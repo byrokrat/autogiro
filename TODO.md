@@ -30,19 +30,6 @@ TODO
    är felformaterat (alltså även om byrokrat/banking säger att det är fel)
    i de fall byrokrat/banking har fel måste det gå att override..
 
-
-Billing
--------
-Strunta i billing när jag utvecklar här. Skapa isället ett eget paket som
-knyter ihop med billing
-
-byrokrat/autogiro-billing
-
-varför inte byta namn på paperinvoice till
-
-byrokrat/pdf-billing
-
-
 BGC:s specifikation
 -------------------
 1. Är det någon skillnad på `Betalningsspecifikation` och
