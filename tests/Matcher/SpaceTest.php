@@ -1,20 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace byrokrat\autogiro\Matcher;
 
-class SpaceTest extends MatcherTestCase
+class SpaceTest extends \byrokrat\autogiro\BaseTestCase
 {
     public function testMatch()
     {
         $this->assertSame(
             ' ',
-            (new Space(4, 1))->match($this->mockLine(3, 1, ' '))
+            (new Space(4, 1))->match($this->getLineMock(' '))
         );
     }
 
     public function testException()
     {
         $this->setExpectedException('byrokrat\autogiro\Exception\InvalidContentException');
-        (new Space(4, 1))->match($this->mockLine(3, 1, '0'));
+        (new Space(4, 1))->match($this->getLineMock('0'));
     }
 }

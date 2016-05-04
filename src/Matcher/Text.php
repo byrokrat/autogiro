@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace byrokrat\autogiro\Matcher;
 
 /**
@@ -12,22 +14,18 @@ class Text extends BaseMatcher
      */
     private $text;
 
-    /**
-     * @param int $startPos
-     * @param string $text
-     */
-    public function __construct($startPos, $text)
+    public function __construct(int $startPos, string $text)
     {
         parent::__construct($startPos, strlen($text));
         $this->text = $text;
     }
 
-    protected function getDescription()
+    protected function getDescription(): string
     {
         return "'{$this->text}'";
     }
 
-    protected function isMatch($str)
+    protected function isMatch(string $str): bool
     {
         return $str === $this->text;
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace byrokrat\autogiro\Matcher;
 
 use byrokrat\autogiro\Line;
@@ -25,12 +27,9 @@ abstract class BaseMatcher implements Matcher
      *
      * Note that to make matcher definitions and the technical specifications of
      * autoirot appear as similar as possible the first character of a line is
-     * re(garded as being in position one (1).
-     *
-     * @param int $startPos
-     * @param int $length
+     * regarded as being in position one (1).
      */
-    public function __construct($startPos, $length)
+    public function __construct(int $startPos, int $length)
     {
         $this->startPos = $startPos;
         $this->length = $length;
@@ -38,27 +37,20 @@ abstract class BaseMatcher implements Matcher
 
     /**
      * Get a description of the expected content
-     *
-     * @return string
      */
-    abstract protected function getDescription();
+    abstract protected function getDescription(): string;
 
     /**
      * Check if string is valid according to matching rules
-     *
-     * @param  string $str
-     * @return bool
      */
-    abstract protected function isMatch($str);
+    abstract protected function isMatch(string $str): bool;
 
     /**
      * Match line and grab substring on success
      *
-     * @param  Line $line
-     * @return string
      * @throws InvalidContentException if line does not match
      */
-    public function match(Line $line)
+    public function match(Line $line): string
     {
         $str = $line->substr($this->startPos - 1, $this->length);
 

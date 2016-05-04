@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace byrokrat\autogiro\Matcher;
 
 use byrokrat\autogiro\Line;
@@ -15,24 +17,12 @@ class FirstOf implements Matcher
      */
     private $matchers;
 
-    /**
-     * Load matchers
-     *
-     * @param Matcher $matchers Any number of Matcher objects
-     */
     public function __construct(Matcher ...$matchers)
     {
         $this->matchers = $matchers;
     }
 
-    /**
-     * Match line and grab substring on success
-     *
-     * @param  Line $line
-     * @return string
-     * @throws InvalidContentException if line does not match
-     */
-    public function match(Line $line)
+    public function match(Line $line): string
     {
         foreach ($this->matchers as $matcher) {
             try {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace byrokrat\autogiro;
 
 use byrokrat\autogiro\Exception\InvalidStateException;
@@ -29,7 +31,7 @@ class StateMachine
      * @param string $initialState
      * @param array  $validTransitions
      */
-    public function __construct($initialState, array $validTransitions)
+    public function __construct(string $initialState, array $validTransitions)
     {
         $this->currentState = $initialState;
         $this->validTransitions = $validTransitions;
@@ -38,11 +40,9 @@ class StateMachine
     /**
      * Set machine in a new state
      *
-     * @param  string $newState
-     * @return void
-     * @throws InvalidStateException if transition is not valid
+     * @throws InvalidStateException If transition is not valid
      */
-    public function transitionTo($newState)
+    public function transitionTo(string $newState)
     {
         if (!array_key_exists($this->currentState, $this->validTransitions)) {
             throw new InvalidStateException("Unexpected $newState (expecting END)");
@@ -63,10 +63,8 @@ class StateMachine
 
     /**
      * Get current state
-     *
-     * @return string
      */
-    public function getState()
+    public function getState(): string
     {
         return $this->currentState;
     }

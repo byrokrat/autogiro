@@ -1,17 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace byrokrat\autogiro\Matcher;
 
-class FirstOfTest extends \PHPUnit_Framework_TestCase
+use byrokrat\autogiro\Exception\InvalidContentException;
+
+class FirstOfTest extends \byrokrat\autogiro\BaseTestCase
 {
     public function testMatch()
     {
-        $line = $this->prophesize('byrokrat\autogiro\Line')->reveal();
+        $line = $this->getLineMock();
 
-        $matcherA = $this->prophesize('byrokrat\autogiro\Matcher\Matcher');
-        $matcherA->match($line)->willThrow(new \byrokrat\autogiro\Exception\InvalidContentException);
+        $matcherA = $this->prophesize(Matcher::CLASS);
+        $matcherA->match($line)->willThrow(new InvalidContentException);
 
-        $matcherB = $this->prophesize('byrokrat\autogiro\Matcher\Matcher');
+        $matcherB = $this->prophesize(Matcher::CLASS);
         $matcherB->match($line)->willReturn('foobar');
 
         $matcher = new FirstOf(
@@ -27,7 +31,7 @@ class FirstOfTest extends \PHPUnit_Framework_TestCase
 
     public function testException()
     {
-        $this->setExpectedException('byrokrat\autogiro\Exception\InvalidContentException');
-        (new FirstOf)->match($this->prophesize('byrokrat\autogiro\Line')->reveal());
+        $this->setExpectedException(InvalidContentException::CLASS);
+        (new FirstOf)->match($this->getLineMock());
     }
 }

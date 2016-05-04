@@ -27,8 +27,5 @@
         "byrokrat/amount": "^1.0",
         "byrokrat/banking": "^1.0",
         "byrokrat/id": "^1.0"
-    },
-    "require-dev": {
-        "mockery/mockery": "0.9.*"
     }
 }

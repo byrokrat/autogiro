@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace byrokrat\autogiro\Matcher;
 
 /**
@@ -7,13 +9,13 @@ namespace byrokrat\autogiro\Matcher;
  */
 class Alphanumeric extends BaseMatcher
 {
-    protected function getDescription()
+    protected function getDescription(): string
     {
         return 'alphanumeric';
     }
 
-    protected function isMatch($str)
+    protected function isMatch(string $str): bool
     {
-        return preg_match('/^[A-Za-zÅÄÖåäö 0-9]*$/', $str);
+        return !!preg_match('/^[A-Za-zÅÄÖåäö 0-9]*$/', $str);
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace byrokrat\autogiro\Matcher;
 
 use byrokrat\autogiro\Line;
@@ -13,9 +15,7 @@ interface Matcher
     /**
      * Match line and grab substring on success
      *
-     * @param  Line $line
-     * @return string
-     * @throws InvalidContentException if line does not match
+     * @throws InvalidContentException If line does not match
      */
-    public function match(Line $line);
+    public function match(Line $line): string;
 }

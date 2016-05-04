@@ -1,98 +1,85 @@
 <?php
 
+declare(strict_types=1);
+
 namespace byrokrat\autogiro;
 
-use Mockery as m;
-
-class FileObjectTest extends \PHPUnit_Framework_TestCase
+class FileObjectTest extends BaseTestCase
 {
     public function testCount()
     {
         $fileObj = new FileObject;
         $this->assertSame(0, count($fileObj));
-        $fileObj->addLine(m::mock('byrokrat\autogiro\Line'));
+
+        $fileObj->addLine($this->getLineMock());
         $this->assertSame(1, count($fileObj));
     }
 
     public function testIterator()
     {
         $fileObj = new FileObject;
-        $this->assertSame(
-            [],
-            iterator_to_array($fileObj)
-        );
-        $line = m::mock('byrokrat\autogiro\Line');
+        $this->assertSame([], iterator_to_array($fileObj));
+
+        $line = $this->getLineMock();
         $fileObj->addLine($line);
-        $this->assertSame(
-            ['0' => $line],
-            iterator_to_array($fileObj)
-        );
+        $this->assertSame(['0' => $line], iterator_to_array($fileObj));
     }
 
     public function testGetLine()
     {
         $fileObj = new FileObject;
-        $line = m::mock('byrokrat\autogiro\Line');
+        $line = $this->getLineMock();
         $fileObj->addLine($line);
-        $this->assertSame(
-            $line,
-            $fileObj->getLine(0)
-        );
+        $this->assertSame($line, $fileObj->getLine(0));
     }
 
     public function testLineDoesNotExistException()
     {
         $this->setExpectedException('byrokrat\autogiro\Exception\RuntimeException');
-        $fileObj = new FileObject;
-        $fileObj->getLine(0);
+        (new FileObject)->getLine(0);
     }
 
     public function testGetFirstLine()
     {
         $fileObj = new FileObject;
-        $empty = m::mock('byrokrat\autogiro\Line')->shouldReceive('isEmpty')->andReturn(true)->mock();
-        $content = m::mock('byrokrat\autogiro\Line')->shouldReceive('isEmpty')->andReturn(false)->mock();
+        $empty = $this->getLineMock('');
+        $notEmpty = $this->getLineMock('foobar');
         $fileObj->addLine($empty);
-        $fileObj->addLine($content);
-        $this->assertSame(
-            $content,
-            $fileObj->getFirstLine()
-        );
+        $fileObj->addLine($notEmpty);
+        $this->assertSame($notEmpty, $fileObj->getFirstLine());
     }
 
     public function testFirstLineDoesNotExistException()
     {
         $this->setExpectedException('byrokrat\autogiro\Exception\RuntimeException');
-        $fileObj = new FileObject;
-        $fileObj->getFirstLine();
+        (new FileObject)->getFirstLine();
     }
 
     public function testGetLastLine()
     {
         $fileObj = new FileObject;
-        $content = m::mock('byrokrat\autogiro\Line')->shouldReceive('isEmpty')->andReturn(false)->mock();
-        $empty = m::mock('byrokrat\autogiro\Line')->shouldReceive('isEmpty')->andReturn(true)->mock();
-        $fileObj->addLine($content);
+        $empty = $this->getLineMock('');
+        $notEmpty = $this->getLineMock('foobar');
+        $fileObj->addLine($notEmpty);
         $fileObj->addLine($empty);
-        $this->assertSame(
-            $content,
-            $fileObj->getLastLine()
-        );
+        $this->assertSame($notEmpty, $fileObj->getLastLine());
     }
 
     public function testLastLineDoesNotExistException()
     {
         $this->setExpectedException('byrokrat\autogiro\Exception\RuntimeException');
-        $fileObj = new FileObject;
-        $fileObj->getLastLine();
+        (new FileObject)->getLastLine();
     }
 
     public function testGetContents()
     {
         $fileObj = new FileObject;
-        $fileObj->addLine(
-            m::mock('byrokrat\autogiro\Line')->shouldReceive('convertTo')->with('encoding')->andReturn('contents')->mock()
-        );
+
+        $line = $this->prophesize(Line::CLASS);
+        $line->convertTo('encoding')->willReturn($this->getLineMock('contents'));
+
+        $fileObj->addLine($line->reveal());
+
         $this->assertSame(
             'contentsnewline',
             $fileObj->getContents('newline', 'encoding')

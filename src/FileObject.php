@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace byrokrat\autogiro;
 
 /**
@@ -17,7 +19,7 @@ class FileObject implements \Countable, \IteratorAggregate
      *
      * @param string $data
      */
-    public function __construct($data = '')
+    public function __construct(string $data = '')
     {
         if ($data) {
             foreach (preg_split("/(\r\n|\n|\r)/", $data) as $raw) {
@@ -28,8 +30,6 @@ class FileObject implements \Countable, \IteratorAggregate
 
     /**
      * Add a line to file
-     *
-     * @param Line $line
      */
     public function addLine(Line $line)
     {
@@ -41,13 +41,12 @@ class FileObject implements \Countable, \IteratorAggregate
      *
      * @param  string $eol      End of line character(s) used
      * @param  string $encoding Encoding used
-     * @return string
      */
-    public function getContents($eol = "\r\n", $encoding = 'ISO-8859-1')
+    public function getContents(string $eol = "\r\n", string $encoding = 'ISO-8859-1'): string
     {
         return array_reduce(
             $this->lines,
-            function ($carry, $line) use ($eol, $encoding) {
+            function (string $carry, Line $line) use ($eol, $encoding) {
                 return $carry . $line->convertTo($encoding) . $eol;
             },
             ''
@@ -57,11 +56,9 @@ class FileObject implements \Countable, \IteratorAggregate
     /**
      * Get line from content
      *
-     * @param  int $lineNumber
-     * @return Line
      * @throws Exception\RuntimeException If line does not exist
      */
-    public function getLine($lineNumber)
+    public function getLine(int $lineNumber): Line
     {
         if (isset($this->lines[$lineNumber])) {
             return $this->lines[$lineNumber];
@@ -73,10 +70,9 @@ class FileObject implements \Countable, \IteratorAggregate
     /**
      * Get first line that has content
      *
-     * @return Line
      * @throws Exception\RuntimeException If no line with content exists
      */
-    public function getFirstLine()
+    public function getFirstLine(): Line
     {
         foreach ($this->lines as $line) {
             if (!$line->isEmpty()) {
@@ -90,10 +86,9 @@ class FileObject implements \Countable, \IteratorAggregate
     /**
      * Get the last line that has content
      *
-     * @return Line
      * @throws Exception\RuntimeException If no line with content exists
      */
-    public function getLastLine()
+    public function getLastLine(): Line
     {
         foreach (array_reverse($this->lines) as $line) {
             if (!$line->isEmpty()) {
@@ -106,20 +101,16 @@ class FileObject implements \Countable, \IteratorAggregate
 
     /**
      * Count the number of lines in file
-     *
-     * @return int
      */
-    public function count()
+    public function count(): int
     {
         return count($this->lines);
     }
 
     /**
      * Iterate over lines
-     *
-     * @return \Traversable
      */
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         foreach ($this->lines as $lineNumber => $line) {
             yield $lineNumber => $line;

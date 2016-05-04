@@ -1,20 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace byrokrat\autogiro\Matcher;
 
-class TextTest extends MatcherTestCase
+class TextTest extends \byrokrat\autogiro\BaseTestCase
 {
     public function testMatch()
     {
         $this->assertSame(
             'TEST',
-            (new Text(1, 'TEST'))->match($this->mockLine(0, 4, 'TEST'))
+            (new Text(1, 'TEST'))->match($this->getLineMock('TEST'))
         );
     }
 
     public function testException()
     {
         $this->setExpectedException('byrokrat\autogiro\Exception\InvalidContentException');
-        (new Text(1, 'TEST'))->match($this->mockLine(0, 4, 'test'));
+        (new Text(1, 'TEST'))->match($this->getLineMock('test'));
     }
 }

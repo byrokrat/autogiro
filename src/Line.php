@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace byrokrat\autogiro;
 
 /**
@@ -23,7 +25,7 @@ class Line
      * @param string $string   Should not contain new line characters
      * @param string $encoding Will be autodetected if missing
      */
-    public function __construct($string, $encoding = '')
+    public function __construct(string $string, string $encoding = '')
     {
         $this->string = $string;
         $this->encoding = $encoding ?: mb_detect_encoding($string);
@@ -32,44 +34,33 @@ class Line
     /**
      * Get part of line
      *
-     * @param  int    $startPos
-     * @param  int    $length
-     * @return string
-     *
      * @todo The returned part should always be encoded in utf8
      */
-    public function substr($startPos, $length)
+    public function substr(int $startPos, int $length): string
     {
         return substr($this->string, $startPos, $length);
     }
 
     /**
      * Get line content
-     *
-     * @return string
      */
-    public function __tostring()
+    public function __toString(): string
     {
         return $this->string;
     }
 
     /**
      * Get line encoding
-     *
-     * @return string
      */
-    public function getEncoding()
+    public function getEncoding(): string
     {
         return $this->encoding;
     }
 
     /**
      * Get a new line object converted to encoding
-     *
-     * @param  string $encoding
-     * @return Line
      */
-    public function convertTo($encoding)
+    public function convertTo(string $encoding): Line
     {
         return new static(
             mb_convert_encoding($this->string, $encoding, $this->getEncoding()),
@@ -79,33 +70,24 @@ class Line
 
     /**
      * Check if line starts with string
-     *
-     * @param  string $string
-     * @return bool
      */
-    public function startsWith($string)
+    public function startsWith(string $string): bool
     {
         return 0 === strpos($this->string, $string);
     }
 
     /**
      * Check if line contains string
-     *
-     * @param  string $string
-     * @return bool
      */
-    public function contains($string)
+    public function contains(string $string): bool
     {
         return false !== strpos($this->string, $string);
     }
 
     /**
      * Check if line matches regular expression
-     *
-     * @param  string $regexp
-     * @return bool
      */
-    public function matches($regexp)
+    public function matches(string $regexp): bool
     {
         return !!preg_match($regexp, $this->string);
     }
@@ -113,10 +95,9 @@ class Line
     /**
      * Capture parts of line using regular expression
      *
-     * @param  string   $regexp
      * @return string[] The captured parts
      */
-    public function capture($regexp)
+    public function capture(string $regexp): array
     {
         preg_match($regexp, $this->string, $matches);
         return (array)$matches;
@@ -124,10 +105,8 @@ class Line
 
     /**
      * Check if line is empty
-     *
-     * @return bool
      */
-    public function isEmpty()
+    public function isEmpty(): bool
     {
         return !trim($this->string);
     }
