@@ -9,4 +9,9 @@ install:
     - composer require hanneskod/readme-tester:dev-master
 
 script:
-    - phpunit
+  - if [[ "$TRAVIS_PHP_VERSION" == '7.0' ]]; then phpunit --coverage-clover=coverage.clover ; fi
+  - if [[ "$TRAVIS_PHP_VERSION" != '7.0' ]]; then phpunit ; fi
+
+after_script:
+  - if [[ "$TRAVIS_PHP_VERSION" == '7.0' ]]; then wget https://scrutinizer-ci.com/ocular.phar ; fi
+  - if [[ "$TRAVIS_PHP_VERSION" == '7.0' ]]; then php ocular.phar code-coverage:upload --format=php-clover coverage.clover ; fi

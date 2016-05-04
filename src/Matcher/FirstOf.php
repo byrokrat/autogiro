@@ -28,6 +28,7 @@ class FirstOf implements Matcher
             try {
                 return $matcher->match($line);
             } catch (InvalidContentException $exception) {
+                // Skipping invalid matches in favour of first valid match
             }
         }
 
