@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace byrokrat\autogiro\Matcher;
 
-class AlphanumericTest extends \byrokrat\autogiro\BaseTestCase
+class NumberTest extends \byrokrat\autogiro\BaseTestCase
 {
     public function testMatch()
     {
         $this->assertSame(
-            'Aa 12 åÅ',
-            (new Alphanumeric(2, 6))->match($this->getLineMock('Aa 12 åÅ'))
+            '23',
+            (new Number(1, 2))->match($this->getLineMock('23'))
         );
     }
 
     public function testException()
     {
         $this->setExpectedException('byrokrat\autogiro\Exception\InvalidContentException');
-        (new Alphanumeric(2, 6))->match($this->getLineMock('12345~'));
+        (new Number(1, 2))->match($this->getLineMock('.3'));
     }
 }

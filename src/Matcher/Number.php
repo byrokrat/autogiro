@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace byrokrat\autogiro\Matcher;
 
 /**
- * Matcher for alphanumeric content
+ * Matcher for numeric content
  */
-class Alphanumeric extends BaseMatcher
+class Number extends BaseMatcher
 {
     protected function getDescription(): string
     {
-        return 'alphanumeric';
+        return 'number';
     }
 
     protected function isMatch(string $str): bool
     {
-        return !!preg_match('/^[A-Za-zÅÄÖåäö 0-9]*$/', $str);
+        return ctype_digit($str);
     }
 }
