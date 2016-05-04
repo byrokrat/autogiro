@@ -45,13 +45,13 @@ class StateMachine
     public function transitionTo(string $newState)
     {
         if (!array_key_exists($this->currentState, $this->validTransitions)) {
-            throw new InvalidStateException("Unexpected $newState (expecting END)");
+            throw new InvalidStateException("Unexpected transaction code $newState (expecting END)");
         }
 
         if (!in_array($newState, $this->validTransitions[$this->currentState])) {
             throw new InvalidStateException(
                 sprintf(
-                    'Unexpected %s (expecting one of [%s])',
+                    'Unexpected transaction code %s (expecting one of [%s])',
                     $newState,
                     implode($this->validTransitions[$this->currentState], ', ')
                 )

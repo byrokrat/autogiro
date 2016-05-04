@@ -78,4 +78,12 @@ class LineTest extends \PHPUnit_Framework_TestCase
             (new Line("\r\n\t "))->isEmpty()
         );
     }
+
+    public function testSubstr()
+    {
+        $this->assertSame(
+            'bar',
+            (new Line('foobarbaz'))->substr(3, 3)
+        );
+    }
 }
