@@ -14,7 +14,7 @@ use byrokrat\autogiro\Parser\Matcher;
 class RecordReader
 {
     /**
-     * @var Matcher\Matcher
+     * @var Matcher\Matcher[]
      */
     private $matchers = [];
 
