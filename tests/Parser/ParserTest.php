@@ -8,7 +8,7 @@ use byrokrat\autogiro\Line;
 use byrokrat\autogiro\Section;
 
 /**
- * @covers Parser
+ * @covers byrokrat\autogiro\Parser\Parser
  */
 class ParserTest extends \byrokrat\autogiro\BaseTestCase
 {
