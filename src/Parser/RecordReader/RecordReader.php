@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace byrokrat\autogiro\Parser;
+namespace byrokrat\autogiro\Parser\RecordReader;
 
 use byrokrat\autogiro\Line;
 use byrokrat\autogiro\Record\Record;
+use byrokrat\autogiro\Parser\Matcher;
 
 /**
  * Match and capture parts of a line into a Record

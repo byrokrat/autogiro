@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace byrokrat\autogiro\Parser;
 
+use byrokrat\autogiro\Section;
 use byrokrat\autogiro\Line;
 use byrokrat\autogiro\Exception;
 
@@ -17,13 +18,18 @@ class Parser
      */
     private $strategy;
 
+    /**
+     * Set parsing strategy
+     */
     public function __construct(Strategy\Strategy $strategy)
     {
         $this->strategy = $strategy;
     }
 
-    // TODO vilken typ av objekt ska parse returnera??
-    public function parse(\SplFileObject $file)
+    /**
+     * Parse file
+     */
+    public function parse(\SplFileObject $file): Section
     {
         $lineNumber = 'undefined';
 
@@ -41,7 +47,7 @@ class Parser
                 $states->transitionTo($line->getTransactionCode());
                 $handler = [$this->strategy, "on{$states->getState()}"];
 
-                if (!is_callable($handler)) {
+                if (!method_exists(...$handler) || !is_callable($handler)) {
                     throw new Exception\LogicException("Missing handler for state {$states->getState()}");
                 }
 
@@ -50,7 +56,6 @@ class Parser
 
             $states->transitionTo(StateMachine::STATE_DONE);
             return $this->strategy->done();
-
         } catch (\Exception $e) {
             throw new Exception\InvalidFileException(
                 "{$e->getMessage()} on line $lineNumber in '{$file->getBasename()}'",

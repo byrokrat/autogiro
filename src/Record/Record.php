@@ -7,6 +7,6 @@ namespace byrokrat\autogiro\Record;
 /**
  * Base record value object
  */
-interface Record
+class Record extends \ArrayObject
 {
 }

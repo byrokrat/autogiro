@@ -7,9 +7,9 @@ namespace byrokrat\autogiro\Record;
 use byrokrat\banking\Bankgiro;
 
 /**
- * Standard opening record
+ * Standard opening record implementation
  */
-class OpeningRecord extends \ArrayObject implements Record
+class OpeningRecord extends Record
 {
     public function __construct(string $layout, \DateTimeImmutable $date, Bankgiro $bankgiro, string $customerNr = '')
     {

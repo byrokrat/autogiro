@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace byrokrat\autogiro\Parser;
+namespace byrokrat\autogiro\Parser\RecordReader;
 
 use byrokrat\autogiro\Record\Record;
+use byrokrat\autogiro\Parser\Matcher;
 
 class RecordReaderTest extends \byrokrat\autogiro\BaseTestCase
 {

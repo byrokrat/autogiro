@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace byrokrat\autogiro\Parser\Strategy;
 
+use byrokrat\autogiro\Section;
 use byrokrat\autogiro\Parser\StateMachine;
 
 /**
@@ -24,5 +25,5 @@ interface Strategy
     /**
      * Get generated data when parsing is complete
      */
-    public function done(): array;
+    public function done(): Section;
 }

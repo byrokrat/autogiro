@@ -1,5 +1,15 @@
-TODO
-====
+1. Needs to support both old and new syntax. Does `Layouts` need a rewrite?
+   Important to have a good testning strategy in place!
+
+1. What should `Parser::parse()` return? Tried to write a generic `Section` class.
+   Wrapp in `Dataset` that implements `getSection(Layout::ID)` and `getAllSections()`?
+   Depends on the BGC specs. Are return values regular in this respect?
+
+1. **FileObject** is not used in `Parser` at all! Keept in source for reference.
+   If `Line` should handle all encoding conversions/line endings; move functionality from
+   `FileObject`. It is also an open question how `Line/FileObject` should be used
+   in `Writer`...
+
 1. Support billing at next possible date (the low level syntax for
    this is `GENAST`, instead of a numeric date). OBS! S. 27 i manual: Periodkod
    1-8 kan inte användas om GENAST har angetts som betalningsdag i TK32 eller TK82.
@@ -17,6 +27,9 @@ TODO
 1. Write something like `byrokrat\autogiro\testfiles\FileProvidingTrait` to
    allow for easy access to test files when writing tests.
 
+1. When tesing: The number of generated `Record` objects should match the number
+   of lines in the raw file. Make the testing strategy validate this..
+
 1. Olika värdebärare for record-sub-parts
     ```php
     $interval = new Record\Intervall\MonthlyOnDate;
@@ -24,16 +37,17 @@ TODO
     echo $interval->getDescription();
     ```
 
-1. Släpp under GPL för att fucka för de som använder koden =)
+1. `Dataset`, `Section` and `Record` could all implement `JsonSerializable`...
 
-1. Det måste vara möjligt att skicka medgivanden och så vidare även om konto
-   är felformaterat (alltså även om byrokrat/banking säger att det är fel)
-   i de fall byrokrat/banking har fel måste det gå att override..
+1. Implement interfaces for `OpeningRecord` and `ClosingRecord` for type checking
+   in `Section` and so on..?? Depends on how I want to implement records in the end..
 
-BGC:s specifikation
--------------------
-1. Flytta spec från katalog `bgc` till `docs`
+1. `Writer` could be an object that transforms a `Dataset` inte raw `Line` objects..
+   And a `Builder` could wrap the writer and define convenience methods for adding
+   invoices, donors and so on..
 
+BGC specs
+---------
 1. Är det någon skillnad på `Betalningsspecifikation` och
    `Betalningsspecifikation och stoppade betalningar i täckningskontroll`?
 
