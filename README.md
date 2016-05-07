@@ -20,8 +20,8 @@ composer require byrokrat/autogiro
 Autogiro specifications
 -----------------------
 This library is developed against the [technichal manual](/bgc/autogiro_tekniskmanual_sv.pdf)
-(in swedish) of the new direct debit system (nya autogirot) accessed in november
-2015. For updated versions of this document contact [Bankgirocentralen](http://bgc.se).
+(in swedish) of the new direct debit system (nya autogirot) revised 2014-08-05.
+For updated versions of this document contact [Bankgirocentralen](http://bgc.se).
 
 Credits
 -------

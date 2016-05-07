@@ -32,6 +32,14 @@ class Line
     }
 
     /**
+     * Get 2 character line transaction code
+     */
+    public function getTransactionCode(): string
+    {
+        return $this->substr(0, 2);
+    }
+
+    /**
      * Get part of line
      *
      * @todo The returned part should always be encoded in utf8

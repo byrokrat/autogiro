@@ -6,6 +6,8 @@ namespace byrokrat\autogiro;
 
 /**
  * Access object for files from bgc
+ *
+ * TODO This class is no longer used. Kept during transition.
  */
 class FileObject implements \Countable, \IteratorAggregate
 {

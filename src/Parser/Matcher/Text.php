@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace byrokrat\autogiro\Matcher;
+namespace byrokrat\autogiro\Parser\Matcher;
 
 /**
  * Matcher for defined text

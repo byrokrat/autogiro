@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace byrokrat\autogiro\Matcher;
+namespace byrokrat\autogiro\Parser\Matcher;
 
 use byrokrat\autogiro\Exception\InvalidContentException;
 

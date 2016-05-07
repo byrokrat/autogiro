@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace byrokrat\autogiro;
+namespace byrokrat\autogiro\Parser;
 
 use byrokrat\autogiro\Exception\InvalidStateException;
 
@@ -11,6 +11,16 @@ use byrokrat\autogiro\Exception\InvalidStateException;
  */
 class StateMachine
 {
+    /**
+     * Default init state
+     */
+    const STATE_INIT = 'state_init';
+
+    /**
+     * Done state
+     */
+    const STATE_DONE = 'state_done';
+
     /**
      * @var string The current state
      */
@@ -31,10 +41,10 @@ class StateMachine
      * @param string $initialState
      * @param array  $validTransitions
      */
-    public function __construct(string $initialState, array $validTransitions)
+    public function __construct(array $validTransitions, string $initialState = self::STATE_INIT)
     {
-        $this->currentState = $initialState;
         $this->validTransitions = $validTransitions;
+        $this->currentState = $initialState;
     }
 
     /**

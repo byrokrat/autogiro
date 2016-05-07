@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace byrokrat\autogiro\Matcher;
+namespace byrokrat\autogiro\Parser\Matcher;
 
 /**
  * Matcher for alphanumeric content
@@ -16,6 +16,6 @@ class Alphanum extends BaseMatcher
 
     protected function isMatch(string $str): bool
     {
-        return !!preg_match('/^[A-Za-zÅÄÖåäö 0-9]*$/', $str);
+        return !!preg_match('/^[A-Za-zÅÄÖåäö0-9 -\/.&]*$/', $str);
     }
 }

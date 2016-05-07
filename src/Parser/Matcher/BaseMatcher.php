@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace byrokrat\autogiro\Matcher;
+namespace byrokrat\autogiro\Parser\Matcher;
 
 use byrokrat\autogiro\Line;
 use byrokrat\autogiro\Exception\InvalidContentException;
@@ -57,7 +57,7 @@ abstract class BaseMatcher implements Matcher
         if (!$this->isMatch($str)) {
             throw new InvalidContentException(
                 sprintf(
-                    "Invalid content '%s' (should be %s) at position %s",
+                    "Invalid content '%s' (expecting %s) starting at position %s",
                     $str,
                     $this->getDescription(),
                     $this->startPos - 1

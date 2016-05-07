@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
-namespace byrokrat\autogiro;
+namespace byrokrat\autogiro\Parser;
+
+use byrokrat\autogiro\Line;
+use byrokrat\autogiro\Record\Record;
 
 /**
  * Match and capture parts of a line into a Record
@@ -10,7 +13,7 @@ namespace byrokrat\autogiro;
 class RecordReader
 {
     /**
-     * @var Mathcer\Matcher
+     * @var Matcher\Matcher
      */
     private $matchers = [];
 
@@ -20,23 +23,17 @@ class RecordReader
     private $builder;
 
     /**
-     * Inject Record builder
+     * Inject matchers and builder
      *
      * The builder should take an array of values captured by registered
      * matchers and return a Record object.
      */
-    public function __construct(callable $builder)
+    public function __construct(array $matchers, callable $builder)
     {
-        $this->builder = $builder;
-    }
-
-    /**
-     * Capture content matching $matcher
-     */
-    public function match(string $key, Matcher\Matcher $matcher): self
-    {
-        $this->matchers[$key] = $matcher;
-        return $this;
+        foreach ($matchers as $key => $matcher) {
+            $this->addMatcher($key, $matcher);
+        }
+        $this->setBuilder($builder);
     }
 
     /**
@@ -51,5 +48,21 @@ class RecordReader
         }
 
         return ($this->builder)($parts);
+    }
+
+    /**
+     * Add content matcher
+     */
+    protected function addMatcher(string $key, Matcher\Matcher $matcher)
+    {
+        $this->matchers[$key] = $matcher;
+    }
+
+    /**
+     * Set record builder
+     */
+    protected function setBuilder(callable $builder)
+    {
+        $this->builder = $builder;
     }
 }

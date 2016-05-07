@@ -6,6 +6,14 @@ namespace byrokrat\autogiro;
 
 class LineTest extends \PHPUnit_Framework_TestCase
 {
+    public function testGetTransactionCode()
+    {
+        $this->assertSame(
+            '12',
+            (new Line('123456789'))->getTransactionCode()
+        );
+    }
+
     public function testConvert()
     {
         $string = 'ABCÖÄÅ';

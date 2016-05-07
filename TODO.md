@@ -32,6 +32,8 @@ TODO
 
 BGC:s specifikation
 -------------------
+1. Flytta spec från katalog `bgc` till `docs`
+
 1. Är det någon skillnad på `Betalningsspecifikation` och
    `Betalningsspecifikation och stoppade betalningar i täckningskontroll`?
 
