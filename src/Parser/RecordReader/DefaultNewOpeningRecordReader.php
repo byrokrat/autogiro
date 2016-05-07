@@ -24,7 +24,7 @@ namespace byrokrat\autogiro\Parser\RecordReader;
 
 use byrokrat\autogiro\Record;
 use byrokrat\autogiro\Parser\Matcher;
-use byrokrat\banking\AccountFactory;
+use byrokrat\banking\BankgiroFactory;
 use byrokrat\banking\BankNames;
 
 /**
@@ -35,12 +35,9 @@ class DefaultNewOpeningRecordReader extends RecordReader
     /**
      * TODO Tests missing; need a plan for how different readers should be organised
      */
-    public function __construct(AccountFactory $accountFactory = null)
+    public function __construct(BankgiroFactory $bankgiroFactory = null)
     {
-        if (!$accountFactory) {
-            $accountFactory = new AccountFactory;
-            $accountFactory->whitelistFormats([BankNames::FORMAT_BANKGIRO]);
-        }
+        $bankgiroFactory = $bankgiroFactory ?: new BankgiroFactory;
 
         parent::__construct(
             [
@@ -53,11 +50,11 @@ class DefaultNewOpeningRecordReader extends RecordReader
                 'customerNr' => new Matcher\Number(65, 6),
                 'bankgiro' => new Matcher\Number(71, 10),
             ],
-            function(array $values) use ($accountFactory) {
+            function(array $values) use ($bankgiroFactory) {
                 return new Record\OpeningRecord(
                     trim($values['layout']),
                     \DateTimeImmutable::createFromFormat('Ymd', $values['date']),
-                    $accountFactory->createAccount(ltrim($values['bankgiro'], '0')),
+                    $bankgiroFactory->createAccount(ltrim($values['bankgiro'], '0')),
                     ltrim($values['customerNr'], '0')
                 );
             }

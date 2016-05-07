@@ -25,7 +25,7 @@
         "php": "^7.0",
         "ext-mbstring": "*",
         "byrokrat/amount": "^1.0",
-        "byrokrat/banking": "^1.0",
+        "byrokrat/banking": "^1.1",
         "byrokrat/id": "^1.0"
     }
 }
