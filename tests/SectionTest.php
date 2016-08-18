@@ -32,7 +32,7 @@ class SectionTest extends \PHPUnit_Framework_TestCase
 
     public function testSetOpeningRecord()
     {
-        $record = $this->getMock(Record\Record::CLASS);
+        $record = $this->getMockBuilder(Record\Record::CLASS)->getMock();
         $section = new Section('');
         $section->setOpeningRecord($record);
         $this->assertSame(
@@ -43,7 +43,7 @@ class SectionTest extends \PHPUnit_Framework_TestCase
 
     public function testSetClosingRecord()
     {
-        $record = $this->getMock(Record\Record::CLASS);
+        $record = $this->getMockBuilder(Record\Record::CLASS)->getMock();
         $section = new Section('');
         $section->setClosingRecord($record);
         $this->assertSame(
@@ -54,7 +54,7 @@ class SectionTest extends \PHPUnit_Framework_TestCase
 
     public function testAddRecord()
     {
-        $record = $this->getMock(Record\Record::CLASS);
+        $record = $this->getMockBuilder(Record\Record::CLASS)->getMock();
         $section = new Section('');
         $section->addRecord($record);
         $section->addRecord($record);
