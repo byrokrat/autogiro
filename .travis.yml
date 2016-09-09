@@ -2,16 +2,19 @@ sudo: false
 
 language: php
 
-php:
-    - 7.0
+matrix:
+    include:
+        - php: 7.0
+        - php: 7.0
+          env: COMPOSER_FLAGS='--prefer-lowest --prefer-stable'
+        - php: nightly
+    allow_failures:
+        - php: nightly
+    fast_finish: true
 
 install:
-    - composer require hanneskod/readme-tester:dev-master
+    - composer require hanneskod/readme-tester:dev-master phpspec/phpspec $COMPOSER_FLAGS --no-interaction
 
 script:
-  - if [[ "$TRAVIS_PHP_VERSION" == '7.0' ]]; then phpunit --coverage-clover=coverage.clover ; fi
-  - if [[ "$TRAVIS_PHP_VERSION" != '7.0' ]]; then phpunit ; fi
-
-after_script:
-  - if [[ "$TRAVIS_PHP_VERSION" == '7.0' ]]; then wget https://scrutinizer-ci.com/ocular.phar ; fi
-  - if [[ "$TRAVIS_PHP_VERSION" == '7.0' ]]; then php ocular.phar code-coverage:upload --format=php-clover coverage.clover ; fi
+    - phpspec run --verbose
+    - phpunit --verbose

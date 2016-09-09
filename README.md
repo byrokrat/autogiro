@@ -22,25 +22,3 @@ Autogiro specifications
 This library is developed against the [technichal manual](/docs/autogiro_tekniskmanual_sv.pdf)
 (in swedish) of the direct debit system (autogirot) revised 2014-08-05. For
 updated versions of this document contact [Bankgirocentralen](http://bgc.se).
-
-Usage
------
-> At the moment...
-
-<!-- @expectOutput /LAYOUT_MANDATE_RESPONSE/ -->
-```php
-namespace byrokrat\autogiro;
-
-$parser = new Parser\Parser(new Parser\Strategy\MandateResponseStrategy);
-
-$file = new \SplFileObject('TEMP_autogiro_exempelfiler_medgivandeavisering_sv.txt');
-
-$data = $parser->parse($file);
-
-var_dump($data);
-```
-
-
-Credits
--------
-@author Hannes Forsgård (hannes.forsgard@fripost.org)

@@ -13,12 +13,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "byrokrat\\autogiro\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "byrokrat\\autogiro\\": "tests/"
+            "byrokrat\\autogiro\\": ["src/"]
         }
     },
     "require": {
@@ -27,5 +22,8 @@
         "byrokrat/amount": "^1.0",
         "byrokrat/banking": "^1.1",
         "byrokrat/id": "^1.0"
+    },
+    "require-dev": {
+        "scato/phpeg": "^1.0"
     }
 }

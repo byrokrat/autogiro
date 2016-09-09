@@ -9,7 +9,7 @@
  *
  * byrokrat/autogiro is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -17,8 +17,6 @@
  *
  * Copyright 2016 Hannes Forsgård
  */
-
-declare(strict_types = 1);
 
 namespace byrokrat\autogiro;
 
@@ -35,7 +33,7 @@ interface Layouts
     /**
      * Layout for receiving responses the previously made mandate requests
      */
-    const LAYOUT_MANDATE_RESPONSE = 'LAYOUT_MANDATE_RESPONSE';
+    const LAYOUT_MANDATE_RESPONSE = 'AG-MEDAVI';
 
     /**
      * Layout for receiving new digital mandates

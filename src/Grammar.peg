@@ -1,0 +1,123 @@
+//<?php
+/**
+ * This file is part of byrokrat\autogiro.
+ *
+ * byrokrat\autogiro is free software: you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * byrokrat\autogiro is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with byrokrat\autogiro. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Copyright 2016 Hannes Forsgård
+ */
+
+namespace byrokrat\autogiro;
+
+use byrokrat\autogiro\Tree\LayoutNode;
+use byrokrat\autogiro\Tree\OpeningNode;
+use byrokrat\autogiro\Tree\ClosingNode;
+use byrokrat\autogiro\Tree\MandateResponseNode;
+
+grammar Grammar extends GrammarDependencies
+{
+    start FILE = MANDATE_RESPONSE_LAYOUT;
+
+    // MANDATE RESPONSE LAYOUT
+
+    MANDATE_RESPONSE_LAYOUT = opening:(GENERIC_OPENING_RECORD / MANDATE_RESPONSE_OPENING_RECORD_OLD) mandates:MANDATE_RESPONSE_RECORD* closing:MANDATE_RESPONSE_CLOSING_RECORD {
+        return new LayoutNode($opening, $closing, ...$mandates);
+    };
+
+    MANDATE_RESPONSE_OPENING_RECORD_OLD = '01' date:DATE BGC_CLEARING bg:BANKGIRO 'AG-MEDAVI' EOR {
+        return new OpeningNode('AG-MEDAVI', $date, '', $bg, $this->currentLineNr);
+    };
+
+    MANDATE_RESPONSE_RECORD = '73' bg:BANKGIRO payerNr:$(N10 N5 N) accountNr:$(A10 A5 A) id:ID A5 info:$(N N) comment:$(N N) date:DATE? EOR {
+        $accountNr = trim(ltrim($accountNr, '0'));
+        $payerNr = ltrim($payerNr, '0');
+
+        return new MandateResponseNode(
+            $bg,
+            $payerNr,
+            $this->getAccountFactory()->createAccount($accountNr ?: $payerNr),
+            $id,
+            $this->getMessageFactory()->createMessage("73.$info"),
+            $this->getMessageFactory()->createMessage("73.comment.$comment"),
+            $date ?: new \DateTimeImmutable('@0'),
+            $this->currentLineNr
+        );
+    };
+
+    MANDATE_RESPONSE_CLOSING_RECORD = '09' date:DATE BGC_CLEARING nrOfPosts:$(N5 N N) EOR {
+        return new ClosingNode($date, intval($nrOfPosts), $this->currentLineNr);
+    };
+
+    // GENERIC RECORDS
+
+    GENERIC_OPENING_RECORD = '01' 'AUTOGIRO' S10 S S S S date:DATE S10 S S layout:A20 custNr:CUST_NR bg:BANKGIRO EOR {
+        return new OpeningNode(rtrim($layout), $date, $custNr, $bg, $this->currentLineNr);
+    };
+
+    // TYPES
+
+    BANKGIRO = number:N10 {
+        return $this->getBankgiroFactory()->createAccount(ltrim($number, '0'));
+    };
+
+    BGC_CLEARING = '9900';
+
+    CUST_NR = custNr:$(N5 N) {
+        return ltrim($custNr, '0');
+    };
+
+    DATE = date:$(N5 N N N) {
+        return new \DateTimeImmutable($date . '000000');
+    };
+
+    ID = century:$(A A) number:A10 {
+        if (in_array($century, ['00', '99'])) {
+            return $this->getOrganizationIdFactory()->create($number);
+        }
+
+        return $this->getPersonalIdFactory()->create($century.$number);
+    };
+
+    // HELPERS
+
+    A "ALPHA-NUMERIC" = [a-zA-Z0-9 -\/&];
+
+    A5 = $(A A A A A);
+
+    A10 = $(A5 A5);
+
+    A20 = $(A10 A10);
+
+    N "NUMBER" = [0-9];
+
+    N5 = $(N N N N N);
+
+    N10 = $(N5 N5);
+
+    N20 = $(N10 N10);
+
+    S "SPACE" = ' ';
+
+    S5 = $(S S S S S);
+
+    S10 = $(S5 S5);
+
+    S20 = $(S10 S10);
+
+    EOL "END_OF_LINE" = "\r"? "\n" {
+        $this->currentLineNr++;
+    };
+
+    EOR "END_OF_RECORD" = A* EOL;
+}
