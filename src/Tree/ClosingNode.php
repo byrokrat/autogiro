@@ -23,31 +23,14 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Tree;
 
 /**
- * Basic closing record value object
+ * Standard closing record node
  */
-class ClosingNode implements NodeInterface
+class ClosingNode extends Node
 {
-    use Attr\DateAttribute, Attr\LineNrAttribute;
-
-    /**
-     * @var int
-     */
-    private $numberOfPosts;
-
-    public function __construct(\DateTimeInterface $date, int $numberOfPosts, int $lineNr)
+    public function __construct(\DateTimeInterface $date, int $numberOfPosts = 0, int $lineNr = 0)
     {
-        $this->date = $date;
-        $this->numberOfPosts = $numberOfPosts;
-        $this->lineNr = $lineNr;
-    }
-
-    public function getNumberOfRecords(): int
-    {
-        return $this->numberOfPosts;
-    }
-
-    public function accept(VisitorInterface $visitor)
-    {
-        $visitor->visitClosingNode($this);
+        parent::__construct($lineNr);
+        $this->setAttribute('date', $date);
+        $this->setAttribute('nr_of_posts', $numberOfPosts);
     }
 }

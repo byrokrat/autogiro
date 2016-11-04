@@ -22,10 +22,13 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro;
 
-use byrokrat\autogiro\Visitor\ValidatingVisitor;
-use byrokrat\autogiro\Tree\LayoutNode;
+use byrokrat\autogiro\Processor\Processor;
+use byrokrat\autogiro\Tree\FileNode;
 use byrokrat\autogiro\Exception\ParserException;
 
+/**
+ * Facade to Grammar with error handling
+ */
 class Parser
 {
     /**
@@ -34,36 +37,41 @@ class Parser
     private $grammar;
 
     /**
-     * @var ValidatingVisitor
+     * @var Processor[]
      */
-    private $validator;
+    private $processors;
 
-    public function __construct(Grammar $grammar, ValidatingVisitor $validator)
+    /**
+     * @param Grammar     $grammar
+     * @param Processor[] $processors
+     */
+    public function __construct(Grammar $grammar = null, array $processors = [])
     {
-        $this->grammar = $grammar;
-        $this->validator = $validator;
+        $this->grammar = $grammar ?: new Grammar;
+        $this->processors = $processors;
     }
 
     /**
      * @throws ParserException If parsning fails
      */
-    public function parse(string $content): LayoutNode
+    public function parse(string $content): FileNode
     {
-        $this->grammar->resetLineCount();
-
         try {
             $node = $this->grammar->parse($content);
-        } catch (\InvalidArgumentException $exception) {
-            throw new ParserException([$exception->getMessage()]);
         } catch (\Exception $exception) {
-            throw new ParserException([$exception->getMessage() . " on line {$this->grammar->getCurrentLineCount()}"]);
+            throw new ParserException([$exception->getMessage()]);
         }
 
-        $this->validator->reset();
-        $node->accept($this->validator);
+        $errors = [];
 
-        if ($this->validator->hasErrors()) {
-            throw new ParserException($this->validator->getErrors());
+        foreach ($this->processors as $processor) {
+            $processor->resetErrors();
+            $node->accept($processor);
+            $errors = array_merge($errors, $processor->getErrors());
+        }
+
+        if (!empty($errors)) {
+            throw new ParserException($errors);
         }
 
         return $node;

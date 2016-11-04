@@ -18,12 +18,17 @@
     },
     "require": {
         "php": "^7.0",
-        "ext-mbstring": "*",
-        "byrokrat/amount": "^1.0",
-        "byrokrat/banking": "^1.1",
-        "byrokrat/id": "^1.0"
+        "ext-mbstring": "*"
     },
     "require-dev": {
-        "scato/phpeg": "^1.0"
+        "scato/phpeg": "^1.0",
+        "byrokrat/amount": "^1.0",
+        "byrokrat/banking": "^1.2",
+        "byrokrat/id": "^1.0"
+    },
+    "suggest": {
+        "byrokrat/amount": "To parse and validate monetary amounts",
+        "byrokrat/banking": "To parse and validate bank account numbers",
+        "byrokrat/id": "To parse and validate identification numbers"
     }
 }

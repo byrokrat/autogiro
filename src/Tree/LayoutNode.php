@@ -23,70 +23,23 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Tree;
 
 /**
- * Generic node container
+ * Generic layout container node
  */
-class LayoutNode implements NodeInterface
+class LayoutNode extends Node
 {
-    /**
-     * @var OpeningNode
-     */
-    private $opening;
-
-    /**
-     * @var ClosingNode
-     */
-    private $closing;
-
-    /**
-     * @var NodeInterface[]
-     */
-    private $content;
-
-    public function __construct(OpeningNode $opening, ClosingNode $closing, NodeInterface ...$content)
+    public function __construct(OpeningNode $opening, ClosingNode $closing, Node ...$content)
     {
-        $this->opening = $opening;
-        $this->closing = $closing;
-        $this->content = $content;
-    }
+        $this->setChild('opening', $opening);
 
-    public function getLayoutId(): string
-    {
-        return $this->getOpeningNode()->getLayoutId();
-    }
-
-    public function getOpeningNode(): OpeningNode
-    {
-        return $this->opening;
-    }
-
-    public function getClosingNode(): ClosingNode
-    {
-        return $this->closing;
-    }
-
-    /**
-     * @return NodeInterface[]
-     */
-    public function getContentNodes(): array
-    {
-        return $this->content;
-    }
-
-    public function accept(VisitorInterface $visitor)
-    {
-        $visitor->visitLayoutNode($this);
-
-        $this->getOpeningNode()->accept($visitor);
-
-        foreach ($this->getContentNodes() as $node) {
-            $node->accept($visitor);
+        foreach ($content as $key => $node) {
+            $this->setChild('content_'.++$key, $node);
         }
 
-        $this->getClosingNode()->accept($visitor);
+        $this->setChild('closing', $closing);
     }
 
     public function getLineNr(): int
     {
-        return $this->getOpeningNode()->getLineNr();
+        return $this->getChild('opening')->getLineNr();
     }
 }

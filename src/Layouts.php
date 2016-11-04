@@ -31,6 +31,16 @@ interface Layouts
     const LAYOUT_MANDATE_REQUEST = 'LAYOUT_MANDATE_REQUEST';
 
     /**
+     * Layout for sending payment requests
+     */
+    const LAYOUT_PAYMENT_REQUEST = 'LAYOUT_PAYMENT_REQUEST';
+
+    /**
+     * Layout for sending payment amendments and revocations
+     */
+    const LAYOUT_AMENDMENT_REQUEST = 'LAYOUT_AMENDMENT_REQUEST';
+
+    /**
      * Layout for receiving responses the previously made mandate requests
      */
     const LAYOUT_MANDATE_RESPONSE = 'AG-MEDAVI';
@@ -46,11 +56,6 @@ interface Layouts
     const LAYOUT_MANDATE_REPORT = 'LAYOUT_MANDATE_REPORT';
 
     /**
-     * Layout for sending payment requests
-     */
-    const LAYOUT_PAYMENT_REQUEST = 'LAYOUT_PAYMENT_REQUEST';
-
-    /**
      * Layout for receiving responses to previously made payment requests
      */
     const LAYOUT_PAYMENT_RESPONSE = 'LAYOUT_PAYMENT_RESPONSE';
@@ -59,11 +64,6 @@ interface Layouts
      * Layout for receiving responses to previously made payment requests in BgMax format
      */
     const LAYOUT_PAYMENT_RESPONSE_BGMAX = 'LAYOUT_PAYMENT_RESPONSE_BGMAX';
-
-    /**
-     * Layout for sending payment amendments and revocations
-     */
-    const LAYOUT_AMENDMENT_REQUEST = 'LAYOUT_AMENDMENT_REQUEST';
 
     /**
      * Layout for receiving responses to previously made payment amendments and revocations

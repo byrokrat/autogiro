@@ -1,5 +1,4 @@
 /docs export-ignore
-/integrations export-ignore
 /rel export-ignore
 /spec export-ignore
 /tests export-ignore
@@ -8,7 +7,7 @@
 /.travis.yml export-ignore
 /build_parser.php export-ignore
 /CHANGELOG.md export-ignore
-/phpspec.yml
+/phpspec.yml export-ignore
 /phpunit.xml.dist export-ignore
 /README.md export-ignore
 /TODO.md export-ignore

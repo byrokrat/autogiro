@@ -4,78 +4,83 @@ declare(strict_types = 1);
 
 namespace spec\byrokrat\autogiro\Tree;
 
-use byrokrat\autogiro\Tree;
-use byrokrat\autogiro\Message\Message;
-use byrokrat\banking\{AccountNumber, Bankgiro};
-use byrokrat\id\Id;
+use byrokrat\autogiro\Tree\MandateResponseNode;
+use byrokrat\autogiro\Tree\Node;
+use byrokrat\autogiro\Tree\BankgiroNode;
+use byrokrat\autogiro\Tree\PayerNumberNode;
+use byrokrat\autogiro\Tree\AccountNode;
+use byrokrat\autogiro\Tree\IdNode;
+use byrokrat\autogiro\Tree\MessageNode;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
 class MandateResponseNodeSpec extends ObjectBehavior
 {
-    const PAYER_NR = '345678';
-    const LINE_NR = 1;
-
-    function let(Bankgiro $bankgiro, AccountNumber $account, Id $id, Message $info, Message $comment, \DateTime $date)
-    {
-        $this->beConstructedWith($bankgiro, self::PAYER_NR, $account, $id, $info, $comment, $date, self::LINE_NR);
+    function let(
+        BankgiroNode $bankgiro,
+        PayerNumberNode $payerNr,
+        AccountNode $account,
+        IdNode $id,
+        MessageNode $info,
+        MessageNode $comment,
+        \DateTime $date
+    ) {
+        $this->beConstructedWith($bankgiro, $payerNr, $account, $id, $info, $comment, $date);
     }
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(Tree\MandateResponseNode::CLASS);
+        $this->shouldHaveType(MandateResponseNode::CLASS);
     }
 
     function it_implements_node_interface()
     {
-        $this->shouldHaveType(Tree\NodeInterface::CLASS);
+        $this->shouldHaveType(Node::CLASS);
     }
 
-    function it_accepts_a_visitor(Tree\VisitorInterface $visitor)
+    function it_contains_a_type()
     {
-        $this->accept($visitor);
-        $visitor->visitMandateResponseNode($this)->shouldHaveBeenCalled();
-    }
-
-    function it_contains_a_line_number()
-    {
-        $this->getLineNr()->shouldEqual(self::LINE_NR);
+        $this->getType()->shouldEqual('MandateResponseNode');
     }
 
     function it_contains_a_bankgiro($bankgiro)
     {
-        $this->getBankgiro()->shouldEqual($bankgiro);
+        $this->getChild('bankgiro')->shouldEqual($bankgiro);
     }
 
-    function it_contains_a_payer_number()
+    function it_contains_a_payer_number($payerNr)
     {
-        $this->getPayerNumber()->shouldEqual(self::PAYER_NR);
+        $this->getChild('payer_number')->shouldEqual($payerNr);
     }
 
     function it_contains_an_account($account)
     {
-        $this->getAccount()->shouldEqual($account);
+        $this->getChild('account')->shouldEqual($account);
     }
 
     function it_contains_an_id($id)
     {
-        $this->getId()->shouldEqual($id);
+        $this->getChild('id')->shouldEqual($id);
     }
 
-    function it_contains_messages($info, $comment)
+    function it_contains_a_message($info)
     {
-        $info->getCode()->willReturn('foo')->shouldBeCalled();
-        $comment->getCode()->willReturn('bar')->shouldBeCalled();
+        $this->getChild('info')->shouldEqual($info);
+    }
 
-        $this->getMessages()->shouldEqual([$info, $comment]);
-
-        $this->hasMessage('foo')->shouldEqual(true);
-        $this->hasMessage('bar')->shouldEqual(true);
-        $this->hasMessage('baz')->shouldEqual(false);
+    function it_contains_a_comment($comment)
+    {
+        $this->getChild('comment')->shouldEqual($comment);
     }
 
     function it_contains_a_date($date)
     {
-        $this->getDate()->shouldEqual($date);
+        $this->getAttribute('date')->shouldEqual($date);
+    }
+
+    function it_contains_a_line_number($bankgiro, $payerNr, $account, $id, $info, $comment, $date)
+    {
+        $this->beConstructedWith($bankgiro, $payerNr, $account, $id, $info, $comment, $date, 100);
+        $this->getLineNr()->shouldEqual(100);
     }
 }

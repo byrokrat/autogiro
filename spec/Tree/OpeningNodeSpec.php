@@ -4,59 +4,58 @@ declare(strict_types = 1);
 
 namespace spec\byrokrat\autogiro\Tree;
 
-use byrokrat\autogiro\Tree;
-use byrokrat\banking\Bankgiro;
+use byrokrat\autogiro\Tree\OpeningNode;
+use byrokrat\autogiro\Tree\Node;
+use byrokrat\autogiro\Tree\BankgiroNode;
 use PhpSpec\ObjectBehavior;
 
 class OpeningNodeSpec extends ObjectBehavior
 {
-    const LAYOUT_NAME = 'layoutName';
-    const CUSTOMER_NR = '123456';
-    const LINE_NR = 1;
-
-    function let(\DateTimeImmutable $date, Bankgiro $bankgiro)
+    function let(\DateTimeImmutable $date, BankgiroNode $bankgiro)
     {
-        $this->beConstructedWith(self::LAYOUT_NAME, $date, self::CUSTOMER_NR, $bankgiro, self::LINE_NR);
+        $this->beConstructedWith('', $date, '', $bankgiro);
     }
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(Tree\OpeningNode::CLASS);
+        $this->shouldHaveType(OpeningNode::CLASS);
     }
 
     function it_implements_node_interface()
     {
-        $this->shouldHaveType(Tree\NodeInterface::CLASS);
+        $this->shouldHaveType(Node::CLASS);
     }
 
-    function it_accepts_a_visitor(Tree\VisitorInterface $visitor)
+    function it_contains_a_type()
     {
-        $this->accept($visitor);
-        $visitor->visitOpeningNode($this)->shouldHaveBeenCalled();
+        $this->getType()->shouldEqual('OpeningNode');
     }
 
-    function it_contains_a_line_number()
+    function it_contains_a_layout_name(\DateTimeImmutable $date, BankgiroNode $bankgiro)
     {
-        $this->getLineNr()->shouldEqual(self::LINE_NR);
+        $this->beConstructedWith('layout', $date, '', $bankgiro);
+        $this->getAttribute('layout_name')->shouldEqual('layout');
     }
 
-    function it_contains_a_layout_name()
+    function it_contains_a_date(\DateTimeImmutable $date)
     {
-        $this->getLayoutId()->shouldEqual(self::LAYOUT_NAME);
+        $this->getAttribute('date')->shouldEqual($date);
     }
 
-    function it_contains_a_date($date)
+    function it_contains_a_customer_number(\DateTimeImmutable $date, BankgiroNode $bankgiro)
     {
-        $this->getDate()->shouldEqual($date);
+        $this->beConstructedWith('', $date, '1234', $bankgiro);
+        $this->getAttribute('customer_number')->shouldEqual('1234');
     }
 
-    function it_contains_a_customer_number()
+    function it_contains_a_bankgiro(BankgiroNode $bankgiro)
     {
-        $this->getCustomerNumber()->shouldEqual(self::CUSTOMER_NR);
+        $this->getChild('bankgiro')->shouldEqual($bankgiro);
     }
 
-    function it_contains_a_bankgiro($bankgiro)
+    function it_contains_a_line_number(\DateTimeImmutable $date, BankgiroNode $bankgiro)
     {
-        $this->getBankgiro()->shouldEqual($bankgiro);
+        $this->beConstructedWith('', $date, '', $bankgiro, 10);
+        $this->getLineNr()->shouldEqual(10);
     }
 }

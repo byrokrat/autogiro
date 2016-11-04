@@ -4,30 +4,45 @@ declare(strict_types = 1);
 
 namespace spec\byrokrat\autogiro\Tree;
 
-use byrokrat\autogiro\Tree;
-use byrokrat\banking\Bankgiro;
+use byrokrat\autogiro\Tree\LayoutNode;
+use byrokrat\autogiro\Tree\Node;
+use byrokrat\autogiro\Tree\OpeningNode;
+use byrokrat\autogiro\Tree\ClosingNode;
+use byrokrat\autogiro\Visitor;
 use PhpSpec\ObjectBehavior;
 
 class LayoutNodeSpec extends ObjectBehavior
 {
-    function let(Tree\OpeningNode $opening, Tree\ClosingNode $closing, Tree\NodeInterface $node)
+    function let(OpeningNode $opening, ClosingNode $closing, Node $node)
     {
         $this->beConstructedWith($opening, $closing, $node);
     }
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(Tree\LayoutNode::CLASS);
+        $this->shouldHaveType(LayoutNode::CLASS);
     }
 
     function it_implements_node_interface()
     {
-        $this->shouldHaveType(Tree\NodeInterface::CLASS);
+        $this->shouldHaveType(Node::CLASS);
     }
 
-    function it_accepts_a_visitor(Tree\VisitorInterface $visitor, $opening, $closing, $node)
+    function it_contains_a_type()
     {
-        $visitor->visitLayoutNode($this)->shouldBeCalled();
+        $this->getType()->shouldEqual('LayoutNode');
+    }
+
+    function it_contains_nodes($opening, $closing, $node)
+    {
+        $this->getChild('opening')->shouldEqual($opening);
+        $this->getChild('closing')->shouldEqual($closing);
+        $this->getChild('content_1')->shouldEqual($node);
+    }
+
+    function it_accepts_a_visitor(Visitor $visitor, $opening, $closing, $node)
+    {
+        $visitor->visit($this)->shouldBeCalled();
         $opening->accept($visitor)->shouldBeCalled();
         $closing->accept($visitor)->shouldBeCalled();
         $node->accept($visitor)->shouldBeCalled();
@@ -39,18 +54,5 @@ class LayoutNodeSpec extends ObjectBehavior
     {
         $opening->getLineNr()->willReturn(100);
         $this->getLineNr()->shouldEqual(100);
-    }
-
-    function it_contains_a_layout_id($opening)
-    {
-        $opening->getLayoutId()->willReturn('foobarbaz');
-        $this->getLayoutId()->shouldEqual('foobarbaz');
-    }
-
-    function it_contains_nodes($opening, $closing, $node)
-    {
-        $this->getOpeningNode()->shouldEqual($opening);
-        $this->getClosingNode()->shouldEqual($closing);
-        $this->getContentNodes()->shouldEqual([$node]);
     }
 }

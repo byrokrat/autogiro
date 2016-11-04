@@ -16,5 +16,5 @@ install:
     - composer require hanneskod/readme-tester:dev-master phpspec/phpspec $COMPOSER_FLAGS --no-interaction
 
 script:
-    - phpspec run --verbose
+    - vendor/bin/phpspec run --verbose
     - phpunit --verbose

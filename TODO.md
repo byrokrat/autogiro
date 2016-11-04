@@ -1,39 +1,61 @@
+TODO
+====
+
+Supported formats at this point
+-------------------------------
+* Medgivandeunderlag i ny och gammal layout
+* Medgivandeavisering i ny och gammal layout
+
+General
+-------
+1. Amount/Banking/Id ska vara dependecies trotts allt.
+   - de behövs i Writer så det blir enklare att göra så...
+   - förenkla ParserFactory med att ta bort class_exists()...
+
+1. ifall FileNode innehåller flera LayoutNodes så kontrolleras att de har
+   samma kundnummer hos autogirot
+   samma payee bankgironummer
+
+   1) Skriv CustomerNumberNode
+   2) Implementera CustomerNumberNode i FileProcessor
+   3) Skriv CustomerNumberProcessor som validerar detta...
+      ALTERNATIVT
+      Implementera detta i LayoutProcessor ???
+
+      Fundera över vilken lösning som känns bäst här!!
+
+1. Skriv om GrammarSpec med Behat
+    - kanske kan alla ParserIntegrationTest skrivas med behat?
+    - om nödvändigt en lista över godkända fel lika i accounting..
+    - varför är det egentligen viktigt här att skilja på GrammarSpec och IntegrationTest??
+      det är en teoretiskt snygg uppdelning. Men i praktiken kanske de kan göra samma sak...
+
+1. det ska inte vara ett krav att sista raden avslutas med ett enterslag
+   men hur jag ska implementera det i Grammar återstår att se
+   något i stil med
+   (EOL / EOF)
+   men hur ska EOF definieras???
+
+1. Nodes to make:
+    - RequestIncomingTransactionNode
+    - RequestOutgoingTransactionNode
+    - RequestTransactionDeletionNode
+    - RequestTransactionUpdateNode
+
 1. ifall kontonummer ska vara payerNr och payerNr är ett personnunmmer (personkonto)
    så måste clearning 3300 läggas till...
-
-   * lägg till denna funktion till banking!
-
-1. lägg till även utdaterade meddelanden till Messages
-   det finns meddelanden rörande Medgivandeavisering jag inte lagt till...
-
-1. få alla testfiler rörande medgivndeavisering att passera.
+   har fixat detta i banking 1.2.0, börja använda här...
 
 1. Implement Writer as a facade to a Visitor that visits request records...
 
-    Detta är vad jag tänker att jag behöver för request making...
+   // Nu har jag kommit så pass långt i Granmmar att jag skulle unna skriva Writer
+   // för mandate requests
 
-    Denna layout innehåller dessutom flera olika sectioner.
-        Det ska jag såklart hålla fasta på när jag parsar
-        Hur göra reda för det i writer? (Strukturen ska vara sådan att writer bara kan skriva...)
-        Vad ska parser egentligen returnera? LayoutInterface??
+   $writer = new Writer($bg, 'cust1232345', $date = null);
+   $writer->deleteMandate('123456789');
+   $writer->createMandate(...);
 
-        // eller så kan jag på detta sätt skapa flera olika layout containers
-        // en generisk RequestLayout
-        // samt layouter för undersektionerna
-            // RequestMandateLayout, RequestTransactionLayout, RequestTransactionChangeLayout
-            // behöver jag i så fall unika objekt för dessa? Eller kan jag har något generiskt??
-
-        RequestLayout::getMandateRequests()->getLayoutId() == Layouts::LAYOUT_MANDATE_REQUEST ?
-
-    // OBS jag är locked på dessa namn, se visitor...
-
-    * RequestMandateNode
-    * RequestMandateRemovalNode
-    * RequestMandateChangeNode
-    * RequestIncomingTransactionNode
-    * RequestOutgoingTransactionNode
-    * RequestTransactionRemovalNode
-    * RequestTransactionChangeNode
+   $writer->getContent(); // string
 
 1. Support billing at next possible date (the low level syntax for
    this is `GENAST`, instead of a numeric date). OBS! S. 27 i manual: Periodkod

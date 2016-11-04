@@ -22,9 +22,19 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro;
 
-use byrokrat\autogiro\Visitor\ValidatingVisitor;
-use byrokrat\banking;
-use byrokrat\id;
+use byrokrat\autogiro\Processor\AccountProcessor;
+use byrokrat\autogiro\Processor\AmountProcessor;
+use byrokrat\autogiro\Processor\BankgiroProcessor;
+use byrokrat\autogiro\Processor\FileProcessor;
+use byrokrat\autogiro\Processor\IdProcessor;
+use byrokrat\autogiro\Processor\LayoutProcessor;
+use byrokrat\autogiro\Processor\MessageProcessor;
+use byrokrat\id\CoordinationIdFactory;
+use byrokrat\id\NullIdFactory;
+use byrokrat\id\OrganizationIdFactory;
+use byrokrat\id\PersonalIdFactory;
+use byrokrat\banking\AccountFactory;
+use byrokrat\banking\Formats as AccountFormats;
 
 /**
  * Simplifies the creation of parser objects
@@ -32,22 +42,62 @@ use byrokrat\id;
 class ParserFactory
 {
     /**
+     * Do not include account number processor in parser
+     */
+    const NO_ACCOUNT_PROCESSOR = 1;
+
+    /**
+     * Do not include amount processor in parser
+     */
+    const NO_AMOUNT_PROCESSOR = 2;
+
+    /**
+     * Do not include id processor in parser
+     */
+    const NO_ID_PROCESSOR = 4;
+
+    /**
+     * Ignore all processors based on external dependencies
+     */
+    const NO_EXTERNAL_PROCESSORS = self::NO_ACCOUNT_PROCESSOR | self::NO_AMOUNT_PROCESSOR | self::NO_ID_PROCESSOR;
+
+    /**
      * Create a new parser
      */
-    public function createParser(): Parser
+    public function createParser(int $flags = 0): Parser
     {
-        $accountFactory = new banking\AccountFactory;
-        $accountFactory->blacklistFormats([banking\Formats::FORMAT_PLUSGIRO]);
+        $flag = function (int $needle) use ($flags) {
+            return ($needle & $flags) == $needle;
+        };
 
-        return new Parser(
-            new Grammar(
-                $accountFactory,
-                new banking\BankgiroFactory,
-                new id\PersonalIdFactory(new id\CoordinationIdFactory(new id\NullIdFactory)),
-                new id\OrganizationIdFactory,
-                new Message\MessageFactory
-            ),
-            new ValidatingVisitor
-        );
+        $processors = [
+            new BankgiroProcessor,
+            new FileProcessor,
+            new LayoutProcessor,
+            new MessageProcessor
+        ];
+
+        if (!$flag(self::NO_ACCOUNT_PROCESSOR) && class_exists('byrokrat\banking\AccountFactory')) {
+            $accountFactory = new AccountFactory;
+            $accountFactory->blacklistFormats([AccountFormats::FORMAT_PLUSGIRO]);
+
+            $bankgiroFactory = new AccountFactory;
+            $bankgiroFactory->whitelistFormats([AccountFormats::FORMAT_BANKGIRO]);
+
+            $processors[] = new AccountProcessor($accountFactory, $bankgiroFactory);
+        }
+
+        if (!$flag(self::NO_AMOUNT_PROCESSOR) && class_exists('byrokrat\amount\Currency\SEK')) {
+            $processors[] = new AmountProcessor;
+        }
+
+        if (!$flag(self::NO_ID_PROCESSOR) && class_exists('byrokrat\id\PersonalIdFactory')) {
+            $processors[] = new IdProcessor(
+                new OrganizationIdFactory,
+                new PersonalIdFactory(new CoordinationIdFactory(new NullIdFactory))
+            );
+        }
+
+        return new Parser(new Grammar, $processors);
     }
 }

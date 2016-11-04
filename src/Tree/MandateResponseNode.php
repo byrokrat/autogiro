@@ -22,85 +22,28 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Tree;
 
-use byrokrat\autogiro\Message\Message;
-use byrokrat\banking\AccountNumber;
-use byrokrat\banking\Bankgiro;
-use byrokrat\id\Id;
-
 /**
- * Value object wrapping data for a new mandate
+ * Node with data representing a new mandate
  */
-class MandateResponseNode implements NodeInterface
+class MandateResponseNode extends Node
 {
-    use Attr\BankgiroAttribute, Attr\DateAttribute, Attr\LineNrAttribute, Attr\MessageAttribute;
-
-    /**
-     * @var string
-     */
-    private $payerNr;
-
-    /**
-     * @var AccountNumber
-     */
-    private $account;
-
-    /**
-     * @var Id
-     */
-    private $id;
-
-    /**
-     * Load values at construct
-     */
     public function __construct(
-        Bankgiro $bankgiro,
-        string $payerNr,
-        AccountNumber $account,
-        Id $id,
-        Message $info,
-        Message $comment,
+        BankgiroNode $bankgiro,
+        PayerNumberNode $payerNr,
+        AccountNode $account,
+        IdNode $id,
+        MessageNode $info,
+        MessageNode $comment,
         \DateTimeInterface $date,
-        int $lineNr
+        int $lineNr = 0
     ) {
-        $this->bankgiro = $bankgiro;
-        $this->payerNr = $payerNr;
-        $this->account = $account;
-        $this->id = $id;
-        $this->messages[] = $info;
-        $this->messages[] = $comment;
-        $this->date = $date;
-        $this->lineNr = $lineNr;
-    }
-
-    /**
-     * Get loaded payer number
-     */
-    public function getPayerNumber(): string
-    {
-        return $this->payerNr;
-    }
-
-    /**
-     * Get loaded account number
-     */
-    public function getAccount(): AccountNumber
-    {
-        return $this->account;
-    }
-
-    /**
-     * Get loaded state id
-     */
-    public function getId(): Id
-    {
-        return $this->id;
-    }
-
-    /**
-     * Accept a visitor
-     */
-    public function accept(VisitorInterface $visitor)
-    {
-        $visitor->visitMandateResponseNode($this);
+        parent::__construct($lineNr);
+        $this->setChild('bankgiro', $bankgiro);
+        $this->setChild('payer_number', $payerNr);
+        $this->setChild('account', $account);
+        $this->setChild('id', $id);
+        $this->setChild('info', $info);
+        $this->setChild('comment', $comment);
+        $this->setAttribute('date', $date);
     }
 }

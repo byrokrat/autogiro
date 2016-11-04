@@ -20,61 +20,160 @@
 
 namespace byrokrat\autogiro;
 
+use byrokrat\autogiro\Tree\FileNode;
 use byrokrat\autogiro\Tree\LayoutNode;
 use byrokrat\autogiro\Tree\OpeningNode;
 use byrokrat\autogiro\Tree\ClosingNode;
+use byrokrat\autogiro\Tree\RequestMandateCreationNode;
+use byrokrat\autogiro\Tree\RequestMandateAcceptanceNode;
+use byrokrat\autogiro\Tree\RequestMandateRejectionNode;
+use byrokrat\autogiro\Tree\RequestMandateUpdateNode;
+use byrokrat\autogiro\Tree\RequestMandateDeletionNode;
+use byrokrat\autogiro\Tree\RequestIncomingTransactionNode;
+use byrokrat\autogiro\Tree\RequestOutgoingTransactionNode;
+use byrokrat\autogiro\Tree\RequestTransactionDeletionNode;
+use byrokrat\autogiro\Tree\RequestTransactionUpdateNode;
 use byrokrat\autogiro\Tree\MandateResponseNode;
+use byrokrat\autogiro\Tree\PersonalIdNode;
+use byrokrat\autogiro\Tree\OrganizationIdNode;
+use byrokrat\autogiro\Tree\AmountNode;
+use byrokrat\autogiro\Tree\AccountNode;
+use byrokrat\autogiro\Tree\BankgiroNode;
+use byrokrat\autogiro\Tree\MessageNode;
+use byrokrat\autogiro\Tree\PayerNumberNode;
 
-grammar Grammar extends GrammarDependencies
+grammar Grammar
 {
-    start FILE = MANDATE_RESPONSE_LAYOUT;
-
-    // MANDATE RESPONSE LAYOUT
-
-    MANDATE_RESPONSE_LAYOUT = opening:(GENERIC_OPENING_RECORD / MANDATE_RESPONSE_OPENING_RECORD_OLD) mandates:MANDATE_RESPONSE_RECORD* closing:MANDATE_RESPONSE_CLOSING_RECORD {
-        return new LayoutNode($opening, $closing, ...$mandates);
+    start FILE = RESET_LINE_COUNT layout:(L_REQ_CONTAINER / L_RESP_MANDATE) {
+        return $layout;
     };
 
-    MANDATE_RESPONSE_OPENING_RECORD_OLD = '01' date:DATE BGC_CLEARING bg:BANKGIRO 'AG-MEDAVI' EOR {
+    RESET_LINE_COUNT = '' {
+        $this->currentLineNr = 0;
+    };
+
+    // GENERIC RECORDS
+
+    R_GENERIC_OPENING = '01' 'AUTOGIRO' S10 S S S S date:DATE S10 S S layout:A20 custNr:CUST_NR bg:BANKGIRO EOR {
+        return new OpeningNode(rtrim($layout), $date, $custNr, $bg, $this->currentLineNr);
+    };
+
+    //
+    // REQUEST LAYOUTS
+    //
+
+    L_REQ_CONTAINER = layouts:(L_REQ_MANDATE / L_REQ_PAYMENT / L_REQ_AMENDMENT)+ {
+        return new FileNode(...$layouts);
+    };
+
+    R_REQ_OPENING = '01' date:DATE 'AUTOGIRO' S20 S20 S S S S custNr:CUST_NR bg:BANKGIRO EOR {
+        // TODO layout_request kan vara ''
+            // kanske lägga in ett test i visitor som kontrollerar att layoutId är ett känt värde... ??
+        return new OpeningNode('', $date, $custNr, $bg, $this->currentLineNr);
+    };
+
+    // MANDATE REQUESTS
+
+    L_REQ_MANDATE = opening:R_REQ_OPENING records:(R_REQ_CREATE_MANDATE / R_REQ_CONFIRM_MANDATE / R_REQ_UPDATE_MANDATE / R_REQ_DEL_MANDATE)+ {
+        $opening->setAttribute('layout_name', Layouts::LAYOUT_MANDATE_REQUEST);
+
+        return new LayoutNode(
+            $opening,
+            new ClosingNode($opening->getAttribute('date'), count($records), $this->currentLineNr),
+            ...$records
+        );
+    };
+
+    R_REQ_CREATE_MANDATE = '04' bg:BANKGIRO payerNr:PAYER_NR account:ACCOUNT id:ID (S20 S S)? EOR {
+        return new RequestMandateCreationNode($bg, $payerNr, $account, $id, $this->currentLineNr);
+    };
+
+    R_REQ_CONFIRM_MANDATE = '04' bg:BANKGIRO payerNr:PAYER_NR (A40 A5 A A A reject:'AV')? EOR {
+        return $reject == 'AV'
+            ? new RequestMandateRejectionNode($bg, $payerNr, $this->currentLineNr)
+            : new RequestMandateAcceptanceNode($bg, $payerNr, $this->currentLineNr);
+    };
+
+    R_REQ_UPDATE_MANDATE = '05' oldBg:BANKGIRO oldPayerNr:PAYER_NR newBg:BANKGIRO newPayerNr:PAYER_NR EOR {
+        return new RequestMandateUpdateNode($oldBg, $oldPayerNr, $newBg, $newPayerNr, $this->currentLineNr);
+    };
+
+    R_REQ_DEL_MANDATE = '03' bg:BANKGIRO payerNr:PAYER_NR EOR {
+        return new RequestMandateDeletionNode($bg, $payerNr, $this->currentLineNr);
+    };
+
+    // PAYMENT REQUESTS
+
+    L_REQ_PAYMENT = opening:R_REQ_OPENING records:('')+ {
+        $opening->setAttribute('layout_name', Layouts::LAYOUT_PAYMENT_REQUEST);
+
+        return new LayoutNode(
+            $opening,
+            new ClosingNode($opening->getAttribute('date'), count($records), $this->currentLineNr),
+            ...$records
+        );
+    };
+
+    // AMENDMENT REQUESTS
+
+    L_REQ_AMENDMENT = opening:R_REQ_OPENING records:('')+ {
+        $opening->setAttribute('layout_name', Layouts::LAYOUT_AMENDMENT_REQUEST);
+
+        return new LayoutNode(
+            $opening,
+            new ClosingNode($opening->getAttribute('date'), count($records), $this->currentLineNr),
+            ...$records
+        );
+    };
+
+    //
+    // RESPONSE LAYOUTS
+    //
+
+    // MANDATE RESPONSES
+
+    L_RESP_MANDATE = opening:(R_GENERIC_OPENING / R_RESP_MANDATE_OPENING_OLD) mandates:R_RESP_MANDATE* closing:R_RESP_MANDATE_CLOSING {
+        return new FileNode(new LayoutNode($opening, $closing, ...$mandates));
+    };
+
+    R_RESP_MANDATE_OPENING_OLD = '01' date:DATE BGC_CLEARING bg:BANKGIRO 'AG-MEDAVI' EOR {
         return new OpeningNode('AG-MEDAVI', $date, '', $bg, $this->currentLineNr);
     };
 
-    MANDATE_RESPONSE_RECORD = '73' bg:BANKGIRO payerNr:$(N10 N5 N) accountNr:$(A10 A5 A) id:ID A5 info:$(N N) comment:$(N N) date:DATE? EOR {
+    R_RESP_MANDATE = '73' bg:BANKGIRO payerNr:PAYER_NR accountNr:$(A10 A5 A) id:ID A5 info:$(N N) comment:$(N N) date:DATE? EOR {
+        // TODO fundera om jag kan dela upp denna i flera R_ så att jag kan använda ACCOUNT ...
         $accountNr = trim(ltrim($accountNr, '0'));
-        $payerNr = ltrim($payerNr, '0');
 
         return new MandateResponseNode(
             $bg,
             $payerNr,
-            $this->getAccountFactory()->createAccount($accountNr ?: $payerNr),
+            new AccountNode($this->currentLineNr, $accountNr ?: $payerNr->getValue()),
             $id,
-            $this->getMessageFactory()->createMessage("73.$info"),
-            $this->getMessageFactory()->createMessage("73.comment.$comment"),
+            new MessageNode($this->currentLineNr, "73.$info"),
+            new MessageNode($this->currentLineNr, "73.comment.$comment"),
             $date ?: new \DateTimeImmutable('@0'),
             $this->currentLineNr
         );
     };
 
-    MANDATE_RESPONSE_CLOSING_RECORD = '09' date:DATE BGC_CLEARING nrOfPosts:$(N5 N N) EOR {
+    R_RESP_MANDATE_CLOSING = '09' date:DATE BGC_CLEARING nrOfPosts:$(N5 N N) EOR {
         return new ClosingNode($date, intval($nrOfPosts), $this->currentLineNr);
-    };
-
-    // GENERIC RECORDS
-
-    GENERIC_OPENING_RECORD = '01' 'AUTOGIRO' S10 S S S S date:DATE S10 S S layout:A20 custNr:CUST_NR bg:BANKGIRO EOR {
-        return new OpeningNode(rtrim($layout), $date, $custNr, $bg, $this->currentLineNr);
     };
 
     // TYPES
 
+    ACCOUNT = number:$(N10 N5 N) {
+        return new AccountNode($this->currentLineNr, ltrim($number, '0'));
+    };
+
     BANKGIRO = number:N10 {
-        return $this->getBankgiroFactory()->createAccount(ltrim($number, '0'));
+        return new BankgiroNode($this->currentLineNr, ltrim($number, '0'));
     };
 
     BGC_CLEARING = '9900';
 
-    CUST_NR = custNr:$(N5 N) {
-        return ltrim($custNr, '0');
+    CUST_NR = nr:$(N5 N) {
+        return ltrim($nr, '0');
     };
 
     DATE = date:$(N5 N N N) {
@@ -82,11 +181,13 @@ grammar Grammar extends GrammarDependencies
     };
 
     ID = century:$(A A) number:A10 {
-        if (in_array($century, ['00', '99'])) {
-            return $this->getOrganizationIdFactory()->create($number);
-        }
+        return in_array($century, ['00', '99'])
+            ? new OrganizationIdNode($this->currentLineNr, $number)
+            : new PersonalIdNode($this->currentLineNr, $century.$number);
+    };
 
-        return $this->getPersonalIdFactory()->create($century.$number);
+    PAYER_NR = nr:$(N10 N5 N) {
+        return new PayerNumberNode($this->currentLineNr, ltrim($nr, '0'));
     };
 
     // HELPERS
@@ -98,6 +199,8 @@ grammar Grammar extends GrammarDependencies
     A10 = $(A5 A5);
 
     A20 = $(A10 A10);
+
+    A40 = $(A20 A20);
 
     N "NUMBER" = [0-9];
 

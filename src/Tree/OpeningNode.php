@@ -22,58 +22,22 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Tree;
 
-use byrokrat\banking\Bankgiro;
-
 /**
- * Generic opening record value object
+ * Generic opening record node
  */
-class OpeningNode implements NodeInterface
+class OpeningNode extends Node
 {
-    use Attr\BankgiroAttribute, Attr\DateAttribute, Attr\LineNrAttribute;
-
-    /**
-     * @var string Name of layout file belongs to
-     */
-    private $layoutName;
-
-    /**
-     * @var string BGC customer number
-     */
-    private $customerNr;
-
-    /**
-     * Load values at construct
-     */
-    public function __construct(string $layoutName, \DateTimeInterface $date, string $customerNr, Bankgiro $bankgiro, int $lineNr)
-    {
-        $this->layoutName = $layoutName;
-        $this->date = $date;
-        $this->customerNr = $customerNr;
-        $this->bankgiro = $bankgiro;
-        $this->lineNr = $lineNr;
-    }
-
-    /**
-     * Get name of layout file belongs to
-     */
-    public function getLayoutId(): string
-    {
-        return $this->layoutName;
-    }
-
-    /**
-     * Get BGC customer number
-     */
-    public function getCustomerNumber(): string
-    {
-        return $this->customerNr;
-    }
-
-    /**
-     * Accept a visitor
-     */
-    public function accept(VisitorInterface $visitor)
-    {
-        $visitor->visitOpeningNode($this);
+    public function __construct(
+        string $layoutName,
+        \DateTimeInterface $date,
+        string $customerNr,
+        BankgiroNode $bankgiro,
+        int $lineNr = 0
+    ) {
+        parent::__construct($lineNr);
+        $this->setAttribute('layout_name', $layoutName);
+        $this->setAttribute('date', $date);
+        $this->setAttribute('customer_number', $customerNr);
+        $this->setChild('bankgiro', $bankgiro);
     }
 }

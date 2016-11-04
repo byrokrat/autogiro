@@ -4,7 +4,8 @@ declare(strict_types = 1);
 
 namespace spec\byrokrat\autogiro;
 
-use byrokrat\autogiro\{ParserFactory, Parser};
+use byrokrat\autogiro\ParserFactory;
+use byrokrat\autogiro\Parser;
 use PhpSpec\ObjectBehavior;
 
 class ParserFactorySpec extends ObjectBehavior
@@ -17,5 +18,10 @@ class ParserFactorySpec extends ObjectBehavior
     function it_creates_parsers()
     {
         $this->createParser()->shouldHaveType(Parser::CLASS);
+    }
+
+    function it_creates_parses_with_no_external_processors()
+    {
+        $this->createParser(ParserFactory::NO_EXTERNAL_PROCESSORS)->shouldHaveType(Parser::CLASS);
     }
 }
