@@ -13,8 +13,8 @@ matrix:
     fast_finish: true
 
 install:
-    - composer require hanneskod/readme-tester:dev-master phpspec/phpspec:^3.0 $COMPOSER_FLAGS --no-interaction
+    - composer require phpspec/phpspec:^3.1 behat/behat:^3.2 $COMPOSER_FLAGS --no-interaction
 
 script:
     - vendor/bin/phpspec run --verbose
-    - phpunit --verbose
+    - vendor/bin/behat --verbose
