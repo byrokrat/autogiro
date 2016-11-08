@@ -39,7 +39,7 @@ class Visitor
      */
     public function visitBefore(Node $node)
     {
-        $this->dispatch('before'.$node->getType(), $node);
+        $this->dispatch('before' . $node->getType(), $node);
     }
 
     /**
@@ -47,7 +47,7 @@ class Visitor
      */
     public function visitAfter(Node $node)
     {
-        $this->dispatch('after'.$node->getType(), $node);
+        $this->dispatch('after' . $node->getType(), $node);
     }
 
     /**
