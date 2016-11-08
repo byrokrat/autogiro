@@ -30,7 +30,7 @@ use byrokrat\autogiro\Messages;
  */
 class MessageProcessor extends Processor
 {
-    public function visitMessageNode(MessageNode $node)
+    public function beforeMessageNode(MessageNode $node)
     {
         if (!isset(Messages::MESSAGE_MAP[$node->getValue()])) {
             return $this->addError(

@@ -8,22 +8,6 @@ Supported formats at this point
 
 General
 -------
-1. Amount/Banking/Id ska vara dependecies trotts allt.
-   - de behövs i Writer så det blir enklare att göra så...
-   - förenkla ParserFactory med att ta bort class_exists()...
-
-1. ifall FileNode innehåller flera LayoutNodes så kontrolleras att de har
-   samma kundnummer hos autogirot
-   samma payee bankgironummer
-
-   1) Skriv CustomerNumberNode
-   2) Implementera CustomerNumberNode i FileProcessor
-   3) Skriv CustomerNumberProcessor som validerar detta...
-      ALTERNATIVT
-      Implementera detta i LayoutProcessor ???
-
-      Fundera över vilken lösning som känns bäst här!!
-
 1. Skriv om GrammarSpec med Behat
     - kanske kan alla ParserIntegrationTest skrivas med behat?
     - om nödvändigt en lista över godkända fel lika i accounting..
@@ -94,11 +78,6 @@ BGC specs
    beroende på val av Kommunikationssätt. För ASCII-filer rekommenderas ISO8859-1
    (Latin-1) för teckenrepresentation, samt <CRLF> för att indikera radavslut.
    Postlängden är fast, 80 positioner.
-
-1. Sid 18ff (avsnitt 6.1.5): Datasetnamn. BGC vill att filer till dem ges specifika
-   namn. Nordea löser nog det åt mig. Men något stöd måste jag skriva. Även att
-   se vilket format vi kan förvänta oss av intputfilen borde kunna ses på detta
-   sätt..
 
 1. OBS! I filer till bankgirot: Posten Byte av betalarnummer (TK05) är endast
    tillåtet för Medgivanden med bankkontonummer.

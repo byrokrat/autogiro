@@ -13,7 +13,7 @@ matrix:
     fast_finish: true
 
 install:
-    - composer require hanneskod/readme-tester:dev-master phpspec/phpspec $COMPOSER_FLAGS --no-interaction
+    - composer require hanneskod/readme-tester:dev-master phpspec/phpspec:^3.0 $COMPOSER_FLAGS --no-interaction
 
 script:
     - vendor/bin/phpspec run --verbose

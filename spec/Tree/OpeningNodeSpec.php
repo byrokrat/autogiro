@@ -7,13 +7,14 @@ namespace spec\byrokrat\autogiro\Tree;
 use byrokrat\autogiro\Tree\OpeningNode;
 use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Tree\BankgiroNode;
+use byrokrat\autogiro\Tree\BgcCustomerNumberNode;
 use PhpSpec\ObjectBehavior;
 
 class OpeningNodeSpec extends ObjectBehavior
 {
-    function let(\DateTimeImmutable $date, BankgiroNode $bankgiro)
+    function let(\DateTimeImmutable $date, BgcCustomerNumberNode $custNr, BankgiroNode $bankgiro)
     {
-        $this->beConstructedWith('', $date, '', $bankgiro);
+        $this->beConstructedWith('', $date, $custNr, $bankgiro);
     }
 
     function it_is_initializable()
@@ -31,31 +32,30 @@ class OpeningNodeSpec extends ObjectBehavior
         $this->getType()->shouldEqual('OpeningNode');
     }
 
-    function it_contains_a_layout_name(\DateTimeImmutable $date, BankgiroNode $bankgiro)
+    function it_contains_a_layout_name($date, $custNr, $bankgiro)
     {
-        $this->beConstructedWith('layout', $date, '', $bankgiro);
+        $this->beConstructedWith('layout', $date, $custNr, $bankgiro);
         $this->getAttribute('layout_name')->shouldEqual('layout');
     }
 
-    function it_contains_a_date(\DateTimeImmutable $date)
+    function it_contains_a_date($date)
     {
         $this->getAttribute('date')->shouldEqual($date);
     }
 
-    function it_contains_a_customer_number(\DateTimeImmutable $date, BankgiroNode $bankgiro)
+    function it_contains_a_customer_number($custNr)
     {
-        $this->beConstructedWith('', $date, '1234', $bankgiro);
-        $this->getAttribute('customer_number')->shouldEqual('1234');
+        $this->getChild('customer_number')->shouldEqual($custNr);
     }
 
-    function it_contains_a_bankgiro(BankgiroNode $bankgiro)
+    function it_contains_a_bankgiro($bankgiro)
     {
         $this->getChild('bankgiro')->shouldEqual($bankgiro);
     }
 
-    function it_contains_a_line_number(\DateTimeImmutable $date, BankgiroNode $bankgiro)
+    function it_contains_a_line_number($date, $custNr, $bankgiro)
     {
-        $this->beConstructedWith('', $date, '', $bankgiro, 10);
+        $this->beConstructedWith('', $date, $custNr, $bankgiro, 10);
         $this->getLineNr()->shouldEqual(10);
     }
 }

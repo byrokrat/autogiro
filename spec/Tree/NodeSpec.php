@@ -39,8 +39,9 @@ class NodeSpec extends ObjectBehavior
 
         $this->accept($visitor);
 
-        $visitor->visit($this)->shouldHaveBeenCalled();
+        $visitor->visitBefore($this)->shouldHaveBeenCalled();
         $node->accept($visitor)->shouldHaveBeenCalled();
+        $visitor->visitAfter($this)->shouldHaveBeenCalled();
     }
 
     function it_can_save_attributes()

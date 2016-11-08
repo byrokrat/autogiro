@@ -48,7 +48,7 @@ class AccountProcessor extends Processor
         $this->bankgiroFactory = $bankgiroFactory;
     }
 
-    public function visitAccountNode(AccountNode $node)
+    public function beforeAccountNode(AccountNode $node)
     {
         try {
             $node->setAttribute(
@@ -64,7 +64,7 @@ class AccountProcessor extends Processor
         }
     }
 
-    public function visitBankgiroNode(BankgiroNode $node)
+    public function beforeBankgiroNode(BankgiroNode $node)
     {
         try {
             $node->setAttribute(

@@ -16,7 +16,7 @@ class ParserSpec extends ObjectBehavior
 {
     function let(Grammar $grammar, Processor $processor)
     {
-        $this->beConstructedWith($grammar, [$processor]);
+        $this->beConstructedWith($grammar, $processor);
     }
 
     function it_is_initializable()
@@ -33,8 +33,8 @@ class ParserSpec extends ObjectBehavior
     function it_throws_exception_if_processor_fails($grammar, $processor, Node $node)
     {
         $grammar->parse('')->willReturn($node);
-        $processor->resetErrors()->shouldBeCalled();
         $node->accept($processor)->shouldBeCalled();
+        $processor->hasErrors()->willReturn(true)->shouldBeCalled();
         $processor->getErrors()->willReturn(['error'])->shouldBeCalled();
         $this->shouldThrow(ParserException::CLASS)->duringParse('');
     }

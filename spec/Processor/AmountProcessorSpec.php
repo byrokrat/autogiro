@@ -22,7 +22,7 @@ class AmountProcessorSpec extends ObjectBehavior
         $amountNode->getLineNr()->willReturn(1);
         $amountNode->getType()->willReturn('AmountNode');
         $amountNode->getValue()->willReturn('this-is-not-a-valid-signal-string');
-        $this->visit($amountNode);
+        $this->visitBefore($amountNode);
         $this->getErrors()->shouldHaveCount(1);
     }
 
@@ -33,7 +33,7 @@ class AmountProcessorSpec extends ObjectBehavior
 
         $amountNode->setAttribute('amount', Argument::exact(new SEK('-123.02')))->shouldBeCalled();
 
-        $this->visit($amountNode);
+        $this->visitBefore($amountNode);
         $this->getErrors()->shouldHaveCount(0);
     }
 }

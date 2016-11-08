@@ -30,14 +30,14 @@ class OpeningNode extends Node
     public function __construct(
         string $layoutName,
         \DateTimeInterface $date,
-        string $customerNr,
+        BgcCustomerNumberNode $customerNr,
         BankgiroNode $bankgiro,
         int $lineNr = 0
     ) {
         parent::__construct($lineNr);
         $this->setAttribute('layout_name', $layoutName);
         $this->setAttribute('date', $date);
-        $this->setAttribute('customer_number', $customerNr);
+        $this->setChild('customer_number', $customerNr);
         $this->setChild('bankgiro', $bankgiro);
     }
 }

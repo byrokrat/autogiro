@@ -30,9 +30,11 @@ class FileNodeSpec extends ObjectBehavior
 
     function it_accepts_a_visitor($layoutA, $layoutB, Visitor $visitor)
     {
-        $visitor->visit($this)->shouldBeCalled();
+        $visitor->visitBefore($this)->shouldBeCalled();
         $layoutA->accept($visitor)->shouldBeCalled();
         $layoutB->accept($visitor)->shouldBeCalled();
+        $visitor->visitAfter($this)->shouldBeCalled();
+
         $this->accept($visitor);
     }
 

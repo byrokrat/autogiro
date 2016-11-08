@@ -42,10 +42,11 @@ class LayoutNodeSpec extends ObjectBehavior
 
     function it_accepts_a_visitor(Visitor $visitor, $opening, $closing, $node)
     {
-        $visitor->visit($this)->shouldBeCalled();
+        $visitor->visitBefore($this)->shouldBeCalled();
         $opening->accept($visitor)->shouldBeCalled();
         $closing->accept($visitor)->shouldBeCalled();
         $node->accept($visitor)->shouldBeCalled();
+        $visitor->visitAfter($this)->shouldBeCalled();
 
         $this->accept($visitor);
     }

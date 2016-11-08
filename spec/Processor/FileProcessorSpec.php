@@ -9,6 +9,7 @@ use byrokrat\autogiro\Tree\FileNode;
 use byrokrat\autogiro\Tree\LayoutNode;
 use byrokrat\autogiro\Tree\OpeningNode;
 use byrokrat\autogiro\Tree\BankgiroNode;
+use byrokrat\autogiro\Tree\BgcCustomerNumberNode;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -23,12 +24,15 @@ class FileProcessorSpec extends ObjectBehavior
         FileNode $fileNode,
         LayoutNode $layoutNode,
         OpeningNode $openingNode,
-        BankgiroNode $bankgiroNode
+        BankgiroNode $bankgiroNode,
+        BgcCustomerNumberNode $bgcCustNrNode
     ) {
         $bankgiroNode->getValue()->willReturn('111-111');
-
-        $openingNode->getAttribute('customer_number')->willReturn('12345');
         $openingNode->getChild('bankgiro')->willReturn($bankgiroNode);
+
+        $bgcCustNrNode->getValue()->willReturn('12345');
+        $openingNode->getChild('customer_number')->willReturn($bgcCustNrNode);
+
         $openingNode->getAttribute('layout_name')->willReturn('name');
 
         $layoutNode->getChild('opening')->willReturn($openingNode);
@@ -39,6 +43,6 @@ class FileProcessorSpec extends ObjectBehavior
         $fileNode->setAttribute('bankgiro', '111-111')->shouldBeCalled();
         $fileNode->setAttribute('layout_ids', ['name'])->shouldBeCalled();
 
-        $this->visitFileNode($fileNode);
+        $this->afterFileNode($fileNode);
     }
 }

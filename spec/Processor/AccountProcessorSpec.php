@@ -44,7 +44,7 @@ class AccountProcessorSpec extends ObjectBehavior
     function it_fails_on_unvalid_account_number($accountNode)
     {
         $accountNode->getValue()->willReturn('not-valid');
-        $this->visit($accountNode);
+        $this->visitBefore($accountNode);
         $this->getErrors()->shouldHaveCount(1);
     }
 
@@ -52,14 +52,14 @@ class AccountProcessorSpec extends ObjectBehavior
     {
         $accountNode->getValue()->willReturn('valid');
         $accountNode->setAttribute('account', $accountNumber)->shouldBeCalled();
-        $this->visit($accountNode);
+        $this->visitBefore($accountNode);
         $this->getErrors()->shouldHaveCount(0);
     }
 
     function it_fails_on_unvalid_bankgiro_number($bankgiroNode)
     {
         $bankgiroNode->getValue()->willReturn('not-valid');
-        $this->visit($bankgiroNode);
+        $this->visitBefore($bankgiroNode);
         $this->getErrors()->shouldHaveCount(1);
     }
 
@@ -67,7 +67,7 @@ class AccountProcessorSpec extends ObjectBehavior
     {
         $bankgiroNode->getValue()->willReturn('valid');
         $bankgiroNode->setAttribute('account', $accountNumber)->shouldBeCalled();
-        $this->visit($bankgiroNode);
+        $this->visitBefore($bankgiroNode);
         $this->getErrors()->shouldHaveCount(0);
     }
 }

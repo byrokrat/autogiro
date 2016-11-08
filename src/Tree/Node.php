@@ -61,11 +61,13 @@ class Node
      */
     public function accept(Visitor $visitor)
     {
-        $visitor->visit($this);
+        $visitor->visitBefore($this);
 
         foreach ($this->getChildren() as $node) {
             $node->accept($visitor);
         }
+
+        $visitor->visitAfter($this);
     }
 
     /**

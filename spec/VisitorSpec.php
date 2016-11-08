@@ -18,6 +18,7 @@ class VisitorSpec extends ObjectBehavior
     function it_ignores_unknown_node_types(Node $node)
     {
         $node->getType()->willReturn('ThisIsNotAValidNode');
-        $this->visit($node)->shouldEqual(null);
+        $this->visitBefore($node)->shouldEqual(null);
+        $this->visitAfter($node)->shouldEqual(null);
     }
 }

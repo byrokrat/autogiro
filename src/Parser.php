@@ -37,18 +37,14 @@ class Parser
     private $grammar;
 
     /**
-     * @var Processor[]
+     * @var Processor
      */
-    private $processors;
+    private $processor;
 
-    /**
-     * @param Grammar     $grammar
-     * @param Processor[] $processors
-     */
-    public function __construct(Grammar $grammar = null, array $processors = [])
+    public function __construct(Grammar $grammar, Processor $processor)
     {
-        $this->grammar = $grammar ?: new Grammar;
-        $this->processors = $processors;
+        $this->grammar = $grammar;
+        $this->processor = $processor;
     }
 
     /**
@@ -57,23 +53,16 @@ class Parser
     public function parse(string $content): FileNode
     {
         try {
-            $node = $this->grammar->parse($content);
+            $fileNode = $this->grammar->parse($content);
+            $fileNode->accept($this->processor);
         } catch (\Exception $exception) {
             throw new ParserException([$exception->getMessage()]);
         }
 
-        $errors = [];
-
-        foreach ($this->processors as $processor) {
-            $processor->resetErrors();
-            $node->accept($processor);
-            $errors = array_merge($errors, $processor->getErrors());
+        if ($this->processor->hasErrors()) {
+            throw new ParserException($this->processor->getErrors());
         }
 
-        if (!empty($errors)) {
-            throw new ParserException($errors);
-        }
-
-        return $node;
+        return $fileNode;
     }
 }

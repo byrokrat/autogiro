@@ -31,7 +31,7 @@ use byrokrat\amount\Exception as AmountException;
  */
 class AmountProcessor extends Processor
 {
-    public function visitAmountNode(AmountNode $node)
+    public function beforeAmountNode(AmountNode $node)
     {
         try {
             $node->setAttribute(
