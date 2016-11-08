@@ -8,18 +8,6 @@ TODO
    Det skulle göra att vi kan få bättre felmeddelanden när ett datum är felaktigt...
        Med radnummer osv...
 
-1. Testa med Behat
-    - lägg till en Enumerator eller liknande, så att jag kan skriva
-        Then it finds 8 mandate requests (eller liknande...)
-
-        $enum = new Enumerator($baseNode);
-
-        $enum->onRequestIncomingTransactionNode(function ($node) {
-            // process..
-        });
-
-        $enum->enumerate();
-
 1. det ska inte vara ett krav att sista raden avslutas med ett enterslag
    men hur jag ska implementera det i Grammar återstår att se
    något i stil med
