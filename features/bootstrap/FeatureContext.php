@@ -48,9 +48,16 @@ class FeatureContext implements Context, SnippetAcceptingContext
      */
     public function iFindALayout($layoutType)
     {
-        PHPUnit_Framework_Assert::assertContains(
+        $this->assertInArray(
             constant("byrokrat\autogiro\Layouts::$layoutType"),
             $this->fileNode->getAttribute('layout_ids')
         );
+    }
+
+    private function assertInArray($needle, array $haystack)
+    {
+        if (!in_array($needle, $haystack)) {
+            throw new Exception("Unable to fins $needle in array");
+        }
     }
 }
