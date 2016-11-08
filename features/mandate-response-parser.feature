@@ -21,6 +21,7 @@ Feature: Mandate responses
     092008061199000000010
     """
     Then I find a "LAYOUT_MANDATE_RESPONSE" layout
+    And I find 10 mandate response nodes
 
   Scenario: I parse the BGC testfile autogiro_gl_exempelfil_medgivandeavisering_fran-bankgirot-medgivanden-kontonummer_exemeplfil_sv.txt
     Given a parser that ignores account and id structures
@@ -37,6 +38,7 @@ Feature: Mandate responses
     092004011899000000007
     """
     Then I find a "LAYOUT_MANDATE_RESPONSE" layout
+    And I find 7 mandate response nodes
 
   Scenario: I parse the BGC testfile autogiro_gl_medgivandeavisering_fran-bankgirot-medgivanden-bankgironummer_exempelfil_sv.txt
     Given a parser that ignores account and id structures
@@ -52,3 +54,4 @@ Feature: Mandate responses
     092004110899000000006
     """
     Then I find a "LAYOUT_MANDATE_RESPONSE" layout
+    And I find 6 mandate response nodes

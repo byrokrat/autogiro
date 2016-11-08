@@ -26,7 +26,6 @@ Instantiating a parser
 ----------------------
 Create a parser using [ParserFactory](/src/ParserFactory.php).
 
-<!-- @ignore -->
 ```php
 $factory = new ParserFactory;
 $parser = $factory->createParser();
@@ -39,21 +38,39 @@ packages respectively.
 
 You can opt out of this functionality using one of the processor constants:
 
-<!-- @ignore -->
 ```php
 $parser = $factory->createParser(ParserFactory::NO_EXTERNAL_PROCESSORS);
 ```
 
 When in use access the created objects as follows:
 
-<!-- @ignore -->
 ```php
 /** @var \byrokrat\amount\Amount */
-$amountNode->getAttribute('amount');
+$amount = $amountNode->getAttribute('amount');
 
 /** @var \byrokrat\id\Id */
-$idNode->getAttribute('id');
+$id = $idNode->getAttribute('id');
 
 /** @var \byrokrat\banking\AccountNumber */
-$accountNode->getAttribute('account');
+$account = $accountNode->getAttribute('account');
 ```
+
+Parsing
+-------
+
+```php
+/** @var \byrokrat\autogiro\Tree\FileNode */
+$fileNode = $parser->parse($raw_content);
+```
+
+Grep nodes based on type using the [Enumerator](/src/Enumerator.php):
+
+```php
+$enum = new Enumerator;
+
+$enum->onMandateResponseNode($custom_callback);
+
+$enum->enumerate($fileNode);
+```
+
+For a list of possible node types see the [Tree](/src/Tree) namespace;
