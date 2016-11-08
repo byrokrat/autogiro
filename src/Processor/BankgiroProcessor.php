@@ -44,27 +44,27 @@ class BankgiroProcessor extends Processor
     /**
      * Collect the current valid bankgiro number
      */
-    public function visitOpeningNode(OpeningNode $node)
+    public function beforeOpeningNode(OpeningNode $node)
     {
         $this->currentBankgiro = $node->getChild('bankgiro')->getValue();
     }
 
-    public function visitRequestMandateCreationNode(RequestMandateCreationNode $node)
+    public function afterRequestMandateCreationNode(RequestMandateCreationNode $node)
     {
         $this->validateBankgiro($node->getChild('bankgiro')->getValue(), $node);
     }
 
-    public function visitRequestMandateAcceptanceNode(RequestMandateAcceptanceNode $node)
+    public function afterRequestMandateAcceptanceNode(RequestMandateAcceptanceNode $node)
     {
         $this->validateBankgiro($node->getChild('bankgiro')->getValue(), $node);
     }
 
-    public function visitRequestMandateRejectionNode(RequestMandateRejectionNode $node)
+    public function afterRequestMandateRejectionNode(RequestMandateRejectionNode $node)
     {
         $this->validateBankgiro($node->getChild('bankgiro')->getValue(), $node);
     }
 
-    public function visitRequestMandateUpdateNode(RequestMandateUpdateNode $node)
+    public function afterRequestMandateUpdateNode(RequestMandateUpdateNode $node)
     {
         $this->validateBankgiro($node->getChild('bankgiro')->getValue(), $node);
 
@@ -79,12 +79,12 @@ class BankgiroProcessor extends Processor
         }
     }
 
-    public function visitRequestMandateDeletionNode(RequestMandateDeletionNode $node)
+    public function afterRequestMandateDeletionNode(RequestMandateDeletionNode $node)
     {
         $this->validateBankgiro($node->getChild('bankgiro')->getValue(), $node);
     }
 
-    public function visitMandateResponseNode(MandateResponseNode $node)
+    public function afterMandateResponseNode(MandateResponseNode $node)
     {
         $this->validateBankgiro($node->getChild('bankgiro')->getValue(), $node);
     }

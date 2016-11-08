@@ -23,7 +23,7 @@ class MessageProcessorSpec extends ObjectBehavior
         $messageNode->getLineNr()->willReturn(1);
         $messageNode->getValue()->willReturn('not-valid');
 
-        $this->visit($messageNode);
+        $this->visitBefore($messageNode);
         $this->getErrors()->shouldHaveCount(1);
     }
 
@@ -35,7 +35,7 @@ class MessageProcessorSpec extends ObjectBehavior
 
         $messageNode->setAttribute('message', Argument::type('string'))->shouldBeCalled();
 
-        $this->visit($messageNode);
+        $this->visitBefore($messageNode);
         $this->getErrors()->shouldHaveCount(0);
     }
 }

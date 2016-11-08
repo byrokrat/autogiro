@@ -21,6 +21,7 @@ use byrokrat\autogiro\Tree\OrganizationIdNode;
 use byrokrat\autogiro\Tree\AmountNode;
 use byrokrat\autogiro\Tree\AccountNode;
 use byrokrat\autogiro\Tree\BankgiroNode;
+use byrokrat\autogiro\Tree\BgcCustomerNumberNode;
 use byrokrat\autogiro\Tree\MessageNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
 
@@ -1497,7 +1498,13 @@ class Grammar
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$bg) {
-                return new OpeningNode('AG-MEDAVI', $date, '', $bg, $this->currentLineNr);
+                return new OpeningNode(
+                    'AG-MEDAVI',
+                    $date,
+                    new BgcCustomerNumberNode($this->currentLineNr, ''),
+                    $bg,
+                    $this->currentLineNr
+                );
             });
         }
 
@@ -2017,7 +2024,7 @@ class Grammar
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$nr) {
-                return ltrim($nr, '0');
+                return new BgcCustomerNumberNode($this->currentLineNr, ltrim($nr, '0'));
             });
         }
 

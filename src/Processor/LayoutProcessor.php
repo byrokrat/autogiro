@@ -29,7 +29,7 @@ use byrokrat\autogiro\Tree\LayoutNode;
  */
 class LayoutProcessor extends Processor
 {
-    public function visitLayoutNode(LayoutNode $node)
+    public function afterLayoutNode(LayoutNode $node)
     {
         if ($node->getChild('opening')->getAttribute('date') != $node->getChild('closing')->getAttribute('date')) {
             $this->addError(

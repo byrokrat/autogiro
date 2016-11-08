@@ -22,50 +22,50 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Processor;
 
-use byrokrat\autogiro\Visitor;
-use byrokrat\autogiro\Tree\FileNode;
+use byrokrat\autogiro\Tree\Node;
 
 /**
- * Defines a parse tree processor
+ * Container for multiple processors
  */
-abstract class Processor extends Visitor
+class MultiCore extends Processor
 {
     /**
-     * @var string[] List of messages describing found errors
+     * @var Processor[]
      */
-    private $errors = [];
+    private $processors;
 
-    /**
-     * Reset internal error state when a new file is traversed
-     */
-    public function beforeFileNode(FileNode $node)
+    public function __construct(Processor ...$processors)
     {
-        $this->errors = [];
+        $this->processors = $processors;
     }
 
-    /**
-     * Check if any errors have been found
-     */
-    public function hasErrors(): bool
+    public function addProcessor(Processor $processor)
     {
-        return !empty($this->getErrors());
+        $this->processors[] = $processor;
     }
 
-    /**
-     * Get list of messages describing found errors
-     *
-     * @return string[]
-     */
+    public function visitBefore(Node $node)
+    {
+        foreach ($this->processors as $processor) {
+            $processor->visitBefore($node);
+        }
+    }
+
+    public function visitAfter(Node $node)
+    {
+        foreach ($this->processors as $processor) {
+            $processor->visitAfter($node);
+        }
+    }
+
     public function getErrors(): array
     {
-        return $this->errors;
-    }
+        $errors = [];
 
-    /**
-     * Add error message to store
-     */
-    protected function addError(string $msg, string ...$args)
-    {
-        $this->errors[] = sprintf($msg, ...$args);
+        foreach ($this->processors as $processor) {
+            $errors = array_merge($errors, $processor->getErrors());
+        }
+
+        return $errors;
     }
 }

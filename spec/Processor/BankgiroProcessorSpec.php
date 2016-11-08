@@ -40,41 +40,24 @@ class BankgiroProcessorSpec extends ObjectBehavior
         return $node;
     }
 
-    function it_can_reset_errors(OpeningNode $opening, MandateResponseNode $node, $bg1, $bg2)
-    {
-        $this->hasErrors()->shouldEqual(false);
-        $this->getErrors()->shouldHaveCount(0);
-
-        $this->visitOpeningNode($this->a_node_with_bankgiro($opening, $bg1));
-        $this->visitMandateResponseNode($this->a_node_with_bankgiro($node, $bg2));
-
-        $this->hasErrors()->shouldEqual(true);
-        $this->getErrors()->shouldHaveCount(1);
-
-        $this->resetErrors();
-
-        $this->hasErrors()->shouldEqual(false);
-        $this->getErrors()->shouldHaveCount(0);
-    }
-
     function it_fails_on_wrong_request_mandate_creation_bg(OpeningNode $opening, RequestMandateCreationNode $node, $bg1, $bg2)
     {
-        $this->visitOpeningNode($this->a_node_with_bankgiro($opening, $bg1));
-        $this->visitRequestMandateCreationNode($this->a_node_with_bankgiro($node, $bg2));
+        $this->beforeOpeningNode($this->a_node_with_bankgiro($opening, $bg1));
+        $this->afterRequestMandateCreationNode($this->a_node_with_bankgiro($node, $bg2));
         $this->getErrors()->shouldHaveCount(1);
     }
 
     function it_fails_on_wrong_request_mandate_rejection_bg(OpeningNode $opening, RequestMandateRejectionNode $node, $bg1, $bg2)
     {
-        $this->visitOpeningNode($this->a_node_with_bankgiro($opening, $bg1));
-        $this->visitRequestMandateRejectionNode($this->a_node_with_bankgiro($node, $bg2));
+        $this->beforeOpeningNode($this->a_node_with_bankgiro($opening, $bg1));
+        $this->afterRequestMandateRejectionNode($this->a_node_with_bankgiro($node, $bg2));
         $this->getErrors()->shouldHaveCount(1);
     }
 
     function it_fails_on_wrong_request_mandate_acceptance_bg(OpeningNode $opening, RequestMandateAcceptanceNode $node, $bg1, $bg2)
     {
-        $this->visitOpeningNode($this->a_node_with_bankgiro($opening, $bg1));
-        $this->visitRequestMandateAcceptanceNode($this->a_node_with_bankgiro($node, $bg2));
+        $this->beforeOpeningNode($this->a_node_with_bankgiro($opening, $bg1));
+        $this->afterRequestMandateAcceptanceNode($this->a_node_with_bankgiro($node, $bg2));
         $this->getErrors()->shouldHaveCount(1);
     }
 
@@ -83,8 +66,8 @@ class BankgiroProcessorSpec extends ObjectBehavior
         $node = $this->a_node_with_bankgiro($node, $bg2);
         $node->getChild('new_bankgiro')->willReturn($bg2);
 
-        $this->visitOpeningNode($this->a_node_with_bankgiro($opening, $bg1));
-        $this->visitRequestMandateUpdateNode($node);
+        $this->beforeOpeningNode($this->a_node_with_bankgiro($opening, $bg1));
+        $this->afterRequestMandateUpdateNode($node);
         $this->getErrors()->shouldHaveCount(1);
     }
 
@@ -93,22 +76,22 @@ class BankgiroProcessorSpec extends ObjectBehavior
         $node = $this->a_node_with_bankgiro($node, $bg1);
         $node->getChild('new_bankgiro')->willReturn($bg2);
 
-        $this->visitOpeningNode($this->a_node_with_bankgiro($opening, $bg1));
-        $this->visitRequestMandateUpdateNode($node);
+        $this->beforeOpeningNode($this->a_node_with_bankgiro($opening, $bg1));
+        $this->afterRequestMandateUpdateNode($node);
         $this->getErrors()->shouldHaveCount(1);
     }
 
     function it_fails_on_wrong_request_mandate_deletion_bg(OpeningNode $opening, RequestMandateDeletionNode $node, $bg1, $bg2)
     {
-        $this->visitOpeningNode($this->a_node_with_bankgiro($opening, $bg1));
-        $this->visitRequestMandateDeletionNode($this->a_node_with_bankgiro($node, $bg2));
+        $this->beforeOpeningNode($this->a_node_with_bankgiro($opening, $bg1));
+        $this->afterRequestMandateDeletionNode($this->a_node_with_bankgiro($node, $bg2));
         $this->getErrors()->shouldHaveCount(1);
     }
 
     function it_fails_on_wrong_mandate_response_bg(OpeningNode $opening, MandateResponseNode $node, $bg1, $bg2)
     {
-        $this->visitOpeningNode($this->a_node_with_bankgiro($opening, $bg1));
-        $this->visitMandateResponseNode($this->a_node_with_bankgiro($node, $bg2));
+        $this->beforeOpeningNode($this->a_node_with_bankgiro($opening, $bg1));
+        $this->afterMandateResponseNode($this->a_node_with_bankgiro($node, $bg2));
         $this->getErrors()->shouldHaveCount(1);
     }
 }

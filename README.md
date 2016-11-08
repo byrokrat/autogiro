@@ -18,7 +18,7 @@ composer require byrokrat/autogiro
 
 Autogiro specifications
 -----------------------
-This library is developed against the [technichal manual](/docs/autogiro_tekniskmanual_sv.pdf)
+This library is developed against the [technichal manual](/rel/autogiro_tekniskmanual_sv.pdf)
 (in swedish) of the direct debit system (autogirot) revised 2014-08-05. For
 updated versions of this document contact [Bankgirocentralen](http://bgc.se).
 
@@ -33,29 +33,27 @@ $parser = $factory->createParser();
 ```
 
 The created parser can parse and validate monetary amounts, account numbers and
-identification numbers if you require the [Amount](https://github.com/byrokrat/amount),
+identification numbers using the [Amount](https://github.com/byrokrat/amount),
 [Id](https://github.com/byrokrat/id) and [Banking](https://github.com/byrokrat/banking)
-packages respectively in your project. `ParserFactory` will automatically search
-your autoloader for these packages.
+packages respectively.
+
+You can opt out of this functionality using one of the processor constants:
+
+<!-- @ignore -->
+```php
+$parser = $factory->createParser(ParserFactory::NO_EXTERNAL_PROCESSORS);
+```
 
 When in use access the created objects as follows:
 
 <!-- @ignore -->
 ```php
 /** @var \byrokrat\amount\Amount */
-$amountNode->getChild('amount');
+$amountNode->getAttribute('amount');
 
 /** @var \byrokrat\id\Id */
-$idNode->getChild('id');
+$idNode->getAttribute('id');
 
 /** @var \byrokrat\banking\AccountNumber */
-$accountNode->getChild('account');
-```
-
-If you have any of these packages installed but does NOT want them included in
-your parser you may opt out using one of the processor constants:
-
-<!-- @ignore -->
-```php
-$parser = $factory->createParser(ParserFactory::NO_EXTERNAL_PROCESSORS);
+$accountNode->getAttribute('account');
 ```

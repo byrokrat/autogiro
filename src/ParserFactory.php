@@ -29,6 +29,8 @@ use byrokrat\autogiro\Processor\FileProcessor;
 use byrokrat\autogiro\Processor\IdProcessor;
 use byrokrat\autogiro\Processor\LayoutProcessor;
 use byrokrat\autogiro\Processor\MessageProcessor;
+use byrokrat\autogiro\Processor\MultiCore;
+use byrokrat\autogiro\Processor\PayeeProcessor;
 use byrokrat\id\CoordinationIdFactory;
 use byrokrat\id\NullIdFactory;
 use byrokrat\id\OrganizationIdFactory;
@@ -70,31 +72,34 @@ class ParserFactory
             return ($needle & $flags) == $needle;
         };
 
-        $processors = [
+        $processors = new MultiCore(
             new BankgiroProcessor,
             new FileProcessor,
             new LayoutProcessor,
-            new MessageProcessor
-        ];
+            new MessageProcessor,
+            new PayeeProcessor
+        );
 
-        if (!$flag(self::NO_ACCOUNT_PROCESSOR) && class_exists('byrokrat\banking\AccountFactory')) {
+        if (!$flag(self::NO_ACCOUNT_PROCESSOR)) {
             $accountFactory = new AccountFactory;
             $accountFactory->blacklistFormats([AccountFormats::FORMAT_PLUSGIRO]);
 
             $bankgiroFactory = new AccountFactory;
             $bankgiroFactory->whitelistFormats([AccountFormats::FORMAT_BANKGIRO]);
 
-            $processors[] = new AccountProcessor($accountFactory, $bankgiroFactory);
+            $processors->addProcessor(new AccountProcessor($accountFactory, $bankgiroFactory));
         }
 
-        if (!$flag(self::NO_AMOUNT_PROCESSOR) && class_exists('byrokrat\amount\Currency\SEK')) {
-            $processors[] = new AmountProcessor;
+        if (!$flag(self::NO_AMOUNT_PROCESSOR)) {
+            $processors->addProcessor(new AmountProcessor);
         }
 
-        if (!$flag(self::NO_ID_PROCESSOR) && class_exists('byrokrat\id\PersonalIdFactory')) {
-            $processors[] = new IdProcessor(
-                new OrganizationIdFactory,
-                new PersonalIdFactory(new CoordinationIdFactory(new NullIdFactory))
+        if (!$flag(self::NO_ID_PROCESSOR)) {
+            $processors->addProcessor(
+                new IdProcessor(
+                    new OrganizationIdFactory,
+                    new PersonalIdFactory(new CoordinationIdFactory(new NullIdFactory))
+                )
             );
         }
 

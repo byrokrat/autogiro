@@ -26,19 +26,35 @@ use byrokrat\autogiro\Tree\Node;
 
 /**
  * Generic node visitor
+ *
+ * Will read the node type (eg. SomeNode) and dispatch a node specific method
+ * if defined in visitor (eg. beforeSomeNode or afterSomeNode). By convention
+ * such visitor methods should type hint the specific node type
+ * (eg. beforeSomeNode(SomeNode $node)).
  */
 class Visitor
 {
     /**
-     * Generic method for visiting a node
-     *
-     * Will read the node type (eg. SomeNode) and dispatch a node specific method
-     * if defined in visitor (eg. visitSomeNode. By convention such visitor
-     * methods should type hint the specific node type (eg. visitSomeNode(SomeNode $node)).
+     * Generic method for visiting a node before its children
      */
-    public function visit(Node $node)
+    public function visitBefore(Node $node)
     {
-        $method = 'visit' . $node->getType();
+        $this->dispatch('before'.$node->getType(), $node);
+    }
+
+    /**
+     * Generic method for visiting a node after its children
+     */
+    public function visitAfter(Node $node)
+    {
+        $this->dispatch('after'.$node->getType(), $node);
+    }
+
+    /**
+     * Dispatch to method if method exists
+     */
+    private function dispatch(string $method, Node $node)
+    {
         if (method_exists($this, $method)) {
             $this->$method($node);
         }

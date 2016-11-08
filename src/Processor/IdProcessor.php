@@ -49,7 +49,7 @@ class IdProcessor extends Processor
         $this->personalIdFactory = $personalIdFactory;
     }
 
-    public function visitOrganizationIdNode(OrganizationIdNode $node)
+    public function beforeOrganizationIdNode(OrganizationIdNode $node)
     {
         try {
             $node->setAttribute(
@@ -65,7 +65,7 @@ class IdProcessor extends Processor
         }
     }
 
-    public function visitPersonalIdNode(PersonalIdNode $node)
+    public function beforePersonalIdNode(PersonalIdNode $node)
     {
         try {
             $node->setAttribute(

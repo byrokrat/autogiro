@@ -1,34 +1,24 @@
 TODO
 ====
 
-Supported formats at this point
--------------------------------
-* Medgivandeunderlag i ny och gammal layout
-* Medgivandeavisering i ny och gammal layout
+1. Dates could be wrapped in a DateNode.
+   Är det bättre?
+   DateProcessor?
 
-General
--------
-1. Amount/Banking/Id ska vara dependecies trotts allt.
-   - de behövs i Writer så det blir enklare att göra så...
-   - förenkla ParserFactory med att ta bort class_exists()...
+   Det skulle göra att vi kan få bättre felmeddelanden när ett datum är felaktigt...
+       Med radnummer osv...
 
-1. ifall FileNode innehåller flera LayoutNodes så kontrolleras att de har
-   samma kundnummer hos autogirot
-   samma payee bankgironummer
+1. Testa med Behat
+    - lägg till en Enumerator eller liknande, så att jag kan skriva
+        Then it finds 8 mandate requests (eller liknande...)
 
-   1) Skriv CustomerNumberNode
-   2) Implementera CustomerNumberNode i FileProcessor
-   3) Skriv CustomerNumberProcessor som validerar detta...
-      ALTERNATIVT
-      Implementera detta i LayoutProcessor ???
+        $enum = new Enumerator($baseNode);
 
-      Fundera över vilken lösning som känns bäst här!!
+        $enum->onRequestIncomingTransactionNode(function ($node) {
+            // process..
+        });
 
-1. Skriv om GrammarSpec med Behat
-    - kanske kan alla ParserIntegrationTest skrivas med behat?
-    - om nödvändigt en lista över godkända fel lika i accounting..
-    - varför är det egentligen viktigt här att skilja på GrammarSpec och IntegrationTest??
-      det är en teoretiskt snygg uppdelning. Men i praktiken kanske de kan göra samma sak...
+        $enum->enumerate();
 
 1. det ska inte vara ett krav att sista raden avslutas med ett enterslag
    men hur jag ska implementera det i Grammar återstår att se
@@ -36,11 +26,24 @@ General
    (EOL / EOF)
    men hur ska EOF definieras???
 
+   Behat/FeatureContext gör ett hack för att fixa detta nu...
+
 1. Nodes to make:
     - RequestIncomingTransactionNode
     - RequestOutgoingTransactionNode
     - RequestTransactionDeletionNode
     - RequestTransactionUpdateNode
+
+1. Olika värdebärare for record-sub-parts
+    ```php
+    $interval = new Record\Intervall\MonthlyOnDate;
+    echo $interval->getCode();
+    echo $interval->getDescription();
+    ```
+
+1. Support billing at next possible date (the low level syntax for
+   this is `GENAST`, instead of a numeric date). OBS! S. 27 i manual: Periodkod
+   1-8 kan inte användas om GENAST har angetts som betalningsdag i TK32 eller TK82.
 
 1. ifall kontonummer ska vara payerNr och payerNr är ett personnunmmer (personkonto)
    så måste clearning 3300 läggas till...
@@ -51,15 +54,14 @@ General
    // Nu har jag kommit så pass långt i Granmmar att jag skulle unna skriva Writer
    // för mandate requests
 
+   VÄNTA MED DETTA TILLS Tree HAR STABILISERATS
+   annars riskerar jag dubbeljobb..
+
    $writer = new Writer($bg, 'cust1232345', $date = null);
    $writer->deleteMandate('123456789');
    $writer->createMandate(...);
 
    $writer->getContent(); // string
-
-1. Support billing at next possible date (the low level syntax for
-   this is `GENAST`, instead of a numeric date). OBS! S. 27 i manual: Periodkod
-   1-8 kan inte användas om GENAST har angetts som betalningsdag i TK32 eller TK82.
 
 1. Generated files must NOT include (end with) and empty line
    In the deprecated georg system this was solved using
@@ -67,13 +69,6 @@ General
    return rtrim($this->buildNative(), "\r\n");
    ```
    in `DonorWorker->billAll()`.
-
-1. Olika värdebärare for record-sub-parts
-    ```php
-    $interval = new Record\Intervall\MonthlyOnDate;
-    echo $interval->getCode();
-    echo $interval->getDescription();
-    ```
 
 BGC specs
 ---------
@@ -94,11 +89,6 @@ BGC specs
    beroende på val av Kommunikationssätt. För ASCII-filer rekommenderas ISO8859-1
    (Latin-1) för teckenrepresentation, samt <CRLF> för att indikera radavslut.
    Postlängden är fast, 80 positioner.
-
-1. Sid 18ff (avsnitt 6.1.5): Datasetnamn. BGC vill att filer till dem ges specifika
-   namn. Nordea löser nog det åt mig. Men något stöd måste jag skriva. Även att
-   se vilket format vi kan förvänta oss av intputfilen borde kunna ses på detta
-   sätt..
 
 1. OBS! I filer till bankgirot: Posten Byte av betalarnummer (TK05) är endast
    tillåtet för Medgivanden med bankkontonummer.

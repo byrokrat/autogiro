@@ -39,6 +39,7 @@ use byrokrat\autogiro\Tree\OrganizationIdNode;
 use byrokrat\autogiro\Tree\AmountNode;
 use byrokrat\autogiro\Tree\AccountNode;
 use byrokrat\autogiro\Tree\BankgiroNode;
+use byrokrat\autogiro\Tree\BgcCustomerNumberNode;
 use byrokrat\autogiro\Tree\MessageNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
 
@@ -137,7 +138,13 @@ grammar Grammar
     };
 
     R_RESP_MANDATE_OPENING_OLD = '01' date:DATE BGC_CLEARING bg:BANKGIRO 'AG-MEDAVI' EOR {
-        return new OpeningNode('AG-MEDAVI', $date, '', $bg, $this->currentLineNr);
+        return new OpeningNode(
+            'AG-MEDAVI',
+            $date,
+            new BgcCustomerNumberNode($this->currentLineNr, ''),
+            $bg,
+            $this->currentLineNr
+        );
     };
 
     R_RESP_MANDATE = '73' bg:BANKGIRO payerNr:PAYER_NR accountNr:$(A10 A5 A) id:ID A5 info:$(N N) comment:$(N N) date:DATE? EOR {
@@ -173,7 +180,7 @@ grammar Grammar
     BGC_CLEARING = '9900';
 
     CUST_NR = nr:$(N5 N) {
-        return ltrim($nr, '0');
+        return new BgcCustomerNumberNode($this->currentLineNr, ltrim($nr, '0'));
     };
 
     DATE = date:$(N5 N N N) {

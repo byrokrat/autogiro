@@ -27,7 +27,7 @@ class LayoutProcessorSpec extends ObjectBehavior
         $node->getChild('closing')->willReturn($closing);
         $node->getChildren()->willReturn([$opening, $closing]);
 
-        $this->visitLayoutNode($node);
+        $this->afterLayoutNode($node);
 
         $this->hasErrors()->shouldEqual(true);
         $this->getErrors()->shouldHaveCount(1);
@@ -44,7 +44,7 @@ class LayoutProcessorSpec extends ObjectBehavior
         $node->getChild('closing')->willReturn($closing);
         $node->getChildren()->willReturn([$opening, $closing]);
 
-        $this->visitLayoutNode($node);
+        $this->afterLayoutNode($node);
 
         $this->hasErrors()->shouldEqual(true);
         $this->getErrors()->shouldHaveCount(1);

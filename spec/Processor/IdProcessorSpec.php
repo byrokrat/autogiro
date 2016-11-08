@@ -42,7 +42,7 @@ class IdProcessorSpec extends ObjectBehavior
     function it_fails_on_unvalid_organizational_id(OrganizationIdNode $organizationIdNode)
     {
         $organizationIdNode->getValue()->willReturn('not-valid');
-        $this->visitOrganizationIdNode($organizationIdNode);
+        $this->beforeOrganizationIdNode($organizationIdNode);
         $this->getErrors()->shouldHaveCount(1);
     }
 
@@ -50,14 +50,14 @@ class IdProcessorSpec extends ObjectBehavior
     {
         $organizationIdNode->getValue()->willReturn('valid');
         $organizationIdNode->setAttribute('id', $id)->shouldBeCalled();
-        $this->visitOrganizationIdNode($organizationIdNode);
+        $this->beforeOrganizationIdNode($organizationIdNode);
         $this->getErrors()->shouldHaveCount(0);
     }
 
     function it_fails_on_unvalid_personal_id(PersonalIdNode $personalIdNode)
     {
         $personalIdNode->getValue()->willReturn('not-valid');
-        $this->visitPersonalIdNode($personalIdNode);
+        $this->beforePersonalIdNode($personalIdNode);
         $this->getErrors()->shouldHaveCount(1);
     }
 
@@ -65,7 +65,7 @@ class IdProcessorSpec extends ObjectBehavior
     {
         $personalIdNode->getValue()->willReturn('valid');
         $personalIdNode->setAttribute('id', $id)->shouldBeCalled();
-        $this->visitPersonalIdNode($personalIdNode);
+        $this->beforePersonalIdNode($personalIdNode);
         $this->getErrors()->shouldHaveCount(0);
     }
 }
