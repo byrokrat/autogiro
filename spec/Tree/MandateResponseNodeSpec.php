@@ -7,6 +7,7 @@ namespace spec\byrokrat\autogiro\Tree;
 use byrokrat\autogiro\Tree\MandateResponseNode;
 use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Tree\BankgiroNode;
+use byrokrat\autogiro\Tree\DateNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
 use byrokrat\autogiro\Tree\AccountNode;
 use byrokrat\autogiro\Tree\IdNode;
@@ -23,7 +24,7 @@ class MandateResponseNodeSpec extends ObjectBehavior
         IdNode $id,
         MessageNode $info,
         MessageNode $comment,
-        \DateTime $date
+        DateNode $date
     ) {
         $this->beConstructedWith($bankgiro, $payerNr, $account, $id, $info, $comment, $date);
     }
@@ -75,7 +76,7 @@ class MandateResponseNodeSpec extends ObjectBehavior
 
     function it_contains_a_date($date)
     {
-        $this->getAttribute('date')->shouldEqual($date);
+        $this->getChild('date')->shouldEqual($date);
     }
 
     function it_contains_a_line_number($bankgiro, $payerNr, $account, $id, $info, $comment, $date)

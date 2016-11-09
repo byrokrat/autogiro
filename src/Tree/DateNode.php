@@ -23,14 +23,8 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Tree;
 
 /**
- * Standard closing record node
+ * Node that wrapps a date
  */
-class ClosingNode extends Node
+class DateNode extends Node
 {
-    public function __construct(DateNode $date, int $numberOfPosts = 0, int $lineNr = 0)
-    {
-        parent::__construct($lineNr);
-        $this->setChild('date', $date);
-        $this->setAttribute('nr_of_posts', $numberOfPosts);
-    }
 }

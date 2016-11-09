@@ -22,6 +22,7 @@ use byrokrat\autogiro\Tree\AmountNode;
 use byrokrat\autogiro\Tree\AccountNode;
 use byrokrat\autogiro\Tree\BankgiroNode;
 use byrokrat\autogiro\Tree\BgcCustomerNumberNode;
+use byrokrat\autogiro\Tree\DateNode;
 use byrokrat\autogiro\Tree\MessageNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
 
@@ -648,7 +649,7 @@ class Grammar
 
                 return new LayoutNode(
                     $opening,
-                    new ClosingNode($opening->getAttribute('date'), count($records), $this->currentLineNr),
+                    new ClosingNode($opening->getChild('date'), count($records), $this->currentLineNr),
                     ...$records
                 );
             });
@@ -1199,7 +1200,7 @@ class Grammar
 
                 return new LayoutNode(
                     $opening,
-                    new ClosingNode($opening->getAttribute('date'), count($records), $this->currentLineNr),
+                    new ClosingNode($opening->getChild('date'), count($records), $this->currentLineNr),
                     ...$records
                 );
             });
@@ -1302,7 +1303,7 @@ class Grammar
 
                 return new LayoutNode(
                     $opening,
-                    new ClosingNode($opening->getAttribute('date'), count($records), $this->currentLineNr),
+                    new ClosingNode($opening->getChild('date'), count($records), $this->currentLineNr),
                     ...$records
                 );
             });
@@ -1723,7 +1724,7 @@ class Grammar
                     $id,
                     new MessageNode($this->currentLineNr, "73.$info"),
                     new MessageNode($this->currentLineNr, "73.comment.$comment"),
-                    $date ?: new \DateTimeImmutable('@0'),
+                    $date ?: new DateNode($this->currentLineNr, '@0'),
                     $this->currentLineNr
                 );
             });
@@ -2093,7 +2094,7 @@ class Grammar
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date) {
-                return new \DateTimeImmutable($date . '000000');
+                return new DateNode($this->currentLineNr, $date);
             });
         }
 

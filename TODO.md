@@ -1,13 +1,6 @@
 TODO
 ====
 
-1. Dates could be wrapped in a DateNode.
-   Är det bättre?
-   DateProcessor?
-
-   Det skulle göra att vi kan få bättre felmeddelanden när ett datum är felaktigt...
-       Med radnummer osv...
-
 1. det ska inte vara ett krav att sista raden avslutas med ett enterslag
    men hur jag ska implementera det i Grammar återstår att se
    något i stil med

@@ -25,6 +25,7 @@ namespace byrokrat\autogiro;
 use byrokrat\autogiro\Processor\AccountProcessor;
 use byrokrat\autogiro\Processor\AmountProcessor;
 use byrokrat\autogiro\Processor\BankgiroProcessor;
+use byrokrat\autogiro\Processor\DateProcessor;
 use byrokrat\autogiro\Processor\FileProcessor;
 use byrokrat\autogiro\Processor\IdProcessor;
 use byrokrat\autogiro\Processor\LayoutProcessor;
@@ -74,6 +75,7 @@ class ParserFactory
 
         $processors = new MultiCore(
             new BankgiroProcessor,
+            new DateProcessor,
             new FileProcessor,
             new LayoutProcessor,
             new MessageProcessor,

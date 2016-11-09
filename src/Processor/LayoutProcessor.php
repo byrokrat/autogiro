@@ -31,11 +31,14 @@ class LayoutProcessor extends Processor
 {
     public function afterLayoutNode(LayoutNode $node)
     {
-        if ($node->getChild('opening')->getAttribute('date') != $node->getChild('closing')->getAttribute('date')) {
+        $openindDate = $node->getChild('opening')->getChild('date')->getValue();
+        $closingDate = $node->getChild('closing')->getChild('date')->getValue();
+
+        if ($openindDate != $closingDate) {
             $this->addError(
                 "Non-matching dates in opening and closing nodes (opening: %s, closing: %s) on line %s",
-                $node->getChild('opening')->getAttribute('date')->format('Y-m-d'),
-                $node->getChild('closing')->getAttribute('date')->format('Y-m-d'),
+                $openindDate,
+                $closingDate,
                 (string)$node->getChild('closing')->getLineNr()
             );
         }
