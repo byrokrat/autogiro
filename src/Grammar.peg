@@ -230,5 +230,7 @@ grammar Grammar
         $this->currentLineNr++;
     };
 
-    EOR "END_OF_RECORD" = A* EOL;
+    EOF "END_OF_FILE" = !.;
+
+    EOR "END_OF_RECORD" = A* (EOL / EOF);
 }

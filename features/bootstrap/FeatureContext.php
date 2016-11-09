@@ -40,8 +40,7 @@ class FeatureContext implements Context, SnippetAcceptingContext
      */
     public function iParse(PyStringNode $string)
     {
-        // TODO extra nyrad på slutet ska inte behövas!!
-        $this->fileNode = $this->parser->parse($string->getRaw() . "\n");
+        $this->fileNode = $this->parser->parse($string->getRaw());
     }
 
     /**

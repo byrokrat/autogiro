@@ -2951,6 +2951,53 @@ class Grammar
         return $_success;
     }
 
+    protected function parseEOF()
+    {
+        $_position = $this->position;
+
+        if (isset($this->cache['EOF'][$_position])) {
+            $_success = $this->cache['EOF'][$_position]['success'];
+            $this->position = $this->cache['EOF'][$_position]['position'];
+            $this->value = $this->cache['EOF'][$_position]['value'];
+
+            return $_success;
+        }
+
+        $_position88 = $this->position;
+        $_cut89 = $this->cut;
+
+        $this->cut = false;
+        if ($this->position < strlen($this->string)) {
+            $_success = true;
+            $this->value = substr($this->string, $this->position, 1);
+            $this->position += 1;
+        } else {
+            $_success = false;
+        }
+
+        if (!$_success) {
+            $_success = true;
+            $this->value = null;
+        } else {
+            $_success = false;
+        }
+
+        $this->position = $_position88;
+        $this->cut = $_cut89;
+
+        $this->cache['EOF'][$_position] = array(
+            'success' => $_success,
+            'position' => $this->position,
+            'value' => $this->value
+        );
+
+        if (!$_success) {
+            $this->report($_position, "END_OF_FILE");
+        }
+
+        return $_success;
+    }
+
     protected function parseEOR()
     {
         $_position = $this->position;
@@ -2963,13 +3010,13 @@ class Grammar
             return $_success;
         }
 
-        $_value91 = array();
+        $_value95 = array();
 
-        $_value89 = array();
-        $_cut90 = $this->cut;
+        $_value91 = array();
+        $_cut92 = $this->cut;
 
         while (true) {
-            $_position88 = $this->position;
+            $_position90 = $this->position;
 
             $this->cut = false;
             $_success = $this->parseA();
@@ -2978,27 +3025,39 @@ class Grammar
                 break;
             }
 
-            $_value89[] = $this->value;
+            $_value91[] = $this->value;
         }
 
         if (!$this->cut) {
             $_success = true;
-            $this->position = $_position88;
-            $this->value = $_value89;
-        }
-
-        $this->cut = $_cut90;
-
-        if ($_success) {
-            $_value91[] = $this->value;
-
-            $_success = $this->parseEOL();
-        }
-
-        if ($_success) {
-            $_value91[] = $this->value;
-
+            $this->position = $_position90;
             $this->value = $_value91;
+        }
+
+        $this->cut = $_cut92;
+
+        if ($_success) {
+            $_value95[] = $this->value;
+
+            $_position93 = $this->position;
+            $_cut94 = $this->cut;
+
+            $this->cut = false;
+            $_success = $this->parseEOL();
+
+            if (!$_success && !$this->cut) {
+                $this->position = $_position93;
+
+                $_success = $this->parseEOF();
+            }
+
+            $this->cut = $_cut94;
+        }
+
+        if ($_success) {
+            $_value95[] = $this->value;
+
+            $this->value = $_value95;
         }
 
         $this->cache['EOR'][$_position] = array(

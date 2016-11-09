@@ -1,14 +1,6 @@
 TODO
 ====
 
-1. det ska inte vara ett krav att sista raden avslutas med ett enterslag
-   men hur jag ska implementera det i Grammar återstår att se
-   något i stil med
-   (EOL / EOF)
-   men hur ska EOF definieras???
-
-   Behat/FeatureContext gör ett hack för att fixa detta nu...
-
 1. Nodes to make:
     - RequestIncomingTransactionNode
     - RequestOutgoingTransactionNode
