@@ -31,6 +31,11 @@ use byrokrat\autogiro\Exception\LogicException;
 class Enumerator
 {
     /**
+     * @var callable[]
+     */
+    private $callbacks = [];
+
+    /**
      * Magic method to register enumeration callbacks
      *
      * Usage: $enumerator->onNodeType($callback);
