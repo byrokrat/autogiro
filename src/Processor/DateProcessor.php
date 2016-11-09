@@ -20,17 +20,28 @@
 
 declare(strict_types = 1);
 
-namespace byrokrat\autogiro\Tree;
+namespace byrokrat\autogiro\Processor;
+
+use byrokrat\autogiro\Tree\DateNode;
 
 /**
- * Standard closing record node
+ * Processor that expands date nodes
  */
-class ClosingNode extends Node
+class DateProcessor extends Processor
 {
-    public function __construct(DateNode $date, int $numberOfPosts = 0, int $lineNr = 0)
+    public function beforeDateNode(DateNode $node)
     {
-        parent::__construct($lineNr);
-        $this->setChild('date', $date);
-        $this->setAttribute('nr_of_posts', $numberOfPosts);
+        try {
+            $node->setAttribute(
+                'date',
+                new \DateTimeImmutable($node->getValue())
+            );
+        } catch (\Exception $e) {
+            $this->addError(
+                "Invalid date %s on line %s",
+                $node->getValue(),
+                (string)$node->getLineNr()
+            );
+        }
     }
 }

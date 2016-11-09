@@ -8,11 +8,12 @@ use byrokrat\autogiro\Tree\OpeningNode;
 use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Tree\BankgiroNode;
 use byrokrat\autogiro\Tree\BgcCustomerNumberNode;
+use byrokrat\autogiro\Tree\DateNode;
 use PhpSpec\ObjectBehavior;
 
 class OpeningNodeSpec extends ObjectBehavior
 {
-    function let(\DateTimeImmutable $date, BgcCustomerNumberNode $custNr, BankgiroNode $bankgiro)
+    function let(DateNode $date, BgcCustomerNumberNode $custNr, BankgiroNode $bankgiro)
     {
         $this->beConstructedWith('', $date, $custNr, $bankgiro);
     }
@@ -40,7 +41,7 @@ class OpeningNodeSpec extends ObjectBehavior
 
     function it_contains_a_date($date)
     {
-        $this->getAttribute('date')->shouldEqual($date);
+        $this->getChild('date')->shouldEqual($date);
     }
 
     function it_contains_a_customer_number($custNr)

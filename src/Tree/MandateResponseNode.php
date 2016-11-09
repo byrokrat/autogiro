@@ -34,7 +34,7 @@ class MandateResponseNode extends Node
         IdNode $id,
         MessageNode $info,
         MessageNode $comment,
-        \DateTimeInterface $date,
+        DateNode $date,
         int $lineNr = 0
     ) {
         parent::__construct($lineNr);
@@ -44,6 +44,6 @@ class MandateResponseNode extends Node
         $this->setChild('id', $id);
         $this->setChild('info', $info);
         $this->setChild('comment', $comment);
-        $this->setAttribute('date', $date);
+        $this->setChild('date', $date);
     }
 }

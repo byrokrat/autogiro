@@ -6,11 +6,12 @@ namespace spec\byrokrat\autogiro\Tree;
 
 use byrokrat\autogiro\Tree\ClosingNode;
 use byrokrat\autogiro\Tree\Node;
+use byrokrat\autogiro\Tree\DateNode;
 use PhpSpec\ObjectBehavior;
 
 class ClosingNodeSpec extends ObjectBehavior
 {
-    function let(\DateTimeImmutable $date)
+    function let(DateNode $date)
     {
         $this->beConstructedWith($date);
     }
@@ -32,7 +33,7 @@ class ClosingNodeSpec extends ObjectBehavior
 
     function it_contains_a_date($date)
     {
-        $this->getAttribute('date')->shouldEqual($date);
+        $this->getChild('date')->shouldEqual($date);
     }
 
     function it_contains_record_count($date)
