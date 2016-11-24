@@ -24,12 +24,12 @@ namespace byrokrat\autogiro\Processor;
 
 use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Tree\OpeningNode;
-use byrokrat\autogiro\Tree\RequestMandateCreationNode;
-use byrokrat\autogiro\Tree\RequestMandateAcceptanceNode;
-use byrokrat\autogiro\Tree\RequestMandateRejectionNode;
-use byrokrat\autogiro\Tree\RequestMandateUpdateNode;
-use byrokrat\autogiro\Tree\RequestMandateDeletionNode;
-use byrokrat\autogiro\Tree\MandateResponseNode;
+use byrokrat\autogiro\Tree\Record\Request\CreateMandateRequestNode;
+use byrokrat\autogiro\Tree\Record\Request\AcceptMandateRequestNode;
+use byrokrat\autogiro\Tree\Record\Request\RejectMandateRequestNode;
+use byrokrat\autogiro\Tree\Record\Request\UpdateMandateRequestNode;
+use byrokrat\autogiro\Tree\Record\Request\DeleteMandateRequestNode;
+use byrokrat\autogiro\Tree\Record\Response\MandateResponseNode;
 
 /**
  * Validates the consistency of payee bankgiro account numbers
@@ -49,22 +49,22 @@ class BankgiroProcessor extends Processor
         $this->currentBankgiro = $node->getChild('bankgiro')->getValue();
     }
 
-    public function afterRequestMandateCreationNode(RequestMandateCreationNode $node)
+    public function afterCreateMandateRequestNode(CreateMandateRequestNode $node)
     {
         $this->validateBankgiro($node->getChild('bankgiro')->getValue(), $node);
     }
 
-    public function afterRequestMandateAcceptanceNode(RequestMandateAcceptanceNode $node)
+    public function afterAcceptMandateRequestNode(AcceptMandateRequestNode $node)
     {
         $this->validateBankgiro($node->getChild('bankgiro')->getValue(), $node);
     }
 
-    public function afterRequestMandateRejectionNode(RequestMandateRejectionNode $node)
+    public function afterRejectMandateRequestNode(RejectMandateRequestNode $node)
     {
         $this->validateBankgiro($node->getChild('bankgiro')->getValue(), $node);
     }
 
-    public function afterRequestMandateUpdateNode(RequestMandateUpdateNode $node)
+    public function afterUpdateMandateRequestNode(UpdateMandateRequestNode $node)
     {
         $this->validateBankgiro($node->getChild('bankgiro')->getValue(), $node);
 
@@ -79,7 +79,7 @@ class BankgiroProcessor extends Processor
         }
     }
 
-    public function afterRequestMandateDeletionNode(RequestMandateDeletionNode $node)
+    public function afterDeleteMandateRequestNode(DeleteMandateRequestNode $node)
     {
         $this->validateBankgiro($node->getChild('bankgiro')->getValue(), $node);
     }

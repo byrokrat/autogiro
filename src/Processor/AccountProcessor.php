@@ -22,8 +22,8 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Processor;
 
-use byrokrat\autogiro\Tree\AccountNode;
-use byrokrat\autogiro\Tree\BankgiroNode;
+use byrokrat\autogiro\Tree\Account\AccountNode;
+use byrokrat\autogiro\Tree\Account\BankgiroNode;
 use byrokrat\banking\AccountFactory;
 use byrokrat\banking\Exception as BankingException;
 

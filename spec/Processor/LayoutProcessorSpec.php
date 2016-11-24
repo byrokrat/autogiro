@@ -8,7 +8,7 @@ use byrokrat\autogiro\Processor\LayoutProcessor;
 use byrokrat\autogiro\Tree\LayoutNode;
 use byrokrat\autogiro\Tree\OpeningNode;
 use byrokrat\autogiro\Tree\ClosingNode;
-use byrokrat\autogiro\Tree\DateNode;
+use byrokrat\autogiro\Tree\Date\DateNode;
 use PhpSpec\ObjectBehavior;
 
 class LayoutProcessorSpec extends ObjectBehavior

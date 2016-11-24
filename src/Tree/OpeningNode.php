@@ -28,11 +28,11 @@ namespace byrokrat\autogiro\Tree;
 class OpeningNode extends Node
 {
     public function __construct(
+        int $lineNr,
         string $layoutName,
-        DateNode $date,
+        Date\DateNode $date,
         BgcCustomerNumberNode $customerNr,
-        BankgiroNode $bankgiro,
-        int $lineNr = 0
+        Account\BankgiroNode $bankgiro
     ) {
         parent::__construct($lineNr);
         $this->setAttribute('layout_name', $layoutName);

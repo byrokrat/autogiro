@@ -6,14 +6,14 @@ namespace spec\byrokrat\autogiro\Tree;
 
 use byrokrat\autogiro\Tree\ClosingNode;
 use byrokrat\autogiro\Tree\Node;
-use byrokrat\autogiro\Tree\DateNode;
+use byrokrat\autogiro\Tree\Date\DateNode;
 use PhpSpec\ObjectBehavior;
 
 class ClosingNodeSpec extends ObjectBehavior
 {
     function let(DateNode $date)
     {
-        $this->beConstructedWith($date);
+        $this->beConstructedWith(0, $date);
     }
 
     function it_is_initializable()
@@ -31,6 +31,12 @@ class ClosingNodeSpec extends ObjectBehavior
         $this->getType()->shouldEqual('ClosingNode');
     }
 
+    function it_contains_a_line_number($date)
+    {
+        $this->beConstructedWith(10, $date);
+        $this->getLineNr()->shouldEqual(10);
+    }
+
     function it_contains_a_date($date)
     {
         $this->getChild('date')->shouldEqual($date);
@@ -38,13 +44,7 @@ class ClosingNodeSpec extends ObjectBehavior
 
     function it_contains_record_count($date)
     {
-        $this->beConstructedWith($date, 5);
+        $this->beConstructedWith(0, $date, 5);
         $this->getAttribute('nr_of_posts')->shouldEqual(5);
-    }
-
-    function it_contains_a_line_number($date)
-    {
-        $this->beConstructedWith($date, 0, 10);
-        $this->getLineNr()->shouldEqual(10);
     }
 }

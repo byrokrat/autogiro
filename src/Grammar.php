@@ -2,29 +2,24 @@
 
 namespace byrokrat\autogiro;
 
-use byrokrat\autogiro\Tree\FileNode;
-use byrokrat\autogiro\Tree\LayoutNode;
-use byrokrat\autogiro\Tree\OpeningNode;
-use byrokrat\autogiro\Tree\ClosingNode;
-use byrokrat\autogiro\Tree\RequestMandateCreationNode;
-use byrokrat\autogiro\Tree\RequestMandateAcceptanceNode;
-use byrokrat\autogiro\Tree\RequestMandateRejectionNode;
-use byrokrat\autogiro\Tree\RequestMandateUpdateNode;
-use byrokrat\autogiro\Tree\RequestMandateDeletionNode;
-use byrokrat\autogiro\Tree\RequestIncomingTransactionNode;
-use byrokrat\autogiro\Tree\RequestOutgoingTransactionNode;
-use byrokrat\autogiro\Tree\RequestTransactionDeletionNode;
-use byrokrat\autogiro\Tree\RequestTransactionUpdateNode;
-use byrokrat\autogiro\Tree\MandateResponseNode;
-use byrokrat\autogiro\Tree\PersonalIdNode;
-use byrokrat\autogiro\Tree\OrganizationIdNode;
+use byrokrat\autogiro\Exception\ParserException;
+use byrokrat\autogiro\Tree\Account;
 use byrokrat\autogiro\Tree\AmountNode;
-use byrokrat\autogiro\Tree\AccountNode;
-use byrokrat\autogiro\Tree\BankgiroNode;
 use byrokrat\autogiro\Tree\BgcCustomerNumberNode;
-use byrokrat\autogiro\Tree\DateNode;
+use byrokrat\autogiro\Tree\ClosingNode;
+use byrokrat\autogiro\Tree\Date;
+use byrokrat\autogiro\Tree\FileNode;
+use byrokrat\autogiro\Tree\Id;
+use byrokrat\autogiro\Tree\Interval;
+use byrokrat\autogiro\Tree\LayoutNode;
 use byrokrat\autogiro\Tree\MessageNode;
+use byrokrat\autogiro\Tree\OpeningNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
+use byrokrat\autogiro\Tree\Record\Request;
+use byrokrat\autogiro\Tree\Record\Response;
+use byrokrat\autogiro\Tree\Repeats;
+use byrokrat\autogiro\Tree\SpaceNode;
+use byrokrat\autogiro\Tree\TextNode;
 
 class Grammar
 {
@@ -280,7 +275,7 @@ class Grammar
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$layout, &$custNr, &$bg) {
-                return new OpeningNode(rtrim($layout), $date, $custNr, $bg, $this->currentLineNr);
+                return new OpeningNode($this->currentLineNr, rtrim($layout), $date, $custNr, $bg);
             });
         }
 
@@ -514,9 +509,7 @@ class Grammar
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$custNr, &$bg) {
-                // TODO layout_request kan vara ''
-                    // kanske lägga in ett test i visitor som kontrollerar att layoutId är ett känt värde... ??
-                return new OpeningNode('', $date, $custNr, $bg, $this->currentLineNr);
+                return new OpeningNode($this->currentLineNr, '', $date, $custNr, $bg);
             });
         }
 
@@ -565,12 +558,6 @@ class Grammar
             if (!$_success && !$this->cut) {
                 $this->position = $_position11;
 
-                $_success = $this->parseR_REQ_CONFIRM_MANDATE();
-            }
-
-            if (!$_success && !$this->cut) {
-                $this->position = $_position11;
-
                 $_success = $this->parseR_REQ_UPDATE_MANDATE();
             }
 
@@ -595,12 +582,6 @@ class Grammar
 
                     $this->cut = false;
                     $_success = $this->parseR_REQ_CREATE_MANDATE();
-
-                    if (!$_success && !$this->cut) {
-                        $this->position = $_position11;
-
-                        $_success = $this->parseR_REQ_CONFIRM_MANDATE();
-                    }
 
                     if (!$_success && !$this->cut) {
                         $this->position = $_position11;
@@ -645,11 +626,9 @@ class Grammar
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$opening, &$records) {
-                $opening->setAttribute('layout_name', Layouts::LAYOUT_MANDATE_REQUEST);
-
                 return new LayoutNode(
-                    $opening,
-                    new ClosingNode($opening->getChild('date'), count($records), $this->currentLineNr),
+                    $opening->setAttribute('layout_name', Layouts::LAYOUT_MANDATE_REQUEST),
+                    new ClosingNode($this->currentLineNr, $opening->getChild('date'), count($records)),
                     ...$records
                 );
             });
@@ -680,7 +659,7 @@ class Grammar
             return $_success;
         }
 
-        $_value20 = array();
+        $_value25 = array();
 
         if (substr($this->string, $this->position, strlen('04')) === '04') {
             $_success = true;
@@ -693,7 +672,7 @@ class Grammar
         }
 
         if ($_success) {
-            $_value20[] = $this->value;
+            $_value25[] = $this->value;
 
             $_success = $this->parseBANKGIRO();
 
@@ -703,7 +682,7 @@ class Grammar
         }
 
         if ($_success) {
-            $_value20[] = $this->value;
+            $_value25[] = $this->value;
 
             $_success = $this->parsePAYER_NR();
 
@@ -713,9 +692,21 @@ class Grammar
         }
 
         if ($_success) {
-            $_value20[] = $this->value;
+            $_value25[] = $this->value;
 
+            $_position17 = $this->position;
+            $_cut18 = $this->cut;
+
+            $this->cut = false;
             $_success = $this->parseACCOUNT();
+
+            if (!$_success && !$this->cut) {
+                $_success = true;
+                $this->position = $_position17;
+                $this->value = null;
+            }
+
+            $this->cut = $_cut18;
 
             if ($_success) {
                 $account = $this->value;
@@ -723,9 +714,21 @@ class Grammar
         }
 
         if ($_success) {
-            $_value20[] = $this->value;
+            $_value25[] = $this->value;
 
+            $_position19 = $this->position;
+            $_cut20 = $this->cut;
+
+            $this->cut = false;
             $_success = $this->parseID();
+
+            if (!$_success && !$this->cut) {
+                $_success = true;
+                $this->position = $_position19;
+                $this->value = null;
+            }
+
+            $this->cut = $_cut20;
 
             if ($_success) {
                 $id = $this->value;
@@ -733,58 +736,74 @@ class Grammar
         }
 
         if ($_success) {
-            $_value20[] = $this->value;
+            $_value25[] = $this->value;
 
-            $_position18 = $this->position;
-            $_cut19 = $this->cut;
+            $_position21 = $this->position;
+            $_cut22 = $this->cut;
 
             $this->cut = false;
-            $_value17 = array();
-
             $_success = $this->parseS20();
 
-            if ($_success) {
-                $_value17[] = $this->value;
-
-                $_success = $this->parseS();
+            if (!$_success && !$this->cut) {
+                $_success = true;
+                $this->position = $_position21;
+                $this->value = null;
             }
 
-            if ($_success) {
-                $_value17[] = $this->value;
+            $this->cut = $_cut22;
+        }
 
-                $_success = $this->parseS();
-            }
+        if ($_success) {
+            $_value25[] = $this->value;
 
-            if ($_success) {
-                $_value17[] = $this->value;
+            $_position23 = $this->position;
+            $_cut24 = $this->cut;
 
-                $this->value = $_value17;
+            $this->cut = false;
+            if (substr($this->string, $this->position, strlen('AV')) === 'AV') {
+                $_success = true;
+                $this->value = substr($this->string, $this->position, strlen('AV'));
+                $this->position += strlen('AV');
+            } else {
+                $_success = false;
+
+                $this->report($this->position, '\'AV\'');
             }
 
             if (!$_success && !$this->cut) {
                 $_success = true;
-                $this->position = $_position18;
+                $this->position = $_position23;
                 $this->value = null;
             }
 
-            $this->cut = $_cut19;
+            $this->cut = $_cut24;
+
+            if ($_success) {
+                $reject = $this->value;
+            }
         }
 
         if ($_success) {
-            $_value20[] = $this->value;
+            $_value25[] = $this->value;
 
             $_success = $this->parseEOR();
         }
 
         if ($_success) {
-            $_value20[] = $this->value;
+            $_value25[] = $this->value;
 
-            $this->value = $_value20;
+            $this->value = $_value25;
         }
 
         if ($_success) {
-            $this->value = call_user_func(function () use (&$bg, &$payerNr, &$account, &$id) {
-                return new RequestMandateCreationNode($bg, $payerNr, $account, $id, $this->currentLineNr);
+            $this->value = call_user_func(function () use (&$bg, &$payerNr, &$account, &$id, &$reject) {
+                if ($reject == 'AV') {
+                    return new Request\RejectMandateRequestNode($this->currentLineNr, $bg, $payerNr);
+                }
+
+                return $account && $id
+                    ? new Request\CreateMandateRequestNode($this->currentLineNr, $bg, $payerNr, $account, $id)
+                    : new Request\AcceptMandateRequestNode($this->currentLineNr, $bg, $payerNr);
             });
         }
 
@@ -796,151 +815,6 @@ class Grammar
 
         if (!$_success) {
             $this->report($_position, 'R_REQ_CREATE_MANDATE');
-        }
-
-        return $_success;
-    }
-
-    protected function parseR_REQ_CONFIRM_MANDATE()
-    {
-        $_position = $this->position;
-
-        if (isset($this->cache['R_REQ_CONFIRM_MANDATE'][$_position])) {
-            $_success = $this->cache['R_REQ_CONFIRM_MANDATE'][$_position]['success'];
-            $this->position = $this->cache['R_REQ_CONFIRM_MANDATE'][$_position]['position'];
-            $this->value = $this->cache['R_REQ_CONFIRM_MANDATE'][$_position]['value'];
-
-            return $_success;
-        }
-
-        $_value24 = array();
-
-        if (substr($this->string, $this->position, strlen('04')) === '04') {
-            $_success = true;
-            $this->value = substr($this->string, $this->position, strlen('04'));
-            $this->position += strlen('04');
-        } else {
-            $_success = false;
-
-            $this->report($this->position, '\'04\'');
-        }
-
-        if ($_success) {
-            $_value24[] = $this->value;
-
-            $_success = $this->parseBANKGIRO();
-
-            if ($_success) {
-                $bg = $this->value;
-            }
-        }
-
-        if ($_success) {
-            $_value24[] = $this->value;
-
-            $_success = $this->parsePAYER_NR();
-
-            if ($_success) {
-                $payerNr = $this->value;
-            }
-        }
-
-        if ($_success) {
-            $_value24[] = $this->value;
-
-            $_position22 = $this->position;
-            $_cut23 = $this->cut;
-
-            $this->cut = false;
-            $_value21 = array();
-
-            $_success = $this->parseA40();
-
-            if ($_success) {
-                $_value21[] = $this->value;
-
-                $_success = $this->parseA5();
-            }
-
-            if ($_success) {
-                $_value21[] = $this->value;
-
-                $_success = $this->parseA();
-            }
-
-            if ($_success) {
-                $_value21[] = $this->value;
-
-                $_success = $this->parseA();
-            }
-
-            if ($_success) {
-                $_value21[] = $this->value;
-
-                $_success = $this->parseA();
-            }
-
-            if ($_success) {
-                $_value21[] = $this->value;
-
-                if (substr($this->string, $this->position, strlen('AV')) === 'AV') {
-                    $_success = true;
-                    $this->value = substr($this->string, $this->position, strlen('AV'));
-                    $this->position += strlen('AV');
-                } else {
-                    $_success = false;
-
-                    $this->report($this->position, '\'AV\'');
-                }
-
-                if ($_success) {
-                    $reject = $this->value;
-                }
-            }
-
-            if ($_success) {
-                $_value21[] = $this->value;
-
-                $this->value = $_value21;
-            }
-
-            if (!$_success && !$this->cut) {
-                $_success = true;
-                $this->position = $_position22;
-                $this->value = null;
-            }
-
-            $this->cut = $_cut23;
-        }
-
-        if ($_success) {
-            $_value24[] = $this->value;
-
-            $_success = $this->parseEOR();
-        }
-
-        if ($_success) {
-            $_value24[] = $this->value;
-
-            $this->value = $_value24;
-        }
-
-        if ($_success) {
-            $this->value = call_user_func(function () use (&$bg, &$payerNr, &$reject) {
-                return $reject == 'AV'
-                    ? new RequestMandateRejectionNode($bg, $payerNr, $this->currentLineNr)
-                    : new RequestMandateAcceptanceNode($bg, $payerNr, $this->currentLineNr);
-            });
-        }
-
-        $this->cache['R_REQ_CONFIRM_MANDATE'][$_position] = array(
-            'success' => $_success,
-            'position' => $this->position,
-            'value' => $this->value
-        );
-
-        if (!$_success) {
-            $this->report($_position, 'R_REQ_CONFIRM_MANDATE');
         }
 
         return $_success;
@@ -958,7 +832,7 @@ class Grammar
             return $_success;
         }
 
-        $_value25 = array();
+        $_value26 = array();
 
         if (substr($this->string, $this->position, strlen('05')) === '05') {
             $_success = true;
@@ -971,7 +845,7 @@ class Grammar
         }
 
         if ($_success) {
-            $_value25[] = $this->value;
+            $_value26[] = $this->value;
 
             $_success = $this->parseBANKGIRO();
 
@@ -981,7 +855,7 @@ class Grammar
         }
 
         if ($_success) {
-            $_value25[] = $this->value;
+            $_value26[] = $this->value;
 
             $_success = $this->parsePAYER_NR();
 
@@ -991,7 +865,7 @@ class Grammar
         }
 
         if ($_success) {
-            $_value25[] = $this->value;
+            $_value26[] = $this->value;
 
             $_success = $this->parseBANKGIRO();
 
@@ -1001,7 +875,7 @@ class Grammar
         }
 
         if ($_success) {
-            $_value25[] = $this->value;
+            $_value26[] = $this->value;
 
             $_success = $this->parsePAYER_NR();
 
@@ -1011,20 +885,20 @@ class Grammar
         }
 
         if ($_success) {
-            $_value25[] = $this->value;
+            $_value26[] = $this->value;
 
             $_success = $this->parseEOR();
         }
 
         if ($_success) {
-            $_value25[] = $this->value;
+            $_value26[] = $this->value;
 
-            $this->value = $_value25;
+            $this->value = $_value26;
         }
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$oldBg, &$oldPayerNr, &$newBg, &$newPayerNr) {
-                return new RequestMandateUpdateNode($oldBg, $oldPayerNr, $newBg, $newPayerNr, $this->currentLineNr);
+                return new Request\UpdateMandateRequestNode($this->currentLineNr, $oldBg, $oldPayerNr, $newBg, $newPayerNr);
             });
         }
 
@@ -1053,7 +927,7 @@ class Grammar
             return $_success;
         }
 
-        $_value26 = array();
+        $_value27 = array();
 
         if (substr($this->string, $this->position, strlen('03')) === '03') {
             $_success = true;
@@ -1066,7 +940,7 @@ class Grammar
         }
 
         if ($_success) {
-            $_value26[] = $this->value;
+            $_value27[] = $this->value;
 
             $_success = $this->parseBANKGIRO();
 
@@ -1076,7 +950,7 @@ class Grammar
         }
 
         if ($_success) {
-            $_value26[] = $this->value;
+            $_value27[] = $this->value;
 
             $_success = $this->parsePAYER_NR();
 
@@ -1086,20 +960,20 @@ class Grammar
         }
 
         if ($_success) {
-            $_value26[] = $this->value;
+            $_value27[] = $this->value;
 
             $_success = $this->parseEOR();
         }
 
         if ($_success) {
-            $_value26[] = $this->value;
+            $_value27[] = $this->value;
 
-            $this->value = $_value26;
+            $this->value = $_value27;
         }
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$bg, &$payerNr) {
-                return new RequestMandateDeletionNode($bg, $payerNr, $this->currentLineNr);
+                return new Request\DeleteMandateRequestNode($this->currentLineNr, $bg, $payerNr);
             });
         }
 
@@ -1128,7 +1002,7 @@ class Grammar
             return $_success;
         }
 
-        $_value30 = array();
+        $_value31 = array();
 
         $_success = $this->parseR_REQ_OPENING();
 
@@ -1137,50 +1011,34 @@ class Grammar
         }
 
         if ($_success) {
-            $_value30[] = $this->value;
+            $_value31[] = $this->value;
 
-            if (substr($this->string, $this->position, strlen('')) === '') {
-                $_success = true;
-                $this->value = substr($this->string, $this->position, strlen(''));
-                $this->position += strlen('');
-            } else {
-                $_success = false;
-
-                $this->report($this->position, '\'\'');
-            }
+            $_success = $this->parseR_REQ_TRANSACTION();
 
             if ($_success) {
-                $_value28 = array($this->value);
-                $_cut29 = $this->cut;
+                $_value29 = array($this->value);
+                $_cut30 = $this->cut;
 
                 while (true) {
-                    $_position27 = $this->position;
+                    $_position28 = $this->position;
 
                     $this->cut = false;
-                    if (substr($this->string, $this->position, strlen('')) === '') {
-                        $_success = true;
-                        $this->value = substr($this->string, $this->position, strlen(''));
-                        $this->position += strlen('');
-                    } else {
-                        $_success = false;
-
-                        $this->report($this->position, '\'\'');
-                    }
+                    $_success = $this->parseR_REQ_TRANSACTION();
 
                     if (!$_success) {
                         break;
                     }
 
-                    $_value28[] = $this->value;
+                    $_value29[] = $this->value;
                 }
 
                 if (!$this->cut) {
                     $_success = true;
-                    $this->position = $_position27;
-                    $this->value = $_value28;
+                    $this->position = $_position28;
+                    $this->value = $_value29;
                 }
 
-                $this->cut = $_cut29;
+                $this->cut = $_cut30;
             }
 
             if ($_success) {
@@ -1189,18 +1047,16 @@ class Grammar
         }
 
         if ($_success) {
-            $_value30[] = $this->value;
+            $_value31[] = $this->value;
 
-            $this->value = $_value30;
+            $this->value = $_value31;
         }
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$opening, &$records) {
-                $opening->setAttribute('layout_name', Layouts::LAYOUT_PAYMENT_REQUEST);
-
                 return new LayoutNode(
-                    $opening,
-                    new ClosingNode($opening->getChild('date'), count($records), $this->currentLineNr),
+                    $opening->setAttribute('layout_name', Layouts::LAYOUT_PAYMENT_REQUEST),
+                    new ClosingNode($this->currentLineNr, $opening->getChild('date'), count($records)),
                     ...$records
                 );
             });
@@ -1219,6 +1075,205 @@ class Grammar
         return $_success;
     }
 
+    protected function parseR_REQ_TRANSACTION()
+    {
+        $_position = $this->position;
+
+        if (isset($this->cache['R_REQ_TRANSACTION'][$_position])) {
+            $_success = $this->cache['R_REQ_TRANSACTION'][$_position]['success'];
+            $this->position = $this->cache['R_REQ_TRANSACTION'][$_position]['position'];
+            $this->value = $this->cache['R_REQ_TRANSACTION'][$_position]['value'];
+
+            return $_success;
+        }
+
+        $_value36 = array();
+
+        $_position32 = $this->position;
+        $_cut33 = $this->cut;
+
+        $this->cut = false;
+        if (substr($this->string, $this->position, strlen('82')) === '82') {
+            $_success = true;
+            $this->value = substr($this->string, $this->position, strlen('82'));
+            $this->position += strlen('82');
+        } else {
+            $_success = false;
+
+            $this->report($this->position, '\'82\'');
+        }
+
+        if (!$_success && !$this->cut) {
+            $this->position = $_position32;
+
+            if (substr($this->string, $this->position, strlen('32')) === '32') {
+                $_success = true;
+                $this->value = substr($this->string, $this->position, strlen('32'));
+                $this->position += strlen('32');
+            } else {
+                $_success = false;
+
+                $this->report($this->position, '\'32\'');
+            }
+        }
+
+        $this->cut = $_cut33;
+
+        if ($_success) {
+            $tc = $this->value;
+        }
+
+        if ($_success) {
+            $_value36[] = $this->value;
+
+            $_position34 = $this->position;
+            $_cut35 = $this->cut;
+
+            $this->cut = false;
+            $_success = $this->parseIMMEDIATE_DATE();
+
+            if (!$_success && !$this->cut) {
+                $this->position = $_position34;
+
+                $_success = $this->parseDATE();
+            }
+
+            $this->cut = $_cut35;
+
+            if ($_success) {
+                $date = $this->value;
+            }
+        }
+
+        if ($_success) {
+            $_value36[] = $this->value;
+
+            $_success = $this->parseINTERVAL();
+
+            if ($_success) {
+                $interval = $this->value;
+            }
+        }
+
+        if ($_success) {
+            $_value36[] = $this->value;
+
+            $_success = $this->parseREPEATS();
+
+            if ($_success) {
+                $repeats = $this->value;
+            }
+        }
+
+        if ($_success) {
+            $_value36[] = $this->value;
+
+            $_success = $this->parseVOID();
+
+            if ($_success) {
+                $void = $this->value;
+            }
+        }
+
+        if ($_success) {
+            $_value36[] = $this->value;
+
+            $_success = $this->parsePAYER_NR();
+
+            if ($_success) {
+                $payerNr = $this->value;
+            }
+        }
+
+        if ($_success) {
+            $_value36[] = $this->value;
+
+            $_success = $this->parseAMOUNT();
+
+            if ($_success) {
+                $amount = $this->value;
+            }
+        }
+
+        if ($_success) {
+            $_value36[] = $this->value;
+
+            $_success = $this->parseBANKGIRO();
+
+            if ($_success) {
+                $payeeBg = $this->value;
+            }
+        }
+
+        if ($_success) {
+            $_value36[] = $this->value;
+
+            $_success = $this->parseTEXT16();
+
+            if ($_success) {
+                $ref = $this->value;
+            }
+        }
+
+        if ($_success) {
+            $_value36[] = $this->value;
+
+            $_success = $this->parseEOR();
+
+            if ($_success) {
+                $end = $this->value;
+            }
+        }
+
+        if ($_success) {
+            $_value36[] = $this->value;
+
+            $this->value = $_value36;
+        }
+
+        if ($_success) {
+            $this->value = call_user_func(function () use (&$tc, &$date, &$interval, &$repeats, &$void, &$payerNr, &$amount, &$payeeBg, &$ref, &$end) {
+                // TODO processor som kontrollerar att periodkod inte används vid GENAST (se dokument)
+                // TODO processor som kontrollerar att interval=0 paras med no repeats (se dokument)
+
+                // TODO fortsätt med nästa argument...
+                    // nästa är betalningsmottagarens bankgironummer, passa på att göra överallt:
+                        //Där bankgiro är payee borde jag byta namn på attribute till payee_bankgiro !!
+                        //payee_bgc_customer_nr ??
+
+                // TODO SpaceNode krävs för att vi ska kunna skriva ut mellanslag...      [KLAR]
+                // TODO processor som kontrollerar att SpaceNode innehåller ett space...
+
+                // TODO ska jag skapa abstract Tree\RecordNode? Att använda exempelvis i LayoutNode...
+                    // Ja, kan även implementera ett visst antal space på slutet på något generellt sätt...
+                    // EOR kan returnera alla space den hittar i slutet av sträng... (Har jag börjat pilla på...)
+
+
+                // DESSA 2 kan jag göra först, enkla och påverkar inte någonting annat...
+                // TODO flytta alla Request nodes till Tree\Request
+                    // passa på att byta namn på alla också...
+                    // gäller även response...
+                    // passa även på att fixa så att alla ärver RecordNode.....
+
+                return $tc == '82'
+                    ? new Request\IncomingTransactionRequestNode($this->currentLineNr, $date, $interval, $repeats, $void, $payerNr, $amount, $payeeBg, $ref, $end)
+                    : new Request\OutgoingTransactionRequestNode($this->currentLineNr, $date, $interval, $repeats, $void, $payerNr, $amount, $payeeBg, $ref, $end);
+            });
+        }
+
+        $this->cache['R_REQ_TRANSACTION'][$_position] = array(
+            'success' => $_success,
+            'position' => $this->position,
+            'value' => $this->value
+        );
+
+        if (!$_success) {
+            $this->report($_position, 'R_REQ_TRANSACTION');
+        }
+
+        return $_success;
+    }
+
     protected function parseL_REQ_AMENDMENT()
     {
         $_position = $this->position;
@@ -1231,7 +1286,7 @@ class Grammar
             return $_success;
         }
 
-        $_value34 = array();
+        $_value40 = array();
 
         $_success = $this->parseR_REQ_OPENING();
 
@@ -1240,50 +1295,50 @@ class Grammar
         }
 
         if ($_success) {
-            $_value34[] = $this->value;
+            $_value40[] = $this->value;
 
-            if (substr($this->string, $this->position, strlen('')) === '') {
+            if (substr($this->string, $this->position, strlen('TODO')) === 'TODO') {
                 $_success = true;
-                $this->value = substr($this->string, $this->position, strlen(''));
-                $this->position += strlen('');
+                $this->value = substr($this->string, $this->position, strlen('TODO'));
+                $this->position += strlen('TODO');
             } else {
                 $_success = false;
 
-                $this->report($this->position, '\'\'');
+                $this->report($this->position, '\'TODO\'');
             }
 
             if ($_success) {
-                $_value32 = array($this->value);
-                $_cut33 = $this->cut;
+                $_value38 = array($this->value);
+                $_cut39 = $this->cut;
 
                 while (true) {
-                    $_position31 = $this->position;
+                    $_position37 = $this->position;
 
                     $this->cut = false;
-                    if (substr($this->string, $this->position, strlen('')) === '') {
+                    if (substr($this->string, $this->position, strlen('TODO')) === 'TODO') {
                         $_success = true;
-                        $this->value = substr($this->string, $this->position, strlen(''));
-                        $this->position += strlen('');
+                        $this->value = substr($this->string, $this->position, strlen('TODO'));
+                        $this->position += strlen('TODO');
                     } else {
                         $_success = false;
 
-                        $this->report($this->position, '\'\'');
+                        $this->report($this->position, '\'TODO\'');
                     }
 
                     if (!$_success) {
                         break;
                     }
 
-                    $_value32[] = $this->value;
+                    $_value38[] = $this->value;
                 }
 
                 if (!$this->cut) {
                     $_success = true;
-                    $this->position = $_position31;
-                    $this->value = $_value32;
+                    $this->position = $_position37;
+                    $this->value = $_value38;
                 }
 
-                $this->cut = $_cut33;
+                $this->cut = $_cut39;
             }
 
             if ($_success) {
@@ -1292,18 +1347,17 @@ class Grammar
         }
 
         if ($_success) {
-            $_value34[] = $this->value;
+            $_value40[] = $this->value;
 
-            $this->value = $_value34;
+            $this->value = $_value40;
         }
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$opening, &$records) {
-                $opening->setAttribute('layout_name', Layouts::LAYOUT_AMENDMENT_REQUEST);
-
+                // TODO this is just a stub...
                 return new LayoutNode(
-                    $opening,
-                    new ClosingNode($opening->getChild('date'), count($records), $this->currentLineNr),
+                    $opening->setAttribute('layout_name', Layouts::LAYOUT_AMENDMENT_REQUEST),
+                    new ClosingNode($this->currentLineNr, $opening->getChild('date'), count($records)),
                     ...$records
                 );
             });
@@ -1334,34 +1388,34 @@ class Grammar
             return $_success;
         }
 
-        $_value40 = array();
+        $_value46 = array();
 
-        $_position35 = $this->position;
-        $_cut36 = $this->cut;
+        $_position41 = $this->position;
+        $_cut42 = $this->cut;
 
         $this->cut = false;
         $_success = $this->parseR_GENERIC_OPENING();
 
         if (!$_success && !$this->cut) {
-            $this->position = $_position35;
+            $this->position = $_position41;
 
             $_success = $this->parseR_RESP_MANDATE_OPENING_OLD();
         }
 
-        $this->cut = $_cut36;
+        $this->cut = $_cut42;
 
         if ($_success) {
             $opening = $this->value;
         }
 
         if ($_success) {
-            $_value40[] = $this->value;
+            $_value46[] = $this->value;
 
-            $_value38 = array();
-            $_cut39 = $this->cut;
+            $_value44 = array();
+            $_cut45 = $this->cut;
 
             while (true) {
-                $_position37 = $this->position;
+                $_position43 = $this->position;
 
                 $this->cut = false;
                 $_success = $this->parseR_RESP_MANDATE();
@@ -1370,16 +1424,16 @@ class Grammar
                     break;
                 }
 
-                $_value38[] = $this->value;
+                $_value44[] = $this->value;
             }
 
             if (!$this->cut) {
                 $_success = true;
-                $this->position = $_position37;
-                $this->value = $_value38;
+                $this->position = $_position43;
+                $this->value = $_value44;
             }
 
-            $this->cut = $_cut39;
+            $this->cut = $_cut45;
 
             if ($_success) {
                 $mandates = $this->value;
@@ -1387,7 +1441,7 @@ class Grammar
         }
 
         if ($_success) {
-            $_value40[] = $this->value;
+            $_value46[] = $this->value;
 
             $_success = $this->parseR_RESP_MANDATE_CLOSING();
 
@@ -1397,9 +1451,9 @@ class Grammar
         }
 
         if ($_success) {
-            $_value40[] = $this->value;
+            $_value46[] = $this->value;
 
-            $this->value = $_value40;
+            $this->value = $_value46;
         }
 
         if ($_success) {
@@ -1433,7 +1487,7 @@ class Grammar
             return $_success;
         }
 
-        $_value41 = array();
+        $_value47 = array();
 
         if (substr($this->string, $this->position, strlen('01')) === '01') {
             $_success = true;
@@ -1446,7 +1500,7 @@ class Grammar
         }
 
         if ($_success) {
-            $_value41[] = $this->value;
+            $_value47[] = $this->value;
 
             $_success = $this->parseDATE();
 
@@ -1456,13 +1510,13 @@ class Grammar
         }
 
         if ($_success) {
-            $_value41[] = $this->value;
+            $_value47[] = $this->value;
 
             $_success = $this->parseBGC_CLEARING();
         }
 
         if ($_success) {
-            $_value41[] = $this->value;
+            $_value47[] = $this->value;
 
             $_success = $this->parseBANKGIRO();
 
@@ -1472,7 +1526,7 @@ class Grammar
         }
 
         if ($_success) {
-            $_value41[] = $this->value;
+            $_value47[] = $this->value;
 
             if (substr($this->string, $this->position, strlen('AG-MEDAVI')) === 'AG-MEDAVI') {
                 $_success = true;
@@ -1486,25 +1540,25 @@ class Grammar
         }
 
         if ($_success) {
-            $_value41[] = $this->value;
+            $_value47[] = $this->value;
 
             $_success = $this->parseEOR();
         }
 
         if ($_success) {
-            $_value41[] = $this->value;
+            $_value47[] = $this->value;
 
-            $this->value = $_value41;
+            $this->value = $_value47;
         }
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$bg) {
                 return new OpeningNode(
+                    $this->currentLineNr,
                     'AG-MEDAVI',
                     $date,
                     new BgcCustomerNumberNode($this->currentLineNr, ''),
-                    $bg,
-                    $this->currentLineNr
+                    $bg
                 );
             });
         }
@@ -1534,7 +1588,7 @@ class Grammar
             return $_success;
         }
 
-        $_value50 = array();
+        $_value54 = array();
 
         if (substr($this->string, $this->position, strlen('73')) === '73') {
             $_success = true;
@@ -1547,7 +1601,7 @@ class Grammar
         }
 
         if ($_success) {
-            $_value50[] = $this->value;
+            $_value54[] = $this->value;
 
             $_success = $this->parseBANKGIRO();
 
@@ -1557,7 +1611,7 @@ class Grammar
         }
 
         if ($_success) {
-            $_value50[] = $this->value;
+            $_value54[] = $this->value;
 
             $_success = $this->parsePAYER_NR();
 
@@ -1567,43 +1621,17 @@ class Grammar
         }
 
         if ($_success) {
-            $_value50[] = $this->value;
+            $_value54[] = $this->value;
 
-            $_position43 = $this->position;
-
-            $_value42 = array();
-
-            $_success = $this->parseA10();
+            $_success = $this->parseACCOUNT();
 
             if ($_success) {
-                $_value42[] = $this->value;
-
-                $_success = $this->parseA5();
-            }
-
-            if ($_success) {
-                $_value42[] = $this->value;
-
-                $_success = $this->parseA();
-            }
-
-            if ($_success) {
-                $_value42[] = $this->value;
-
-                $this->value = $_value42;
-            }
-
-            if ($_success) {
-                $this->value = strval(substr($this->string, $_position43, $this->position - $_position43));
-            }
-
-            if ($_success) {
-                $accountNr = $this->value;
+                $account = $this->value;
             }
         }
 
         if ($_success) {
-            $_value50[] = $this->value;
+            $_value54[] = $this->value;
 
             $_success = $this->parseID();
 
@@ -1613,34 +1641,34 @@ class Grammar
         }
 
         if ($_success) {
-            $_value50[] = $this->value;
+            $_value54[] = $this->value;
 
             $_success = $this->parseA5();
         }
 
         if ($_success) {
-            $_value50[] = $this->value;
+            $_value54[] = $this->value;
 
-            $_position45 = $this->position;
+            $_position49 = $this->position;
 
-            $_value44 = array();
+            $_value48 = array();
 
             $_success = $this->parseN();
 
             if ($_success) {
-                $_value44[] = $this->value;
+                $_value48[] = $this->value;
 
                 $_success = $this->parseN();
             }
 
             if ($_success) {
-                $_value44[] = $this->value;
+                $_value48[] = $this->value;
 
-                $this->value = $_value44;
+                $this->value = $_value48;
             }
 
             if ($_success) {
-                $this->value = strval(substr($this->string, $_position45, $this->position - $_position45));
+                $this->value = strval(substr($this->string, $_position49, $this->position - $_position49));
             }
 
             if ($_success) {
@@ -1649,28 +1677,28 @@ class Grammar
         }
 
         if ($_success) {
-            $_value50[] = $this->value;
+            $_value54[] = $this->value;
 
-            $_position47 = $this->position;
+            $_position51 = $this->position;
 
-            $_value46 = array();
+            $_value50 = array();
 
             $_success = $this->parseN();
 
             if ($_success) {
-                $_value46[] = $this->value;
+                $_value50[] = $this->value;
 
                 $_success = $this->parseN();
             }
 
             if ($_success) {
-                $_value46[] = $this->value;
+                $_value50[] = $this->value;
 
-                $this->value = $_value46;
+                $this->value = $_value50;
             }
 
             if ($_success) {
-                $this->value = strval(substr($this->string, $_position47, $this->position - $_position47));
+                $this->value = strval(substr($this->string, $_position51, $this->position - $_position51));
             }
 
             if ($_success) {
@@ -1679,21 +1707,21 @@ class Grammar
         }
 
         if ($_success) {
-            $_value50[] = $this->value;
+            $_value54[] = $this->value;
 
-            $_position48 = $this->position;
-            $_cut49 = $this->cut;
+            $_position52 = $this->position;
+            $_cut53 = $this->cut;
 
             $this->cut = false;
             $_success = $this->parseDATE();
 
             if (!$_success && !$this->cut) {
                 $_success = true;
-                $this->position = $_position48;
+                $this->position = $_position52;
                 $this->value = null;
             }
 
-            $this->cut = $_cut49;
+            $this->cut = $_cut53;
 
             if ($_success) {
                 $date = $this->value;
@@ -1701,31 +1729,32 @@ class Grammar
         }
 
         if ($_success) {
-            $_value50[] = $this->value;
+            $_value54[] = $this->value;
 
             $_success = $this->parseEOR();
         }
 
         if ($_success) {
-            $_value50[] = $this->value;
+            $_value54[] = $this->value;
 
-            $this->value = $_value50;
+            $this->value = $_value54;
         }
 
         if ($_success) {
-            $this->value = call_user_func(function () use (&$bg, &$payerNr, &$accountNr, &$id, &$info, &$comment, &$date) {
-                // TODO fundera om jag kan dela upp denna i flera R_ så att jag kan använda ACCOUNT ...
-                $accountNr = trim(ltrim($accountNr, '0'));
+            $this->value = call_user_func(function () use (&$bg, &$payerNr, &$account, &$id, &$info, &$comment, &$date) {
+                $account = $account->getValue()
+                    ? $account
+                    : new Account\AccountNode($this->currentLineNr, $payerNr->getValue());
 
-                return new MandateResponseNode(
+                return new Response\MandateResponseNode(
+                    $this->currentLineNr,
                     $bg,
                     $payerNr,
-                    new AccountNode($this->currentLineNr, $accountNr ?: $payerNr->getValue()),
+                    $account,
                     $id,
                     new MessageNode($this->currentLineNr, "73.$info"),
                     new MessageNode($this->currentLineNr, "73.comment.$comment"),
-                    $date ?: new DateNode($this->currentLineNr, '@0'),
-                    $this->currentLineNr
+                    $date ?: new Date\DateNode($this->currentLineNr, '@0')
                 );
             });
         }
@@ -1755,7 +1784,7 @@ class Grammar
             return $_success;
         }
 
-        $_value53 = array();
+        $_value57 = array();
 
         if (substr($this->string, $this->position, strlen('09')) === '09') {
             $_success = true;
@@ -1768,7 +1797,7 @@ class Grammar
         }
 
         if ($_success) {
-            $_value53[] = $this->value;
+            $_value57[] = $this->value;
 
             $_success = $this->parseDATE();
 
@@ -1778,40 +1807,40 @@ class Grammar
         }
 
         if ($_success) {
-            $_value53[] = $this->value;
+            $_value57[] = $this->value;
 
             $_success = $this->parseBGC_CLEARING();
         }
 
         if ($_success) {
-            $_value53[] = $this->value;
+            $_value57[] = $this->value;
 
-            $_position52 = $this->position;
+            $_position56 = $this->position;
 
-            $_value51 = array();
+            $_value55 = array();
 
             $_success = $this->parseN5();
 
             if ($_success) {
-                $_value51[] = $this->value;
+                $_value55[] = $this->value;
 
                 $_success = $this->parseN();
             }
 
             if ($_success) {
-                $_value51[] = $this->value;
+                $_value55[] = $this->value;
 
                 $_success = $this->parseN();
             }
 
             if ($_success) {
-                $_value51[] = $this->value;
+                $_value55[] = $this->value;
 
-                $this->value = $_value51;
+                $this->value = $_value55;
             }
 
             if ($_success) {
-                $this->value = strval(substr($this->string, $_position52, $this->position - $_position52));
+                $this->value = strval(substr($this->string, $_position56, $this->position - $_position56));
             }
 
             if ($_success) {
@@ -1820,20 +1849,20 @@ class Grammar
         }
 
         if ($_success) {
-            $_value53[] = $this->value;
+            $_value57[] = $this->value;
 
             $_success = $this->parseEOR();
         }
 
         if ($_success) {
-            $_value53[] = $this->value;
+            $_value57[] = $this->value;
 
-            $this->value = $_value53;
+            $this->value = $_value57;
         }
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$nrOfPosts) {
-                return new ClosingNode($date, intval($nrOfPosts), $this->currentLineNr);
+                return new ClosingNode($this->currentLineNr, $date, intval($nrOfPosts));
             });
         }
 
@@ -1862,32 +1891,32 @@ class Grammar
             return $_success;
         }
 
-        $_position55 = $this->position;
+        $_position59 = $this->position;
 
-        $_value54 = array();
+        $_value58 = array();
 
-        $_success = $this->parseN10();
+        $_success = $this->parseA10();
 
         if ($_success) {
-            $_value54[] = $this->value;
+            $_value58[] = $this->value;
 
-            $_success = $this->parseN5();
+            $_success = $this->parseA5();
         }
 
         if ($_success) {
-            $_value54[] = $this->value;
+            $_value58[] = $this->value;
 
-            $_success = $this->parseN();
+            $_success = $this->parseA();
         }
 
         if ($_success) {
-            $_value54[] = $this->value;
+            $_value58[] = $this->value;
 
-            $this->value = $_value54;
+            $this->value = $_value58;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position55, $this->position - $_position55));
+            $this->value = strval(substr($this->string, $_position59, $this->position - $_position59));
         }
 
         if ($_success) {
@@ -1896,7 +1925,7 @@ class Grammar
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$number) {
-                return new AccountNode($this->currentLineNr, ltrim($number, '0'));
+                return new Account\AccountNode($this->currentLineNr, trim(ltrim($number, '0')));
             });
         }
 
@@ -1908,6 +1937,69 @@ class Grammar
 
         if (!$_success) {
             $this->report($_position, 'ACCOUNT');
+        }
+
+        return $_success;
+    }
+
+    protected function parseAMOUNT()
+    {
+        $_position = $this->position;
+
+        if (isset($this->cache['AMOUNT'][$_position])) {
+            $_success = $this->cache['AMOUNT'][$_position]['success'];
+            $this->position = $this->cache['AMOUNT'][$_position]['position'];
+            $this->value = $this->cache['AMOUNT'][$_position]['value'];
+
+            return $_success;
+        }
+
+        $_position61 = $this->position;
+
+        $_value60 = array();
+
+        $_success = $this->parseA10();
+
+        if ($_success) {
+            $_value60[] = $this->value;
+
+            $_success = $this->parseA();
+        }
+
+        if ($_success) {
+            $_value60[] = $this->value;
+
+            $_success = $this->parseA();
+        }
+
+        if ($_success) {
+            $_value60[] = $this->value;
+
+            $this->value = $_value60;
+        }
+
+        if ($_success) {
+            $this->value = strval(substr($this->string, $_position61, $this->position - $_position61));
+        }
+
+        if ($_success) {
+            $amount = $this->value;
+        }
+
+        if ($_success) {
+            $this->value = call_user_func(function () use (&$amount) {
+                return new AmountNode($this->currentLineNr, trim(ltrim($amount, '0')));
+            });
+        }
+
+        $this->cache['AMOUNT'][$_position] = array(
+            'success' => $_success,
+            'position' => $this->position,
+            'value' => $this->value
+        );
+
+        if (!$_success) {
+            $this->report($_position, 'AMOUNT');
         }
 
         return $_success;
@@ -1925,7 +2017,7 @@ class Grammar
             return $_success;
         }
 
-        $_success = $this->parseN10();
+        $_success = $this->parseA10();
 
         if ($_success) {
             $number = $this->value;
@@ -1933,7 +2025,7 @@ class Grammar
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$number) {
-                return new BankgiroNode($this->currentLineNr, ltrim($number, '0'));
+                return new Account\BankgiroNode($this->currentLineNr, trim(ltrim($number, '0')));
             });
         }
 
@@ -1997,26 +2089,26 @@ class Grammar
             return $_success;
         }
 
-        $_position57 = $this->position;
+        $_position63 = $this->position;
 
-        $_value56 = array();
+        $_value62 = array();
 
-        $_success = $this->parseN5();
+        $_success = $this->parseA5();
 
         if ($_success) {
-            $_value56[] = $this->value;
+            $_value62[] = $this->value;
 
-            $_success = $this->parseN();
+            $_success = $this->parseA();
         }
 
         if ($_success) {
-            $_value56[] = $this->value;
+            $_value62[] = $this->value;
 
-            $this->value = $_value56;
+            $this->value = $_value62;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position57, $this->position - $_position57));
+            $this->value = strval(substr($this->string, $_position63, $this->position - $_position63));
         }
 
         if ($_success) {
@@ -2025,7 +2117,7 @@ class Grammar
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$nr) {
-                return new BgcCustomerNumberNode($this->currentLineNr, ltrim($nr, '0'));
+                return new BgcCustomerNumberNode($this->currentLineNr, trim(ltrim($nr, '0')));
             });
         }
 
@@ -2054,38 +2146,38 @@ class Grammar
             return $_success;
         }
 
-        $_position59 = $this->position;
+        $_position65 = $this->position;
 
-        $_value58 = array();
+        $_value64 = array();
 
-        $_success = $this->parseN5();
+        $_success = $this->parseA5();
 
         if ($_success) {
-            $_value58[] = $this->value;
+            $_value64[] = $this->value;
 
-            $_success = $this->parseN();
+            $_success = $this->parseA();
         }
 
         if ($_success) {
-            $_value58[] = $this->value;
+            $_value64[] = $this->value;
 
-            $_success = $this->parseN();
+            $_success = $this->parseA();
         }
 
         if ($_success) {
-            $_value58[] = $this->value;
+            $_value64[] = $this->value;
 
-            $_success = $this->parseN();
+            $_success = $this->parseA();
         }
 
         if ($_success) {
-            $_value58[] = $this->value;
+            $_value64[] = $this->value;
 
-            $this->value = $_value58;
+            $this->value = $_value64;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position59, $this->position - $_position59));
+            $this->value = strval(substr($this->string, $_position65, $this->position - $_position65));
         }
 
         if ($_success) {
@@ -2094,7 +2186,7 @@ class Grammar
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date) {
-                return new DateNode($this->currentLineNr, $date);
+                return new Date\DateNode($this->currentLineNr, trim($date));
             });
         }
 
@@ -2106,6 +2198,67 @@ class Grammar
 
         if (!$_success) {
             $this->report($_position, 'DATE');
+        }
+
+        return $_success;
+    }
+
+    protected function parseIMMEDIATE_DATE()
+    {
+        $_position = $this->position;
+
+        if (isset($this->cache['IMMEDIATE_DATE'][$_position])) {
+            $_success = $this->cache['IMMEDIATE_DATE'][$_position]['success'];
+            $this->position = $this->cache['IMMEDIATE_DATE'][$_position]['position'];
+            $this->value = $this->cache['IMMEDIATE_DATE'][$_position]['value'];
+
+            return $_success;
+        }
+
+        $_value66 = array();
+
+        if (substr($this->string, $this->position, strlen('GENAST')) === 'GENAST') {
+            $_success = true;
+            $this->value = substr($this->string, $this->position, strlen('GENAST'));
+            $this->position += strlen('GENAST');
+        } else {
+            $_success = false;
+
+            $this->report($this->position, '\'GENAST\'');
+        }
+
+        if ($_success) {
+            $_value66[] = $this->value;
+
+            $_success = $this->parseS();
+        }
+
+        if ($_success) {
+            $_value66[] = $this->value;
+
+            $_success = $this->parseS();
+        }
+
+        if ($_success) {
+            $_value66[] = $this->value;
+
+            $this->value = $_value66;
+        }
+
+        if ($_success) {
+            $this->value = call_user_func(function () {
+                return new Date\ImmediateDateNode($this->currentLineNr);
+            });
+        }
+
+        $this->cache['IMMEDIATE_DATE'][$_position] = array(
+            'success' => $_success,
+            'position' => $this->position,
+            'value' => $this->value
+        );
+
+        if (!$_success) {
+            $this->report($_position, 'IMMEDIATE_DATE');
         }
 
         return $_success;
@@ -2123,28 +2276,28 @@ class Grammar
             return $_success;
         }
 
-        $_value62 = array();
+        $_value69 = array();
 
-        $_position61 = $this->position;
+        $_position68 = $this->position;
 
-        $_value60 = array();
+        $_value67 = array();
 
         $_success = $this->parseA();
 
         if ($_success) {
-            $_value60[] = $this->value;
+            $_value67[] = $this->value;
 
             $_success = $this->parseA();
         }
 
         if ($_success) {
-            $_value60[] = $this->value;
+            $_value67[] = $this->value;
 
-            $this->value = $_value60;
+            $this->value = $_value67;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position61, $this->position - $_position61));
+            $this->value = strval(substr($this->string, $_position68, $this->position - $_position68));
         }
 
         if ($_success) {
@@ -2152,7 +2305,7 @@ class Grammar
         }
 
         if ($_success) {
-            $_value62[] = $this->value;
+            $_value69[] = $this->value;
 
             $_success = $this->parseA10();
 
@@ -2162,16 +2315,16 @@ class Grammar
         }
 
         if ($_success) {
-            $_value62[] = $this->value;
+            $_value69[] = $this->value;
 
-            $this->value = $_value62;
+            $this->value = $_value69;
         }
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$century, &$number) {
                 return in_array($century, ['00', '99'])
-                    ? new OrganizationIdNode($this->currentLineNr, $number)
-                    : new PersonalIdNode($this->currentLineNr, $century.$number);
+                    ? new Id\OrganizationIdNode($this->currentLineNr, trim($number))
+                    : new Id\PersonalIdNode($this->currentLineNr, trim($century.$number));
             });
         }
 
@@ -2183,6 +2336,54 @@ class Grammar
 
         if (!$_success) {
             $this->report($_position, 'ID');
+        }
+
+        return $_success;
+    }
+
+    protected function parseINTERVAL()
+    {
+        $_position = $this->position;
+
+        if (isset($this->cache['INTERVAL'][$_position])) {
+            $_success = $this->cache['INTERVAL'][$_position]['success'];
+            $this->position = $this->cache['INTERVAL'][$_position]['position'];
+            $this->value = $this->cache['INTERVAL'][$_position]['value'];
+
+            return $_success;
+        }
+
+        $_success = $this->parseA();
+
+        if ($_success) {
+            $interval = $this->value;
+        }
+
+        if ($_success) {
+            $this->value = call_user_func(function () use (&$interval) {
+                switch ($interval) {
+                    case '0': return new Interval\IntervalOnceNode;
+                    case '1': return new Interval\IntervalMonthlyOnDateNode;
+                    case '2': return new Interval\IntervalQuarterlyOnDateNode;
+                    case '3': return new Interval\IntervalSemiannuallyOnDateNode;
+                    case '4': return new Interval\IntervalAnnuallyOnDateNode;
+                    case '5': return new Interval\IntervalMonthlyOnLastCalendarDayNode;
+                    case '6': return new Interval\IntervalQuarterlyOnLastCalendarDayNode;
+                    case '7': return new Interval\IntervalSemiannuallyOnLastCalendarDayNode;
+                    case '8': return new Interval\IntervalAnnuallyOnLastCalendarDayNode;
+                    default: throw new ParserException("Invalid interval identifier $interval");
+                }
+            });
+        }
+
+        $this->cache['INTERVAL'][$_position] = array(
+            'success' => $_success,
+            'position' => $this->position,
+            'value' => $this->value
+        );
+
+        if (!$_success) {
+            $this->report($_position, 'INTERVAL');
         }
 
         return $_success;
@@ -2200,32 +2401,32 @@ class Grammar
             return $_success;
         }
 
-        $_position64 = $this->position;
+        $_position71 = $this->position;
 
-        $_value63 = array();
+        $_value70 = array();
 
-        $_success = $this->parseN10();
+        $_success = $this->parseA10();
 
         if ($_success) {
-            $_value63[] = $this->value;
+            $_value70[] = $this->value;
 
-            $_success = $this->parseN5();
+            $_success = $this->parseA5();
         }
 
         if ($_success) {
-            $_value63[] = $this->value;
+            $_value70[] = $this->value;
 
-            $_success = $this->parseN();
+            $_success = $this->parseA();
         }
 
         if ($_success) {
-            $_value63[] = $this->value;
+            $_value70[] = $this->value;
 
-            $this->value = $_value63;
+            $this->value = $_value70;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position64, $this->position - $_position64));
+            $this->value = strval(substr($this->string, $_position71, $this->position - $_position71));
         }
 
         if ($_success) {
@@ -2234,7 +2435,7 @@ class Grammar
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$nr) {
-                return new PayerNumberNode($this->currentLineNr, ltrim($nr, '0'));
+                return new PayerNumberNode($this->currentLineNr, trim(ltrim($nr, '0')));
             });
         }
 
@@ -2246,6 +2447,75 @@ class Grammar
 
         if (!$_success) {
             $this->report($_position, 'PAYER_NR');
+        }
+
+        return $_success;
+    }
+
+    protected function parseREPEATS()
+    {
+        $_position = $this->position;
+
+        if (isset($this->cache['REPEATS'][$_position])) {
+            $_success = $this->cache['REPEATS'][$_position]['success'];
+            $this->position = $this->cache['REPEATS'][$_position]['position'];
+            $this->value = $this->cache['REPEATS'][$_position]['value'];
+
+            return $_success;
+        }
+
+        $_position73 = $this->position;
+
+        $_value72 = array();
+
+        $_success = $this->parseA();
+
+        if ($_success) {
+            $_value72[] = $this->value;
+
+            $_success = $this->parseA();
+        }
+
+        if ($_success) {
+            $_value72[] = $this->value;
+
+            $_success = $this->parseA();
+        }
+
+        if ($_success) {
+            $_value72[] = $this->value;
+
+            $this->value = $_value72;
+        }
+
+        if ($_success) {
+            $this->value = strval(substr($this->string, $_position73, $this->position - $_position73));
+        }
+
+        if ($_success) {
+            $repeats = $this->value;
+        }
+
+        if ($_success) {
+            $this->value = call_user_func(function () use (&$repeats) {
+                $repeats = trim(ltrim($repeats, '0'));
+
+                if ($repeats) {
+                    return new Repeats\RepeatsNode($this->currentLineNr, $repeats);
+                }
+
+                return new Repeats\RepeatsUnspecifiedNode($this->currentLineNr);
+            });
+        }
+
+        $this->cache['REPEATS'][$_position] = array(
+            'success' => $_success,
+            'position' => $this->position,
+            'value' => $this->value
+        );
+
+        if (!$_success) {
+            $this->report($_position, 'REPEATS');
         }
 
         return $_success;
@@ -2296,44 +2566,44 @@ class Grammar
             return $_success;
         }
 
-        $_position66 = $this->position;
+        $_position75 = $this->position;
 
-        $_value65 = array();
+        $_value74 = array();
 
         $_success = $this->parseA();
 
         if ($_success) {
-            $_value65[] = $this->value;
+            $_value74[] = $this->value;
 
             $_success = $this->parseA();
         }
 
         if ($_success) {
-            $_value65[] = $this->value;
+            $_value74[] = $this->value;
 
             $_success = $this->parseA();
         }
 
         if ($_success) {
-            $_value65[] = $this->value;
+            $_value74[] = $this->value;
 
             $_success = $this->parseA();
         }
 
         if ($_success) {
-            $_value65[] = $this->value;
+            $_value74[] = $this->value;
 
             $_success = $this->parseA();
         }
 
         if ($_success) {
-            $_value65[] = $this->value;
+            $_value74[] = $this->value;
 
-            $this->value = $_value65;
+            $this->value = $_value74;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position66, $this->position - $_position66));
+            $this->value = strval(substr($this->string, $_position75, $this->position - $_position75));
         }
 
         $this->cache['A5'][$_position] = array(
@@ -2361,26 +2631,26 @@ class Grammar
             return $_success;
         }
 
-        $_position68 = $this->position;
+        $_position77 = $this->position;
 
-        $_value67 = array();
+        $_value76 = array();
 
         $_success = $this->parseA5();
 
         if ($_success) {
-            $_value67[] = $this->value;
+            $_value76[] = $this->value;
 
             $_success = $this->parseA5();
         }
 
         if ($_success) {
-            $_value67[] = $this->value;
+            $_value76[] = $this->value;
 
-            $this->value = $_value67;
+            $this->value = $_value76;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position68, $this->position - $_position68));
+            $this->value = strval(substr($this->string, $_position77, $this->position - $_position77));
         }
 
         $this->cache['A10'][$_position] = array(
@@ -2408,26 +2678,26 @@ class Grammar
             return $_success;
         }
 
-        $_position70 = $this->position;
+        $_position79 = $this->position;
 
-        $_value69 = array();
+        $_value78 = array();
 
         $_success = $this->parseA10();
 
         if ($_success) {
-            $_value69[] = $this->value;
+            $_value78[] = $this->value;
 
             $_success = $this->parseA10();
         }
 
         if ($_success) {
-            $_value69[] = $this->value;
+            $_value78[] = $this->value;
 
-            $this->value = $_value69;
+            $this->value = $_value78;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position70, $this->position - $_position70));
+            $this->value = strval(substr($this->string, $_position79, $this->position - $_position79));
         }
 
         $this->cache['A20'][$_position] = array(
@@ -2438,53 +2708,6 @@ class Grammar
 
         if (!$_success) {
             $this->report($_position, 'A20');
-        }
-
-        return $_success;
-    }
-
-    protected function parseA40()
-    {
-        $_position = $this->position;
-
-        if (isset($this->cache['A40'][$_position])) {
-            $_success = $this->cache['A40'][$_position]['success'];
-            $this->position = $this->cache['A40'][$_position]['position'];
-            $this->value = $this->cache['A40'][$_position]['value'];
-
-            return $_success;
-        }
-
-        $_position72 = $this->position;
-
-        $_value71 = array();
-
-        $_success = $this->parseA20();
-
-        if ($_success) {
-            $_value71[] = $this->value;
-
-            $_success = $this->parseA20();
-        }
-
-        if ($_success) {
-            $_value71[] = $this->value;
-
-            $this->value = $_value71;
-        }
-
-        if ($_success) {
-            $this->value = strval(substr($this->string, $_position72, $this->position - $_position72));
-        }
-
-        $this->cache['A40'][$_position] = array(
-            'success' => $_success,
-            'position' => $this->position,
-            'value' => $this->value
-        );
-
-        if (!$_success) {
-            $this->report($_position, 'A40');
         }
 
         return $_success;
@@ -2535,44 +2758,44 @@ class Grammar
             return $_success;
         }
 
-        $_position74 = $this->position;
+        $_position81 = $this->position;
 
-        $_value73 = array();
+        $_value80 = array();
 
         $_success = $this->parseN();
 
         if ($_success) {
-            $_value73[] = $this->value;
+            $_value80[] = $this->value;
 
             $_success = $this->parseN();
         }
 
         if ($_success) {
-            $_value73[] = $this->value;
+            $_value80[] = $this->value;
 
             $_success = $this->parseN();
         }
 
         if ($_success) {
-            $_value73[] = $this->value;
+            $_value80[] = $this->value;
 
             $_success = $this->parseN();
         }
 
         if ($_success) {
-            $_value73[] = $this->value;
+            $_value80[] = $this->value;
 
             $_success = $this->parseN();
         }
 
         if ($_success) {
-            $_value73[] = $this->value;
+            $_value80[] = $this->value;
 
-            $this->value = $_value73;
+            $this->value = $_value80;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position74, $this->position - $_position74));
+            $this->value = strval(substr($this->string, $_position81, $this->position - $_position81));
         }
 
         $this->cache['N5'][$_position] = array(
@@ -2583,100 +2806,6 @@ class Grammar
 
         if (!$_success) {
             $this->report($_position, 'N5');
-        }
-
-        return $_success;
-    }
-
-    protected function parseN10()
-    {
-        $_position = $this->position;
-
-        if (isset($this->cache['N10'][$_position])) {
-            $_success = $this->cache['N10'][$_position]['success'];
-            $this->position = $this->cache['N10'][$_position]['position'];
-            $this->value = $this->cache['N10'][$_position]['value'];
-
-            return $_success;
-        }
-
-        $_position76 = $this->position;
-
-        $_value75 = array();
-
-        $_success = $this->parseN5();
-
-        if ($_success) {
-            $_value75[] = $this->value;
-
-            $_success = $this->parseN5();
-        }
-
-        if ($_success) {
-            $_value75[] = $this->value;
-
-            $this->value = $_value75;
-        }
-
-        if ($_success) {
-            $this->value = strval(substr($this->string, $_position76, $this->position - $_position76));
-        }
-
-        $this->cache['N10'][$_position] = array(
-            'success' => $_success,
-            'position' => $this->position,
-            'value' => $this->value
-        );
-
-        if (!$_success) {
-            $this->report($_position, 'N10');
-        }
-
-        return $_success;
-    }
-
-    protected function parseN20()
-    {
-        $_position = $this->position;
-
-        if (isset($this->cache['N20'][$_position])) {
-            $_success = $this->cache['N20'][$_position]['success'];
-            $this->position = $this->cache['N20'][$_position]['position'];
-            $this->value = $this->cache['N20'][$_position]['value'];
-
-            return $_success;
-        }
-
-        $_position78 = $this->position;
-
-        $_value77 = array();
-
-        $_success = $this->parseN10();
-
-        if ($_success) {
-            $_value77[] = $this->value;
-
-            $_success = $this->parseN10();
-        }
-
-        if ($_success) {
-            $_value77[] = $this->value;
-
-            $this->value = $_value77;
-        }
-
-        if ($_success) {
-            $this->value = strval(substr($this->string, $_position78, $this->position - $_position78));
-        }
-
-        $this->cache['N20'][$_position] = array(
-            'success' => $_success,
-            'position' => $this->position,
-            'value' => $this->value
-        );
-
-        if (!$_success) {
-            $this->report($_position, 'N20');
         }
 
         return $_success;
@@ -2717,71 +2846,6 @@ class Grammar
         return $_success;
     }
 
-    protected function parseS5()
-    {
-        $_position = $this->position;
-
-        if (isset($this->cache['S5'][$_position])) {
-            $_success = $this->cache['S5'][$_position]['success'];
-            $this->position = $this->cache['S5'][$_position]['position'];
-            $this->value = $this->cache['S5'][$_position]['value'];
-
-            return $_success;
-        }
-
-        $_position80 = $this->position;
-
-        $_value79 = array();
-
-        $_success = $this->parseS();
-
-        if ($_success) {
-            $_value79[] = $this->value;
-
-            $_success = $this->parseS();
-        }
-
-        if ($_success) {
-            $_value79[] = $this->value;
-
-            $_success = $this->parseS();
-        }
-
-        if ($_success) {
-            $_value79[] = $this->value;
-
-            $_success = $this->parseS();
-        }
-
-        if ($_success) {
-            $_value79[] = $this->value;
-
-            $_success = $this->parseS();
-        }
-
-        if ($_success) {
-            $_value79[] = $this->value;
-
-            $this->value = $_value79;
-        }
-
-        if ($_success) {
-            $this->value = strval(substr($this->string, $_position80, $this->position - $_position80));
-        }
-
-        $this->cache['S5'][$_position] = array(
-            'success' => $_success,
-            'position' => $this->position,
-            'value' => $this->value
-        );
-
-        if (!$_success) {
-            $this->report($_position, 'S5');
-        }
-
-        return $_success;
-    }
-
     protected function parseS10()
     {
         $_position = $this->position;
@@ -2794,26 +2858,74 @@ class Grammar
             return $_success;
         }
 
-        $_position82 = $this->position;
+        $_position83 = $this->position;
 
-        $_value81 = array();
+        $_value82 = array();
 
-        $_success = $this->parseS5();
+        $_success = $this->parseS();
 
         if ($_success) {
-            $_value81[] = $this->value;
+            $_value82[] = $this->value;
 
-            $_success = $this->parseS5();
+            $_success = $this->parseS();
         }
 
         if ($_success) {
-            $_value81[] = $this->value;
+            $_value82[] = $this->value;
 
-            $this->value = $_value81;
+            $_success = $this->parseS();
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position82, $this->position - $_position82));
+            $_value82[] = $this->value;
+
+            $_success = $this->parseS();
+        }
+
+        if ($_success) {
+            $_value82[] = $this->value;
+
+            $_success = $this->parseS();
+        }
+
+        if ($_success) {
+            $_value82[] = $this->value;
+
+            $_success = $this->parseS();
+        }
+
+        if ($_success) {
+            $_value82[] = $this->value;
+
+            $_success = $this->parseS();
+        }
+
+        if ($_success) {
+            $_value82[] = $this->value;
+
+            $_success = $this->parseS();
+        }
+
+        if ($_success) {
+            $_value82[] = $this->value;
+
+            $_success = $this->parseS();
+        }
+
+        if ($_success) {
+            $_value82[] = $this->value;
+
+            $_success = $this->parseS();
+        }
+
+        if ($_success) {
+            $_value82[] = $this->value;
+
+            $this->value = $_value82;
+        }
+
+        if ($_success) {
+            $this->value = strval(substr($this->string, $_position83, $this->position - $_position83));
         }
 
         $this->cache['S10'][$_position] = array(
@@ -2841,26 +2953,26 @@ class Grammar
             return $_success;
         }
 
-        $_position84 = $this->position;
+        $_position85 = $this->position;
 
-        $_value83 = array();
+        $_value84 = array();
 
         $_success = $this->parseS10();
 
         if ($_success) {
-            $_value83[] = $this->value;
+            $_value84[] = $this->value;
 
             $_success = $this->parseS10();
         }
 
         if ($_success) {
-            $_value83[] = $this->value;
+            $_value84[] = $this->value;
 
-            $this->value = $_value83;
+            $this->value = $_value84;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position84, $this->position - $_position84));
+            $this->value = strval(substr($this->string, $_position85, $this->position - $_position85));
         }
 
         $this->cache['S20'][$_position] = array(
@@ -2871,6 +2983,266 @@ class Grammar
 
         if (!$_success) {
             $this->report($_position, 'S20');
+        }
+
+        return $_success;
+    }
+
+    protected function parseVOID()
+    {
+        $_position = $this->position;
+
+        if (isset($this->cache['VOID'][$_position])) {
+            $_success = $this->cache['VOID'][$_position]['success'];
+            $this->position = $this->cache['VOID'][$_position]['position'];
+            $this->value = $this->cache['VOID'][$_position]['value'];
+
+            return $_success;
+        }
+
+        $_success = $this->parseA();
+
+        if ($_success) {
+            $chars = $this->value;
+        }
+
+        if ($_success) {
+            $this->value = call_user_func(function () use (&$chars) {
+                return new SpaceNode($this->currentLineNr, $chars);
+            });
+        }
+
+        $this->cache['VOID'][$_position] = array(
+            'success' => $_success,
+            'position' => $this->position,
+            'value' => $this->value
+        );
+
+        if (!$_success) {
+            $this->report($_position, 'VOID');
+        }
+
+        return $_success;
+    }
+
+    protected function parseVOID10()
+    {
+        $_position = $this->position;
+
+        if (isset($this->cache['VOID10'][$_position])) {
+            $_success = $this->cache['VOID10'][$_position]['success'];
+            $this->position = $this->cache['VOID10'][$_position]['position'];
+            $this->value = $this->cache['VOID10'][$_position]['value'];
+
+            return $_success;
+        }
+
+        $_success = $this->parseA10();
+
+        if ($_success) {
+            $chars = $this->value;
+        }
+
+        if ($_success) {
+            $this->value = call_user_func(function () use (&$chars) {
+                return new SpaceNode($this->currentLineNr, $chars);
+            });
+        }
+
+        $this->cache['VOID10'][$_position] = array(
+            'success' => $_success,
+            'position' => $this->position,
+            'value' => $this->value
+        );
+
+        if (!$_success) {
+            $this->report($_position, 'VOID10');
+        }
+
+        return $_success;
+    }
+
+    protected function parseVOID20()
+    {
+        $_position = $this->position;
+
+        if (isset($this->cache['VOID20'][$_position])) {
+            $_success = $this->cache['VOID20'][$_position]['success'];
+            $this->position = $this->cache['VOID20'][$_position]['position'];
+            $this->value = $this->cache['VOID20'][$_position]['value'];
+
+            return $_success;
+        }
+
+        $_success = $this->parseA20();
+
+        if ($_success) {
+            $chars = $this->value;
+        }
+
+        if ($_success) {
+            $this->value = call_user_func(function () use (&$chars) {
+                return new SpaceNode($this->currentLineNr, $chars);
+            });
+        }
+
+        $this->cache['VOID20'][$_position] = array(
+            'success' => $_success,
+            'position' => $this->position,
+            'value' => $this->value
+        );
+
+        if (!$_success) {
+            $this->report($_position, 'VOID20');
+        }
+
+        return $_success;
+    }
+
+    protected function parseTEXT16()
+    {
+        $_position = $this->position;
+
+        if (isset($this->cache['TEXT16'][$_position])) {
+            $_success = $this->cache['TEXT16'][$_position]['success'];
+            $this->position = $this->cache['TEXT16'][$_position]['position'];
+            $this->value = $this->cache['TEXT16'][$_position]['value'];
+
+            return $_success;
+        }
+
+        $_position87 = $this->position;
+
+        $_value86 = array();
+
+        $_success = $this->parseA10();
+
+        if ($_success) {
+            $_value86[] = $this->value;
+
+            $_success = $this->parseA5();
+        }
+
+        if ($_success) {
+            $_value86[] = $this->value;
+
+            $_success = $this->parseA();
+        }
+
+        if ($_success) {
+            $_value86[] = $this->value;
+
+            $this->value = $_value86;
+        }
+
+        if ($_success) {
+            $this->value = strval(substr($this->string, $_position87, $this->position - $_position87));
+        }
+
+        if ($_success) {
+            $text = $this->value;
+        }
+
+        if ($_success) {
+            $this->value = call_user_func(function () use (&$text) {
+                return new TextNode($this->currentLineNr, $text);
+            });
+        }
+
+        $this->cache['TEXT16'][$_position] = array(
+            'success' => $_success,
+            'position' => $this->position,
+            'value' => $this->value
+        );
+
+        if (!$_success) {
+            $this->report($_position, 'TEXT16');
+        }
+
+        return $_success;
+    }
+
+    protected function parseEOR()
+    {
+        $_position = $this->position;
+
+        if (isset($this->cache['EOR'][$_position])) {
+            $_success = $this->cache['EOR'][$_position]['success'];
+            $this->position = $this->cache['EOR'][$_position]['position'];
+            $this->value = $this->cache['EOR'][$_position]['value'];
+
+            return $_success;
+        }
+
+        $_value93 = array();
+
+        $_value89 = array();
+        $_cut90 = $this->cut;
+
+        while (true) {
+            $_position88 = $this->position;
+
+            $this->cut = false;
+            $_success = $this->parseVOID();
+
+            if (!$_success) {
+                break;
+            }
+
+            $_value89[] = $this->value;
+        }
+
+        if (!$this->cut) {
+            $_success = true;
+            $this->position = $_position88;
+            $this->value = $_value89;
+        }
+
+        $this->cut = $_cut90;
+
+        if ($_success) {
+            $end = $this->value;
+        }
+
+        if ($_success) {
+            $_value93[] = $this->value;
+
+            $_position91 = $this->position;
+            $_cut92 = $this->cut;
+
+            $this->cut = false;
+            $_success = $this->parseEOL();
+
+            if (!$_success && !$this->cut) {
+                $this->position = $_position91;
+
+                $_success = $this->parseEOF();
+            }
+
+            $this->cut = $_cut92;
+        }
+
+        if ($_success) {
+            $_value93[] = $this->value;
+
+            $this->value = $_value93;
+        }
+
+        if ($_success) {
+            $this->value = call_user_func(function () use (&$end) {
+                // TODO alla ställen där jag använder EOR ska dessa end voids fångas upp...
+                return $end;
+            });
+        }
+
+        $this->cache['EOR'][$_position] = array(
+            'success' => $_success,
+            'position' => $this->position,
+            'value' => $this->value
+        );
+
+        if (!$_success) {
+            $this->report($_position, "END_OF_RECORD");
         }
 
         return $_success;
@@ -2888,10 +3260,10 @@ class Grammar
             return $_success;
         }
 
-        $_value87 = array();
+        $_value96 = array();
 
-        $_position85 = $this->position;
-        $_cut86 = $this->cut;
+        $_position94 = $this->position;
+        $_cut95 = $this->cut;
 
         $this->cut = false;
         if (substr($this->string, $this->position, strlen("\r")) === "\r") {
@@ -2906,14 +3278,14 @@ class Grammar
 
         if (!$_success && !$this->cut) {
             $_success = true;
-            $this->position = $_position85;
+            $this->position = $_position94;
             $this->value = null;
         }
 
-        $this->cut = $_cut86;
+        $this->cut = $_cut95;
 
         if ($_success) {
-            $_value87[] = $this->value;
+            $_value96[] = $this->value;
 
             if (substr($this->string, $this->position, strlen("\n")) === "\n") {
                 $_success = true;
@@ -2927,9 +3299,9 @@ class Grammar
         }
 
         if ($_success) {
-            $_value87[] = $this->value;
+            $_value96[] = $this->value;
 
-            $this->value = $_value87;
+            $this->value = $_value96;
         }
 
         if ($_success) {
@@ -2963,8 +3335,8 @@ class Grammar
             return $_success;
         }
 
-        $_position88 = $this->position;
-        $_cut89 = $this->cut;
+        $_position97 = $this->position;
+        $_cut98 = $this->cut;
 
         $this->cut = false;
         if ($this->position < strlen($this->string)) {
@@ -2982,8 +3354,8 @@ class Grammar
             $_success = false;
         }
 
-        $this->position = $_position88;
-        $this->cut = $_cut89;
+        $this->position = $_position97;
+        $this->cut = $_cut98;
 
         $this->cache['EOF'][$_position] = array(
             'success' => $_success,
@@ -2993,81 +3365,6 @@ class Grammar
 
         if (!$_success) {
             $this->report($_position, "END_OF_FILE");
-        }
-
-        return $_success;
-    }
-
-    protected function parseEOR()
-    {
-        $_position = $this->position;
-
-        if (isset($this->cache['EOR'][$_position])) {
-            $_success = $this->cache['EOR'][$_position]['success'];
-            $this->position = $this->cache['EOR'][$_position]['position'];
-            $this->value = $this->cache['EOR'][$_position]['value'];
-
-            return $_success;
-        }
-
-        $_value95 = array();
-
-        $_value91 = array();
-        $_cut92 = $this->cut;
-
-        while (true) {
-            $_position90 = $this->position;
-
-            $this->cut = false;
-            $_success = $this->parseA();
-
-            if (!$_success) {
-                break;
-            }
-
-            $_value91[] = $this->value;
-        }
-
-        if (!$this->cut) {
-            $_success = true;
-            $this->position = $_position90;
-            $this->value = $_value91;
-        }
-
-        $this->cut = $_cut92;
-
-        if ($_success) {
-            $_value95[] = $this->value;
-
-            $_position93 = $this->position;
-            $_cut94 = $this->cut;
-
-            $this->cut = false;
-            $_success = $this->parseEOL();
-
-            if (!$_success && !$this->cut) {
-                $this->position = $_position93;
-
-                $_success = $this->parseEOF();
-            }
-
-            $this->cut = $_cut94;
-        }
-
-        if ($_success) {
-            $_value95[] = $this->value;
-
-            $this->value = $_value95;
-        }
-
-        $this->cache['EOR'][$_position] = array(
-            'success' => $_success,
-            'position' => $this->position,
-            'value' => $this->value
-        );
-
-        if (!$_success) {
-            $this->report($_position, "END_OF_RECORD");
         }
 
         return $_success;

@@ -100,9 +100,10 @@ class Node
      * @param string $name  Name of attribute
      * @param mixed  $value Value of attribute
      */
-    public function setAttribute(string $name, $value)
+    public function setAttribute(string $name, $value): self
     {
         $this->attributes[$name] = $value;
+        return $this;
     }
 
     /**
@@ -135,9 +136,10 @@ class Node
     /**
      * Set a child node
      */
-    public function setChild(string $name, Node $child)
+    public function setChild(string $name, Node $child): self
     {
         $this->children[$name] = $child;
+        return $this;
     }
 
     /**

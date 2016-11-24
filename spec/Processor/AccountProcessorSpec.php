@@ -5,8 +5,8 @@ declare(strict_types = 1);
 namespace spec\byrokrat\autogiro\Processor;
 
 use byrokrat\autogiro\Processor\AccountProcessor;
-use byrokrat\autogiro\Tree\AccountNode;
-use byrokrat\autogiro\Tree\BankgiroNode;
+use byrokrat\autogiro\Tree\Account\AccountNode;
+use byrokrat\autogiro\Tree\Account\BankgiroNode;
 use byrokrat\banking\AccountFactory;
 use byrokrat\banking\AccountNumber;
 use byrokrat\banking\Exception\InvalidAccountNumberException as BankingException;

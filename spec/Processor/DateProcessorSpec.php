@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace spec\byrokrat\autogiro\Processor;
 
 use byrokrat\autogiro\Processor\DateProcessor;
-use byrokrat\autogiro\Tree\DateNode;
+use byrokrat\autogiro\Tree\Date\DateNode;
 use PhpSpec\ObjectBehavior;
 
 class DateProcessorSpec extends ObjectBehavior

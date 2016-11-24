@@ -27,7 +27,7 @@ namespace byrokrat\autogiro\Tree;
  */
 class ClosingNode extends Node
 {
-    public function __construct(DateNode $date, int $numberOfPosts = 0, int $lineNr = 0)
+    public function __construct(int $lineNr, Date\DateNode $date, int $numberOfPosts = 0)
     {
         parent::__construct($lineNr);
         $this->setChild('date', $date);

@@ -8,7 +8,7 @@ use byrokrat\autogiro\Processor\FileProcessor;
 use byrokrat\autogiro\Tree\FileNode;
 use byrokrat\autogiro\Tree\LayoutNode;
 use byrokrat\autogiro\Tree\OpeningNode;
-use byrokrat\autogiro\Tree\BankgiroNode;
+use byrokrat\autogiro\Tree\Account\BankgiroNode;
 use byrokrat\autogiro\Tree\BgcCustomerNumberNode;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;

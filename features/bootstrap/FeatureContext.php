@@ -55,40 +55,16 @@ class FeatureContext implements Context, SnippetAcceptingContext
     }
 
     /**
-     * @Then I find :number mandate response nodes
+     * @Then I find :number :nodeType nodes
      */
-    public function iFindMandateResponseNodes($number)
+    public function iFindNodes($number, $nodeType)
     {
-        $count = 0;
-
         $enumerator = new Enumerator;
 
-        $enumerator->onMandateResponseNode(function () use (&$count) {
+        $count = 0;
+        $enumerator->on($nodeType, function () use (&$count) {
             $count++;
         });
-
-        $enumerator->enumerate($this->fileNode);
-
-        $this->assertCount((integer)$number, $count);
-    }
-
-    /**
-     * @Then I find :number mandate request nodes
-     */
-    public function iFindMandateRequestNodes($number)
-    {
-        $count = 0;
-        $counter = function () use (&$count) {
-            $count++;
-        };
-
-        $enumerator = new Enumerator;
-
-        $enumerator->onRequestMandateAcceptanceNode($counter);
-        $enumerator->onRequestMandateCreationNode($counter);
-        $enumerator->onRequestMandateDeletionNode($counter);
-        $enumerator->onRequestMandateRejectionNode($counter);
-        $enumerator->onRequestMandateUpdateNode($counter);
 
         $enumerator->enumerate($this->fileNode);
 

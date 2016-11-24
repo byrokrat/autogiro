@@ -36,19 +36,31 @@ class EnumeratorSpec extends ObjectBehavior
         $this->shouldThrow(LogicException::CLASS)->during('method_not_defined');
     }
 
-    function it_fails_on_non_callable()
+    function it_fails_on_missing_callable()
+    {
+        $this->shouldThrow(LogicException::CLASS)->duringOnNode();
+    }
+
+    function it_fails_on_non_callable_argument()
     {
         $this->shouldThrow(LogicException::CLASS)->duringOnNode('this-is-not-a-callable');
     }
 
-    function it_enumerates_the_base_node($parent, Callback $callback)
+    function it_can_enumerate_the_base_node($parent, Callback $callback)
+    {
+        $this->on('Parent', $callback);
+        $this->enumerate($parent);
+        $callback->__invoke($parent)->shouldHaveBeenCalled();
+    }
+
+    function it_can_enumerate_the_base_node_using_dynamic_definition($parent, Callback $callback)
     {
         $this->onParent($callback);
         $this->enumerate($parent);
         $callback->__invoke($parent)->shouldHaveBeenCalled();
     }
 
-    function it_enumerates_children($parent, $childA, $childB, $grandchild, Callback $callback)
+    function it_can_enumerate_children($parent, $childA, $childB, $grandchild, Callback $callback)
     {
         $this->onChild($callback);
         $this->enumerate($parent);

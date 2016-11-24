@@ -5,8 +5,8 @@ declare(strict_types = 1);
 namespace spec\byrokrat\autogiro\Processor;
 
 use byrokrat\autogiro\Processor\IdProcessor;
-use byrokrat\autogiro\Tree\OrganizationIdNode;
-use byrokrat\autogiro\Tree\PersonalIdNode;
+use byrokrat\autogiro\Tree\Id\OrganizationIdNode;
+use byrokrat\autogiro\Tree\Id\PersonalIdNode;
 use byrokrat\id\OrganizationIdFactory;
 use byrokrat\id\PersonalIdFactory;
 use byrokrat\id\Id;

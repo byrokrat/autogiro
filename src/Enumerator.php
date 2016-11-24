@@ -40,8 +40,8 @@ class Enumerator
      *
      * Usage: $enumerator->onNodeType($callback);
      *
-     * @param string $name Name of node type to capure prefixed with on (eg onNodeType)
-     * @param array  $args First argument must be a callable to be called with each capured node
+     * @param string $name Node type to capure prefixed with on (eg onNodeType)
+     * @param array  $args First argument must be a capure callback
      *
      * @throws LogicException If node type or callback is not specified
      */
@@ -51,11 +51,19 @@ class Enumerator
             throw new LogicException("Unknown method $name");
         }
 
-        if (!is_callable($args[0])) {
+        if (!isset($args[0]) || !is_callable($args[0])) {
             throw new LogicException('Enumeration callback must be callable');
         }
 
-        $this->callbacks[substr($name, 2)] = $args[0];
+        $this->on(substr($name, 2), $args[0]);
+    }
+
+    /**
+     * Register a callback for node type
+     */
+    public function on(string $nodeType, callable $callback)
+    {
+        $this->callbacks[$nodeType] = $callback;
     }
 
     /**

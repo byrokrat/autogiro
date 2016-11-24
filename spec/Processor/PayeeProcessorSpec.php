@@ -7,7 +7,7 @@ namespace spec\byrokrat\autogiro\Processor;
 use byrokrat\autogiro\Processor\PayeeProcessor;
 use byrokrat\autogiro\Tree\OpeningNode;
 use byrokrat\autogiro\Tree\FileNode;
-use byrokrat\autogiro\Tree\BankgiroNode;
+use byrokrat\autogiro\Tree\Account\BankgiroNode;
 use byrokrat\autogiro\Tree\BgcCustomerNumberNode;
 use PhpSpec\ObjectBehavior;
 
