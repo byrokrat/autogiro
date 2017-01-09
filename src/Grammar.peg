@@ -27,7 +27,7 @@ use byrokrat\autogiro\Tree\PayeeBgcNumberNode;
 use byrokrat\autogiro\Tree\Date;
 use byrokrat\autogiro\Tree\FileNode;
 use byrokrat\autogiro\Tree\Id;
-use byrokrat\autogiro\Tree\Interval;
+use byrokrat\autogiro\Tree\IntervalNode;
 use byrokrat\autogiro\Tree\LayoutNode;
 use byrokrat\autogiro\Tree\MessageNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
@@ -35,7 +35,7 @@ use byrokrat\autogiro\Tree\Record\ClosingRecordNode;
 use byrokrat\autogiro\Tree\Record\OpeningRecordNode;
 use byrokrat\autogiro\Tree\Record\Request;
 use byrokrat\autogiro\Tree\Record\Response;
-use byrokrat\autogiro\Tree\Repeats;
+use byrokrat\autogiro\Tree\RepeatsNode;
 use byrokrat\autogiro\Tree\TextNode;
 
 grammar Grammar
@@ -109,7 +109,7 @@ grammar Grammar
     };
 
     R_REQ_TRANSACTION = tc:('82' / '32') date:(IMMEDIATE_DATE / DATE) interval:INTERVAL repeats:REPEATS space:VOID payerNr:PAYER_NR amount:AMOUNT payeeBg:PAYEE_BG ref:TEXT16 void:EOR {
-        // TODO fixxa dessa processors
+        // TODO fixxa TransactionProcessor:
             // kontrollerar att periodkod inte används vid GENAST (se dokument)
             // kontrollerar att interval=0 paras med no repeats (se dokument)
 
@@ -185,7 +185,7 @@ grammar Grammar
         return new ClosingRecordNode($this->currentLineNr, $date, $nrOfPosts, $void);
     };
 
-    // TYPES
+    // EXTERNAL TYPES
 
     ACCOUNT = number:$(A10 A5 A) {
         return new AccountNode($this->currentLineNr + 1, $number);
@@ -195,19 +195,29 @@ grammar Grammar
         return new AmountNode($this->currentLineNr + 1, $amount);
     };
 
-    AUTOGIRO = text:$(A5 A A A) {
-        return new TextNode($this->currentLineNr + 1, $text, '/^AUTOGIRO$/');
-    };
-
     PAYEE_BG = number:A10 {
         return new PayeeBankgiroNode($this->currentLineNr + 1, $number);
+    };
+
+    ID = century:$(A A) number:A10 {
+        // TODO skulle kunna hålla detta till en node, och sedan låta processor kolla vad som ska göras...
+            // allt här ska vara så enkelt som möjligt!
+        return in_array($century, ['00', '99'])
+            ? new Id\OrganizationIdNode($this->currentLineNr + 1, $number)
+            : new Id\PersonalIdNode($this->currentLineNr + 1, $century.$number);
+    };
+
+    // SIMPLE TYPES
+
+    AUTOGIRO = text:$(A5 A A A) {
+        return new TextNode($this->currentLineNr + 1, $text, '/^AUTOGIRO$/');
     };
 
     BGC_NR = nr:$(A5 A) {
         return new PayeeBgcNumberNode($this->currentLineNr + 1, $nr);
     };
 
-    DATE = date:$(A5 A A A) {
+    DATE = date:$(A5 A2 A) {
         return new Date\DateNode($this->currentLineNr + 1, $date);
     };
 
@@ -215,45 +225,16 @@ grammar Grammar
         return new Date\ImmediateDateNode($this->currentLineNr + 1);
     };
 
-    ID = century:$(A A) number:A10 {
-        return in_array($century, ['00', '99'])
-            ? new Id\OrganizationIdNode($this->currentLineNr + 1, $number)
-            : new Id\PersonalIdNode($this->currentLineNr + 1, $century.$number);
-    };
-
-    INTERVAL = interval:A {
-        switch ($interval) {
-            case '0': return new Interval\IntervalOnceNode($this->currentLineNr + 1, $interval);
-            case '1': return new Interval\IntervalMonthlyOnDateNode($this->currentLineNr + 1, $interval);
-            case '2': return new Interval\IntervalQuarterlyOnDateNode($this->currentLineNr + 1, $interval);
-            case '3': return new Interval\IntervalSemiannuallyOnDateNode($this->currentLineNr + 1, $interval);
-            case '4': return new Interval\IntervalAnnuallyOnDateNode($this->currentLineNr + 1, $interval);
-            case '5': return new Interval\IntervalMonthlyOnLastCalendarDayNode($this->currentLineNr + 1, $interval);
-            case '6': return new Interval\IntervalQuarterlyOnLastCalendarDayNode($this->currentLineNr + 1, $interval);
-            case '7': return new Interval\IntervalSemiannuallyOnLastCalendarDayNode($this->currentLineNr + 1, $interval);
-            case '8': return new Interval\IntervalAnnuallyOnLastCalendarDayNode($this->currentLineNr + 1, $interval);
-
-            // TODO ska jag verkligen kasta undantag här? Ska inte det göras i processor??
-                // default kan vara att göra once, och så kan jag i processor kontrollera innehållet i IntervalOnceNode...
-            default: throw new \byrokrat\autogiro\Exception\ParserException(["Invalid interval identifier $interval"]);
-        }
+    INTERVAL = interval:$(A) {
+        return new IntervalNode($this->currentLineNr + 1, $interval);
     };
 
     PAYER_NR = nr:$(A10 A5 A) {
         return new PayerNumberNode($this->currentLineNr + 1, $nr);
     };
 
-    REPEATS = repeats:$(A A A) {
-        // TODO här vill jag egentligen inte använda trim
-            // men måste kolla lite mer i dokumentationen innan jag tar bort...
-
-        $repeats = trim(ltrim($repeats, '0'));
-
-        if ($repeats) {
-            return new Repeats\RepeatsNode($this->currentLineNr + 1, $repeats);
-        }
-
-        return new Repeats\RepeatsUnspecifiedNode($this->currentLineNr + 1);
+    REPEATS = repeats:$(A2 A) {
+        return new RepeatsNode($this->currentLineNr + 1, $repeats);
     };
 
     // CONVENIENCE TYPES

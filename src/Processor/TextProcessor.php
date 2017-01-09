@@ -22,26 +22,58 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Processor;
 
+use byrokrat\autogiro\Tree\IntervalNode;
+use byrokrat\autogiro\Tree\RepeatsNode;
 use byrokrat\autogiro\Tree\TextNode;
 
 /**
- * Validate the content of type nodes
+ * Validate the content of text nodes
  */
 class TextProcessor extends Processor
 {
     /**
      * Validate that text nodes contain values matching a regular expression
      */
-    public function beforeTextNode(TextNode $textNode)
+    public function beforeTextNode(TextNode $node)
     {
-        $regexp = $textNode->getAttribute('validation_regexp');
+        $regexp = $node->getAttribute('validation_regexp');
 
-        if ($regexp && !preg_match($regexp, $textNode->getValue())) {
+        if ($regexp && !preg_match($regexp, $node->getValue())) {
             $this->addError(
                 "Text value '%s' does not match expected %s on line %s",
-                $textNode->getValue(),
+                $node->getValue(),
                 $regexp,
-                (string)$textNode->getLineNr()
+                (string)$node->getLineNr()
+            );
+        }
+    }
+
+    /**
+     * Validate that interval nodes contain values matching a regular expression
+     */
+    public function beforeIntervalNode(IntervalNode $node)
+    {
+        if (!preg_match($node->getAttribute('validation_regexp'), $node->getValue())) {
+            $this->addError(
+                "Interval '%s' does not match expected %s on line %s",
+                $node->getValue(),
+                $node->getAttribute('validation_regexp'),
+                (string)$node->getLineNr()
+            );
+        }
+    }
+
+    /**
+     * Validate that repeats nodes contain values matching a regular expression
+     */
+    public function beforeRepeatsNode(RepeatsNode $node)
+    {
+        if (!preg_match($node->getAttribute('validation_regexp'), $node->getValue())) {
+            $this->addError(
+                "Repeats '%s' does not match expected %s on line %s",
+                $node->getValue(),
+                $node->getAttribute('validation_regexp'),
+                (string)$node->getLineNr()
             );
         }
     }

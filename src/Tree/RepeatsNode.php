@@ -20,11 +20,15 @@
 
 declare(strict_types = 1);
 
-namespace byrokrat\autogiro\Tree\Interval;
+namespace byrokrat\autogiro\Tree;
 
 /**
- * Perform transaction once every six months on the last calender day
+ * Node representing the number of transaction repititions
  */
-class IntervalSemiannuallyOnLastCalendarDayNode extends IntervalNode
+class RepeatsNode extends TextNode
 {
+    public function __construct(int $lineNr = 0, string $value = '')
+    {
+        parent::__construct($lineNr, $value, '/^([0-9]{3})|( {3})$/');
+    }
 }
