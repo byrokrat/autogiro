@@ -22,8 +22,9 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Processor;
 
-use byrokrat\autogiro\Tree\OpeningNode;
 use byrokrat\autogiro\Tree\FileNode;
+use byrokrat\autogiro\Tree\PayeeBankgiroNode;
+use byrokrat\autogiro\Tree\PayeeBgcNumberNode;
 
 /**
  * Validate that payee bankgiro and BGC customer number are constant within tree
@@ -31,51 +32,57 @@ use byrokrat\autogiro\Tree\FileNode;
 class PayeeProcessor extends Processor
 {
     /**
-     * @var string
+     * @var string Payee bankgiro account number
      */
-    private $bankgiro;
+    private $payeeBg;
 
     /**
-     * @var string
+     * @var string Payee BGC customer number
      */
-    private $custNr;
+    private $payeeBgcNr;
 
     /**
-     * Reset bankgiro and customer number before a new file is traversed
+     * Reset payee bankgiro and customer number before a new file is traversed
      */
     public function beforeFileNode(FileNode $fileNode)
     {
-        $this->bankgiro = '';
-        $this->custNr = '';
+        $this->payeeBg = '';
+        $this->payeeBgcNr = '';
     }
 
     /**
-     * Validate bankgiro and customer number of section
+     * Validate payee bankgiro number
      */
-    public function beforeOpeningNode(OpeningNode $node)
+    public function beforePayeeBankgiroNode(PayeeBankgiroNode $node)
     {
-        if (!$this->bankgiro) {
-            $this->bankgiro = $node->getChild('bankgiro')->getValue();
+        if (!$this->payeeBg) {
+            $this->payeeBg = $node->getValue();
         }
 
-        if (!$this->custNr) {
-            $this->custNr = $node->getChild('customer_number')->getValue();
-        }
-
-        if ($node->getChild('bankgiro')->getValue() != $this->bankgiro) {
+        if ($node->getValue() != $this->payeeBg) {
             $this->addError(
-                "Non-matching payee bankgiro numbers within file (%s and %s) on line %s",
-                $this->bankgiro,
-                $node->getChild('bankgiro')->getValue(),
+                "Non-matching payee bankgiro numbers (expecting: %s, found: %s) on line %s",
+                $this->payeeBg,
+                $node->getValue(),
                 (string)$node->getLineNr()
             );
         }
+    }
 
-        if ($node->getChild('customer_number')->getValue() != $this->custNr) {
+    /**
+     * Validate payee BGC customer number
+     */
+    public function beforePayeeBgcNumberNode(PayeeBgcNumberNode $node)
+    {
+        if (!$this->payeeBgcNr) {
+            $this->payeeBgcNr = $node->getValue();
+        }
+
+        if ($node->getValue() != $this->payeeBgcNr) {
             $this->addError(
-                "Non-matching payee BGC customer numbers within file (%s and %s) on line %s",
-                $this->custNr,
-                $node->getChild('customer_number')->getValue(),
+                "Non-matching payee BGC customer numbers (expecting: %s, found: %s) on line %s",
+                $this->payeeBgcNr,
+                $node->getValue(),
                 (string)$node->getLineNr()
             );
         }

@@ -5,10 +5,9 @@ declare(strict_types = 1);
 namespace spec\byrokrat\autogiro\Processor;
 
 use byrokrat\autogiro\Processor\PayeeProcessor;
-use byrokrat\autogiro\Tree\OpeningNode;
 use byrokrat\autogiro\Tree\FileNode;
-use byrokrat\autogiro\Tree\Account\BankgiroNode;
-use byrokrat\autogiro\Tree\BgcCustomerNumberNode;
+use byrokrat\autogiro\Tree\PayeeBankgiroNode;
+use byrokrat\autogiro\Tree\PayeeBgcNumberNode;
 use PhpSpec\ObjectBehavior;
 
 class PayeeProcessorSpec extends ObjectBehavior
@@ -18,46 +17,49 @@ class PayeeProcessorSpec extends ObjectBehavior
         $this->shouldHaveType(PayeeProcessor::CLASS);
     }
 
-    function let(
-        OpeningNode $openingA,
-        BankgiroNode $bgA,
-        BgcCustomerNumberNode $custA,
-        OpeningNode $openingB,
-        BankgiroNode $bgB,
-        BgcCustomerNumberNode $custB
-    ) {
+    function let(PayeeBankgiroNode $bgA, PayeeBankgiroNode $bgB, PayeeBgcNumberNode $custA, PayeeBgcNumberNode $custB)
+    {
         $bgA->getValue()->willReturn('A');
-        $custA->getValue()->willReturn('A');
-        $openingA->getChild('bankgiro')->willReturn($bgA);
-        $openingA->getChild('customer_number')->willReturn($custA);
-        $openingA->getLineNr()->willReturn(0);
 
         $bgB->getValue()->willReturn('B');
+        $bgB->getLineNr()->willReturn(1);
+
+        $custA->getValue()->willReturn('A');
+
         $custB->getValue()->willReturn('B');
-        $openingB->getChild('bankgiro')->willReturn($bgB);
-        $openingB->getChild('customer_number')->willReturn($custB);
-        $openingB->getLineNr()->willReturn(0);
+        $custB->getLineNr()->willReturn(1);
     }
 
-    function it_ignores_consistent_payee_info($openingA)
+    function it_ignores_consistent_payee_info($bgA, $custA)
     {
-        $this->beforeOpeningNode($openingA);
-        $this->beforeOpeningNode($openingA);
+        $this->beforePayeeBankgiroNode($bgA);
+        $this->beforePayeeBankgiroNode($bgA);
+
+        $this->beforePayeeBgcNumberNode($custA);
+        $this->beforePayeeBgcNumberNode($custA);
+
         $this->hasErrors()->shouldEqual(false);
     }
 
-    function it_failes_on_inconsistent_payee_info($openingA, $openingB)
+    function it_failes_on_inconsistent_payee_bankgiro($bgA, $bgB)
     {
-        $this->beforeOpeningNode($openingA);
-        $this->beforeOpeningNode($openingB);
+        $this->beforePayeeBankgiroNode($bgA);
+        $this->beforePayeeBankgiroNode($bgB);
         $this->hasErrors()->shouldEqual(true);
     }
 
-    function it_ignores_inconsistent_payee_info_in_different_files($openingA, $openingB, FileNode $fileNode)
+    function it_failes_on_inconsistent_payee_bgc_numbers($custA, $custB)
     {
-        $this->beforeOpeningNode($openingA);
+        $this->beforePayeeBgcNumberNode($custA);
+        $this->beforePayeeBgcNumberNode($custB);
+        $this->hasErrors()->shouldEqual(true);
+    }
+
+    function it_ignores_inconsistent_payee_info_in_different_files($bgA, $bgB, FileNode $fileNode)
+    {
+        $this->beforePayeeBankgiroNode($bgA);
         $this->beforeFileNode($fileNode);
-        $this->beforeOpeningNode($openingB);
+        $this->beforePayeeBankgiroNode($bgB);
         $this->hasErrors()->shouldEqual(false);
     }
 }

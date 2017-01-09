@@ -24,4 +24,10 @@ class TextNodeSpec extends ObjectBehavior
     {
         $this->getType()->shouldEqual('TextNode');
     }
+
+    function it_contains_a_validation_regexp()
+    {
+        $this->beConstructedWith(0, '', '/regexp/');
+        $this->getAttribute('validation_regexp')->shouldEqual('/regexp/');
+    }
 }

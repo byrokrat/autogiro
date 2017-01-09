@@ -24,14 +24,13 @@ namespace byrokrat\autogiro;
 
 use byrokrat\autogiro\Processor\AccountProcessor;
 use byrokrat\autogiro\Processor\AmountProcessor;
-use byrokrat\autogiro\Processor\BankgiroProcessor;
 use byrokrat\autogiro\Processor\DateProcessor;
-use byrokrat\autogiro\Processor\FileProcessor;
 use byrokrat\autogiro\Processor\IdProcessor;
 use byrokrat\autogiro\Processor\LayoutProcessor;
 use byrokrat\autogiro\Processor\MessageProcessor;
 use byrokrat\autogiro\Processor\MultiCore;
 use byrokrat\autogiro\Processor\PayeeProcessor;
+use byrokrat\autogiro\Processor\TextProcessor;
 use byrokrat\id\CoordinationIdFactory;
 use byrokrat\id\NullIdFactory;
 use byrokrat\id\OrganizationIdFactory;
@@ -74,12 +73,11 @@ class ParserFactory
         };
 
         $processors = new MultiCore(
-            new BankgiroProcessor,
             new DateProcessor,
-            new FileProcessor,
             new LayoutProcessor,
             new MessageProcessor,
-            new PayeeProcessor
+            new PayeeProcessor,
+            new TextProcessor
         );
 
         if (!$flag(self::NO_ACCOUNT_PROCESSOR)) {

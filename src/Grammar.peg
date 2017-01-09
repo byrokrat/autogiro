@@ -20,28 +20,37 @@
 
 namespace byrokrat\autogiro;
 
-use byrokrat\autogiro\Exception\ParserException;
-use byrokrat\autogiro\Tree\Account;
+use byrokrat\autogiro\Tree\AccountNode;
 use byrokrat\autogiro\Tree\AmountNode;
-use byrokrat\autogiro\Tree\BgcCustomerNumberNode;
-use byrokrat\autogiro\Tree\ClosingNode;
+use byrokrat\autogiro\Tree\PayeeBankgiroNode;
+use byrokrat\autogiro\Tree\PayeeBgcNumberNode;
 use byrokrat\autogiro\Tree\Date;
 use byrokrat\autogiro\Tree\FileNode;
 use byrokrat\autogiro\Tree\Id;
 use byrokrat\autogiro\Tree\Interval;
 use byrokrat\autogiro\Tree\LayoutNode;
 use byrokrat\autogiro\Tree\MessageNode;
-use byrokrat\autogiro\Tree\OpeningNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
+use byrokrat\autogiro\Tree\Record\ClosingRecordNode;
+use byrokrat\autogiro\Tree\Record\OpeningRecordNode;
 use byrokrat\autogiro\Tree\Record\Request;
 use byrokrat\autogiro\Tree\Record\Response;
 use byrokrat\autogiro\Tree\Repeats;
-use byrokrat\autogiro\Tree\SpaceNode;
 use byrokrat\autogiro\Tree\TextNode;
 
 grammar Grammar
 {
-    start FILE = RESET_LINE_COUNT layout:(L_REQ_CONTAINER / L_RESP_MANDATE) {
+    // TODO Det enda som inte ska vara nodes är transaktionskoder
+        // på något sätt måste trotts allt olika record skiljas från varandra vid parse-time..
+
+        // stega igenom filen och kontrollera att det stämmer överallt...
+
+    // TODO lägg till någon form av ErrorNode så att jag om jag skickar in helt
+        // felaktig text så får vi trotts allt ett bra felmeddelande
+        //
+        // lägg ett behat test för detta också...
+
+    start FILE = RESET_LINE_COUNT layout:(REQUEST_FILE / L_RESP_MANDATE) {
         return $layout;
     };
 
@@ -51,92 +60,73 @@ grammar Grammar
 
     // GENERIC RECORDS
 
-    R_GENERIC_OPENING = '01' 'AUTOGIRO' S10 S S S S date:DATE S10 S S layout:A20 custNr:CUST_NR bg:BANKGIRO EOR {
-        return new OpeningNode($this->currentLineNr, rtrim($layout), $date, $custNr, $bg);
+    R_GENERIC_OPENING = '01' ag:AUTOGIRO space1:VOID14 date:DATE space2:VOID12 layout:TEXT20 payeeBgcNr:BGC_NR payeeBg:PAYEE_BG void:EOR {
+        return new OpeningRecordNode($this->currentLineNr, $ag, $space1, $date, $space2, $layout, $payeeBgcNr, $payeeBg, $void);
     };
 
     //
     // REQUEST LAYOUTS
     //
 
-    L_REQ_CONTAINER = layouts:(L_REQ_MANDATE / L_REQ_PAYMENT / L_REQ_AMENDMENT)+ {
+    REQUEST_FILE = layouts:(L_REQ_MANDATE / L_REQ_PAYMENT / L_REQ_AMENDMENT)+ {
         return new FileNode(...$layouts);
     };
 
-    R_REQ_OPENING = '01' date:DATE 'AUTOGIRO' S20 S20 S S S S custNr:CUST_NR bg:BANKGIRO EOR {
-        return new OpeningNode($this->currentLineNr, '', $date, $custNr, $bg);
+    R_REQ_OPENING = '01' date:DATE ag:AUTOGIRO space:VOID44 payeeBgcNr:BGC_NR payeeBg:PAYEE_BG void:EOR {
+        return new Request\RequestOpeningRecordNode($this->currentLineNr, $date, $ag, $space, $payeeBgcNr, $payeeBg, $void);
     };
 
     // MANDATE REQUESTS
 
-    L_REQ_MANDATE = opening:R_REQ_OPENING records:(R_REQ_CREATE_MANDATE / R_REQ_UPDATE_MANDATE / R_REQ_DEL_MANDATE)+ {
-        return new LayoutNode(
-            $opening->setAttribute('layout_name', Layouts::LAYOUT_MANDATE_REQUEST),
-            new ClosingNode($this->currentLineNr, $opening->getChild('date'), count($records)),
-            ...$records
-        );
+    L_REQ_MANDATE = open:R_REQ_OPENING records:(R_REQ_CREATE_MANDATE / R_REQ_UPDATE_MANDATE / R_REQ_DEL_MANDATE)+ {
+        return (new LayoutNode($open, ...$records))->setAttribute('layout_name', Layouts::LAYOUT_MANDATE_REQUEST);
     };
 
-    R_REQ_CREATE_MANDATE = '04' bg:BANKGIRO payerNr:PAYER_NR account:ACCOUNT? id:ID? S20? reject:'AV'? EOR {
+    R_REQ_CREATE_MANDATE = '04' payeeBg:PAYEE_BG payerNr:PAYER_NR account:ACCOUNT? id:ID? space:VOID20? reject:'AV'? void:EOR {
+        // TODO $space måste också sparas till objekt för att kunna valideras...
+
         if ($reject == 'AV') {
-            return new Request\RejectMandateRequestNode($this->currentLineNr, $bg, $payerNr);
+            return new Request\RejectMandateRequestNode($this->currentLineNr, $payeeBg, $payerNr, $void);
         }
 
         return $account && $id
-            ? new Request\CreateMandateRequestNode($this->currentLineNr, $bg, $payerNr, $account, $id)
-            : new Request\AcceptMandateRequestNode($this->currentLineNr, $bg, $payerNr);
+            ? new Request\CreateMandateRequestNode($this->currentLineNr, $payeeBg, $payerNr, $account, $id, $void)
+            : new Request\AcceptMandateRequestNode($this->currentLineNr, $payeeBg, $payerNr, $void);
     };
 
-    R_REQ_UPDATE_MANDATE = '05' oldBg:BANKGIRO oldPayerNr:PAYER_NR newBg:BANKGIRO newPayerNr:PAYER_NR EOR {
-        return new Request\UpdateMandateRequestNode($this->currentLineNr, $oldBg, $oldPayerNr, $newBg, $newPayerNr);
+    R_REQ_UPDATE_MANDATE = '05' oldPayeeBg:PAYEE_BG oldPayerNr:PAYER_NR newPayeeBg:PAYEE_BG newPayerNr:PAYER_NR void:EOR {
+        return new Request\UpdateMandateRequestNode($this->currentLineNr, $oldPayeeBg, $oldPayerNr, $newPayeeBg, $newPayerNr, $void);
     };
 
-    R_REQ_DEL_MANDATE = '03' bg:BANKGIRO payerNr:PAYER_NR EOR {
-        return new Request\DeleteMandateRequestNode($this->currentLineNr, $bg, $payerNr);
+    R_REQ_DEL_MANDATE = '03' payeeBg:PAYEE_BG payerNr:PAYER_NR void:EOR {
+        return new Request\DeleteMandateRequestNode($this->currentLineNr, $payeeBg, $payerNr, $void);
     };
 
     // PAYMENT REQUESTS
 
-    L_REQ_PAYMENT = opening:R_REQ_OPENING records:(R_REQ_TRANSACTION)+ {
-        return new LayoutNode(
-            $opening->setAttribute('layout_name', Layouts::LAYOUT_PAYMENT_REQUEST),
-            new ClosingNode($this->currentLineNr, $opening->getChild('date'), count($records)),
-            ...$records
-        );
+    L_REQ_PAYMENT = open:R_REQ_OPENING records:(R_REQ_TRANSACTION)+ {
+        return (new LayoutNode($open, ...$records))->setAttribute('layout_name', Layouts::LAYOUT_PAYMENT_REQUEST);
     };
 
-    R_REQ_TRANSACTION = tc:('82' / '32') date:(IMMEDIATE_DATE / DATE) interval:INTERVAL repeats:REPEATS void:VOID payerNr:PAYER_NR amount:AMOUNT payeeBg:BANKGIRO ref:TEXT16 end:EOR {
-        // TODO processor som kontrollerar att periodkod inte används vid GENAST (se dokument)
-        // TODO processor som kontrollerar att interval=0 paras med no repeats (se dokument)
+    R_REQ_TRANSACTION = tc:('82' / '32') date:(IMMEDIATE_DATE / DATE) interval:INTERVAL repeats:REPEATS space:VOID payerNr:PAYER_NR amount:AMOUNT payeeBg:PAYEE_BG ref:TEXT16 void:EOR {
+        // TODO fixxa dessa processors
+            // kontrollerar att periodkod inte används vid GENAST (se dokument)
+            // kontrollerar att interval=0 paras med no repeats (se dokument)
 
-        // TODO fortsätt med nästa argument...
-            // nästa är betalningsmottagarens bankgironummer, passa på att göra överallt:
-                //Där bankgiro är payee borde jag byta namn på attribute till payee_bankgiro !!
-                    // byt även namn på alla lokala variabler osv...
-                    // lika bra att göra det tydligt när jag ändå håller på...
-                //payee_bgc_customer_nr ?? // eller bara payee_bgc_number ??
-
-        // TODO SpaceNode krävs för att vi ska kunna skriva ut mellanslag...      [KLAR]
-        // TODO processor som kontrollerar att SpaceNode innehåller ett space...
-
-        // TODO ska jag skapa abstract Tree\RecordNode? Att använda exempelvis i LayoutNode...
-            // Ja, kan även implementera ett visst antal space på slutet på något generellt sätt...
-            // EOR kan returnera alla space den hittar i slutet av sträng... (Har jag börjat pilla på...)
+        // TODO skriv dessa 2 request-records klara...
+        // TODO lägg till behat-test för denna layout
+            // så kan jag gå vidare sedan...
 
         return $tc == '82'
-            ? new Request\IncomingTransactionRequestNode($this->currentLineNr, $date, $interval, $repeats, $void, $payerNr, $amount, $payeeBg, $ref, $end)
-            : new Request\OutgoingTransactionRequestNode($this->currentLineNr, $date, $interval, $repeats, $void, $payerNr, $amount, $payeeBg, $ref, $end);
+            ? new Request\IncomingTransactionRequestNode($this->currentLineNr, $date, $interval, $repeats, $space, $payerNr, $amount, $payeeBg, $ref, $void)
+            : new Request\OutgoingTransactionRequestNode($this->currentLineNr, $date, $interval, $repeats, $space, $payerNr, $amount, $payeeBg, $ref, $void);
     };
 
     // AMENDMENT REQUESTS
 
-    L_REQ_AMENDMENT = opening:R_REQ_OPENING records:('TODO')+ {
+    L_REQ_AMENDMENT = open:R_REQ_OPENING records:('TODO')+ {
         // TODO this is just a stub...
-        return new LayoutNode(
-            $opening->setAttribute('layout_name', Layouts::LAYOUT_AMENDMENT_REQUEST),
-            new ClosingNode($this->currentLineNr, $opening->getChild('date'), count($records)),
-            ...$records
-        );
+        return (new LayoutNode($open, ...$records))->setAttribute('layout_name', Layouts::LAYOUT_AMENDMENT_REQUEST);
     };
 
     //
@@ -145,146 +135,179 @@ grammar Grammar
 
     // MANDATE RESPONSES
 
-    L_RESP_MANDATE = opening:(R_GENERIC_OPENING / R_RESP_MANDATE_OPENING_OLD) mandates:R_RESP_MANDATE* closing:R_RESP_MANDATE_CLOSING {
-        return new FileNode(new LayoutNode($opening, $closing, ...$mandates));
-    };
-
-    R_RESP_MANDATE_OPENING_OLD = '01' date:DATE BGC_CLEARING bg:BANKGIRO 'AG-MEDAVI' EOR {
-        return new OpeningNode(
-            $this->currentLineNr,
-            'AG-MEDAVI',
-            $date,
-            new BgcCustomerNumberNode($this->currentLineNr, ''),
-            $bg
+    L_RESP_MANDATE = open:(R_GENERIC_OPENING / R_RESP_MANDATE_OPENING_OLD) mands:R_RESP_MANDATE* close:R_RESP_MANDATE_CLOSING {
+        return new FileNode(
+            (new LayoutNode($open, $close, ...$mands))->setAttribute('layout_name', Layouts::LAYOUT_MANDATE_RESPONSE)
         );
     };
 
-    R_RESP_MANDATE = '73' bg:BANKGIRO payerNr:PAYER_NR account:ACCOUNT id:ID A5 info:$(N N) comment:$(N N) date:DATE? EOR {
+    R_RESP_MANDATE_OPENING_OLD = '01' date:DATE clear:$(A2 A2) payeeBg:PAYEE_BG layout:$(A5 A2 A2) void:EOR {
+        return new OpeningRecordNode(
+            $this->currentLineNr,
+            new TextNode($this->currentLineNr, ''),
+            new TextNode($this->currentLineNr, ''),
+            $date,
+            new TextNode($this->currentLineNr, $clear, '/^9900$/'),
+            new TextNode($this->currentLineNr, $layout, '/^AG-MEDAVI$/'),
+            new PayeeBgcNumberNode($this->currentLineNr, ''),
+            $payeeBg,
+            $void
+        );
+    };
+
+    R_RESP_MANDATE = '73' payeeBg:PAYEE_BG payerNr:PAYER_NR account:ACCOUNT id:ID A5 info:$(A A) comment:$(A A) date:DATE? validDate:$(A5 A)? void:EOR {
         $account = $account->getValue()
             ? $account
-            : new Account\AccountNode($this->currentLineNr, $payerNr->getValue());
+            : new AccountNode($this->currentLineNr, $payerNr->getValue());
+
+        // TODO här oven finns en A5 som måste sparas...
+
+        // TODO $validDate måste sparas, se s 78 i specen, det är datum då medgivandet är giltigt för debitering..
+            // dock bara sex siffror, så det är inte riktigt som det vanliga date...
 
         return new Response\MandateResponseNode(
             $this->currentLineNr,
-            $bg,
+            $payeeBg,
             $payerNr,
             $account,
             $id,
             new MessageNode($this->currentLineNr, "73.$info"),
             new MessageNode($this->currentLineNr, "73.comment.$comment"),
-            $date ?: new Date\DateNode($this->currentLineNr, '@0')
+            $date ?: new Date\DateNode($this->currentLineNr, '@0'),
+            $void
         );
     };
 
-    R_RESP_MANDATE_CLOSING = '09' date:DATE BGC_CLEARING nrOfPosts:$(N5 N N) EOR {
-        return new ClosingNode($this->currentLineNr, $date, intval($nrOfPosts));
+    R_RESP_MANDATE_CLOSING = '09' date:DATE clear:$(A2 A2) nrOfPosts:INT7 void:EOR {
+        // TODO clearing måste sparas så att det kan valideras...
+        new TextNode($this->currentLineNr, $clear, '/^9900$/');
+
+        return new ClosingRecordNode($this->currentLineNr, $date, $nrOfPosts, $void);
     };
 
     // TYPES
 
     ACCOUNT = number:$(A10 A5 A) {
-        return new Account\AccountNode($this->currentLineNr, trim(ltrim($number, '0')));
+        return new AccountNode($this->currentLineNr + 1, $number);
     };
 
     AMOUNT = amount:$(A10 A A) {
-        return new AmountNode($this->currentLineNr, trim(ltrim($amount, '0')));
+        return new AmountNode($this->currentLineNr + 1, $amount);
     };
 
-    BANKGIRO = number:A10 {
-        return new Account\BankgiroNode($this->currentLineNr, trim(ltrim($number, '0')));
+    AUTOGIRO = text:$(A5 A A A) {
+        return new TextNode($this->currentLineNr + 1, $text, '/^AUTOGIRO$/');
     };
 
-    BGC_CLEARING = '9900';
+    PAYEE_BG = number:A10 {
+        return new PayeeBankgiroNode($this->currentLineNr + 1, $number);
+    };
 
-    CUST_NR = nr:$(A5 A) {
-        return new BgcCustomerNumberNode($this->currentLineNr, trim(ltrim($nr, '0')));
+    BGC_NR = nr:$(A5 A) {
+        return new PayeeBgcNumberNode($this->currentLineNr + 1, $nr);
     };
 
     DATE = date:$(A5 A A A) {
-        return new Date\DateNode($this->currentLineNr, trim($date));
+        return new Date\DateNode($this->currentLineNr + 1, $date);
     };
 
-    IMMEDIATE_DATE = 'GENAST' S S {
-        return new Date\ImmediateDateNode($this->currentLineNr);
+    IMMEDIATE_DATE = 'GENAST  ' {
+        return new Date\ImmediateDateNode($this->currentLineNr + 1);
     };
 
     ID = century:$(A A) number:A10 {
         return in_array($century, ['00', '99'])
-            ? new Id\OrganizationIdNode($this->currentLineNr, trim($number))
-            : new Id\PersonalIdNode($this->currentLineNr, trim($century.$number));
+            ? new Id\OrganizationIdNode($this->currentLineNr + 1, $number)
+            : new Id\PersonalIdNode($this->currentLineNr + 1, $century.$number);
     };
 
     INTERVAL = interval:A {
         switch ($interval) {
-            case '0': return new Interval\IntervalOnceNode;
-            case '1': return new Interval\IntervalMonthlyOnDateNode;
-            case '2': return new Interval\IntervalQuarterlyOnDateNode;
-            case '3': return new Interval\IntervalSemiannuallyOnDateNode;
-            case '4': return new Interval\IntervalAnnuallyOnDateNode;
-            case '5': return new Interval\IntervalMonthlyOnLastCalendarDayNode;
-            case '6': return new Interval\IntervalQuarterlyOnLastCalendarDayNode;
-            case '7': return new Interval\IntervalSemiannuallyOnLastCalendarDayNode;
-            case '8': return new Interval\IntervalAnnuallyOnLastCalendarDayNode;
-            default: throw new ParserException("Invalid interval identifier $interval");
+            case '0': return new Interval\IntervalOnceNode($this->currentLineNr + 1, $interval);
+            case '1': return new Interval\IntervalMonthlyOnDateNode($this->currentLineNr + 1, $interval);
+            case '2': return new Interval\IntervalQuarterlyOnDateNode($this->currentLineNr + 1, $interval);
+            case '3': return new Interval\IntervalSemiannuallyOnDateNode($this->currentLineNr + 1, $interval);
+            case '4': return new Interval\IntervalAnnuallyOnDateNode($this->currentLineNr + 1, $interval);
+            case '5': return new Interval\IntervalMonthlyOnLastCalendarDayNode($this->currentLineNr + 1, $interval);
+            case '6': return new Interval\IntervalQuarterlyOnLastCalendarDayNode($this->currentLineNr + 1, $interval);
+            case '7': return new Interval\IntervalSemiannuallyOnLastCalendarDayNode($this->currentLineNr + 1, $interval);
+            case '8': return new Interval\IntervalAnnuallyOnLastCalendarDayNode($this->currentLineNr + 1, $interval);
+
+            // TODO ska jag verkligen kasta undantag här? Ska inte det göras i processor??
+                // default kan vara att göra once, och så kan jag i processor kontrollera innehållet i IntervalOnceNode...
+            default: throw new \byrokrat\autogiro\Exception\ParserException(["Invalid interval identifier $interval"]);
         }
     };
 
     PAYER_NR = nr:$(A10 A5 A) {
-        return new PayerNumberNode($this->currentLineNr, trim(ltrim($nr, '0')));
+        return new PayerNumberNode($this->currentLineNr + 1, $nr);
     };
 
     REPEATS = repeats:$(A A A) {
+        // TODO här vill jag egentligen inte använda trim
+            // men måste kolla lite mer i dokumentationen innan jag tar bort...
+
         $repeats = trim(ltrim($repeats, '0'));
 
         if ($repeats) {
-            return new Repeats\RepeatsNode($this->currentLineNr, $repeats);
+            return new Repeats\RepeatsNode($this->currentLineNr + 1, $repeats);
         }
 
-        return new Repeats\RepeatsUnspecifiedNode($this->currentLineNr);
+        return new Repeats\RepeatsUnspecifiedNode($this->currentLineNr + 1);
+    };
+
+    // CONVENIENCE TYPES
+
+    INT7 = integer:$(A5 A2) {
+        return new TextNode($this->currentLineNr + 1, $integer, '/^\d{7}$/');
+    };
+
+    TEXT16 = text:$(A10 A5 A) {
+        return new TextNode($this->currentLineNr + 1, $text);
+    };
+
+    TEXT20 = text:$(A10 A10) {
+        return new TextNode($this->currentLineNr + 1, $text);
+    };
+
+    VOID = text:$(A) {
+        return new TextNode($this->currentLineNr + 1, $text, '/^ $/');
+    };
+
+    VOID10 = text:$(A10) {
+        return new TextNode($this->currentLineNr + 1, $text, '/^ {10}$/');
+    };
+
+    VOID12 = text:$(A10 A2) {
+        return new TextNode($this->currentLineNr + 1, $text, '/^ {12}$/');
+    };
+
+    VOID14 = text:$(A10 A2 A2) {
+        return new TextNode($this->currentLineNr + 1, $text, '/^ {14}$/');
+    };
+
+    VOID20 = text:$(A10 A10) {
+        return new TextNode($this->currentLineNr + 1, $text, '/^ {20}$/');
+    };
+
+    VOID44 = text:$(A10 A10 A10 A10 A2 A2) {
+        return new TextNode($this->currentLineNr + 1, $text, '/^ {44}$/');
     };
 
     // HELPERS
 
-    // TODO should I only use A-helper, and only validate data i processors??
-
     A "ALPHA-NUMERIC" = [a-zA-Z0-9 -\/&];
+
+    A2 = $(A A);
 
     A5 = $(A A A A A);
 
     A10 = $(A5 A5);
 
-    A20 = $(A10 A10);
+    // ENDINGS
 
-    N "NUMBER" = [0-9];
-
-    N5 = $(N N N N N);
-
-    S "SPACE" = ' ';
-
-    S10 = $(S S S S S S S S S S);
-
-    S20 = $(S10 S10);
-
-    // TODO alla S och N (och A?) ska ersättas av void...
-    VOID = chars:A {
-        return new SpaceNode($this->currentLineNr, $chars);
-    };
-
-    VOID10 = chars:A10 {
-        return new SpaceNode($this->currentLineNr, $chars);
-    };
-
-    VOID20 = chars:A20 {
-        return new SpaceNode($this->currentLineNr, $chars);
-    };
-
-    TEXT16 = text:$(A10 A5 A) {
-        return new TextNode($this->currentLineNr, $text);
-    };
-
-    EOR "END_OF_RECORD" = end:VOID* (EOL / EOF) {
-        // TODO alla ställen där jag använder EOR ska dessa end voids fångas upp...
-        return $end;
+    EOR "END_OF_RECORD" = void:VOID* (EOL / EOF) {
+        return $void;
     };
 
     EOL "END_OF_LINE" = "\r"? "\n" {

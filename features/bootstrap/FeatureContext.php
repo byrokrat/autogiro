@@ -7,15 +7,27 @@ use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use byrokrat\autogiro\ParserFactory;
 use byrokrat\autogiro\Enumerator;
+use byrokrat\autogiro\Exception\ParserException;
 
 /**
  * Defines application features from the specific context.
  */
 class FeatureContext implements Context, SnippetAcceptingContext
 {
+    /**
+     * @var \byrokrat\autogiro\Parser
+     */
     private $parser;
 
+    /**
+     * @var \byrokrat\autogiro\Tree\FileNode Created at parse time
+     */
     private $fileNode;
+
+    /**
+     * @var ParserException
+     */
+    private $exception;
 
     /**
      * @Given a parser
@@ -40,7 +52,11 @@ class FeatureContext implements Context, SnippetAcceptingContext
      */
     public function iParse(PyStringNode $string)
     {
-        $this->fileNode = $this->parser->parse($string->getRaw());
+        try {
+            $this->fileNode = $this->parser->parse($string->getRaw());
+        } catch (ParserException $e) {
+            $this->exception = $e;
+        }
     }
 
     /**
@@ -48,8 +64,19 @@ class FeatureContext implements Context, SnippetAcceptingContext
      */
     public function iFindALayout($layoutType)
     {
+        if ($this->exception) {
+            throw $this->exception;
+        }
+
+        $layoutIds = [];
+
+        foreach ($this->fileNode->getChildren() as $layoutNode) {
+            $layoutIds[] = $layoutNode->getAttribute('layout_name');
+        }
+
         $this->assertInArray(
             constant("byrokrat\autogiro\Layouts::$layoutType"),
+            $layoutIds,
             $this->fileNode->getAttribute('layout_ids')
         );
     }
@@ -71,10 +98,21 @@ class FeatureContext implements Context, SnippetAcceptingContext
         $this->assertCount((integer)$number, $count);
     }
 
+    /**
+     * @Then I get a :error error
+     */
+    public function iGetAError(string $error)
+    {
+        $this->assertInArray(
+            $error,
+            $this->exception->getErrors()
+        );
+    }
+
     private function assertInArray($needle, array $haystack)
     {
         if (!in_array($needle, $haystack)) {
-            throw new Exception("Unable to fins $needle in array");
+            throw new Exception("Unable to find $needle in array");
         }
     }
 

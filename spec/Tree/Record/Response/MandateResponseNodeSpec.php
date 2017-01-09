@@ -6,19 +6,19 @@ namespace spec\byrokrat\autogiro\Tree\Record\Response;
 
 use byrokrat\autogiro\Tree\Record\Response\MandateResponseNode;
 use byrokrat\autogiro\Tree\Record\RecordNode;
+use byrokrat\autogiro\Tree\AccountNode;
 use byrokrat\autogiro\Tree\Date\DateNode;
-use byrokrat\autogiro\Tree\PayerNumberNode;
-use byrokrat\autogiro\Tree\MessageNode;
-use byrokrat\autogiro\Tree\Account\AccountNode;
-use byrokrat\autogiro\Tree\Account\BankgiroNode;
 use byrokrat\autogiro\Tree\Id\IdNode;
+use byrokrat\autogiro\Tree\MessageNode;
+use byrokrat\autogiro\Tree\PayeeBankgiroNode;
+use byrokrat\autogiro\Tree\PayerNumberNode;
+use byrokrat\autogiro\Tree\TextNode;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 class MandateResponseNodeSpec extends ObjectBehavior
 {
     function let(
-        BankgiroNode $bankgiro,
+        PayeeBankgiroNode $bankgiro,
         PayerNumberNode $payerNr,
         AccountNode $account,
         IdNode $id,
@@ -52,7 +52,7 @@ class MandateResponseNodeSpec extends ObjectBehavior
 
     function it_contains_a_bankgiro($bankgiro)
     {
-        $this->getChild('bankgiro')->shouldEqual($bankgiro);
+        $this->getChild('payee_bankgiro')->shouldEqual($bankgiro);
     }
 
     function it_contains_a_payer_number($payerNr)
@@ -83,5 +83,11 @@ class MandateResponseNodeSpec extends ObjectBehavior
     function it_contains_a_date($date)
     {
         $this->getChild('date')->shouldEqual($date);
+    }
+
+    function it_may_contain_void_ending_nodes($bankgiro, $payerNr, $account, $id, $info, $comment, $date, TextNode $endVoid)
+    {
+        $this->beConstructedWith(0, $bankgiro, $payerNr, $account, $id, $info, $comment, $date, [$endVoid]);
+        $this->getChild('end_0')->shouldEqual($endVoid);
     }
 }

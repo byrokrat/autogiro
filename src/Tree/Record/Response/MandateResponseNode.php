@@ -23,8 +23,8 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Tree\Record\Response;
 
 use byrokrat\autogiro\Tree\Record\RecordNode;
-use byrokrat\autogiro\Tree\Account\AccountNode;
-use byrokrat\autogiro\Tree\Account\BankgiroNode;
+use byrokrat\autogiro\Tree\AccountNode;
+use byrokrat\autogiro\Tree\PayeeBankgiroNode;
 use byrokrat\autogiro\Tree\Date\DateNode;
 use byrokrat\autogiro\Tree\Id\IdNode;
 use byrokrat\autogiro\Tree\MessageNode;
@@ -37,21 +37,22 @@ class MandateResponseNode extends RecordNode
 {
     public function __construct(
         int $lineNr,
-        BankgiroNode $bankgiro,
+        PayeeBankgiroNode $payeeBg,
         PayerNumberNode $payerNr,
         AccountNode $account,
         IdNode $id,
         MessageNode $info,
         MessageNode $comment,
-        DateNode $date
+        DateNode $date,
+        array $void = []
     ) {
-        parent::__construct($lineNr);
-        $this->setChild('bankgiro', $bankgiro);
+        $this->setChild('payee_bankgiro', $payeeBg);
         $this->setChild('payer_number', $payerNr);
         $this->setChild('account', $account);
         $this->setChild('id', $id);
         $this->setChild('info', $info);
         $this->setChild('comment', $comment);
         $this->setChild('date', $date);
+        parent::__construct($lineNr, $void);
     }
 }

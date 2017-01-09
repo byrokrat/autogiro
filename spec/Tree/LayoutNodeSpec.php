@@ -6,16 +6,17 @@ namespace spec\byrokrat\autogiro\Tree;
 
 use byrokrat\autogiro\Tree\LayoutNode;
 use byrokrat\autogiro\Tree\Node;
-use byrokrat\autogiro\Tree\OpeningNode;
-use byrokrat\autogiro\Tree\ClosingNode;
+use byrokrat\autogiro\Tree\Record\RecordNode;
+use byrokrat\autogiro\Tree\TextNode;
 use byrokrat\autogiro\Visitor;
 use PhpSpec\ObjectBehavior;
 
 class LayoutNodeSpec extends ObjectBehavior
 {
-    function let(OpeningNode $opening, ClosingNode $closing, Node $node)
+    function let(RecordNode $record1, RecordNode $record2)
     {
-        $this->beConstructedWith($opening, $closing, $node);
+        $record1->hasChild('layout_name')->willReturn(false);
+        $this->beConstructedWith($record1, $record2);
     }
 
     function it_is_initializable()
@@ -33,27 +34,37 @@ class LayoutNodeSpec extends ObjectBehavior
         $this->getType()->shouldEqual('LayoutNode');
     }
 
-    function it_contains_nodes($opening, $closing, $node)
+    function it_contains_nodes($record1, $record2)
     {
-        $this->getChild('opening')->shouldEqual($opening);
-        $this->getChild('closing')->shouldEqual($closing);
-        $this->getChild('content_1')->shouldEqual($node);
+        $this->getChild('1')->shouldEqual($record1);
+        $this->getChild('2')->shouldEqual($record2);
     }
 
-    function it_accepts_a_visitor(Visitor $visitor, $opening, $closing, $node)
+    function it_accepts_a_visitor(Visitor $visitor, $record1, $record2)
     {
         $visitor->visitBefore($this)->shouldBeCalled();
-        $opening->accept($visitor)->shouldBeCalled();
-        $closing->accept($visitor)->shouldBeCalled();
-        $node->accept($visitor)->shouldBeCalled();
+        $record1->accept($visitor)->shouldBeCalled();
+        $record2->accept($visitor)->shouldBeCalled();
         $visitor->visitAfter($this)->shouldBeCalled();
 
         $this->accept($visitor);
     }
 
-    function it_contains_a_line_number($opening)
+    function it_contains_a_line_number($record1)
     {
-        $opening->getLineNr()->willReturn(100);
+        $record1->getLineNr()->willReturn(100);
         $this->getLineNr()->shouldEqual(100);
+    }
+
+    function it_sets_the_layout_name_attribute(RecordNode $opening, TextNode $layoutName)
+    {
+        $layoutName->getValue()->willReturn('foobar');
+
+        $opening->hasChild('layout_name')->willReturn(true);
+        $opening->getChild('layout_name')->willReturn($layoutName);
+
+        $this->beConstructedWith($opening);
+
+        $this->getAttribute('layout_name')->shouldEqual('foobar');
     }
 }

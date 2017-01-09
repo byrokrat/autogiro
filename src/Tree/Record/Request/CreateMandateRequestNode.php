@@ -23,8 +23,8 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Tree\Record\Request;
 
 use byrokrat\autogiro\Tree\Record\RecordNode;
-use byrokrat\autogiro\Tree\Account\AccountNode;
-use byrokrat\autogiro\Tree\Account\BankgiroNode;
+use byrokrat\autogiro\Tree\AccountNode;
+use byrokrat\autogiro\Tree\PayeeBankgiroNode;
 use byrokrat\autogiro\Tree\Id\IdNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
 
@@ -35,15 +35,16 @@ class CreateMandateRequestNode extends RecordNode
 {
     public function __construct(
         int $lineNr,
-        BankgiroNode $bankgiro,
+        PayeeBankgiroNode $payeeBg,
         PayerNumberNode $payerNr,
         AccountNode $account,
-        IdNode $id
+        IdNode $id,
+        array $void = []
     ) {
-        parent::__construct($lineNr);
-        $this->setChild('bankgiro', $bankgiro);
+        $this->setChild('payee_bankgiro', $payeeBg);
         $this->setChild('payer_number', $payerNr);
         $this->setChild('account', $account);
         $this->setChild('id', $id);
+        parent::__construct($lineNr, $void);
     }
 }

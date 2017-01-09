@@ -23,10 +23,23 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Tree\Record;
 
 use byrokrat\autogiro\Tree\Node;
+use byrokrat\autogiro\Tree\TextNode;
 
 /**
  * Base node to identify records
  */
 abstract class RecordNode extends Node
 {
+    /**
+     * @param integer    $lineNr Line number of record definition
+     * @param TextNode[] $end    Void nodes at end of record
+     */
+    public function __construct(int $lineNr = 0, array $end = [])
+    {
+        parent::__construct($lineNr);
+
+        foreach ($end as $index => $node) {
+            $this->setChild("end_$index", $node);
+        }
+    }
 }

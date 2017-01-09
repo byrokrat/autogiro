@@ -22,24 +22,26 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Tree;
 
+use byrokrat\autogiro\Tree\Record\RecordNode;
+
 /**
- * Generic layout container node
+ * Generic record container node
  */
 class LayoutNode extends Node
 {
-    public function __construct(OpeningNode $opening, ClosingNode $closing, Node ...$content)
+    public function __construct(RecordNode ...$nodes)
     {
-        $this->setChild('opening', $opening);
-
-        foreach ($content as $key => $node) {
-            $this->setChild('content_'.++$key, $node);
+        foreach ($nodes as $key => $node) {
+            $this->setChild((string)($key + 1), $node);
         }
 
-        $this->setChild('closing', $closing);
+        if (isset($nodes[0]) && $nodes[0]->hasChild('layout_name')) {
+            $this->setAttribute('layout_name', $nodes[0]->getChild('layout_name')->getValue());
+        }
     }
 
     public function getLineNr(): int
     {
-        return $this->getChild('opening')->getLineNr();
+        return $this->getChild('1')->getLineNr();
     }
 }

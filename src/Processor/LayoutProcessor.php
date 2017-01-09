@@ -23,32 +23,66 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Processor;
 
 use byrokrat\autogiro\Tree\LayoutNode;
+use byrokrat\autogiro\Tree\Record\OpeningRecordNode;
+use byrokrat\autogiro\Tree\Record\ClosingRecordNode;
 
 /**
  * Validate dates and record count in layout
  */
 class LayoutProcessor extends Processor
 {
-    public function afterLayoutNode(LayoutNode $node)
-    {
-        $openindDate = $node->getChild('opening')->getChild('date')->getValue();
-        $closingDate = $node->getChild('closing')->getChild('date')->getValue();
+    /**
+     * @var string Current date from opening record
+     */
+    private $date;
 
-        if ($openindDate != $closingDate) {
+    /**
+     * @var int The number of records in layout
+     */
+    private $recordCount;
+
+    /**
+     * Collect date from opening record
+     */
+    public function beforeOpeningRecordNode(OpeningRecordNode $node)
+    {
+        $this->date = $node->getChild('date')->getValue();
+    }
+
+    /**
+     * Validate that date in closing record matches date in opening record
+     */
+    public function beforeClosingRecordNode(ClosingRecordNode $node)
+    {
+        if ($node->getChild('date')->getValue() != $this->date) {
             $this->addError(
                 "Non-matching dates in opening and closing nodes (opening: %s, closing: %s) on line %s",
-                $openindDate,
-                $closingDate,
-                (string)$node->getChild('closing')->getLineNr()
+                $this->date,
+                $node->getChild('date')->getValue(),
+                (string)$node->getLineNr()
             );
         }
+    }
 
-        if ($node->getChild('closing')->getAttribute('nr_of_posts') != count($node->getChildren())-2 ) {
+    /**
+     * Collect the number of expected records in layout
+     */
+    public function afterClosingRecordNode(ClosingRecordNode $node)
+    {
+        $this->recordCount = (int)$node->getChild('nr_of_posts')->getValue();
+    }
+
+    /**
+    * Validate that the number of records in layout matches the expected value
+     */
+    public function afterLayoutNode(LayoutNode $node)
+    {
+        if ($this->recordCount && $this->recordCount != count($node->getChildren()) - 2) {
             $this->addError(
-                "Wrong record count in closing record (found: %s, expecting: %s) on line %s",
-                (string)$node->getChild('closing')->getAttribute('nr_of_posts'),
-                (string)(count($node->getChildren())-2),
-                (string)$node->getChild('closing')->getLineNr()
+                "Invalid record count (found: %s, expecting: %s) on line %s",
+                (string)(count($node->getChildren()) - 2),
+                (string)($this->recordCount),
+                (string)$node->getLineNr()
             );
         }
     }

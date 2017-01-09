@@ -20,24 +20,36 @@
 
 declare(strict_types = 1);
 
-namespace byrokrat\autogiro\Tree;
+namespace byrokrat\autogiro\Tree\Record;
+
+use byrokrat\autogiro\Tree\PayeeBankgiroNode;
+use byrokrat\autogiro\Tree\PayeeBgcNumberNode;
+use byrokrat\autogiro\Tree\Date\DateNode;
+use byrokrat\autogiro\Tree\TextNode;
 
 /**
  * Generic opening record node
  */
-class OpeningNode extends Node
+class OpeningRecordNode extends RecordNode
 {
     public function __construct(
         int $lineNr,
-        string $layoutName,
-        Date\DateNode $date,
-        BgcCustomerNumberNode $customerNr,
-        Account\BankgiroNode $bankgiro
+        TextNode $agTxt,
+        TextNode $space1,
+        DateNode $date,
+        TextNode $space2,
+        TextNode $layoutName,
+        PayeeBgcNumberNode $payeeBgcNr,
+        PayeeBankgiroNode $payeeBg,
+        array $void = []
     ) {
-        parent::__construct($lineNr);
-        $this->setAttribute('layout_name', $layoutName);
+        $this->setChild('autogiro_txt', $agTxt);
+        $this->setChild('space_1', $space1);
         $this->setChild('date', $date);
-        $this->setChild('customer_number', $customerNr);
-        $this->setChild('bankgiro', $bankgiro);
+        $this->setChild('space_2', $space2);
+        $this->setChild('layout_name', $layoutName);
+        $this->setChild('payee_bgc_number', $payeeBgcNr);
+        $this->setChild('payee_bankgiro', $payeeBg);
+        parent::__construct($lineNr, $void);
     }
 }

@@ -24,17 +24,29 @@ namespace byrokrat\autogiro\Tree\Record\Request;
 
 use byrokrat\autogiro\Tree\Record\RecordNode;
 use byrokrat\autogiro\Tree\PayeeBankgiroNode;
-use byrokrat\autogiro\Tree\PayerNumberNode;
+use byrokrat\autogiro\Tree\PayeeBgcNumberNode;
+use byrokrat\autogiro\Tree\Date\DateNode;
+use byrokrat\autogiro\Tree\TextNode;
 
 /**
- * Node representing a request that a mandate received from the internet bank be accepted
+ * Opening record node for request layouts
  */
-class AcceptMandateRequestNode extends RecordNode
+class RequestOpeningRecordNode extends RecordNode
 {
-    public function __construct(int $lineNr, PayeeBankgiroNode $payeeBg, PayerNumberNode $payerNr, array $void = [])
-    {
+    public function __construct(
+        int $lineNr,
+        DateNode $date,
+        TextNode $agTxt,
+        TextNode $space,
+        PayeeBgcNumberNode $payeeBgcNr,
+        PayeeBankgiroNode $payeeBg,
+        array $void = []
+    ) {
+        $this->setChild('date', $date);
+        $this->setChild('autogiro_txt', $agTxt);
+        $this->setChild('space', $space);
+        $this->setChild('payee_bgc_number', $payeeBgcNr);
         $this->setChild('payee_bankgiro', $payeeBg);
-        $this->setChild('payer_number', $payerNr);
         parent::__construct($lineNr, $void);
     }
 }

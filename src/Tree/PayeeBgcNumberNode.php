@@ -20,11 +20,11 @@
 
 declare(strict_types = 1);
 
-namespace byrokrat\autogiro\Tree\Account;
+namespace byrokrat\autogiro\Tree;
 
 /**
- * Wrapps a bankgiro account number
+ * Node that wrapps a BGC customer number
  */
-class BankgiroNode extends AccountNode
+class PayeeBgcNumberNode extends Node
 {
 }

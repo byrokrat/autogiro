@@ -5,8 +5,8 @@ declare(strict_types = 1);
 namespace spec\byrokrat\autogiro\Processor;
 
 use byrokrat\autogiro\Processor\AccountProcessor;
-use byrokrat\autogiro\Tree\Account\AccountNode;
-use byrokrat\autogiro\Tree\Account\BankgiroNode;
+use byrokrat\autogiro\Tree\AccountNode;
+use byrokrat\autogiro\Tree\PayeeBankgiroNode;
 use byrokrat\banking\AccountFactory;
 use byrokrat\banking\AccountNumber;
 use byrokrat\banking\Exception\InvalidAccountNumberException as BankingException;
@@ -18,7 +18,7 @@ class AccountProcessorSpec extends ObjectBehavior
         AccountFactory $accountFactory,
         AccountFactory $bankgiroFactory,
         AccountNode $accountNode,
-        BankgiroNode $bankgiroNode,
+        PayeeBankgiroNode $bankgiroNode,
         AccountNumber $accountNumber
     ) {
         $accountFactory->createAccount('not-valid')->willThrow(BankingException::CLASS);
@@ -31,7 +31,7 @@ class AccountProcessorSpec extends ObjectBehavior
         $accountNode->getType()->willReturn('AccountNode');
 
         $bankgiroNode->getLineNr()->willReturn(1);
-        $bankgiroNode->getType()->willReturn('BankgiroNode');
+        $bankgiroNode->getType()->willReturn('PayeeBankgiroNode');
 
         $this->beConstructedWith($accountFactory, $bankgiroFactory);
     }

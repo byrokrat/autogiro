@@ -23,14 +23,8 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Tree;
 
 /**
- * Standard closing record node
+ * Wrapps a bank account number
  */
-class ClosingNode extends Node
+class AccountNode extends Node
 {
-    public function __construct(int $lineNr, Date\DateNode $date, int $numberOfPosts = 0)
-    {
-        parent::__construct($lineNr);
-        $this->setChild('date', $date);
-        $this->setAttribute('nr_of_posts', $numberOfPosts);
-    }
 }

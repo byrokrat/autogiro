@@ -20,13 +20,20 @@
 
 declare(strict_types = 1);
 
-namespace byrokrat\autogiro\Tree\Account;
+namespace byrokrat\autogiro\Tree\Record;
 
-use byrokrat\autogiro\Tree\Node;
+use byrokrat\autogiro\Tree\Date\DateNode;
+use byrokrat\autogiro\Tree\TextNode;
 
 /**
- * Wrapps a bank account number
+ * Standard closing record node
  */
-class AccountNode extends Node
+class ClosingRecordNode extends RecordNode
 {
+    public function __construct(int $lineNr, DateNode $date, TextNode $numberOfPosts, array $void = [])
+    {
+        $this->setChild('date', $date);
+        $this->setChild('nr_of_posts', $numberOfPosts);
+        parent::__construct($lineNr, $void);
+    }
 }

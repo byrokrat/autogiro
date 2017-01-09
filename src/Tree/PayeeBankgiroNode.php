@@ -20,33 +20,11 @@
 
 declare(strict_types = 1);
 
-namespace byrokrat\autogiro\Processor;
-
-use byrokrat\autogiro\Tree\FileNode;
+namespace byrokrat\autogiro\Tree;
 
 /**
- * Set shorthand attributes on file nodes
+ * Wrapps a payee bankgiro account number
  */
-class FileProcessor extends Processor
+class PayeeBankgiroNode extends Node
 {
-    public function afterFileNode(FileNode $node)
-    {
-        $layoutIds = [];
-
-        foreach ($node->getChildren() as $layout) {
-            $node->setAttribute(
-                'customer_number',
-                $layout->getChild('opening')->getChild('customer_number')->getValue()
-            );
-
-            $node->setAttribute(
-                'bankgiro',
-                $layout->getChild('opening')->getChild('bankgiro')->getValue()
-            );
-
-            $layoutIds[] = $layout->getChild('opening')->getAttribute('layout_name');
-        }
-
-        $node->setAttribute('layout_ids', $layoutIds);
-    }
 }

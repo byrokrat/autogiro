@@ -7,14 +7,15 @@ namespace spec\byrokrat\autogiro\Tree\Record\Request;
 use byrokrat\autogiro\Tree\Record\Request\CreateMandateRequestNode;
 use byrokrat\autogiro\Tree\Record\RecordNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
-use byrokrat\autogiro\Tree\Account\AccountNode;
-use byrokrat\autogiro\Tree\Account\BankgiroNode;
+use byrokrat\autogiro\Tree\AccountNode;
+use byrokrat\autogiro\Tree\PayeeBankgiroNode;
 use byrokrat\autogiro\Tree\Id\IdNode;
+use byrokrat\autogiro\Tree\TextNode;
 use PhpSpec\ObjectBehavior;
 
 class CreateMandateRequestNodeSpec extends ObjectBehavior
 {
-    function let(BankgiroNode $bankgiro, PayerNumberNode $payerNr, AccountNode $account, IdNode $id)
+    function let(PayeeBankgiroNode $bankgiro, PayerNumberNode $payerNr, AccountNode $account, IdNode $id)
     {
         $this->beConstructedWith(0, $bankgiro, $payerNr, $account, $id);
     }
@@ -42,7 +43,7 @@ class CreateMandateRequestNodeSpec extends ObjectBehavior
 
     function it_contains_a_bankgiro($bankgiro)
     {
-        $this->getChild('bankgiro')->shouldEqual($bankgiro);
+        $this->getChild('payee_bankgiro')->shouldEqual($bankgiro);
     }
 
     function it_contains_a_payer_nr($payerNr)
@@ -58,5 +59,11 @@ class CreateMandateRequestNodeSpec extends ObjectBehavior
     function it_containt_an_id($id)
     {
         $this->getChild('id')->shouldEqual($id);
+    }
+
+    function it_may_contain_void_ending_nodes($bankgiro, $payerNr, $account, $id, TextNode $endVoid)
+    {
+        $this->beConstructedWith(0, $bankgiro, $payerNr, $account, $id, [$endVoid]);
+        $this->getChild('end_0')->shouldEqual($endVoid);
     }
 }
