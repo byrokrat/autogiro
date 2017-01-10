@@ -20,28 +20,17 @@
 
 declare(strict_types = 1);
 
-namespace byrokrat\autogiro\Processor;
-
-use byrokrat\autogiro\Visitor\Visitor;
-use byrokrat\autogiro\Tree\FileNode;
+namespace byrokrat\autogiro\Visitor;
 
 /**
- * Defines a parse tree processor
+ * Container of error messages
  */
-abstract class Processor extends Visitor
+class ErrorObject
 {
     /**
      * @var string[] List of messages describing found errors
      */
     private $errors = [];
-
-    /**
-     * Reset internal error state when a new file is traversed
-     */
-    public function beforeFileNode(FileNode $node)
-    {
-        $this->errors = [];
-    }
 
     /**
      * Check if any errors have been found
@@ -64,8 +53,16 @@ abstract class Processor extends Visitor
     /**
      * Add error message to store
      */
-    protected function addError(string $msg, string ...$args)
+    public function addError(string $msg, string ...$args)
     {
         $this->errors[] = sprintf($msg, ...$args);
+    }
+
+    /**
+     * Reset error store
+     */
+    public function resetErrors()
+    {
+        $this->errors = [];
     }
 }

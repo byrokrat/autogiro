@@ -3,6 +3,9 @@ TODO
 
 1. Updatera årtal i copyright...
 
+1. Flytta ner Date och ImmediateDateNode till Tree root, bara konstigt att de
+    ska hänga och dingla...
+
 1. Implement Writer as a facade to a Visitor that visits request records...
 
    $writer = new Writer($bg, 'cust1232345', $date = null);
@@ -11,11 +14,17 @@ TODO
 
    $writer->getContent(); // string
 
-   Har börjar med PrintingVisitor
-        -> saknas radbrytningar efter record-klasser
+   Har börjar med PrintingVisitor, saknas:
+        -> transaktionskoder innan record-klasser
+        -> radbrytningar efter record-klasser
 
-   Skriv TreeBuilders eller liknande, som kan bygga upp ett träd för en request
-        så blir arbetet för writer att kombinera en builder med printing visitor...
+   TreeBuilder:
+        Har kommit igång bra, bara att fortsätta...
+        Tänk på att alla rader i alla filer jag skapar ska vara exakt 80 tecken!
+            Anpassa med TextNodes där det behövs...
+        Vänta med att fortsätta detta arbete tills jag gått igenom grammar och
+            slutligen beslutet om hur alla nod-klasser ska vara
+            (riskerar att bli en hel del dubbeljobb här annars...)
 
 1. Generated files must NOT include (end with) and empty line
    In the deprecated georg system this was solved using

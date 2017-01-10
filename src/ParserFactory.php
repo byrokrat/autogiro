@@ -42,28 +42,8 @@ use byrokrat\banking\Formats as AccountFormats;
 /**
  * Simplifies the creation of parser objects
  */
-class ParserFactory
+class ParserFactory implements Visitors
 {
-    /**
-     * Do not include account number processor in parser
-     */
-    const NO_ACCOUNT_PROCESSOR = 1;
-
-    /**
-     * Do not include amount processor in parser
-     */
-    const NO_AMOUNT_PROCESSOR = 2;
-
-    /**
-     * Do not include id processor in parser
-     */
-    const NO_ID_PROCESSOR = 4;
-
-    /**
-     * Ignore all processors based on external dependencies
-     */
-    const NO_EXTERNAL_PROCESSORS = self::NO_ACCOUNT_PROCESSOR | self::NO_AMOUNT_PROCESSOR | self::NO_ID_PROCESSOR;
-
     /**
      * Create a new parser
      */
@@ -82,7 +62,7 @@ class ParserFactory
             new TransactionProcessor
         );
 
-        if (!$flag(self::NO_ACCOUNT_PROCESSOR)) {
+        if (!$flag(self::VISITOR_IGNORE_ACCOUNTS)) {
             $accountFactory = new AccountFactory;
             $accountFactory->blacklistFormats([AccountFormats::FORMAT_PLUSGIRO]);
 
@@ -92,11 +72,11 @@ class ParserFactory
             $processors->addProcessor(new AccountProcessor($accountFactory, $bankgiroFactory));
         }
 
-        if (!$flag(self::NO_AMOUNT_PROCESSOR)) {
+        if (!$flag(self::VISITOR_IGNORE_AMOUNTS)) {
             $processors->addProcessor(new AmountProcessor);
         }
 
-        if (!$flag(self::NO_ID_PROCESSOR)) {
+        if (!$flag(self::VISITOR_IGNORE_IDS)) {
             $processors->addProcessor(
                 new IdProcessor(
                     new OrganizationIdFactory,

@@ -18,7 +18,7 @@ use byrokrat\autogiro\Tree\AmountNode;
 use byrokrat\autogiro\Tree\IntervalNode;
 use byrokrat\autogiro\Tree\IdNode;
 use byrokrat\autogiro\Tree\RepetitionsNode;
-use byrokrat\autogiro\Visitor;
+use byrokrat\autogiro\Visitor\Visitor;
 use byrokrat\amount\Currency\SEK;
 use byrokrat\banking\AccountNumber;
 use byrokrat\id\PersonalId;

@@ -43,7 +43,7 @@ class FeatureContext implements Context, SnippetAcceptingContext
     public function aParserThatIgnoresAccountAndIdStructures()
     {
         $this->parser = (new ParserFactory)->createParser(
-            ParserFactory::NO_ACCOUNT_PROCESSOR | ParserFactory::NO_ID_PROCESSOR
+            ParserFactory::VISITOR_IGNORE_ACCOUNTS | ParserFactory::VISITOR_IGNORE_IDS
         );
     }
 

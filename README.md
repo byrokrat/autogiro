@@ -45,7 +45,7 @@ You can opt out of this functionality using one of the processor constants:
     @extends factory-n-parser
 -->
 ```php
-$parser = $factory->createParser(\byrokrat\autogiro\ParserFactory::NO_EXTERNAL_PROCESSORS);
+$parser = $factory->createParser(\byrokrat\autogiro\ParserFactory::VISITOR_IGNORE_EXTERNAL);
 ```
 
 When in use access the created objects as follows:

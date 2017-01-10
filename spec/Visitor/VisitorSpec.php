@@ -2,9 +2,9 @@
 
 declare(strict_types = 1);
 
-namespace spec\byrokrat\autogiro;
+namespace spec\byrokrat\autogiro\Visitor;
 
-use byrokrat\autogiro\Visitor;
+use byrokrat\autogiro\Visitor\Visitor;
 use byrokrat\autogiro\Tree\Node;
 use PhpSpec\ObjectBehavior;
 

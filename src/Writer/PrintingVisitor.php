@@ -22,7 +22,7 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Writer;
 
-use byrokrat\autogiro\Visitor;
+use byrokrat\autogiro\Visitor\Visitor;
 use byrokrat\autogiro\Exception\LogicException;
 use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Tree\Date\DateNode;

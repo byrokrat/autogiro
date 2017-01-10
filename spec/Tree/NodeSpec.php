@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace spec\byrokrat\autogiro\Tree;
 
 use byrokrat\autogiro\Tree\Node;
-use byrokrat\autogiro\Visitor;
+use byrokrat\autogiro\Visitor\Visitor;
 use byrokrat\autogiro\Exception\LogicException;
 use PhpSpec\ObjectBehavior;
 
