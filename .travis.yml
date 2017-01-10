@@ -17,4 +17,4 @@ install:
 script:
     - vendor/bin/phpspec run --verbose
     - vendor/bin/behat --verbose
-    - readme-tester test README.md
+    - vendor/bin/readme-tester test README.md
