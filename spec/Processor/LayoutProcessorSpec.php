@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace spec\byrokrat\autogiro\Processor;
 
 use byrokrat\autogiro\Processor\LayoutProcessor;
+use byrokrat\autogiro\Processor\Processor;
 use byrokrat\autogiro\Tree\LayoutNode;
 use byrokrat\autogiro\Tree\Record\RecordNode;
 use byrokrat\autogiro\Tree\Record\OpeningRecordNode;
@@ -18,6 +19,11 @@ class LayoutProcessorSpec extends ObjectBehavior
     function it_is_initializable()
     {
         $this->shouldHaveType(LayoutProcessor::CLASS);
+    }
+
+    function it_extends_processor()
+    {
+        $this->shouldHaveType(Processor::CLASS);
     }
 
     function it_fails_on_missmatching_dates(

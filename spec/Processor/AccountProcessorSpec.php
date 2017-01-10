@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace spec\byrokrat\autogiro\Processor;
 
 use byrokrat\autogiro\Processor\AccountProcessor;
+use byrokrat\autogiro\Processor\Processor;
 use byrokrat\autogiro\Tree\AccountNode;
 use byrokrat\autogiro\Tree\PayeeBankgiroNode;
 use byrokrat\banking\AccountFactory;
@@ -39,6 +40,11 @@ class AccountProcessorSpec extends ObjectBehavior
     function it_is_initializable()
     {
         $this->shouldHaveType(AccountProcessor::CLASS);
+    }
+
+    function it_extends_processor()
+    {
+        $this->shouldHaveType(Processor::CLASS);
     }
 
     function it_fails_on_unvalid_account_number($accountNode)

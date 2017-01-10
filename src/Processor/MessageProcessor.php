@@ -23,7 +23,9 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Processor;
 
 use byrokrat\autogiro\Tree\MessageNode;
+use byrokrat\autogiro\Tree\IntervalNode;
 use byrokrat\autogiro\Messages;
+use byrokrat\autogiro\Intervals;
 
 /**
  * Processor of message nodes in tree
@@ -32,7 +34,17 @@ class MessageProcessor extends Processor
 {
     public function beforeMessageNode(MessageNode $node)
     {
-        if (!isset(Messages::MESSAGE_MAP[$node->getValue()])) {
+        $this->setMessageAttr($node, Messages::MESSAGE_MAP);
+    }
+
+    public function beforeIntervalNode(IntervalNode $node)
+    {
+        $this->setMessageAttr($node, Intervals::MESSAGE_MAP);
+    }
+
+    private function setMessageAttr(MessageNode $node, array $messageMap)
+    {
+        if (!isset($messageMap[$node->getValue()])) {
             return $this->addError(
                 "Invalid message id %s on line %s",
                 $node->getValue(),
@@ -42,7 +54,7 @@ class MessageProcessor extends Processor
 
         $node->setAttribute(
             'message',
-            Messages::MESSAGE_MAP[$node->getValue()]
+            $messageMap[$node->getValue()]
         );
     }
 }

@@ -22,8 +22,7 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Processor;
 
-use byrokrat\autogiro\Tree\Id\OrganizationIdNode;
-use byrokrat\autogiro\Tree\Id\PersonalIdNode;
+use byrokrat\autogiro\Tree\IdNode;
 use byrokrat\id\OrganizationIdFactory;
 use byrokrat\id\PersonalIdFactory;
 use byrokrat\id\Exception as IdException;
@@ -49,35 +48,39 @@ class IdProcessor extends Processor
         $this->personalIdFactory = $personalIdFactory;
     }
 
-    public function beforeOrganizationIdNode(OrganizationIdNode $node)
+    public function beforeIdNode(IdNode $node)
     {
         try {
-            $node->setAttribute(
-                'id',
-                $this->organizationIdFactory->create($node->getValue())
-            );
-        } catch (IdException $e) {
+
+            if (in_array(substr($node->getValue(), 0, 2), ['00', '99'])) {
+                return $this->createOrganizationId($node);
+            }
+
+            return $this->createPersonalId($node);
+
+        } catch (IdException $exception) {
             $this->addError(
-                "Invalid organizational id number %s on line %s",
+                "Invalid id number %s (%s) on line %s",
                 $node->getValue(),
+                $exception->getMessage(),
                 (string)$node->getLineNr()
             );
         }
     }
 
-    public function beforePersonalIdNode(PersonalIdNode $node)
+    private function createOrganizationId(IdNode $node)
     {
-        try {
-            $node->setAttribute(
-                'id',
-                $this->personalIdFactory->create($node->getValue())
-            );
-        } catch (IdException $e) {
-            $this->addError(
-                "Invalid personal id number %s on line %s",
-                $node->getValue(),
-                (string)$node->getLineNr()
-            );
-        }
+        $node->setAttribute(
+            'id',
+            $this->organizationIdFactory->create(substr($node->getValue(), 2))
+        );
+    }
+
+    private function createPersonalId(IdNode $node)
+    {
+        $node->setAttribute(
+            'id',
+            $this->personalIdFactory->create($node->getValue())
+        );
     }
 }

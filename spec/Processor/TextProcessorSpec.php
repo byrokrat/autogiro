@@ -5,8 +5,8 @@ declare(strict_types = 1);
 namespace spec\byrokrat\autogiro\Processor;
 
 use byrokrat\autogiro\Processor\TextProcessor;
-use byrokrat\autogiro\Tree\IntervalNode;
-use byrokrat\autogiro\Tree\RepeatsNode;
+use byrokrat\autogiro\Processor\Processor;
+use byrokrat\autogiro\Tree\RepetitionsNode;
 use byrokrat\autogiro\Tree\TextNode;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -16,6 +16,11 @@ class TextProcessorSpec extends ObjectBehavior
     function it_is_initializable()
     {
         $this->shouldHaveType(TextProcessor::CLASS);
+    }
+
+    function it_extends_processor()
+    {
+        $this->shouldHaveType(Processor::CLASS);
     }
 
     function a_failing_regexp(TextNode $node)
@@ -51,15 +56,9 @@ class TextProcessorSpec extends ObjectBehavior
         $this->getErrors()->shouldHaveCount(0);
     }
 
-    function it_captures_invalid_intervals(IntervalNode $node)
+    function it_captures_invalid_repetitions(RepetitionsNode $node)
     {
-        $this->beforeIntervalNode($this->a_failing_regexp($node));
-        $this->getErrors()->shouldHaveCount(1);
-    }
-
-    function it_captures_invalid_repititions(RepeatsNode $node)
-    {
-        $this->beforeRepeatsNode($this->a_failing_regexp($node));
+        $this->beforeRepetitionsNode($this->a_failing_regexp($node));
         $this->getErrors()->shouldHaveCount(1);
     }
 }

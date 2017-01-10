@@ -20,13 +20,11 @@
 
 declare(strict_types = 1);
 
-namespace byrokrat\autogiro\Tree\Id;
-
-use byrokrat\autogiro\Tree\Node;
+namespace byrokrat\autogiro\Tree\Record\Request;
 
 /**
- * Wrapps an organizational or personal id
+ * Node representing a request of an outgoing transaction
  */
-abstract class IdNode extends Node
+class OutgoingTransactionRequestNode extends IncomingTransactionRequestNode
 {
 }

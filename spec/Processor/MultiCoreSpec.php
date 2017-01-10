@@ -21,6 +21,11 @@ class MultiCoreSpec extends ObjectBehavior
         $this->shouldHaveType(MultiCore::CLASS);
     }
 
+    function it_extends_processor()
+    {
+        $this->shouldHaveType(Processor::CLASS);
+    }
+
     function it_delegates_visit_before($processorA, $processorB, Node $node)
     {
         $this->visitBefore($node);

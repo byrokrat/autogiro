@@ -26,7 +26,7 @@ use byrokrat\autogiro\Tree\Record\RecordNode;
 use byrokrat\autogiro\Tree\AccountNode;
 use byrokrat\autogiro\Tree\PayeeBankgiroNode;
 use byrokrat\autogiro\Tree\Date\DateNode;
-use byrokrat\autogiro\Tree\Id\IdNode;
+use byrokrat\autogiro\Tree\IdNode;
 use byrokrat\autogiro\Tree\MessageNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
 

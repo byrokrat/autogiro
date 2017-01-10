@@ -31,6 +31,7 @@ use byrokrat\autogiro\Processor\MessageProcessor;
 use byrokrat\autogiro\Processor\MultiCore;
 use byrokrat\autogiro\Processor\PayeeProcessor;
 use byrokrat\autogiro\Processor\TextProcessor;
+use byrokrat\autogiro\Processor\TransactionProcessor;
 use byrokrat\id\CoordinationIdFactory;
 use byrokrat\id\NullIdFactory;
 use byrokrat\id\OrganizationIdFactory;
@@ -77,7 +78,8 @@ class ParserFactory
             new LayoutProcessor,
             new MessageProcessor,
             new PayeeProcessor,
-            new TextProcessor
+            new TextProcessor,
+            new TransactionProcessor
         );
 
         if (!$flag(self::NO_ACCOUNT_PROCESSOR)) {

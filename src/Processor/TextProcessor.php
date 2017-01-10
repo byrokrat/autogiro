@@ -23,7 +23,7 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Processor;
 
 use byrokrat\autogiro\Tree\IntervalNode;
-use byrokrat\autogiro\Tree\RepeatsNode;
+use byrokrat\autogiro\Tree\RepetitionsNode;
 use byrokrat\autogiro\Tree\TextNode;
 
 /**
@@ -49,24 +49,9 @@ class TextProcessor extends Processor
     }
 
     /**
-     * Validate that interval nodes contain values matching a regular expression
+     * Validate that repetition nodes contain values matching a regular expression
      */
-    public function beforeIntervalNode(IntervalNode $node)
-    {
-        if (!preg_match($node->getAttribute('validation_regexp'), $node->getValue())) {
-            $this->addError(
-                "Interval '%s' does not match expected %s on line %s",
-                $node->getValue(),
-                $node->getAttribute('validation_regexp'),
-                (string)$node->getLineNr()
-            );
-        }
-    }
-
-    /**
-     * Validate that repeats nodes contain values matching a regular expression
-     */
-    public function beforeRepeatsNode(RepeatsNode $node)
+    public function beforeRepetitionsNode(RepetitionsNode $node)
     {
         if (!preg_match($node->getAttribute('validation_regexp'), $node->getValue())) {
             $this->addError(

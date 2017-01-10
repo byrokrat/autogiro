@@ -20,11 +20,15 @@
 
 declare(strict_types = 1);
 
-namespace byrokrat\autogiro\Tree\Id;
+namespace byrokrat\autogiro\Tree;
 
 /**
- * Wrapps an organization id
+ * Node representing the number of transaction repititions
  */
-class OrganizationIdNode extends IdNode
+class RepetitionsNode extends TextNode
 {
+    public function __construct(int $lineNr = 0, string $value = '')
+    {
+        parent::__construct($lineNr, $value, '/^([0-9]{3})|( {3})$/');
+    }
 }

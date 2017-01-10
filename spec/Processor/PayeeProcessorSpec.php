@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace spec\byrokrat\autogiro\Processor;
 
 use byrokrat\autogiro\Processor\PayeeProcessor;
+use byrokrat\autogiro\Processor\Processor;
 use byrokrat\autogiro\Tree\FileNode;
 use byrokrat\autogiro\Tree\PayeeBankgiroNode;
 use byrokrat\autogiro\Tree\PayeeBgcNumberNode;
@@ -15,6 +16,11 @@ class PayeeProcessorSpec extends ObjectBehavior
     function it_is_initializable()
     {
         $this->shouldHaveType(PayeeProcessor::CLASS);
+    }
+
+    function it_extends_processor()
+    {
+        $this->shouldHaveType(Processor::CLASS);
     }
 
     function let(PayeeBankgiroNode $bgA, PayeeBankgiroNode $bgB, PayeeBgcNumberNode $custA, PayeeBgcNumberNode $custB)

@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace spec\byrokrat\autogiro\Processor;
 
 use byrokrat\autogiro\Processor\AmountProcessor;
+use byrokrat\autogiro\Processor\Processor;
 use byrokrat\autogiro\Tree\AmountNode;
 use byrokrat\amount\Currency\SEK;
 use PhpSpec\ObjectBehavior;
@@ -15,6 +16,11 @@ class AmountProcessorSpec extends ObjectBehavior
     function it_is_initializable()
     {
         $this->shouldHaveType(AmountProcessor::CLASS);
+    }
+
+    function it_extends_processor()
+    {
+        $this->shouldHaveType(Processor::CLASS);
     }
 
     function it_fails_on_unvalid_amounts(AmountNode $amountNode)

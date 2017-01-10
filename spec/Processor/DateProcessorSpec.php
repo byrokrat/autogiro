@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace spec\byrokrat\autogiro\Processor;
 
 use byrokrat\autogiro\Processor\DateProcessor;
+use byrokrat\autogiro\Processor\Processor;
 use byrokrat\autogiro\Tree\Date\DateNode;
 use PhpSpec\ObjectBehavior;
 
@@ -13,6 +14,11 @@ class DateProcessorSpec extends ObjectBehavior
     function it_is_initializable()
     {
         $this->shouldHaveType(DateProcessor::CLASS);
+    }
+
+    function it_extends_processor()
+    {
+        $this->shouldHaveType(Processor::CLASS);
     }
 
     function it_fails_on_unvalid_date(DateNode $dateNode)

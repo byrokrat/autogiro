@@ -23,12 +23,8 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Tree;
 
 /**
- * Node representing the number of transaction repititions
+ * Node representing an organizational or personal id
  */
-class RepeatsNode extends TextNode
+class IdNode extends Node
 {
-    public function __construct(int $lineNr = 0, string $value = '')
-    {
-        parent::__construct($lineNr, $value, '/^([0-9]{3})|( {3})$/');
-    }
 }
