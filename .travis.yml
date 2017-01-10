@@ -12,8 +12,9 @@ matrix:
     fast_finish: true
 
 install:
-    - composer require phpspec/phpspec:^3.1 behat/behat:^3.2 --no-interaction
+    - composer require phpspec/phpspec:^3.1 behat/behat:^3.2 hanneskod/readme-tester:^1.0@beta --no-interaction
 
 script:
     - vendor/bin/phpspec run --verbose
     - vendor/bin/behat --verbose
+    - readme-tester test README.md

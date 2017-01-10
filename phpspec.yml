@@ -2,5 +2,3 @@ suites:
     autogiro_suite:
         namespace: byrokrat\autogiro
         psr4_prefix: byrokrat\autogiro
-
-bootstrap: build_parser.php

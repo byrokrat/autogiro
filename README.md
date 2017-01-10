@@ -26,8 +26,11 @@ Instantiating a parser
 ----------------------
 Create a parser using [ParserFactory](/src/ParserFactory.php).
 
+<!--
+    @example factory-n-parser
+-->
 ```php
-$factory = new ParserFactory;
+$factory = new \byrokrat\autogiro\ParserFactory;
 $parser = $factory->createParser();
 ```
 
@@ -38,12 +41,16 @@ packages respectively.
 
 You can opt out of this functionality using one of the processor constants:
 
+<!--
+    @extends factory-n-parser
+-->
 ```php
-$parser = $factory->createParser(ParserFactory::NO_EXTERNAL_PROCESSORS);
+$parser = $factory->createParser(\byrokrat\autogiro\ParserFactory::NO_EXTERNAL_PROCESSORS);
 ```
 
 When in use access the created objects as follows:
 
+<!-- @ignore -->
 ```php
 /** @var \byrokrat\amount\Amount */
 $amount = $amountNode->getAttribute('amount');
@@ -58,6 +65,7 @@ $account = $accountNode->getAttribute('account');
 Parsing
 -------
 
+<!-- @ignore -->
 ```php
 /** @var \byrokrat\autogiro\Tree\FileNode */
 $fileNode = $parser->parse($raw_content);
@@ -65,6 +73,7 @@ $fileNode = $parser->parse($raw_content);
 
 Grep nodes based on type using the [Enumerator](/src/Enumerator.php):
 
+<!-- @ignore -->
 ```php
 $enum = new Enumerator;
 
