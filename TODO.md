@@ -5,17 +5,17 @@ TODO
 
 1. Implement Writer as a facade to a Visitor that visits request records...
 
-   // Nu har jag kommit så pass långt i Granmmar att jag skulle unna skriva Writer
-   // för mandate requests
-
-   VÄNTA MED DETTA TILLS Tree HAR STABILISERATS
-   annars riskerar jag dubbeljobb..
-
    $writer = new Writer($bg, 'cust1232345', $date = null);
    $writer->deleteMandate('123456789');
    $writer->createMandate(...);
 
    $writer->getContent(); // string
+
+   Har börjar med PrintingVisitor
+        -> saknas radbrytningar efter record-klasser
+
+   Skriv TreeBuilders eller liknande, som kan bygga upp ett träd för en request
+        så blir arbetet för writer att kombinera en builder med printing visitor...
 
 1. Generated files must NOT include (end with) and empty line
    In the deprecated georg system this was solved using

@@ -18,13 +18,15 @@
  * Copyright 2016 Hannes Forsgård
  */
 
-declare(strict_types = 1);
-
-namespace byrokrat\autogiro\Tree;
+namespace byrokrat\autogiro\Writer;
 
 /**
- * Wrapps a payee bankgiro account number
+ * Interface for generating output
  */
-class PayeeBankgiroNode extends AccountNode
+interface OutputInterface
 {
+    /**
+     * Write a string to output
+     */
+    public function write(string $chars);
 }
