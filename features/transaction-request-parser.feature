@@ -1,4 +1,4 @@
-Feature: Transaction requests
+Feature: Transaction request parser
   In order to work with the autogiro
   As a user
   I need to be able to parse transaction requests

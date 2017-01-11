@@ -6,6 +6,7 @@ use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use byrokrat\autogiro\Parser\ParserFactory;
+use byrokrat\autogiro\Writer\WriterFactory;
 use byrokrat\autogiro\Enumerator;
 use byrokrat\autogiro\Exception\TreeException;
 
@@ -15,7 +16,7 @@ use byrokrat\autogiro\Exception\TreeException;
 class FeatureContext implements Context, SnippetAcceptingContext
 {
     /**
-     * @var \byrokrat\autogiro\Parser
+     * @var \byrokrat\autogiro\Parser\Parser
      */
     private $parser;
 
@@ -28,6 +29,16 @@ class FeatureContext implements Context, SnippetAcceptingContext
      * @var TreeException
      */
     private $exception;
+
+    /**
+     * @var \byrokrat\autogiro\Writer\Writer
+     */
+    private $writer;
+
+    /**
+     * @var string The generated request file
+     */
+    private $generatedFile = '';
 
     /**
      * @Given a parser
@@ -52,11 +63,7 @@ class FeatureContext implements Context, SnippetAcceptingContext
      */
     public function iParse(PyStringNode $string)
     {
-        try {
-            $this->fileNode = $this->parser->parse($string->getRaw());
-        } catch (TreeException $e) {
-            $this->exception = $e;
-        }
+        $this->parseRawFile($string->getRaw());
     }
 
     /**
@@ -107,6 +114,59 @@ class FeatureContext implements Context, SnippetAcceptingContext
             $error,
             $this->exception->getErrors()
         );
+    }
+
+    /**
+     * @Given a writer with BGC number :bgcNumber and bankgiro :autogiro
+     */
+    public function aWriterWithBgcNumberAndBankgiro($bgcNumber, $autogiro)
+    {
+        $this->writer = (new WriterFactory)->createWriter($bgcNumber, $autogiro);
+    }
+
+    /**
+     * @When I request mandate :payerNr be deleted
+     */
+    public function iRequestMandateBeDeleted($payerNr)
+    {
+        $this->writer->deleteMandate($payerNr);
+    }
+
+    /**
+     * @When I generate the request file
+     */
+    public function iGenerateTheRequestFile()
+    {
+        $output = new \byrokrat\autogiro\Writer\Output;
+        $this->writer->writeTo($output);
+        $this->generatedFile = $output->getContent();
+    }
+
+    /**
+     * @When I parse the generated file
+     */
+    public function iParseTheGeneratedFile()
+    {
+        $this->parseRawFile($this->generatedFile);
+    }
+
+    /**
+     * @Then I get a file like:
+     */
+    public function iGetAFileLike(PyStringNode $string)
+    {
+        if ((string)$string != $this->generatedFile) {
+            throw new \Exception($this->generatedFile);
+        }
+    }
+
+    private function parseRawFile(string $content)
+    {
+        try {
+            $this->fileNode = $this->parser->parse($content);
+        } catch (TreeException $e) {
+            $this->exception = $e;
+        }
     }
 
     private function assertInArray($needle, array $haystack)

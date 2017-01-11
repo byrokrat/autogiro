@@ -1,4 +1,4 @@
-Feature: Mandate requests
+Feature: Mandate request parser
   In order to work with the autogiro
   As a user
   I need to be able to parse mandate requests

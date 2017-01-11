@@ -88,7 +88,8 @@ class PrintingVisitorSpec extends ObjectBehavior
     function it_prints_payee_bankgiro_numbers(PayeeBankgiroNode $node, AccountNumber $account, OutputInterface $output)
     {
         $this->setOutput($output);
-        $account->getSerialNumber()->willReturn('12345678');
+        $account->getSerialNumber()->willReturn('1234567');
+        $account->getCheckDigit()->willReturn('8');
         $node->hasAttribute('account')->willReturn(true);
         $node->getAttribute('account')->willReturn($account);
         $this->beforePayeeBankgiroNode($node);
@@ -122,7 +123,8 @@ class PrintingVisitorSpec extends ObjectBehavior
     {
         $this->setOutput($output);
         $account->getClearingNumber()->willReturn('1111');
-        $account->getSerialNumber()->willReturn('12345678');
+        $account->getSerialNumber()->willReturn('1234567');
+        $account->getCheckDigit()->willReturn('8');
         $node->hasAttribute('account')->willReturn(true);
         $node->getAttribute('account')->willReturn($account);
         $this->beforeAccountNode($node);

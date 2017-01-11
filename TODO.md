@@ -8,26 +8,6 @@ TODO
     Fortsätt med TreeBuilder
         - Gå igenom Grammar och bestäm hur noder slutgiltigt ska definieras innan jag fortsätter...
         - Lägg till transaktionskoder och ny-rader i PrintingVisitor i takt med att jag lägger till TreeBuilder
-        - Alla rader som jag skapar ska vara exakt 80 tecken...
-        - lätt till ett tjusigt behat test...
-
-1. Lägg till ett test som detta till README...
-```php
-
-namespace byrokrat\autogiro;
-
-include 'vendor/autoload.php';
-
-$writer = (new Writer\WriterFactory)->createWriter('583960', '5450-2034');
-
-$writer->deleteMandate('12345');
-
-$output = new Writer\Output;
-
-$writer->writeTo($output);
-
-echo $output;
-```
 
 1. Generated files must NOT include (end with) and empty line
    In the deprecated georg system this was solved using

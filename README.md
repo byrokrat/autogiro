@@ -83,3 +83,28 @@ $enum->enumerate($fileNode);
 ```
 
 For a list of possible node types see the [Tree](/src/Tree) namespace;
+
+Generating autogiro request files
+---------------------------------
+Create a writer by supplying your bankgiro and BGC customer number to WriterFactory.
+
+<!-- @example WriterFactory -->
+```php
+$writer = (new \byrokrat\autogiro\Writer\WriterFactory)->createWriter('123456', '1111-1119');
+```
+
+Then perform actions on the writer and generate contents to output.
+
+<!--
+    @extends WriterFactory
+    @expectOutput /AUTOGIRO/
+-->
+```php
+$writer->deleteMandate('1234567890');
+
+$output = new \byrokrat\autogiro\Writer\Output;
+
+$writer->writeTo($output);
+
+echo $output;
+```

@@ -97,7 +97,8 @@ class TreeBuilder
             new TextNode(0, 'AUTOGIRO'),
             new TextNode(0, str_pad('', 44)),
             new PayeeBgcNumberNode(0, $this->payeeBgcNr),
-            new PayeeBankgiroNode(0, $this->payeeBankgiro)
+            new PayeeBankgiroNode(0, $this->payeeBankgiro),
+            [new TextNode(0, '  ')]
         );
         $this->mandateRecords = [];
         $this->transactionRecords = [];
@@ -112,7 +113,8 @@ class TreeBuilder
         $this->mandateRecords[] = new DeleteMandateRequestNode(
             0,
             new PayeeBankgiroNode(0, $this->payeeBankgiro),
-            new PayerNumberNode(0, $payerNr)
+            new PayerNumberNode(0, $payerNr),
+            [new TextNode(0, str_pad('', 52))]
         );
     }
 

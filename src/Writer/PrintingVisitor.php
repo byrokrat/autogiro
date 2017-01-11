@@ -81,7 +81,8 @@ class PrintingVisitor extends Visitor
     public function beforePayeeBankgiroNode(PayeeBankgiroNode $node)
     {
         $this->assertAttribute($node, 'account', AccountNumber::CLASS);
-        $this->output->write(str_pad($node->getAttribute('account')->getSerialNumber(), 10, '0', STR_PAD_LEFT));
+        $number = $node->getAttribute('account')->getSerialNumber() . $node->getAttribute('account')->getCheckDigit();
+        $this->output->write(str_pad($number, 10, '0', STR_PAD_LEFT));
     }
 
     public function beforePayerNumberNode(PayerNumberNode $node)
@@ -92,9 +93,10 @@ class PrintingVisitor extends Visitor
     public function beforeAccountNode(AccountNode $node)
     {
         $this->assertAttribute($node, 'account', AccountNumber::CLASS);
+        $number = $node->getAttribute('account')->getSerialNumber() . $node->getAttribute('account')->getCheckDigit();
         $this->output->write(
             $node->getAttribute('account')->getClearingNumber()
-            . str_pad($node->getAttribute('account')->getSerialNumber(), 12, '0', STR_PAD_LEFT)
+            . str_pad($number, 12, '0', STR_PAD_LEFT)
         );
     }
 
