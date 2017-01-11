@@ -7,7 +7,7 @@ namespace spec\byrokrat\autogiro\Visitor;
 use byrokrat\autogiro\Visitor\DateVisitor;
 use byrokrat\autogiro\Visitor\ErrorAwareVisitor;
 use byrokrat\autogiro\Visitor\ErrorObject;
-use byrokrat\autogiro\Tree\Date\DateNode;
+use byrokrat\autogiro\Tree\DateNode;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 

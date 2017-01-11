@@ -7,7 +7,7 @@ namespace spec\byrokrat\autogiro\Tree\Record\Response;
 use byrokrat\autogiro\Tree\Record\Response\MandateResponseNode;
 use byrokrat\autogiro\Tree\Record\RecordNode;
 use byrokrat\autogiro\Tree\AccountNode;
-use byrokrat\autogiro\Tree\Date\DateNode;
+use byrokrat\autogiro\Tree\DateNode;
 use byrokrat\autogiro\Tree\IdNode;
 use byrokrat\autogiro\Tree\MessageNode;
 use byrokrat\autogiro\Tree\PayeeBankgiroNode;

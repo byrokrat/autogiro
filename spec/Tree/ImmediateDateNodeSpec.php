@@ -2,10 +2,10 @@
 
 declare(strict_types = 1);
 
-namespace spec\byrokrat\autogiro\Tree\Date;
+namespace spec\byrokrat\autogiro\Tree;
 
-use byrokrat\autogiro\Tree\Date\ImmediateDateNode;
-use byrokrat\autogiro\Tree\Date\DateNode;
+use byrokrat\autogiro\Tree\ImmediateDateNode;
+use byrokrat\autogiro\Tree\DateNode;
 use PhpSpec\ObjectBehavior;
 
 class ImmediateDateNodeSpec extends ObjectBehavior

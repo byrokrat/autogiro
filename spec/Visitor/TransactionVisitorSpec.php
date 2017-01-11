@@ -9,7 +9,7 @@ use byrokrat\autogiro\Visitor\ErrorAwareVisitor;
 use byrokrat\autogiro\Visitor\ErrorObject;
 use byrokrat\autogiro\Tree\Record\Request\IncomingTransactionRequestNode;
 use byrokrat\autogiro\Tree\Record\Request\OutgoingTransactionRequestNode;
-use byrokrat\autogiro\Tree\Date\ImmediateDateNode;
+use byrokrat\autogiro\Tree\ImmediateDateNode;
 use byrokrat\autogiro\Tree\IntervalNode;
 use byrokrat\autogiro\Tree\RepetitionsNode;
 use PhpSpec\ObjectBehavior;

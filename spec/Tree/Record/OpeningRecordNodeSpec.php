@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace spec\byrokrat\autogiro\Tree\Record;
 
 use byrokrat\autogiro\Tree\Record\OpeningRecordNode;
-use byrokrat\autogiro\Tree\Date\DateNode;
+use byrokrat\autogiro\Tree\DateNode;
 use byrokrat\autogiro\Tree\PayeeBankgiroNode;
 use byrokrat\autogiro\Tree\PayeeBgcNumberNode;
 use byrokrat\autogiro\Tree\Record\RecordNode;

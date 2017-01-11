@@ -22,7 +22,7 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Tree\Record;
 
-use byrokrat\autogiro\Tree\Date\DateNode;
+use byrokrat\autogiro\Tree\DateNode;
 use byrokrat\autogiro\Tree\TextNode;
 
 /**

@@ -6,7 +6,7 @@ namespace spec\byrokrat\autogiro\Tree\Record\Request;
 
 use byrokrat\autogiro\Tree\Record\Request\OutgoingTransactionRequestNode;
 use byrokrat\autogiro\Tree\Record\Request\IncomingTransactionRequestNode;
-use byrokrat\autogiro\Tree\Date\DateNode;
+use byrokrat\autogiro\Tree\DateNode;
 use byrokrat\autogiro\Tree\IntervalNode;
 use byrokrat\autogiro\Tree\RepetitionsNode;
 use byrokrat\autogiro\Tree\TextNode;

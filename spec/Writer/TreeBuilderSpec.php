@@ -9,7 +9,7 @@ use byrokrat\autogiro\Tree\Record\Request\RequestOpeningRecordNode;
 use byrokrat\autogiro\Tree\Record\Request\DeleteMandateRequestNode;
 use byrokrat\autogiro\Tree\FileNode;
 use byrokrat\autogiro\Tree\LayoutNode;
-use byrokrat\autogiro\Tree\Date\DateNode;
+use byrokrat\autogiro\Tree\DateNode;
 use byrokrat\autogiro\Tree\TextNode;
 use byrokrat\autogiro\Tree\PayeeBgcNumberNode;
 use byrokrat\autogiro\Tree\PayeeBankgiroNode;

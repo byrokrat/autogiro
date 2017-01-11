@@ -1,9 +1,6 @@
 TODO
 ====
 
-1. Flytta ner Date och ImmediateDateNode till Tree root, bara konstigt att de
-    ska hänga och dingla...
-
 1. Stoppa Parser/Grammar/ParserFactory i eget namespace Parser
 
 1. Är PayerNumberNode en TextNode som validerar att det är bara siffror??
@@ -14,6 +11,7 @@ TODO
         - Gå igenom Grammar och bestäm hur noder slutgiltigt ska definieras innan jag fortsätter...
         - Lägg till transaktionskoder och ny-rader i PrintingVisitor i takt med att jag lägger till TreeBuilder
         - Alla rader som jag skapar ska vara exakt 80 tecken...
+        - lätt till ett tjusigt behat test...
 
 1. Lägg till ett test som detta till README...
 ```php

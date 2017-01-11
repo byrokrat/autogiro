@@ -6,7 +6,8 @@ use byrokrat\autogiro\Tree\AccountNode;
 use byrokrat\autogiro\Tree\AmountNode;
 use byrokrat\autogiro\Tree\PayeeBankgiroNode;
 use byrokrat\autogiro\Tree\PayeeBgcNumberNode;
-use byrokrat\autogiro\Tree\Date;
+use byrokrat\autogiro\Tree\ImmediateDateNode;
+use byrokrat\autogiro\Tree\DateNode;
 use byrokrat\autogiro\Tree\FileNode;
 use byrokrat\autogiro\Tree\IdNode;
 use byrokrat\autogiro\Tree\IntervalNode;
@@ -1773,7 +1774,7 @@ class Grammar
                     $id,
                     new MessageNode($this->lineNr, "73.$info"),
                     new MessageNode($this->lineNr, "73.comment.$comment"),
-                    $date ?: new Date\DateNode($this->lineNr, '@0'),
+                    $date ?: new DateNode($this->lineNr, '@0'),
                     $void
                 );
             });
@@ -2319,7 +2320,7 @@ class Grammar
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date) {
-                return new Date\DateNode($this->lineNr + 1, $date);
+                return new DateNode($this->lineNr + 1, $date);
             });
         }
 
@@ -2360,7 +2361,7 @@ class Grammar
 
         if ($_success) {
             $this->value = call_user_func(function () {
-                return new Date\ImmediateDateNode($this->lineNr + 1);
+                return new ImmediateDateNode($this->lineNr + 1);
             });
         }
 

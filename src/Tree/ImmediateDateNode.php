@@ -20,13 +20,11 @@
 
 declare(strict_types = 1);
 
-namespace byrokrat\autogiro\Tree\Date;
-
-use byrokrat\autogiro\Tree\Node;
+namespace byrokrat\autogiro\Tree;
 
 /**
- * Node that wrapps a date
+ * Node representing the nearest possible transaction date
  */
-class DateNode extends Node
+class ImmediateDateNode extends DateNode
 {
 }

@@ -2,9 +2,9 @@
 
 declare(strict_types = 1);
 
-namespace spec\byrokrat\autogiro\Tree\Date;
+namespace spec\byrokrat\autogiro\Tree;
 
-use byrokrat\autogiro\Tree\Date\DateNode;
+use byrokrat\autogiro\Tree\DateNode;
 use byrokrat\autogiro\Tree\Node;
 use PhpSpec\ObjectBehavior;
 

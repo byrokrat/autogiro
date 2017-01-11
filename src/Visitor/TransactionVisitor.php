@@ -24,7 +24,7 @@ namespace byrokrat\autogiro\Visitor;
 
 use byrokrat\autogiro\Tree\Record\Request\IncomingTransactionRequestNode;
 use byrokrat\autogiro\Tree\Record\Request\OutgoingTransactionRequestNode;
-use byrokrat\autogiro\Tree\Date\ImmediateDateNode;
+use byrokrat\autogiro\Tree\ImmediateDateNode;
 
 /**
  * Validate intervals, repetitions and dates of transaction requests
