@@ -48,11 +48,11 @@ use byrokrat\id\OrganizationId;
 class PrintingVisitor extends Visitor
 {
     /**
-     * @var OutputInterface
+     * @var Output
      */
     private $output;
 
-    public function setOutput(OutputInterface $output)
+    public function setOutput(Output $output)
     {
         $this->output = $output;
     }

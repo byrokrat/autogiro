@@ -101,10 +101,5 @@ Then perform actions on the writer and generate contents to output.
 -->
 ```php
 $writer->deleteMandate('1234567890');
-
-$output = new \byrokrat\autogiro\Writer\Output;
-
-$writer->writeTo($output);
-
-echo $output;
+echo $writer->getContent();
 ```

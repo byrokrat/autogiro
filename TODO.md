@@ -1,6 +1,15 @@
 TODO
 ====
 
+1. WriterFactory och TreeBuilder bör ta argument som Bankgiro och DateInterface
+    istället för bara strängar.
+    Det finns inte någon anledning att inte arbeta med objekt...
+    TreeBuilder kan sätta attribute direkt.
+    AccountVisitor mf ska då kolla om attribute är satta innan de skapar något
+    Kanske kan det vara värt att dokumentera vilket attribute som är aktuellt
+        för respektive klass i respektive klass
+        Alltså ex att DateNode har attribute date som kan vara satt...
+
 1. Är PayerNumberNode en TextNode som validerar att det är bara siffror??
    Kanske finns det fler nodes som skulle kunna valideras på detta sätt..
 
@@ -14,7 +23,6 @@ TODO
    ```php
    return rtrim($this->buildNative(), "\r\n");
    ```
-   in `DonorWorker->billAll()`.
 
 BGC specs
 ---------

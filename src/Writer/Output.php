@@ -23,9 +23,9 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Writer;
 
 /**
- * Simple capturing output implementation
+ * Simple output capturing
  */
-class Output implements OutputInterface
+class Output
 {
     /**
      * @var string Captured content
@@ -40,10 +40,5 @@ class Output implements OutputInterface
     public function getContent(): string
     {
         return $this->content;
-    }
-
-    public function __tostring(): string
-    {
-        return $this->getContent();
     }
 }

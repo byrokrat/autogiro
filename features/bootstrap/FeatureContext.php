@@ -137,9 +137,7 @@ class FeatureContext implements Context, SnippetAcceptingContext
      */
     public function iGenerateTheRequestFile()
     {
-        $output = new \byrokrat\autogiro\Writer\Output;
-        $this->writer->writeTo($output);
-        $this->generatedFile = $output->getContent();
+        $this->generatedFile = $this->writer->getContent();
     }
 
     /**

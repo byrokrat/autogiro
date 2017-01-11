@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace spec\byrokrat\autogiro\Writer;
 
 use byrokrat\autogiro\Writer\PrintingVisitor;
-use byrokrat\autogiro\Writer\OutputInterface;
+use byrokrat\autogiro\Writer\Output;
 use byrokrat\autogiro\Exception\LogicException;
 use byrokrat\autogiro\Tree\DateNode;
 use byrokrat\autogiro\Tree\ImmediateDateNode;
@@ -38,7 +38,7 @@ class PrintingVisitorSpec extends ObjectBehavior
         $this->shouldHaveType(Visitor::CLASS);
     }
 
-    function it_prints_dates(DateNode $node, OutputInterface $output)
+    function it_prints_dates(DateNode $node, Output $output)
     {
         $this->setOutput($output);
         $node->hasAttribute('date')->willReturn(true);
@@ -62,14 +62,14 @@ class PrintingVisitorSpec extends ObjectBehavior
         $this->shouldThrow(LogicException::CLASS)->duringBeforeDateNode($node);
     }
 
-    function it_prints_immediate_dates(ImmediateDateNode $node, OutputInterface $output)
+    function it_prints_immediate_dates(ImmediateDateNode $node, Output $output)
     {
         $this->setOutput($output);
         $this->beforeImmediateDateNode($node);
         $output->write(Argument::is('GENAST  '))->shouldHaveBeenCalled();
     }
 
-    function it_print_text_nodes(TextNode $node, OutputInterface $output)
+    function it_print_text_nodes(TextNode $node, Output $output)
     {
         $this->setOutput($output);
         $node->getValue()->willReturn('foobar');
@@ -77,7 +77,7 @@ class PrintingVisitorSpec extends ObjectBehavior
         $output->write('foobar')->shouldHaveBeenCalled();
     }
 
-    function it_prints_payee_bgc_numbers(PayeeBgcNumberNode $node, OutputInterface $output)
+    function it_prints_payee_bgc_numbers(PayeeBgcNumberNode $node, Output $output)
     {
         $this->setOutput($output);
         $node->getValue()->willReturn('111');
@@ -85,7 +85,7 @@ class PrintingVisitorSpec extends ObjectBehavior
         $output->write(Argument::is('000111'))->shouldHaveBeenCalled();
     }
 
-    function it_prints_payee_bankgiro_numbers(PayeeBankgiroNode $node, AccountNumber $account, OutputInterface $output)
+    function it_prints_payee_bankgiro_numbers(PayeeBankgiroNode $node, AccountNumber $account, Output $output)
     {
         $this->setOutput($output);
         $account->getSerialNumber()->willReturn('1234567');
@@ -111,7 +111,7 @@ class PrintingVisitorSpec extends ObjectBehavior
         $this->shouldThrow(LogicException::CLASS)->duringBeforePayeeBankgiroNode($node);
     }
 
-    function it_prints_payer_numbers(PayerNumberNode $node, OutputInterface $output)
+    function it_prints_payer_numbers(PayerNumberNode $node, Output $output)
     {
         $this->setOutput($output);
         $node->getValue()->willReturn('1234567890');
@@ -119,7 +119,7 @@ class PrintingVisitorSpec extends ObjectBehavior
         $output->write(Argument::is('0000001234567890'))->shouldHaveBeenCalled();
     }
 
-    function it_prints_account_numbers(AccountNode $node, AccountNumber $account, OutputInterface $output)
+    function it_prints_account_numbers(AccountNode $node, AccountNumber $account, Output $output)
     {
         $this->setOutput($output);
         $account->getClearingNumber()->willReturn('1111');
@@ -146,7 +146,7 @@ class PrintingVisitorSpec extends ObjectBehavior
         $this->shouldThrow(LogicException::CLASS)->duringBeforeAccountNode($node);
     }
 
-    function it_prints_intervals(IntervalNode $node, OutputInterface $output)
+    function it_prints_intervals(IntervalNode $node, Output $output)
     {
         $this->setOutput($output);
         $node->getValue()->willReturn('9');
@@ -154,7 +154,7 @@ class PrintingVisitorSpec extends ObjectBehavior
         $output->write('9')->shouldHaveBeenCalled();
     }
 
-    function it_prints_repetitions(RepetitionsNode $node, OutputInterface $output)
+    function it_prints_repetitions(RepetitionsNode $node, Output $output)
     {
         $this->setOutput($output);
         $node->getValue()->willReturn('123');
@@ -162,7 +162,7 @@ class PrintingVisitorSpec extends ObjectBehavior
         $output->write('123')->shouldHaveBeenCalled();
     }
 
-    function it_prints_amounts(AmountNode $node, SEK $amount, OutputInterface $output)
+    function it_prints_amounts(AmountNode $node, SEK $amount, Output $output)
     {
         $this->setOutput($output);
         $amount->getSignalString()->willReturn('1234567890');
@@ -187,7 +187,7 @@ class PrintingVisitorSpec extends ObjectBehavior
         $this->shouldThrow(LogicException::CLASS)->duringBeforeAmountNode($node);
     }
 
-    function it_prints_personal_ids(IdNode $node, PersonalId $id, OutputInterface $output)
+    function it_prints_personal_ids(IdNode $node, PersonalId $id, Output $output)
     {
         $this->setOutput($output);
         $id->format('Ymdsk')->willReturn('201701101111');
@@ -197,7 +197,7 @@ class PrintingVisitorSpec extends ObjectBehavior
         $output->write('201701101111')->shouldHaveBeenCalled();
     }
 
-    function it_prints_organization_ids(IdNode $node, OrganizationId $id, OutputInterface $output)
+    function it_prints_organization_ids(IdNode $node, OrganizationId $id, Output $output)
     {
         $this->setOutput($output);
         $id->format('00Ssk')->willReturn('001234561111');
@@ -222,28 +222,28 @@ class PrintingVisitorSpec extends ObjectBehavior
         $this->shouldThrow(LogicException::CLASS)->duringBeforeIdNode($node);
     }
 
-    function it_prints_transaction_code_before_opening(OutputInterface $output)
+    function it_prints_transaction_code_before_opening(Output $output)
     {
         $this->setOutput($output);
         $this->beforeRequestOpeningRecordNode();
         $output->write('01')->shouldHaveBeenCalled();
     }
 
-    function it_prints_new_line_after_opening(OutputInterface $output)
+    function it_prints_new_line_after_opening(Output $output)
     {
         $this->setOutput($output);
         $this->afterRequestOpeningRecordNode();
         $output->write("\n")->shouldHaveBeenCalled();
     }
 
-    function it_prints_transaction_code_before_delete_mandate(OutputInterface $output)
+    function it_prints_transaction_code_before_delete_mandate(Output $output)
     {
         $this->setOutput($output);
         $this->beforeDeleteMandateRequestNode();
         $output->write('03')->shouldHaveBeenCalled();
     }
 
-    function it_prints_new_line_after_delete_mandate(OutputInterface $output)
+    function it_prints_new_line_after_delete_mandate(Output $output)
     {
         $this->setOutput($output);
         $this->afterDeleteMandateRequestNode();

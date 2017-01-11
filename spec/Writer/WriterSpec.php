@@ -7,7 +7,7 @@ namespace spec\byrokrat\autogiro\Writer;
 use byrokrat\autogiro\Writer\Writer;
 use byrokrat\autogiro\Writer\TreeBuilder;
 use byrokrat\autogiro\Writer\PrintingVisitor;
-use byrokrat\autogiro\Writer\OutputInterface;
+use byrokrat\autogiro\Writer\Output;
 use byrokrat\autogiro\Visitor\Visitor;
 use byrokrat\autogiro\Tree\FileNode;
 use PhpSpec\ObjectBehavior;
@@ -25,13 +25,13 @@ class WriterSpec extends ObjectBehavior
         $this->shouldHaveType(Writer::CLASS);
     }
 
-    function it_can_write_to_output($treeBuilder, $printer, $visitor, FileNode $tree, OutputInterface $output)
+    function it_can_create_content($treeBuilder, $printer, $visitor, FileNode $tree)
     {
         $treeBuilder->buildTree()->willReturn($tree)->shouldBeCalled();
         $tree->accept($visitor)->shouldBeCalled();
-        $printer->setOutput($output)->shouldBeCalled();
+        $printer->setOutput(Argument::type(Output::CLASS))->shouldBeCalled();
         $tree->accept($printer)->shouldBeCalled();
-        $this->writeTo($output);
+        $this->getContent()->shouldEqual('');
     }
 
     function it_calls_tree_builder_on_reset($treeBuilder)
