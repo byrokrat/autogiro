@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with byrokrat\autogiro. If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright 2016 Hannes Forsgård
+ * Copyright 2016-17 Hannes Forsgård
  */
 
 namespace byrokrat\autogiro;

@@ -1,8 +1,6 @@
 TODO
 ====
 
-1. Updatera årtal i copyright...
-
 1. Flytta ner Date och ImmediateDateNode till Tree root, bara konstigt att de
     ska hänga och dingla...
 
