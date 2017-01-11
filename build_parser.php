@@ -3,4 +3,4 @@
 /**
  * Generate parser from peg file
  */
-exec("vendor/bin/phpeg generate src/Grammar.peg");
+exec("vendor/bin/phpeg generate src/Parser/Grammar.peg");

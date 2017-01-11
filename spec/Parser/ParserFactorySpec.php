@@ -2,10 +2,10 @@
 
 declare(strict_types = 1);
 
-namespace spec\byrokrat\autogiro;
+namespace spec\byrokrat\autogiro\Parser;
 
-use byrokrat\autogiro\ParserFactory;
-use byrokrat\autogiro\Parser;
+use byrokrat\autogiro\Parser\ParserFactory;
+use byrokrat\autogiro\Parser\Parser;
 use PhpSpec\ObjectBehavior;
 
 class ParserFactorySpec extends ObjectBehavior

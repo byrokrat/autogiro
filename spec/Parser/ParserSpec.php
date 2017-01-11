@@ -2,10 +2,10 @@
 
 declare(strict_types = 1);
 
-namespace spec\byrokrat\autogiro;
+namespace spec\byrokrat\autogiro\Parser;
 
-use byrokrat\autogiro\Parser;
-use byrokrat\autogiro\Grammar;
+use byrokrat\autogiro\Parser\Parser;
+use byrokrat\autogiro\Parser\Grammar;
 use byrokrat\autogiro\Visitor\Visitor;
 use byrokrat\autogiro\Tree\FileNode;
 use PhpSpec\ObjectBehavior;

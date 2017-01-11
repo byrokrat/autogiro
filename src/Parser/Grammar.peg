@@ -18,8 +18,9 @@
  * Copyright 2016-17 Hannes Forsgård
  */
 
-namespace byrokrat\autogiro;
+namespace byrokrat\autogiro\Parser;
 
+use byrokrat\autogiro\Layouts;
 use byrokrat\autogiro\Tree\AccountNode;
 use byrokrat\autogiro\Tree\AmountNode;
 use byrokrat\autogiro\Tree\PayeeBankgiroNode;

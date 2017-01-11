@@ -30,7 +30,7 @@ Create a parser using [ParserFactory](/src/ParserFactory.php).
     @example factory-n-parser
 -->
 ```php
-$factory = new \byrokrat\autogiro\ParserFactory;
+$factory = new \byrokrat\autogiro\Parser\ParserFactory;
 $parser = $factory->createParser();
 ```
 
@@ -45,7 +45,7 @@ You can opt out of this functionality using one of the visitor constants:
     @extends factory-n-parser
 -->
 ```php
-$parser = $factory->createParser(\byrokrat\autogiro\ParserFactory::VISITOR_IGNORE_EXTERNAL);
+$parser = $factory->createParser(\byrokrat\autogiro\Parser\ParserFactory::VISITOR_IGNORE_EXTERNAL);
 ```
 
 When in use access the created objects as follows:

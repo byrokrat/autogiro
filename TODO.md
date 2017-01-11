@@ -1,8 +1,6 @@
 TODO
 ====
 
-1. Stoppa Parser/Grammar/ParserFactory i eget namespace Parser
-
 1. Är PayerNumberNode en TextNode som validerar att det är bara siffror??
    Kanske finns det fler nodes som skulle kunna valideras på detta sätt..
 

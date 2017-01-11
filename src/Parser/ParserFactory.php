@@ -20,37 +20,17 @@
 
 declare(strict_types = 1);
 
-namespace byrokrat\autogiro;
+namespace byrokrat\autogiro\Parser;
 
-use byrokrat\autogiro\Visitor\Visitor;
-use byrokrat\autogiro\Tree\FileNode;
+use byrokrat\autogiro\Visitor\VisitorFactory;
 
 /**
- * Facade to Grammar with error handling
+ * Creates a standard parser
  */
-class Parser
+class ParserFactory extends VisitorFactory
 {
-    /**
-     * @var Grammar
-     */
-    private $grammar;
-
-    /**
-     * @var Visitor
-     */
-    private $visitor;
-
-    public function __construct(Grammar $grammar, Visitor $visitor)
+    public function createParser(int $flags = 0): Parser
     {
-        $this->grammar = $grammar;
-        $this->visitor = $visitor;
-    }
-
-    public function parse(string $content): FileNode
-    {
-        $tree = $this->grammar->parse($content);
-        $tree->accept($this->visitor);
-
-        return $tree;
+        return new Parser(new Grammar, $this->createVisitors($flags));
     }
 }

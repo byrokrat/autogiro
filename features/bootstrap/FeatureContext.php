@@ -5,7 +5,7 @@ use Behat\Behat\Context\Context;
 use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
-use byrokrat\autogiro\ParserFactory;
+use byrokrat\autogiro\Parser\ParserFactory;
 use byrokrat\autogiro\Enumerator;
 use byrokrat\autogiro\Exception\TreeException;
 
