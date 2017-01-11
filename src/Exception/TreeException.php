@@ -20,52 +20,34 @@
 
 declare(strict_types = 1);
 
-namespace byrokrat\autogiro\Processor;
-
-use byrokrat\autogiro\Visitor\Visitor;
-use byrokrat\autogiro\Tree\FileNode;
+namespace byrokrat\autogiro\Exception;
 
 /**
- * Defines a parse tree processor
+ * Exception thrown when a parse tree contains invalid data
  */
-abstract class Processor extends Visitor
+class TreeException extends RuntimeException
 {
     /**
-     * @var string[] List of messages describing found errors
+     * @var string[]
      */
-    private $errors = [];
+    private $errors;
 
     /**
-     * Reset internal error state when a new file is traversed
-     */
-    public function beforeFileNode(FileNode $node)
-    {
-        $this->errors = [];
-    }
-
-    /**
-     * Check if any errors have been found
-     */
-    public function hasErrors(): bool
-    {
-        return !empty($this->getErrors());
-    }
-
-    /**
-     * Get list of messages describing found errors
+     * Set list of errors at construct
      *
+     * @param string[] $errors Messages describing found parsing errors
+     */
+    public function __construct(array $errors)
+    {
+        parent::__construct("Tree invalid due to the following issues:\n" . implode("\n", $errors));
+        $this->errors = $errors;
+    }
+
+    /**
      * @return string[]
      */
     public function getErrors(): array
     {
         return $this->errors;
-    }
-
-    /**
-     * Add error message to store
-     */
-    protected function addError(string $msg, string ...$args)
-    {
-        $this->errors[] = sprintf($msg, ...$args);
     }
 }

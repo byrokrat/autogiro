@@ -73,6 +73,11 @@ class TreeBuilder
      */
     private $date;
 
+    /**
+     * @param string $payeeBgcNr    The BGC customer number of payee
+     * @param string $payeeBankgiro The bankgiro number of payee
+     * @param string $date          Optional creation date formatted as yyyymmdd
+     */
     public function __construct(string $payeeBgcNr, string $payeeBankgiro, string $date = '')
     {
         $this->payeeBgcNr = $payeeBgcNr;

@@ -20,27 +20,25 @@
 
 declare(strict_types = 1);
 
-namespace byrokrat\autogiro\Processor;
+namespace byrokrat\autogiro\Visitor;
 
-use byrokrat\autogiro\Tree\AmountNode;
-use byrokrat\amount\Currency\SEK;
-use byrokrat\amount\Exception as AmountException;
+use byrokrat\autogiro\Tree\Date\DateNode;
 
 /**
- * Processor of amount nodes
+ * Visitor that expands date nodes
  */
-class AmountProcessor extends Processor
+class DateVisitor extends ErrorAwareVisitor
 {
-    public function beforeAmountNode(AmountNode $node)
+    public function beforeDateNode(DateNode $node)
     {
         try {
             $node->setAttribute(
-                'amount',
-                SEK::createFromSignalString($node->getValue())
+                'date',
+                new \DateTimeImmutable($node->getValue())
             );
-        } catch (AmountException $e) {
-            $this->addError(
-                "Invalid signaled amount %s on line %s",
+        } catch (\Exception $e) {
+            $this->getErrorObject()->addError(
+                "Invalid date %s on line %s",
                 $node->getValue(),
                 (string)$node->getLineNr()
             );

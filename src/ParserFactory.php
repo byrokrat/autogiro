@@ -22,69 +22,15 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro;
 
-use byrokrat\autogiro\Processor\AccountProcessor;
-use byrokrat\autogiro\Processor\AmountProcessor;
-use byrokrat\autogiro\Processor\DateProcessor;
-use byrokrat\autogiro\Processor\IdProcessor;
-use byrokrat\autogiro\Processor\LayoutProcessor;
-use byrokrat\autogiro\Processor\MessageProcessor;
-use byrokrat\autogiro\Processor\MultiCore;
-use byrokrat\autogiro\Processor\PayeeProcessor;
-use byrokrat\autogiro\Processor\TextProcessor;
-use byrokrat\autogiro\Processor\TransactionProcessor;
-use byrokrat\id\CoordinationIdFactory;
-use byrokrat\id\NullIdFactory;
-use byrokrat\id\OrganizationIdFactory;
-use byrokrat\id\PersonalIdFactory;
-use byrokrat\banking\AccountFactory;
-use byrokrat\banking\Formats as AccountFormats;
+use byrokrat\autogiro\Visitor\VisitorFactory;
 
 /**
- * Simplifies the creation of parser objects
+ * Creates a standard parser
  */
-class ParserFactory implements Visitors
+class ParserFactory extends VisitorFactory
 {
-    /**
-     * Create a new parser
-     */
     public function createParser(int $flags = 0): Parser
     {
-        $flag = function (int $needle) use ($flags) {
-            return ($needle & $flags) == $needle;
-        };
-
-        $processors = new MultiCore(
-            new DateProcessor,
-            new LayoutProcessor,
-            new MessageProcessor,
-            new PayeeProcessor,
-            new TextProcessor,
-            new TransactionProcessor
-        );
-
-        if (!$flag(self::VISITOR_IGNORE_ACCOUNTS)) {
-            $accountFactory = new AccountFactory;
-            $accountFactory->blacklistFormats([AccountFormats::FORMAT_PLUSGIRO]);
-
-            $bankgiroFactory = new AccountFactory;
-            $bankgiroFactory->whitelistFormats([AccountFormats::FORMAT_BANKGIRO]);
-
-            $processors->addProcessor(new AccountProcessor($accountFactory, $bankgiroFactory));
-        }
-
-        if (!$flag(self::VISITOR_IGNORE_AMOUNTS)) {
-            $processors->addProcessor(new AmountProcessor);
-        }
-
-        if (!$flag(self::VISITOR_IGNORE_IDS)) {
-            $processors->addProcessor(
-                new IdProcessor(
-                    new OrganizationIdFactory,
-                    new PersonalIdFactory(new CoordinationIdFactory(new NullIdFactory))
-                )
-            );
-        }
-
-        return new Parser(new Grammar, $processors);
+        return new Parser(new Grammar, $this->createVisitors($flags));
     }
 }

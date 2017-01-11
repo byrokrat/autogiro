@@ -20,7 +20,7 @@
 
 declare(strict_types = 1);
 
-namespace byrokrat\autogiro\Processor;
+namespace byrokrat\autogiro\Visitor;
 
 use byrokrat\autogiro\Tree\IdNode;
 use byrokrat\id\OrganizationIdFactory;
@@ -30,7 +30,7 @@ use byrokrat\id\Exception as IdException;
 /**
  * Validates the structure of id numbers in tree
  */
-class IdProcessor extends Processor
+class IdVisitor extends ErrorAwareVisitor
 {
     /**
      * @var OrganizationIdFactory
@@ -42,8 +42,9 @@ class IdProcessor extends Processor
      */
     private $personalIdFactory;
 
-    public function __construct(OrganizationIdFactory $organizationIdFactory, PersonalIdFactory $personalIdFactory)
+    public function __construct(ErrorObject $errorObj, OrganizationIdFactory $organizationIdFactory, PersonalIdFactory $personalIdFactory)
     {
+        parent::__construct($errorObj);
         $this->organizationIdFactory = $organizationIdFactory;
         $this->personalIdFactory = $personalIdFactory;
     }
@@ -59,7 +60,7 @@ class IdProcessor extends Processor
             return $this->createPersonalId($node);
 
         } catch (IdException $exception) {
-            $this->addError(
+            $this->getErrorObject()->addError(
                 "Invalid id number %s (%s) on line %s",
                 $node->getValue(),
                 $exception->getMessage(),

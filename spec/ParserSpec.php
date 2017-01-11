@@ -6,17 +6,16 @@ namespace spec\byrokrat\autogiro;
 
 use byrokrat\autogiro\Parser;
 use byrokrat\autogiro\Grammar;
-use byrokrat\autogiro\Processor\Processor;
-use byrokrat\autogiro\Tree\Node;
-use byrokrat\autogiro\Exception\ParserException;
+use byrokrat\autogiro\Visitor\Visitor;
+use byrokrat\autogiro\Tree\FileNode;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
 class ParserSpec extends ObjectBehavior
 {
-    function let(Grammar $grammar, Processor $processor)
+    function let(Grammar $grammar, Visitor $visitor)
     {
-        $this->beConstructedWith($grammar, $processor);
+        $this->beConstructedWith($grammar, $visitor);
     }
 
     function it_is_initializable()
@@ -24,18 +23,10 @@ class ParserSpec extends ObjectBehavior
         $this->shouldHaveType(Parser::CLASS);
     }
 
-    function it_throws_exception_if_parser_fails($grammar)
+    function it_creates_trees($grammar, $visitor, FileNode $node)
     {
-        $grammar->parse('')->willThrow(new \Exception);
-        $this->shouldThrow(ParserException::CLASS)->duringParse('');
-    }
-
-    function it_throws_exception_if_processor_fails($grammar, $processor, Node $node)
-    {
-        $grammar->parse('')->willReturn($node);
-        $node->accept($processor)->shouldBeCalled();
-        $processor->hasErrors()->willReturn(true)->shouldBeCalled();
-        $processor->getErrors()->willReturn(['error'])->shouldBeCalled();
-        $this->shouldThrow(ParserException::CLASS)->duringParse('');
+        $grammar->parse('foobar')->willReturn($node);
+        $node->accept($visitor)->shouldBeCalled();
+        $this->parse('foobar')->shouldEqual($node);
     }
 }

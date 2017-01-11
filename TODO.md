@@ -6,25 +6,34 @@ TODO
 1. Flytta ner Date och ImmediateDateNode till Tree root, bara konstigt att de
     ska hänga och dingla...
 
-1. Implement Writer as a facade to a Visitor that visits request records...
+1. Stoppa Parser/Grammar/ParserFactory i eget namespace Parser
 
-   $writer = new Writer($bg, 'cust1232345', $date = null);
-   $writer->deleteMandate('123456789');
-   $writer->createMandate(...);
+1. Är PayerNumberNode en TextNode som validerar att det är bara siffror??
+   Kanske finns det fler nodes som skulle kunna valideras på detta sätt..
 
-   $writer->getContent(); // string
+1. Writer as a Facade:
+    Fortsätt med TreeBuilder
+        - Gå igenom Grammar och bestäm hur noder slutgiltigt ska definieras innan jag fortsätter...
+        - Lägg till transaktionskoder och ny-rader i PrintingVisitor i takt med att jag lägger till TreeBuilder
+        - Alla rader som jag skapar ska vara exakt 80 tecken...
 
-   Har börjar med PrintingVisitor, saknas:
-        -> transaktionskoder innan record-klasser
-        -> radbrytningar efter record-klasser
+1. Lägg till ett test som detta till README...
+```php
 
-   TreeBuilder:
-        Har kommit igång bra, bara att fortsätta...
-        Tänk på att alla rader i alla filer jag skapar ska vara exakt 80 tecken!
-            Anpassa med TextNodes där det behövs...
-        Vänta med att fortsätta detta arbete tills jag gått igenom grammar och
-            slutligen beslutet om hur alla nod-klasser ska vara
-            (riskerar att bli en hel del dubbeljobb här annars...)
+namespace byrokrat\autogiro;
+
+include 'vendor/autoload.php';
+
+$writer = (new Writer\WriterFactory)->createWriter('583960', '5450-2034');
+
+$writer->deleteMandate('12345');
+
+$output = new Writer\Output;
+
+$writer->writeTo($output);
+
+echo $output;
+```
 
 1. Generated files must NOT include (end with) and empty line
    In the deprecated georg system this was solved using

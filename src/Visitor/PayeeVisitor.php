@@ -20,16 +20,15 @@
 
 declare(strict_types = 1);
 
-namespace byrokrat\autogiro\Processor;
+namespace byrokrat\autogiro\Visitor;
 
-use byrokrat\autogiro\Tree\FileNode;
 use byrokrat\autogiro\Tree\PayeeBankgiroNode;
 use byrokrat\autogiro\Tree\PayeeBgcNumberNode;
 
 /**
  * Validate that payee bankgiro and BGC customer number are constant within tree
  */
-class PayeeProcessor extends Processor
+class PayeeVisitor extends ErrorAwareVisitor
 {
     /**
      * @var string Payee bankgiro account number
@@ -44,7 +43,7 @@ class PayeeProcessor extends Processor
     /**
      * Reset payee bankgiro and customer number before a new file is traversed
      */
-    public function beforeFileNode(FileNode $fileNode)
+    public function beforeFileNode()
     {
         $this->payeeBg = '';
         $this->payeeBgcNr = '';
@@ -60,7 +59,7 @@ class PayeeProcessor extends Processor
         }
 
         if ($node->getValue() != $this->payeeBg) {
-            $this->addError(
+            $this->getErrorObject()->addError(
                 "Non-matching payee bankgiro numbers (expecting: %s, found: %s) on line %s",
                 $this->payeeBg,
                 $node->getValue(),
@@ -79,7 +78,7 @@ class PayeeProcessor extends Processor
         }
 
         if ($node->getValue() != $this->payeeBgcNr) {
-            $this->addError(
+            $this->getErrorObject()->addError(
                 "Non-matching payee BGC customer numbers (expecting: %s, found: %s) on line %s",
                 $this->payeeBgcNr,
                 $node->getValue(),

@@ -18,32 +18,32 @@
  * Copyright 2016 Hannes Forsgård
  */
 
-namespace byrokrat\autogiro;
+declare(strict_types = 1);
+
+namespace byrokrat\autogiro\Visitor;
+
+use byrokrat\autogiro\Tree\AmountNode;
+use byrokrat\amount\Currency\SEK;
+use byrokrat\amount\Exception as AmountException;
 
 /**
- * Visitor creation flags
- *
- * TODO kan flyttas till VisitorFactory så länge som ParserFactory ärver VisitorFactory...
+ * Visitor of amount nodes
  */
-interface Visitors
+class AmountVisitor extends ErrorAwareVisitor
 {
-    /**
-     * Do not include account number visitor
-     */
-    const VISITOR_IGNORE_ACCOUNTS = 1;
-
-    /**
-     * Do not include amount visitor
-     */
-    const VISITOR_IGNORE_AMOUNTS = 2;
-
-    /**
-     * Do not include id visitor
-     */
-    const VISITOR_IGNORE_IDS = 4;
-
-    /**
-     * Ignore all visitors based on external dependencies
-     */
-    const VISITOR_IGNORE_EXTERNAL = self::VISITOR_IGNORE_ACCOUNTS | self::VISITOR_IGNORE_AMOUNTS | self::VISITOR_IGNORE_IDS;
+    public function beforeAmountNode(AmountNode $node)
+    {
+        try {
+            $node->setAttribute(
+                'amount',
+                SEK::createFromSignalString($node->getValue())
+            );
+        } catch (AmountException $e) {
+            $this->getErrorObject()->addError(
+                "Invalid signaled amount %s on line %s",
+                $node->getValue(),
+                (string)$node->getLineNr()
+            );
+        }
+    }
 }

@@ -20,28 +20,26 @@
 
 declare(strict_types = 1);
 
-namespace byrokrat\autogiro\Processor;
+namespace byrokrat\autogiro\Writer;
 
-use byrokrat\autogiro\Tree\Date\DateNode;
+use byrokrat\autogiro\Visitor\VisitorFactory;
 
 /**
- * Processor that expands date nodes
+ * Creates a standard writer
  */
-class DateProcessor extends Processor
+class WriterFactory extends VisitorFactory
 {
-    public function beforeDateNode(DateNode $node)
+    /**
+     * @param string $payeeBgcNr    The BGC customer number of payee
+     * @param string $payeeBankgiro The bankgiro number of payee
+     * @param string $date          Optional creation date formatted as yyyymmdd
+     */
+    public function createWriter(string $payeeBgcNr, string $payeeBankgiro, string $date = ''): Writer
     {
-        try {
-            $node->setAttribute(
-                'date',
-                new \DateTimeImmutable($node->getValue())
-            );
-        } catch (\Exception $e) {
-            $this->addError(
-                "Invalid date %s on line %s",
-                $node->getValue(),
-                (string)$node->getLineNr()
-            );
-        }
+        return new Writer(
+            new TreeBuilder($payeeBgcNr, $payeeBankgiro, $date),
+            new PrintingVisitor,
+            $this->createVisitors()
+        );
     }
 }

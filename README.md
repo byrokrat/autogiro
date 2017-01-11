@@ -39,7 +39,7 @@ identification numbers using the [Amount](https://github.com/byrokrat/amount),
 [Id](https://github.com/byrokrat/id) and [Banking](https://github.com/byrokrat/banking)
 packages respectively.
 
-You can opt out of this functionality using one of the processor constants:
+You can opt out of this functionality using one of the visitor constants:
 
 <!--
     @extends factory-n-parser

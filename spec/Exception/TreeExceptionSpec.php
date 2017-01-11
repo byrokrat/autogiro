@@ -4,11 +4,11 @@ declare(strict_types = 1);
 
 namespace spec\byrokrat\autogiro\Exception;
 
-use byrokrat\autogiro\Exception\ParserException;
+use byrokrat\autogiro\Exception\TreeException;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
-class ParserExceptionSpec extends ObjectBehavior
+class TreeExceptionSpec extends ObjectBehavior
 {
     const ERRORS = ['foo', 'bar'];
 
@@ -19,7 +19,7 @@ class ParserExceptionSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(ParserException::CLASS);
+        $this->shouldHaveType(TreeException::CLASS);
     }
 
     function it_is_throwable()

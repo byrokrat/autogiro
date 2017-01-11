@@ -22,9 +22,8 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro;
 
-use byrokrat\autogiro\Processor\Processor;
+use byrokrat\autogiro\Visitor\Visitor;
 use byrokrat\autogiro\Tree\FileNode;
-use byrokrat\autogiro\Exception\ParserException;
 
 /**
  * Facade to Grammar with error handling
@@ -37,32 +36,21 @@ class Parser
     private $grammar;
 
     /**
-     * @var Processor
+     * @var Visitor
      */
-    private $processor;
+    private $visitor;
 
-    public function __construct(Grammar $grammar, Processor $processor)
+    public function __construct(Grammar $grammar, Visitor $visitor)
     {
         $this->grammar = $grammar;
-        $this->processor = $processor;
+        $this->visitor = $visitor;
     }
 
-    /**
-     * @throws ParserException If parsning fails
-     */
     public function parse(string $content): FileNode
     {
-        try {
-            $fileNode = $this->grammar->parse($content);
-            $fileNode->accept($this->processor);
-        } catch (\Exception $exception) {
-            throw new ParserException([$exception->getMessage()]);
-        }
+        $tree = $this->grammar->parse($content);
+        $tree->accept($this->visitor);
 
-        if ($this->processor->hasErrors()) {
-            throw new ParserException($this->processor->getErrors());
-        }
-
-        return $fileNode;
+        return $tree;
     }
 }

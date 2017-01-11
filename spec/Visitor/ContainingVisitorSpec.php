@@ -9,6 +9,7 @@ use byrokrat\autogiro\Visitor\ErrorAwareVisitor;
 use byrokrat\autogiro\Visitor\ErrorObject;
 use byrokrat\autogiro\Visitor\Visitor;
 use byrokrat\autogiro\Tree\Node;
+use byrokrat\autogiro\Exception\TreeException;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -60,9 +61,7 @@ class ContainingVisitorSpec extends ObjectBehavior
         $node->getType()->willReturn('FileNode');
         $errorObj->hasErrors()->willReturn(true);
         $errorObj->getErrors()->willReturn(['an error']);
-
-        // TODO fel undantag...
-        $this->shouldThrow('\Exception')->duringVisitAfter($node);
+        $this->shouldThrow(TreeException::CLASS)->duringVisitAfter($node);
     }
 
     function it_resets_errors($errorObj, $node)

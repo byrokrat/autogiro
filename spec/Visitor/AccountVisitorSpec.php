@@ -2,20 +2,23 @@
 
 declare(strict_types = 1);
 
-namespace spec\byrokrat\autogiro\Processor;
+namespace spec\byrokrat\autogiro\Visitor;
 
-use byrokrat\autogiro\Processor\AccountProcessor;
-use byrokrat\autogiro\Processor\Processor;
+use byrokrat\autogiro\Visitor\AccountVisitor;
+use byrokrat\autogiro\Visitor\ErrorAwareVisitor;
+use byrokrat\autogiro\Visitor\ErrorObject;
 use byrokrat\autogiro\Tree\AccountNode;
 use byrokrat\autogiro\Tree\PayeeBankgiroNode;
 use byrokrat\banking\AccountFactory;
 use byrokrat\banking\AccountNumber;
 use byrokrat\banking\Exception\InvalidAccountNumberException as BankingException;
 use PhpSpec\ObjectBehavior;
+use Prophecy\Argument;
 
-class AccountProcessorSpec extends ObjectBehavior
+class AccountVisitorSpec extends ObjectBehavior
 {
     function let(
+        ErrorObject $errorObj,
         AccountFactory $accountFactory,
         AccountFactory $bankgiroFactory,
         AccountNode $accountNode,
@@ -34,46 +37,46 @@ class AccountProcessorSpec extends ObjectBehavior
         $bankgiroNode->getLineNr()->willReturn(1);
         $bankgiroNode->getType()->willReturn('PayeeBankgiroNode');
 
-        $this->beConstructedWith($accountFactory, $bankgiroFactory);
+        $this->beConstructedWith($errorObj, $accountFactory, $bankgiroFactory);
     }
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(AccountProcessor::CLASS);
+        $this->shouldHaveType(AccountVisitor::CLASS);
     }
 
-    function it_extends_processor()
+    function it_is_an_error_aware_visitor()
     {
-        $this->shouldHaveType(Processor::CLASS);
+        $this->shouldHaveType(ErrorAwareVisitor::CLASS);
     }
 
-    function it_fails_on_unvalid_account_number($accountNode)
+    function it_fails_on_unvalid_account_number($accountNode, $errorObj)
     {
         $accountNode->getValue()->willReturn('not-valid');
         $this->visitBefore($accountNode);
-        $this->getErrors()->shouldHaveCount(1);
+        $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 
-    function it_creates_valid_account_numbers($accountNode, $accountNumber)
+    function it_creates_valid_account_numbers($accountNode, $accountNumber, $errorObj)
     {
         $accountNode->getValue()->willReturn('valid');
         $accountNode->setAttribute('account', $accountNumber)->shouldBeCalled();
         $this->visitBefore($accountNode);
-        $this->getErrors()->shouldHaveCount(0);
+        $errorObj->addError(Argument::cetera())->shouldNotHaveBeenCalled();
     }
 
-    function it_fails_on_unvalid_bankgiro_number($bankgiroNode)
+    function it_fails_on_unvalid_bankgiro_number($bankgiroNode, $errorObj)
     {
         $bankgiroNode->getValue()->willReturn('not-valid');
         $this->visitBefore($bankgiroNode);
-        $this->getErrors()->shouldHaveCount(1);
+        $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 
-    function it_creates_valid_bankgiro_numbers($bankgiroNode, $accountNumber)
+    function it_creates_valid_bankgiro_numbers($bankgiroNode, $accountNumber, $errorObj)
     {
         $bankgiroNode->getValue()->willReturn('valid');
         $bankgiroNode->setAttribute('account', $accountNumber)->shouldBeCalled();
         $this->visitBefore($bankgiroNode);
-        $this->getErrors()->shouldHaveCount(0);
+        $errorObj->addError(Argument::cetera())->shouldNotHaveBeenCalled();
     }
 }

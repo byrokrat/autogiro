@@ -7,7 +7,7 @@ use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use byrokrat\autogiro\ParserFactory;
 use byrokrat\autogiro\Enumerator;
-use byrokrat\autogiro\Exception\ParserException;
+use byrokrat\autogiro\Exception\TreeException;
 
 /**
  * Defines application features from the specific context.
@@ -25,7 +25,7 @@ class FeatureContext implements Context, SnippetAcceptingContext
     private $fileNode;
 
     /**
-     * @var ParserException
+     * @var TreeException
      */
     private $exception;
 
@@ -54,7 +54,7 @@ class FeatureContext implements Context, SnippetAcceptingContext
     {
         try {
             $this->fileNode = $this->parser->parse($string->getRaw());
-        } catch (ParserException $e) {
+        } catch (TreeException $e) {
             $this->exception = $e;
         }
     }

@@ -20,7 +20,7 @@ class ParserFactorySpec extends ObjectBehavior
         $this->createParser()->shouldHaveType(Parser::CLASS);
     }
 
-    function it_creates_parses_with_no_external_processors()
+    function it_creates_parses_with_no_external_visitors()
     {
         $this->createParser(ParserFactory::VISITOR_IGNORE_EXTERNAL)->shouldHaveType(Parser::CLASS);
     }

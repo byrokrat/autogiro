@@ -20,7 +20,7 @@
 
 declare(strict_types = 1);
 
-namespace byrokrat\autogiro\Processor;
+namespace byrokrat\autogiro\Visitor;
 
 use byrokrat\autogiro\Tree\LayoutNode;
 use byrokrat\autogiro\Tree\Record\OpeningRecordNode;
@@ -29,7 +29,7 @@ use byrokrat\autogiro\Tree\Record\ClosingRecordNode;
 /**
  * Validate dates and record count in layout
  */
-class LayoutProcessor extends Processor
+class LayoutVisitor extends ErrorAwareVisitor
 {
     /**
      * @var string Current date from opening record
@@ -55,7 +55,7 @@ class LayoutProcessor extends Processor
     public function beforeClosingRecordNode(ClosingRecordNode $node)
     {
         if ($node->getChild('date')->getValue() != $this->date) {
-            $this->addError(
+            $this->getErrorObject()->addError(
                 "Non-matching dates in opening and closing nodes (opening: %s, closing: %s) on line %s",
                 $this->date,
                 $node->getChild('date')->getValue(),
@@ -78,7 +78,7 @@ class LayoutProcessor extends Processor
     public function afterLayoutNode(LayoutNode $node)
     {
         if ($this->recordCount && $this->recordCount != count($node->getChildren()) - 2) {
-            $this->addError(
+            $this->getErrorObject()->addError(
                 "Invalid record count (found: %s, expecting: %s) on line %s",
                 (string)(count($node->getChildren()) - 2),
                 (string)($this->recordCount),

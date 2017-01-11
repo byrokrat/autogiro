@@ -2,10 +2,11 @@
 
 declare(strict_types = 1);
 
-namespace spec\byrokrat\autogiro\Processor;
+namespace spec\byrokrat\autogiro\Visitor;
 
-use byrokrat\autogiro\Processor\LayoutProcessor;
-use byrokrat\autogiro\Processor\Processor;
+use byrokrat\autogiro\Visitor\LayoutVisitor;
+use byrokrat\autogiro\Visitor\ErrorAwareVisitor;
+use byrokrat\autogiro\Visitor\ErrorObject;
 use byrokrat\autogiro\Tree\LayoutNode;
 use byrokrat\autogiro\Tree\Record\RecordNode;
 use byrokrat\autogiro\Tree\Record\OpeningRecordNode;
@@ -13,24 +14,31 @@ use byrokrat\autogiro\Tree\Record\ClosingRecordNode;
 use byrokrat\autogiro\Tree\Date\DateNode;
 use byrokrat\autogiro\Tree\TextNode;
 use PhpSpec\ObjectBehavior;
+use Prophecy\Argument;
 
-class LayoutProcessorSpec extends ObjectBehavior
+class LayoutVisitorSpec extends ObjectBehavior
 {
-    function it_is_initializable()
+    function let(ErrorObject $errorObj)
     {
-        $this->shouldHaveType(LayoutProcessor::CLASS);
+        $this->beConstructedWith($errorObj);
     }
 
-    function it_extends_processor()
+    function it_is_initializable()
     {
-        $this->shouldHaveType(Processor::CLASS);
+        $this->shouldHaveType(LayoutVisitor::CLASS);
+    }
+
+    function it_is_an_error_aware_visitor()
+    {
+        $this->shouldHaveType(ErrorAwareVisitor::CLASS);
     }
 
     function it_fails_on_missmatching_dates(
         OpeningRecordNode $opening,
         ClosingRecordNode $closing,
         DateNode $dateA,
-        DateNode $dateB
+        DateNode $dateB,
+        $errorObj
     ) {
         $dateA->getValue()->willReturn('2010');
         $opening->getChild('date')->willReturn($dateA);
@@ -43,8 +51,7 @@ class LayoutProcessorSpec extends ObjectBehavior
 
         $this->beforeClosingRecordNode($closing);
 
-        $this->hasErrors()->shouldEqual(true);
-        $this->getErrors()->shouldHaveCount(1);
+        $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 
     function it_fails_on_wrong_record_count(
@@ -52,7 +59,8 @@ class LayoutProcessorSpec extends ObjectBehavior
         OpeningRecordNode $opening,
         RecordNode $record,
         ClosingRecordNode $closing,
-        TextNode $nrOfPosts
+        TextNode $nrOfPosts,
+        $errorObj
     ) {
 
         $nrOfPosts->getValue()->willReturn('2');
@@ -65,7 +73,6 @@ class LayoutProcessorSpec extends ObjectBehavior
 
         $this->afterLayoutNode($layout);
 
-        $this->hasErrors()->shouldEqual(true);
-        $this->getErrors()->shouldHaveCount(1);
+        $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 }

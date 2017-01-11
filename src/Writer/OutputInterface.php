@@ -28,5 +28,5 @@ interface OutputInterface
     /**
      * Write a string to output
      */
-    public function write(string $chars);
+    public function write(string $string);
 }

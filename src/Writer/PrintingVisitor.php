@@ -52,14 +52,14 @@ class PrintingVisitor extends Visitor
      */
     private $output;
 
-    public function __construct(OutputInterface $output)
+    public function setOutput(OutputInterface $output)
     {
         $this->output = $output;
     }
 
     public function beforeDateNode(DateNode $node)
     {
-        $this->assertAttribute($node, 'date', \DateTime::CLASS);
+        $this->assertAttribute($node, 'date', \DateTimeInterface::CLASS);
         $this->output->write($node->getAttribute('date')->format('Ymd'));
     }
 
@@ -98,13 +98,6 @@ class PrintingVisitor extends Visitor
         );
     }
 
-    private function assertAttribute(Node $node, string $attr, string $classname)
-    {
-        if (!$node->hasAttribute($attr) || !$node->getAttribute($attr) instanceof $classname) {
-            throw new LogicException("Missing attribute '$attr' in {$node->getType()}");
-        }
-    }
-
     public function beforeIntervalNode(IntervalNode $node)
     {
         $this->output->write($node->getValue());
@@ -132,5 +125,32 @@ class PrintingVisitor extends Visitor
         if ($node->getAttribute('id') instanceof OrganizationId) {
             $this->output->write($node->getAttribute('id')->format('00Ssk'));
         }
+    }
+
+    private function assertAttribute(Node $node, string $attr, string $classname)
+    {
+        if (!$node->hasAttribute($attr) || !$node->getAttribute($attr) instanceof $classname) {
+            throw new LogicException("Failing attribute '$attr' in {$node->getType()}");
+        }
+    }
+
+    public function beforeRequestOpeningRecordNode()
+    {
+        $this->output->write('01');
+    }
+
+    public function afterRequestOpeningRecordNode()
+    {
+        $this->output->write("\n");
+    }
+
+    public function beforeDeleteMandateRequestNode()
+    {
+        $this->output->write('03');
+    }
+
+    public function afterDeleteMandateRequestNode()
+    {
+        $this->output->write("\n");
     }
 }

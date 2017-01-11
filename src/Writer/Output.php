@@ -20,31 +20,30 @@
 
 declare(strict_types = 1);
 
-namespace byrokrat\autogiro\Exception;
+namespace byrokrat\autogiro\Writer;
 
-class ParserException extends RuntimeException
+/**
+ * Simple capturing output implementation
+ */
+class Output implements OutputInterface
 {
     /**
-     * @var string[]
+     * @var string Captured content
      */
-    private $errors;
+    private $content = '';
 
-    /**
-     * Set list of errors at construct
-     *
-     * @param string[] $errors Messages describing found parsing errors
-     */
-    public function __construct(array $errors)
+    public function write(string $string)
     {
-        parent::__construct("Parsing failed due to the following issues:\n" . implode("\n", $errors));
-        $this->errors = $errors;
+        $this->content .= $string;
     }
 
-    /**
-     * @return string[]
-     */
-    public function getErrors(): array
+    public function getContent(): string
     {
-        return $this->errors;
+        return $this->content;
+    }
+
+    public function __tostring(): string
+    {
+        return $this->getContent();
     }
 }

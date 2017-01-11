@@ -20,7 +20,7 @@
 
 declare(strict_types = 1);
 
-namespace byrokrat\autogiro\Processor;
+namespace byrokrat\autogiro\Visitor;
 
 use byrokrat\autogiro\Tree\MessageNode;
 use byrokrat\autogiro\Tree\IntervalNode;
@@ -28,9 +28,9 @@ use byrokrat\autogiro\Messages;
 use byrokrat\autogiro\Intervals;
 
 /**
- * Processor of message nodes in tree
+ * Visitor of message nodes in tree
  */
-class MessageProcessor extends Processor
+class MessageVisitor extends ErrorAwareVisitor
 {
     public function beforeMessageNode(MessageNode $node)
     {
@@ -45,7 +45,7 @@ class MessageProcessor extends Processor
     private function setMessageAttr(MessageNode $node, array $messageMap)
     {
         if (!isset($messageMap[$node->getValue()])) {
-            return $this->addError(
+            return $this->getErrorObject()->addError(
                 "Invalid message id %s on line %s",
                 $node->getValue(),
                 (string)$node->getLineNr()

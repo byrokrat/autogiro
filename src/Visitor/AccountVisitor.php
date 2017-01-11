@@ -20,7 +20,7 @@
 
 declare(strict_types = 1);
 
-namespace byrokrat\autogiro\Processor;
+namespace byrokrat\autogiro\Visitor;
 
 use byrokrat\autogiro\Tree\AccountNode;
 use byrokrat\autogiro\Tree\PayeeBankgiroNode;
@@ -30,7 +30,7 @@ use byrokrat\banking\Exception as BankingException;
 /**
  * Validates the structure of account numbers in tree
  */
-class AccountProcessor extends Processor
+class AccountVisitor extends ErrorAwareVisitor
 {
     /**
      * @var AccountFactory
@@ -42,8 +42,9 @@ class AccountProcessor extends Processor
      */
     private $bankgiroFactory;
 
-    public function __construct(AccountFactory $accountFactory, AccountFactory $bankgiroFactory)
+    public function __construct(ErrorObject $errorObj, AccountFactory $accountFactory, AccountFactory $bankgiroFactory)
     {
+        parent::__construct($errorObj);
         $this->accountFactory = $accountFactory;
         $this->bankgiroFactory = $bankgiroFactory;
     }
@@ -56,7 +57,7 @@ class AccountProcessor extends Processor
                 $this->accountFactory->createAccount($node->getValue())
             );
         } catch (BankingException $e) {
-            $this->addError(
+            $this->getErrorObject()->addError(
                 "Invalid account number %s on line %s",
                 $node->getValue(),
                 (string)$node->getLineNr()
@@ -72,7 +73,7 @@ class AccountProcessor extends Processor
                 $this->bankgiroFactory->createAccount($node->getValue())
             );
         } catch (BankingException $e) {
-            $this->addError(
+            $this->getErrorObject()->addError(
                 "Invalid bankgiro number %s on line %s",
                 $node->getValue(),
                 (string)$node->getLineNr()

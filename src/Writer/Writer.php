@@ -22,7 +22,7 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Writer;
 
-use byrokrat\autogiro\Processor\Processor;
+use byrokrat\autogiro\Visitor\Visitor;
 
 /**
  * Facade for creating autogiro request files
@@ -40,50 +40,41 @@ class Writer
     private $printer;
 
     /**
-     * @var Processor Helper used to validate and process tree
+     * @var Visitor Helper used to validate and process tree
      */
-    private $processor;
+    private $visitor;
 
-    /*public function __construct(TreeBuilder $treeBuilder, PrintingVisitor $printer, Processor $processor)
+    public function __construct(TreeBuilder $treeBuilder, PrintingVisitor $printer, Visitor $visitor)
     {
         $this->treeBuilder = $treeBuilder;
         $this->printer = $printer;
-        $this->processor = $processor;
-    }*/
-
-    public function deleteMandate(string $payerNr)
-    {
-        $this->treeBuilder->addDeleteMandateRecord($payerNr);
+        $this->visitor = $visitor;
     }
 
+    /**
+     * Build request file and write content to $output
+     */
     public function writeTo(OutputInterface $output)
     {
         $tree = $this->treeBuilder->buildTree();
-
-        /*
-            TODO
-            det här ser bra ut, men:
-
-            1) [KLAR] ErrorObject -> registrerar error
-            1.5) TreeException som ersättning till ParserException
-            2) [KLAR] (sånär som på rätt undantag...) ContainingVisitor -> hanterar errors och visitors
-            3) [KLAR]ErrorAwareVisitor för att slippa uppning
-            3.5) [KLAR] Interface Visitors med flag-args (kan föras över till VisitorFactory)
-            4) För över alla processors till visitor..
-            4.5) VisitorFactory::createVisitors(Visitors::VISITOR_IGNORE_EXTERNAL)
-            5) ParserFactory extends VisitorFactory
-                return new Parser(new Grammar, $this->createVisitors($flags));
-            6) WriterFactory extends ParserFactory
-                om vi vill använda parser för att validera att den genererade koden
-                verkligen är så bra som vi tror...
-            7) Glöm inte bort att skriva spec för den här klassen...
-            8) Möjligtvis flytta upp Parser + factory till eget namespace ??
-                då följer allting samma mall...
-         */
-
-        $tree->accept($this->processor);
-
+        $tree->accept($this->visitor);
         $this->printer->setOutput($output);
         $tree->accept($this->printer);
+    }
+
+    /**
+     * Reset internal buidld queue
+     */
+    public function reset()
+    {
+        $this->treeBuilder->reset();
+    }
+
+    /**
+     * Add a delete mandate request to the build queue
+     */
+    public function deleteMandate(string $payerNr)
+    {
+        $this->treeBuilder->addDeleteMandateRecord($payerNr);
     }
 }
