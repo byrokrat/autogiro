@@ -12,6 +12,8 @@ use byrokrat\autogiro\Exception\TreeException;
 
 /**
  * Defines application features from the specific context.
+ *
+ * @TODO Break up into traits to create a more robust setup..
  */
 class FeatureContext implements Context, SnippetAcceptingContext
 {
@@ -117,11 +119,15 @@ class FeatureContext implements Context, SnippetAcceptingContext
     }
 
     /**
-     * @Given a writer with BGC number :bgcNumber and bankgiro :autogiro
+     * @Given a writer with BGC number :bgcNumber, bankgiro :autogiro and date :date
      */
-    public function aWriterWithBgcNumberAndBankgiro($bgcNumber, $autogiro)
+    public function aWriterWithBgcNumberAndBankgiro(string $bgcNumber, string $bankgiro, string $date)
     {
-        $this->writer = (new WriterFactory)->createWriter($bgcNumber, $autogiro);
+        $this->writer = (new WriterFactory)->createWriter(
+            $bgcNumber,
+            (new \byrokrat\banking\BankgiroFactory)->createAccount($bankgiro),
+            new \DateTime($date)
+        );
     }
 
     /**

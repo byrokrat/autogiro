@@ -6,6 +6,7 @@ namespace spec\byrokrat\autogiro\Writer;
 
 use byrokrat\autogiro\Writer\WriterFactory;
 use byrokrat\autogiro\Writer\Writer;
+use byrokrat\banking\Bankgiro;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -16,8 +17,10 @@ class WriterFactorySpec extends ObjectBehavior
         $this->shouldHaveType(WriterFactory::CLASS);
     }
 
-    function it_creates_writers()
+    function it_creates_writers(Bankgiro $bankgiro, \DateTime $date)
     {
-        $this->createWriter('bgc_cust', 'bankgiro')->shouldHaveType(Writer::CLASS);
+        $bankgiro->getNumber()->willReturn('');
+        $date->format(Argument::any())->willReturn('');
+        $this->createWriter('bgc_cust', $bankgiro, $date)->shouldHaveType(Writer::CLASS);
     }
 }

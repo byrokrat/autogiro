@@ -21,17 +21,12 @@ class IdVisitorSpec extends ObjectBehavior
         ErrorObject $errorObj,
         OrganizationIdFactory $organizationIdFactory,
         PersonalIdFactory $personalIdFactory,
-        IdNode $idNode,
         Id $id
     ) {
         $organizationIdFactory->create('-not-valid')->willThrow(IdException::CLASS);
         $organizationIdFactory->create('-valid')->willReturn($id);
-
         $personalIdFactory->create('19-not-valid')->willThrow(IdException::CLASS);
         $personalIdFactory->create('20-valid')->willReturn($id);
-
-        $idNode->getLineNr()->willReturn(1);
-
         $this->beConstructedWith($errorObj, $organizationIdFactory, $personalIdFactory);
     }
 
@@ -45,33 +40,46 @@ class IdVisitorSpec extends ObjectBehavior
         $this->shouldHaveType(ErrorAwareVisitor::CLASS);
     }
 
-    function it_fails_on_unvalid_organizational_id($idNode, $errorObj)
+    function it_fails_on_unvalid_organizational_id(IdNode $idNode, $errorObj)
     {
+        $idNode->hasAttribute('id')->willReturn(false);
         $idNode->getValue()->willReturn('99-not-valid');
+        $idNode->getLineNr()->willReturn(1);
         $this->beforeIdNode($idNode);
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 
-    function it_creates_valid_organizational_ids($idNode, $id, $errorObj)
+    function it_creates_valid_organizational_ids(IdNode $idNode, $id, $errorObj)
     {
+        $idNode->hasAttribute('id')->willReturn(false);
         $idNode->getValue()->willReturn('00-valid');
         $idNode->setAttribute('id', $id)->shouldBeCalled();
         $this->beforeIdNode($idNode);
         $errorObj->addError(Argument::cetera())->shouldNotHaveBeenCalled();
     }
 
-    function it_fails_on_unvalid_personal_id($idNode, $errorObj)
+    function it_fails_on_unvalid_personal_id(IdNode $idNode, $errorObj)
     {
+        $idNode->hasAttribute('id')->willReturn(false);
         $idNode->getValue()->willReturn('19-not-valid');
+        $idNode->getLineNr()->willReturn(1);
         $this->beforeIdNode($idNode);
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 
-    function it_creates_valid_personal_ids($idNode, $id, $errorObj)
+    function it_creates_valid_personal_ids(IdNode $idNode, $id, $errorObj)
     {
+        $idNode->hasAttribute('id')->willReturn(false);
         $idNode->getValue()->willReturn('20-valid');
         $idNode->setAttribute('id', $id)->shouldBeCalled();
         $this->beforeIdNode($idNode);
         $errorObj->addError(Argument::cetera())->shouldNotHaveBeenCalled();
+    }
+
+    function it_does_not_create_id_if_attr_is_set(IdNode $idNode)
+    {
+        $idNode->hasAttribute('id')->willReturn(true);
+        $this->beforeIdNode($idNode);
+        $idNode->setAttribute('id', Argument::any())->shouldNotHaveBeenCalled();
     }
 }

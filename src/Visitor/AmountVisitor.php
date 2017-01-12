@@ -33,6 +33,10 @@ class AmountVisitor extends ErrorAwareVisitor
 {
     public function beforeAmountNode(AmountNode $node)
     {
+        if ($node->hasAttribute('amount')) {
+            return;
+        }
+
         try {
             $node->setAttribute(
                 'amount',

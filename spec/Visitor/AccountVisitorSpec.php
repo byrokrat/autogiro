@@ -21,22 +21,12 @@ class AccountVisitorSpec extends ObjectBehavior
         ErrorObject $errorObj,
         AccountFactory $accountFactory,
         AccountFactory $bankgiroFactory,
-        AccountNode $accountNode,
-        PayeeBankgiroNode $bankgiroNode,
         AccountNumber $accountNumber
     ) {
         $accountFactory->createAccount('not-valid')->willThrow(BankingException::CLASS);
         $accountFactory->createAccount('valid')->willReturn($accountNumber);
-
         $bankgiroFactory->createAccount('not-valid')->willThrow(BankingException::CLASS);
         $bankgiroFactory->createAccount('valid')->willReturn($accountNumber);
-
-        $accountNode->getLineNr()->willReturn(1);
-        $accountNode->getType()->willReturn('AccountNode');
-
-        $bankgiroNode->getLineNr()->willReturn(1);
-        $bankgiroNode->getType()->willReturn('PayeeBankgiroNode');
-
         $this->beConstructedWith($errorObj, $accountFactory, $bankgiroFactory);
     }
 
@@ -50,33 +40,53 @@ class AccountVisitorSpec extends ObjectBehavior
         $this->shouldHaveType(ErrorAwareVisitor::CLASS);
     }
 
-    function it_fails_on_unvalid_account_number($accountNode, $errorObj)
+    function it_fails_on_unvalid_account_number(AccountNode $accountNode, $errorObj)
     {
+        $accountNode->hasAttribute('account')->willReturn(false);
         $accountNode->getValue()->willReturn('not-valid');
-        $this->visitBefore($accountNode);
+        $accountNode->getLineNr()->willReturn(1);
+        $this->beforeAccountNode($accountNode);
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 
-    function it_creates_valid_account_numbers($accountNode, $accountNumber, $errorObj)
+    function it_creates_valid_account_numbers(AccountNode $accountNode, $accountNumber, $errorObj)
     {
+        $accountNode->hasAttribute('account')->willReturn(false);
         $accountNode->getValue()->willReturn('valid');
         $accountNode->setAttribute('account', $accountNumber)->shouldBeCalled();
-        $this->visitBefore($accountNode);
+        $this->beforeAccountNode($accountNode);
         $errorObj->addError(Argument::cetera())->shouldNotHaveBeenCalled();
     }
 
-    function it_fails_on_unvalid_bankgiro_number($bankgiroNode, $errorObj)
+    function it_does_not_create_account_if_attr_is_set(AccountNode $accountNode)
     {
+        $accountNode->hasAttribute('account')->willReturn(true);
+        $this->beforeAccountNode($accountNode);
+        $accountNode->setAttribute('account', Argument::any())->shouldNotHaveBeenCalled();
+    }
+
+    function it_fails_on_unvalid_bankgiro_number(PayeeBankgiroNode $bankgiroNode, $errorObj)
+    {
+        $bankgiroNode->hasAttribute('account')->willReturn(false);
         $bankgiroNode->getValue()->willReturn('not-valid');
-        $this->visitBefore($bankgiroNode);
+        $bankgiroNode->getLineNr()->willReturn(1);
+        $this->beforePayeeBankgiroNode($bankgiroNode);
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 
-    function it_creates_valid_bankgiro_numbers($bankgiroNode, $accountNumber, $errorObj)
+    function it_creates_valid_bankgiro_numbers(PayeeBankgiroNode $bankgiroNode, $accountNumber, $errorObj)
     {
+        $bankgiroNode->hasAttribute('account')->willReturn(false);
         $bankgiroNode->getValue()->willReturn('valid');
         $bankgiroNode->setAttribute('account', $accountNumber)->shouldBeCalled();
-        $this->visitBefore($bankgiroNode);
+        $this->beforePayeeBankgiroNode($bankgiroNode);
         $errorObj->addError(Argument::cetera())->shouldNotHaveBeenCalled();
+    }
+
+    function it_does_not_create_bankgiro_if_attr_is_set(PayeeBankgiroNode $bankgiroNode)
+    {
+        $bankgiroNode->hasAttribute('account')->willReturn(true);
+        $this->beforePayeeBankgiroNode($bankgiroNode);
+        $bankgiroNode->setAttribute('account', Argument::any())->shouldNotHaveBeenCalled();
     }
 }

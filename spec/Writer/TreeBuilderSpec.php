@@ -14,14 +14,17 @@ use byrokrat\autogiro\Tree\TextNode;
 use byrokrat\autogiro\Tree\PayeeBgcNumberNode;
 use byrokrat\autogiro\Tree\PayeeBankgiroNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
+use byrokrat\banking\Bankgiro;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
 class TreeBuilderSpec extends ObjectBehavior
 {
-    function let()
+    function let(Bankgiro $bankgiro, \DateTime $date)
     {
-        $this->beConstructedWith('payeeBgcNr', 'payeeBankgiro', '20170110');
+        $bankgiro->getNumber()->willReturn('bankgiro');
+        $date->format('Ymd')->willReturn('date');
+        $this->beConstructedWith('bgcNr', $bankgiro, $date);
     }
 
     function it_is_initializable()
@@ -36,7 +39,7 @@ class TreeBuilderSpec extends ObjectBehavior
         $this->buildTree()->shouldBeLike(new FileNode);
     }
 
-    function it_builds_simple_delete_mandate_trees()
+    function it_builds_simple_delete_mandate_trees($bankgiro, $date)
     {
         $this->addDeleteMandateRecord('payerNr');
         $this->buildTree()->shouldBeLike(
@@ -44,16 +47,16 @@ class TreeBuilderSpec extends ObjectBehavior
                 new LayoutNode(
                     new RequestOpeningRecordNode(
                         0,
-                        new DateNode(0, '20170110'),
+                        (new DateNode(0, 'date'))->setAttribute('date', $date->getWrappedObject()),
                         new TextNode(0, 'AUTOGIRO'),
                         new TextNode(0, str_pad('', 44)),
-                        new PayeeBgcNumberNode(0, 'payeeBgcNr'),
-                        new PayeeBankgiroNode(0, 'payeeBankgiro'),
+                        new PayeeBgcNumberNode(0, 'bgcNr'),
+                        (new PayeeBankgiroNode(0, 'bankgiro'))->setAttribute('account', $bankgiro->getWrappedObject()),
                         [new TextNode(0, '  ')]
                     ),
                     new DeleteMandateRequestNode(
                         0,
-                        new PayeeBankgiroNode(0, 'payeeBankgiro'),
+                        (new PayeeBankgiroNode(0, 'bankgiro'))->setAttribute('account', $bankgiro->getWrappedObject()),
                         new PayerNumberNode(0, 'payerNr'),
                         [new TextNode(0, str_pad('', 52))]
                     )

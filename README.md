@@ -90,7 +90,10 @@ Create a writer by supplying your bankgiro and BGC customer number to WriterFact
 
 <!-- @example WriterFactory -->
 ```php
-$writer = (new \byrokrat\autogiro\Writer\WriterFactory)->createWriter('123456', '1111-1119');
+$writer = (new \byrokrat\autogiro\Writer\WriterFactory)->createWriter(
+    '123456',
+    (new \byrokrat\banking\BankgiroFactory)->createAccount('1111-1119')
+);
 ```
 
 Then perform actions on the writer and generate contents to output.

@@ -44,6 +44,10 @@ class MessageVisitor extends ErrorAwareVisitor
 
     private function setMessageAttr(MessageNode $node, array $messageMap)
     {
+        if ($node->hasAttribute('message')) {
+            return;
+        }
+
         if (!isset($messageMap[$node->getValue()])) {
             return $this->getErrorObject()->addError(
                 "Invalid message id %s on line %s",

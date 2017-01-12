@@ -51,6 +51,10 @@ class IdVisitor extends ErrorAwareVisitor
 
     public function beforeIdNode(IdNode $node)
     {
+        if ($node->hasAttribute('id')) {
+            return;
+        }
+
         try {
 
             if (in_array(substr($node->getValue(), 0, 2), ['00', '99'])) {

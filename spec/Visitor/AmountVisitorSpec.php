@@ -31,21 +31,26 @@ class AmountVisitorSpec extends ObjectBehavior
 
     function it_fails_on_unvalid_amounts(AmountNode $amountNode, $errorObj)
     {
+        $amountNode->hasAttribute('amount')->willReturn(false);
         $amountNode->getLineNr()->willReturn(1);
-        $amountNode->getType()->willReturn('AmountNode');
         $amountNode->getValue()->willReturn('this-is-not-a-valid-signal-string');
-        $this->visitBefore($amountNode);
+        $this->beforeAmountNode($amountNode);
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 
     function it_creates_valid_amounts(AmountNode $amountNode, $errorObj)
     {
-        $amountNode->getType()->willReturn('AmountNode');
+        $amountNode->hasAttribute('amount')->willReturn(false);
         $amountNode->getValue()->willReturn('1230K');
-
         $amountNode->setAttribute('amount', Argument::exact(new SEK('-123.02')))->shouldBeCalled();
-
-        $this->visitBefore($amountNode);
+        $this->beforeAmountNode($amountNode);
         $errorObj->addError(Argument::cetera())->shouldNotHaveBeenCalled();
+    }
+
+    function it_does_not_create_amount_if_attr_is_set(AmountNode $amountNode)
+    {
+        $amountNode->hasAttribute('amount')->willReturn(true);
+        $this->beforeAmountNode($amountNode);
+        $amountNode->setAttribute('amount', Argument::any())->shouldNotHaveBeenCalled();
     }
 }

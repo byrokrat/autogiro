@@ -4,7 +4,7 @@ Feature: Mandate request writer
   I need to be able to generate mandate requests
 
   Scenario: I request a mandate deletion
-    Given a writer with BGC number "666666" and bankgiro "1111-1119"
+    Given a writer with BGC number "666666", bankgiro "1111-1119" and date "20170111"
     When I request mandate "3333333333" be deleted
     And I generate the request file
     Then I get a file like:
@@ -15,7 +15,7 @@ Feature: Mandate request writer
     """
 
   Scenario: I parse a generated mandate deletion
-    Given a writer with BGC number "222222" and bankgiro "1111-1119"
+    Given a writer with BGC number "222222", bankgiro "1111-1119" and date "20170111"
     And a parser
     When I request mandate "1111111111" be deleted
     And I generate the request file

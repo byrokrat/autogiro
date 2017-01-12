@@ -31,6 +31,10 @@ class DateVisitor extends ErrorAwareVisitor
 {
     public function beforeDateNode(DateNode $node)
     {
+        if ($node->hasAttribute('date')) {
+            return;
+        }
+
         try {
             $node->setAttribute(
                 'date',

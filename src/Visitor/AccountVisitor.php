@@ -51,30 +51,28 @@ class AccountVisitor extends ErrorAwareVisitor
 
     public function beforeAccountNode(AccountNode $node)
     {
-        try {
-            $node->setAttribute(
-                'account',
-                $this->accountFactory->createAccount($node->getValue())
-            );
-        } catch (BankingException $e) {
-            $this->getErrorObject()->addError(
-                "Invalid account number %s on line %s",
-                $node->getValue(),
-                (string)$node->getLineNr()
-            );
-        }
+        $this->writeAccountAttr($node, $this->accountFactory);
     }
 
     public function beforePayeeBankgiroNode(PayeeBankgiroNode $node)
     {
+        $this->writeAccountAttr($node, $this->bankgiroFactory);
+    }
+
+    private function writeAccountAttr(AccountNode $node, AccountFactory $factory)
+    {
+        if ($node->hasAttribute('account')) {
+            return;
+        }
+
         try {
             $node->setAttribute(
                 'account',
-                $this->bankgiroFactory->createAccount($node->getValue())
+                $factory->createAccount($node->getValue())
             );
         } catch (BankingException $e) {
             $this->getErrorObject()->addError(
-                "Invalid bankgiro number %s on line %s",
+                "Invalid account number %s on line %s",
                 $node->getValue(),
                 (string)$node->getLineNr()
             );
