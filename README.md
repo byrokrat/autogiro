@@ -18,9 +18,9 @@ composer require byrokrat/autogiro
 
 Autogiro specifications
 -----------------------
-This library is developed against the [technichal manual](/rel/autogiro_tekniskmanual_sv.pdf)
-(in swedish) of the direct debit system (autogirot) revised 2014-08-05. For
-updated versions of this document contact [Bankgirocentralen](http://bgc.se).
+This library is developed against the technichal manual (in swedish) of the
+direct debit system (autogirot) revised 2014-08-05. For updated versions of this
+document contact [Bankgirocentralen](http://bgc.se).
 
 Instantiating a parser
 ----------------------

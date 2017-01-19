@@ -8,7 +8,6 @@ use byrokrat\autogiro\Writer\PrintingVisitor;
 use byrokrat\autogiro\Writer\Output;
 use byrokrat\autogiro\Exception\LogicException;
 use byrokrat\autogiro\Tree\DateNode;
-use byrokrat\autogiro\Tree\ImmediateDateNode;
 use byrokrat\autogiro\Tree\TextNode;
 use byrokrat\autogiro\Tree\PayeeBgcNumberNode;
 use byrokrat\autogiro\Tree\PayeeBankgiroNode;
@@ -62,10 +61,10 @@ class PrintingVisitorSpec extends ObjectBehavior
         $this->shouldThrow(LogicException::CLASS)->duringBeforeDateNode($node);
     }
 
-    function it_prints_immediate_dates(ImmediateDateNode $node, Output $output)
+    function it_prints_immediate_dates(Output $output)
     {
         $this->setOutput($output);
-        $this->beforeImmediateDateNode($node);
+        $this->beforeImmediateDateNode();
         $output->write(Argument::is('GENAST  '))->shouldHaveBeenCalled();
     }
 

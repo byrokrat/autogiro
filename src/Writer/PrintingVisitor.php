@@ -26,7 +26,6 @@ use byrokrat\autogiro\Visitor\Visitor;
 use byrokrat\autogiro\Exception\LogicException;
 use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Tree\DateNode;
-use byrokrat\autogiro\Tree\ImmediateDateNode;
 use byrokrat\autogiro\Tree\TextNode;
 use byrokrat\autogiro\Tree\PayeeBgcNumberNode;
 use byrokrat\autogiro\Tree\PayeeBankgiroNode;
@@ -68,7 +67,7 @@ class PrintingVisitor extends Visitor
         $this->output->write($node->getAttribute('date')->format('Ymd'));
     }
 
-    public function beforeImmediateDateNode(ImmediateDateNode $node)
+    public function beforeImmediateDateNode()
     {
         $this->output->write('GENAST  ');
     }
