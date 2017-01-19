@@ -94,7 +94,7 @@ class FeatureContext implements Context, SnippetAcceptingContext
     {
         Assertions::assertEquals(
             $number,
-            Utils::extractNodeFromTree($nodeType, $this->fileNode)->getChild('account')->getAttribute('account')->getRawNumber()
+            Utils::extractNodeFromTree($nodeType, $this->fileNode)->getChild('account')->getAttribute('account')->getNumber()
         );
     }
 

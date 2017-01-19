@@ -65,4 +65,4 @@ Feature: Mandate response parser
     092008061199000000001
     """
     Then I find a "LAYOUT_MANDATE_RESPONSE" layout
-    And the last "MandateResponseNode" contains account "0000000050501055"
+    And the last "MandateResponseNode" contains account "5050-1055"
