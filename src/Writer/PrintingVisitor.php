@@ -48,6 +48,11 @@ use byrokrat\id\OrganizationId;
 class PrintingVisitor extends Visitor
 {
     /**
+     * End-of-line chars used when generating files
+     */
+    const EOL = "\r\n";
+
+    /**
      * @var Output
      */
     private $output;
@@ -143,7 +148,7 @@ class PrintingVisitor extends Visitor
 
     public function afterRequestOpeningRecordNode()
     {
-        $this->output->write("\n");
+        $this->output->write(self::EOL);
     }
 
     public function beforeDeleteMandateRequestNode()
@@ -153,6 +158,6 @@ class PrintingVisitor extends Visitor
 
     public function afterDeleteMandateRequestNode()
     {
-        $this->output->write("\n");
+        $this->output->write(self::EOL);
     }
 }

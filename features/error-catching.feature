@@ -3,6 +3,14 @@ Feature: Error cathing
   As a user
   I need to be able to get information on error states
 
+  Scenario: I parse a file with invalid content
+    Given a parser
+    When I parse:
+    """
+    This is not valid content
+    """
+    Then I get an error
+
   Scenario: I parse a file with inconsistent payee bankgiro information
     Given a parser that ignores account and id structures
     When I parse:

@@ -37,23 +37,14 @@ use byrokrat\autogiro\Tree\Record\ClosingRecordNode;
 use byrokrat\autogiro\Tree\Record\OpeningRecordNode;
 use byrokrat\autogiro\Tree\Record\Request;
 use byrokrat\autogiro\Tree\Record\Response;
+use byrokrat\autogiro\Tree\ReferredAccountNode;
 use byrokrat\autogiro\Tree\RepetitionsNode;
 use byrokrat\autogiro\Tree\TextNode;
 
 grammar Grammar
 {
-    // TODO Det enda som inte ska vara nodes är transaktionskoder
-        // på något sätt måste trotts allt olika record skiljas från varandra vid parse-time..
-
-        // stega igenom filen och kontrollera att det stämmer överallt...
-
-    // TODO lägg till någon form av ErrorNode så att jag om jag skickar in helt
-        // felaktig text så får vi trotts allt ett bra felmeddelande
-        //
-        // lägg ett behat test för detta också...
-
-    start FILE = RESET_LINE_COUNT layout:(REQUEST_FILE / L_RESP_MANDATE) {
-        return $layout;
+    start FILE = RESET_LINE_COUNT file:(REQUEST_FILE / RESP_MANDATE_FILE) {
+        return $file;
     };
 
     RESET_LINE_COUNT = '' {
@@ -62,7 +53,7 @@ grammar Grammar
 
     // GENERIC RECORDS
 
-    R_GENERIC_OPENING = '01' ag:AUTOGIRO space1:VOID14 date:DATE space2:VOID12 layout:TEXT20 payeeBgcNr:BGC_NR payeeBg:PAYEE_BG void:EOR {
+    GENERIC_OPENING_RECORD = '01' ag:AUTOGIRO space1:VOID14 date:DATE space2:VOID12 layout:TEXT20 payeeBgcNr:BGC_NR payeeBg:PAYEE_BG void:EOR {
         return new OpeningRecordNode($this->lineNr, $ag, $space1, $date, $space2, $layout, $payeeBgcNr, $payeeBg, $void);
     };
 
@@ -70,52 +61,45 @@ grammar Grammar
     // REQUEST LAYOUTS
     //
 
-    REQUEST_FILE = layouts:(L_REQ_MANDATE / L_REQ_PAYMENT / L_REQ_AMENDMENT)+ {
+    REQUEST_FILE = layouts:(REQ_MANDATE_LAYOUT / REQ_PAYMENT_LAYOUT / REQ_AMENDMENT_LAYOUT)+ {
         return new FileNode(...$layouts);
     };
 
-    R_REQ_OPENING = '01' date:DATE ag:AUTOGIRO space:VOID44 payeeBgcNr:BGC_NR payeeBg:PAYEE_BG void:EOR {
+    REQ_OPENING_RECORD = '01' date:DATE ag:AUTOGIRO space:VOID44 payeeBgcNr:BGC_NR payeeBg:PAYEE_BG void:EOR {
         return new Request\RequestOpeningRecordNode($this->lineNr, $date, $ag, $space, $payeeBgcNr, $payeeBg, $void);
     };
 
     // MANDATE REQUESTS
 
-    // TODO fundera på om mitt naming convention kan bli tydligare här...
-
-    L_REQ_MANDATE = open:R_REQ_OPENING records:(R_REQ_CREATE_MANDATE / R_REQ_UPDATE_MANDATE / R_REQ_DEL_MANDATE)+ {
+    REQ_MANDATE_LAYOUT = open:REQ_OPENING_RECORD records:(REQ_DEL_MANDATE_RECORD / REQ_REJECT_MANDATE_RECORD / REQ_CREATE_MANDATE_RECORD / REQ_UPDATE_MANDATE_RECORD)+ {
         return (new LayoutNode($open, ...$records))->setAttribute('layout_name', Layouts::LAYOUT_MANDATE_REQUEST);
     };
 
-    R_REQ_CREATE_MANDATE = '04' payeeBg:PAYEE_BG payerNr:PAYER_NR account:ACCOUNT? id:ID? space:VOID20? reject:'AV'? void:EOR {
-        // TODO $space måste också sparas till objekt för att kunna valideras...
-        // TODO och reject??
+    REQ_DEL_MANDATE_RECORD = '03' payeeBg:PAYEE_BG payerNr:PAYER_NR void:EOR {
+        return new Request\DeleteMandateRequestNode($this->lineNr, $payeeBg, $payerNr, $void);
+    };
 
-        new TextNode($this->lineNr, (string)$reject, '/^(AV)|( {0,2})$/');
+    REQ_REJECT_MANDATE_RECORD = '04' payeeBg:PAYEE_BG payerNr:PAYER_NR space:TEXT48 'AV' void:EOR {
+        return new Request\RejectMandateRequestNode($this->lineNr, $payeeBg, $payerNr, $space, new TextNode($this->lineNr, 'AV'), $void);
+    };
 
-        if ($reject == 'AV') {
-            return new Request\RejectMandateRequestNode($this->lineNr, $payeeBg, $payerNr, $void);
-        }
-
-        return $account && $id
+    REQ_CREATE_MANDATE_RECORD = '04' payeeBg:PAYEE_BG payerNr:PAYER_NR account:ACCOUNT? id:ID? void:EOR {
+        return $id && trim($id->getValue())
             ? new Request\CreateMandateRequestNode($this->lineNr, $payeeBg, $payerNr, $account, $id, $void)
             : new Request\AcceptMandateRequestNode($this->lineNr, $payeeBg, $payerNr, $void);
     };
 
-    R_REQ_UPDATE_MANDATE = '05' oldPayeeBg:PAYEE_BG oldPayerNr:PAYER_NR newPayeeBg:PAYEE_BG newPayerNr:PAYER_NR void:EOR {
+    REQ_UPDATE_MANDATE_RECORD = '05' oldPayeeBg:PAYEE_BG oldPayerNr:PAYER_NR newPayeeBg:PAYEE_BG newPayerNr:PAYER_NR void:EOR {
         return new Request\UpdateMandateRequestNode($this->lineNr, $oldPayeeBg, $oldPayerNr, $newPayeeBg, $newPayerNr, $void);
-    };
-
-    R_REQ_DEL_MANDATE = '03' payeeBg:PAYEE_BG payerNr:PAYER_NR void:EOR {
-        return new Request\DeleteMandateRequestNode($this->lineNr, $payeeBg, $payerNr, $void);
     };
 
     // PAYMENT REQUESTS
 
-    L_REQ_PAYMENT = open:R_REQ_OPENING records:(R_REQ_TRANSACTION)+ {
+    REQ_PAYMENT_LAYOUT = open:REQ_OPENING_RECORD records:(REQ_TRANSACTION_RECORD)+ {
         return (new LayoutNode($open, ...$records))->setAttribute('layout_name', Layouts::LAYOUT_PAYMENT_REQUEST);
     };
 
-    R_REQ_TRANSACTION = tc:('82' / '32') date:(IMMEDIATE_DATE / DATE) ival:INTERVAL reps:REPS space:VOID payerNr:PAYER_NR amount:AMOUNT payeeBg:PAYEE_BG ref:VARIABLE_TEXT void:EOR {
+    REQ_TRANSACTION_RECORD = tc:('32' / '82') date:(IMMEDIATE_DATE / DATE) ival:INTERVAL reps:REPS space:VOID payerNr:PAYER_NR amount:AMOUNT payeeBg:PAYEE_BG ref:VARIABLE_TEXT void:EOR {
         return $tc == '82'
             ? new Request\IncomingTransactionRequestNode($this->lineNr, $date, $ival, $reps, $space, $payerNr, $amount, $payeeBg, $ref, $void)
             : new Request\OutgoingTransactionRequestNode($this->lineNr, $date, $ival, $reps, $space, $payerNr, $amount, $payeeBg, $ref, $void);
@@ -123,7 +107,7 @@ grammar Grammar
 
     // AMENDMENT REQUESTS
 
-    L_REQ_AMENDMENT = open:R_REQ_OPENING records:('TODO')+ {
+    REQ_AMENDMENT_LAYOUT = open:REQ_OPENING_RECORD records:('TODO')+ {
         // TODO this is just a stub...
         return (new LayoutNode($open, ...$records))->setAttribute('layout_name', Layouts::LAYOUT_AMENDMENT_REQUEST);
     };
@@ -134,35 +118,36 @@ grammar Grammar
 
     // MANDATE RESPONSES
 
-    L_RESP_MANDATE = open:(R_GENERIC_OPENING / R_RESP_MANDATE_OPENING_OLD) mands:R_RESP_MANDATE* close:R_RESP_MANDATE_CLOSING {
+    RESP_MANDATE_FILE = open:(RESP_MANDATE_OPENING_OLD_RECORD / GENERIC_OPENING_RECORD) mands:RESP_MANDATE_RECORD* close:RESP_MANDATE_CLOSING_RECORD {
         return new FileNode(
             (new LayoutNode($open, $close, ...$mands))->setAttribute('layout_name', Layouts::LAYOUT_MANDATE_RESPONSE)
         );
     };
 
-    R_RESP_MANDATE_OPENING_OLD = '01' date:DATE clear:BGC_CLEARING payeeBg:PAYEE_BG layout:$(A5 A2 A2) void:EOR {
+    RESP_MANDATE_OPENING_OLD_RECORD = '01' date:DATE clear:BGC_CLEARING payeeBg:PAYEE_BG 'AG-MEDAVI' void:EOR {
         return new OpeningRecordNode(
             $this->lineNr,
             new TextNode($this->lineNr, ''),
             new TextNode($this->lineNr, ''),
             $date,
             $clear,
-            new TextNode($this->lineNr, $layout, '/^AG-MEDAVI$/'),
+            new TextNode($this->lineNr, 'AG-MEDAVI'),
             new PayeeBgcNumberNode($this->lineNr, ''),
             $payeeBg,
             $void
         );
     };
 
-    R_RESP_MANDATE = '73' payeeBg:PAYEE_BG payerNr:PAYER_NR account:ACCOUNT id:ID A5 info:$(A A) comment:$(A A) date:DATE? validDate:$(A5 A)? void:EOR {
-        $account = $account->getValue()
-            ? $account
-            : new AccountNode($this->lineNr, $payerNr->getValue());
+    RESP_MANDATE_RECORD = '73' payeeBg:PAYEE_BG payerNr:PAYER_NR account:ACCOUNT id:ID space:$(A5) info:MESSAGE comment:MESSAGE date:DATE validDate:$(A5 A)? void:EOR {
+        // If account is empty a valid bankgiro number may be read from the payer number field
+        if (!trim($account->getValue())) {
+            $account = (new ReferredAccountNode($account->getLineNr(), $account->getValue()))->setAttribute('referred_value', $payerNr->getValue());
+        }
 
-        // TODO här oven finns en A5 som måste sparas...
-
-        // TODO $validDate måste sparas, se s 78 i specen, det är datum då medgivandet är giltigt för debitering..
-            // dock bara sex siffror, så det är inte riktigt som det vanliga date...
+        // A mandate-valid-from-date is only present in the old layout
+        if ($validDate) {
+            array_unshift($void, new TextNode($this->lineNr, (string)$validDate));
+        }
 
         return new Response\MandateResponseNode(
             $this->lineNr,
@@ -170,16 +155,16 @@ grammar Grammar
             $payerNr,
             $account,
             $id,
-            new MessageNode($this->lineNr, "73.$info"),
-            new MessageNode($this->lineNr, "73.comment.$comment"),
-            $date ?: new DateNode($this->lineNr, '@0'),
+            new TextNode($this->lineNr, $space, '/^( |0){5}$/'),
+            $info->setAttribute('message_id', "73.{$info->getValue()}"),
+            $comment->setAttribute('message_id', "73.comment.{$comment->getValue()}"),
+            $date,
             $void
         );
     };
 
-    R_RESP_MANDATE_CLOSING = '09' date:DATE clear:BGC_CLEARING nrOfPosts:INT7 void:EOR {
-        // TODO $clear måste sparas så att det kan valideras...
-        return new ClosingRecordNode($this->lineNr, $date, $nrOfPosts, $void);
+    RESP_MANDATE_CLOSING_RECORD = '09' date:DATE clear:BGC_CLEARING nrOfPosts:INT7 void:EOR {
+        return new ClosingRecordNode($this->lineNr, $date, $clear, $nrOfPosts, $void);
     };
 
     // EXTERNAL TYPES
@@ -226,6 +211,10 @@ grammar Grammar
         return new IntervalNode($this->lineNr + 1, $interval);
     };
 
+    MESSAGE = msg:$(A A) {
+        return new MessageNode($this->lineNr + 1, $msg);
+    };
+
     PAYER_NR = nr:$(A10 A5 A) {
         return new PayerNumberNode($this->lineNr + 1, $nr);
     };
@@ -245,6 +234,10 @@ grammar Grammar
     };
 
     TEXT20 = text:$(A10 A10) {
+        return new TextNode($this->lineNr + 1, $text);
+    };
+
+    TEXT48 = text:$(A10 A10 A10 A10 A5 A2 A) {
         return new TextNode($this->lineNr + 1, $text);
     };
 

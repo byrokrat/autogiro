@@ -8,6 +8,7 @@ use byrokrat\autogiro\Visitor\AccountVisitor;
 use byrokrat\autogiro\Visitor\ErrorAwareVisitor;
 use byrokrat\autogiro\Visitor\ErrorObject;
 use byrokrat\autogiro\Tree\AccountNode;
+use byrokrat\autogiro\Tree\ReferredAccountNode;
 use byrokrat\autogiro\Tree\PayeeBankgiroNode;
 use byrokrat\banking\AccountFactory;
 use byrokrat\banking\AccountNumber;
@@ -61,7 +62,26 @@ class AccountVisitorSpec extends ObjectBehavior
     function it_does_not_create_account_if_attr_is_set(AccountNode $accountNode)
     {
         $accountNode->hasAttribute('account')->willReturn(true);
+        $accountNode->getValue()->willReturn('');
         $this->beforeAccountNode($accountNode);
+        $accountNode->setAttribute('account', Argument::any())->shouldNotHaveBeenCalled();
+    }
+
+    function it_creates_valid_referred_account_numbers(ReferredAccountNode $accountNode, $accountNumber, $errorObj)
+    {
+        $accountNode->hasAttribute('account')->willReturn(false);
+        $accountNode->getValue()->willReturn('');
+        $accountNode->hasAttribute('referred_value')->willReturn(true);
+        $accountNode->getAttribute('referred_value')->willReturn('valid');
+        $accountNode->setAttribute('account', $accountNumber)->shouldBeCalled();
+        $this->beforeReferredAccountNode($accountNode);
+        $errorObj->addError(Argument::cetera())->shouldNotHaveBeenCalled();
+    }
+
+    function it_does_not_create_referred_account_if_attr_is_not_set(ReferredAccountNode $accountNode)
+    {
+        $accountNode->hasAttribute('referred_value')->willReturn(false);
+        $this->beforeReferredAccountNode($accountNode);
         $accountNode->setAttribute('account', Argument::any())->shouldNotHaveBeenCalled();
     }
 
@@ -86,6 +106,7 @@ class AccountVisitorSpec extends ObjectBehavior
     function it_does_not_create_bankgiro_if_attr_is_set(PayeeBankgiroNode $bankgiroNode)
     {
         $bankgiroNode->hasAttribute('account')->willReturn(true);
+        $bankgiroNode->getValue()->willReturn('');
         $this->beforePayeeBankgiroNode($bankgiroNode);
         $bankgiroNode->setAttribute('account', Argument::any())->shouldNotHaveBeenCalled();
     }

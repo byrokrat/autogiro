@@ -5,10 +5,11 @@ use Behat\Behat\Context\Context;
 use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
+use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Parser\ParserFactory;
 use byrokrat\autogiro\Writer\WriterFactory;
 use byrokrat\autogiro\Enumerator;
-use byrokrat\autogiro\Exception\TreeException;
+use byrokrat\autogiro\Exception\ContentException;
 
 /**
  * Defines application features from the specific context.
@@ -17,10 +18,7 @@ use byrokrat\autogiro\Exception\TreeException;
  */
 class FeatureContext implements Context, SnippetAcceptingContext
 {
-    /**
-     * @var \byrokrat\autogiro\Parser\Parser
-     */
-    private $parser;
+    use ParserTrait;
 
     /**
      * @var \byrokrat\autogiro\Tree\FileNode Created at parse time
@@ -28,7 +26,7 @@ class FeatureContext implements Context, SnippetAcceptingContext
     private $fileNode;
 
     /**
-     * @var TreeException
+     * @var ContentException
      */
     private $exception;
 
@@ -43,29 +41,11 @@ class FeatureContext implements Context, SnippetAcceptingContext
     private $generatedFile = '';
 
     /**
-     * @Given a parser
-     */
-    public function aParser()
-    {
-        $this->parser = (new ParserFactory)->createParser();
-    }
-
-    /**
-     * @Given a parser that ignores account and id structures
-     */
-    public function aParserThatIgnoresAccountAndIdStructures()
-    {
-        $this->parser = (new ParserFactory)->createParser(
-            ParserFactory::VISITOR_IGNORE_ACCOUNTS | ParserFactory::VISITOR_IGNORE_IDS
-        );
-    }
-
-    /**
      * @When I parse:
      */
-    public function iParse(PyStringNode $string)
+    public function iParse(PyStringNode $node)
     {
-        $this->parseRawFile($string->getRaw());
+        $this->parseRawFile(Utils::normalize($node));
     }
 
     /**
@@ -83,7 +63,7 @@ class FeatureContext implements Context, SnippetAcceptingContext
             $layoutIds[] = $layoutNode->getAttribute('layout_name');
         }
 
-        $this->assertInArray(
+        Assertions::assertInArray(
             constant("byrokrat\autogiro\Layouts::$layoutType"),
             $layoutIds,
             $this->fileNode->getAttribute('layout_ids')
@@ -104,17 +84,39 @@ class FeatureContext implements Context, SnippetAcceptingContext
 
         $enumerator->enumerate($this->fileNode);
 
-        $this->assertCount((integer)$number, $count);
+        Assertions::assertEquals((integer)$number, $count);
+    }
+
+    /**
+     * @Then the last :nodeType contains account :number
+     */
+    public function theLastNodeContainsAccount(string $nodeType, string $number)
+    {
+        Assertions::assertEquals(
+            $number,
+            Utils::extractNodeFromTree($nodeType, $this->fileNode)->getChild('account')->getAttribute('account')->getRawNumber()
+        );
     }
 
     /**
      * @Then I get a :error error
      */
-    public function iGetAError(string $error)
+    public function iGetErrorWithMessage(string $error)
     {
-        $this->assertInArray(
+        Assertions::assertInArray(
             $error,
             $this->exception->getErrors()
+        );
+    }
+
+    /**
+     * @Then I get an error
+     */
+    public function iGetAnError()
+    {
+        Assertions::assertEquals(
+            ContentException::CLASS,
+            get_class($this->exception)
         );
     }
 
@@ -157,33 +159,19 @@ class FeatureContext implements Context, SnippetAcceptingContext
     /**
      * @Then I get a file like:
      */
-    public function iGetAFileLike(PyStringNode $string)
+    public function iGetAFileLike(PyStringNode $node)
     {
-        if ((string)$string != $this->generatedFile) {
-            throw new \Exception($this->generatedFile);
+        if (Utils::normalize($node) != $this->generatedFile) {
+            throw new \Exception("Unvalid generated file: $this->generatedFile");
         }
     }
 
     private function parseRawFile(string $content)
     {
         try {
-            $this->fileNode = $this->parser->parse($content);
-        } catch (TreeException $e) {
+            $this->fileNode = $this->getParser()->parse($content);
+        } catch (ContentException $e) {
             $this->exception = $e;
-        }
-    }
-
-    private function assertInArray($needle, array $haystack)
-    {
-        if (!in_array($needle, $haystack)) {
-            throw new Exception("Unable to find $needle in array");
-        }
-    }
-
-    private function assertCount($expected, $count)
-    {
-        if ($expected != $count) {
-            throw new Exception("Invalid count $count (expected $expected)");
         }
     }
 }

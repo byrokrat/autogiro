@@ -22,11 +22,13 @@ class MandateResponseNodeSpec extends ObjectBehavior
         PayerNumberNode $payerNr,
         AccountNode $account,
         IdNode $id,
+        TextNode $space,
         MessageNode $info,
         MessageNode $comment,
-        DateNode $date
+        DateNode $date,
+        TextNode $endVoid
     ) {
-        $this->beConstructedWith(0, $bankgiro, $payerNr, $account, $id, $info, $comment, $date);
+        $this->beConstructedWith(100, $bankgiro, $payerNr, $account, $id, $space, $info, $comment, $date, [$endVoid]);
     }
 
     function it_is_initializable()
@@ -46,7 +48,6 @@ class MandateResponseNodeSpec extends ObjectBehavior
 
     function it_contains_a_line_number($bankgiro, $payerNr, $account, $id, $info, $comment, $date)
     {
-        $this->beConstructedWith(100, $bankgiro, $payerNr, $account, $id, $info, $comment, $date);
         $this->getLineNr()->shouldEqual(100);
     }
 
@@ -70,6 +71,11 @@ class MandateResponseNodeSpec extends ObjectBehavior
         $this->getChild('id')->shouldEqual($id);
     }
 
+    function it_contains_space($space)
+    {
+        $this->getChild('space_1')->shouldEqual($space);
+    }
+
     function it_contains_a_message($info)
     {
         $this->getChild('info')->shouldEqual($info);
@@ -85,9 +91,8 @@ class MandateResponseNodeSpec extends ObjectBehavior
         $this->getChild('date')->shouldEqual($date);
     }
 
-    function it_may_contain_void_ending_nodes($bankgiro, $payerNr, $account, $id, $info, $comment, $date, TextNode $endVoid)
+    function it_may_contain_void_ending_nodes($endVoid)
     {
-        $this->beConstructedWith(0, $bankgiro, $payerNr, $account, $id, $info, $comment, $date, [$endVoid]);
         $this->getChild('end_0')->shouldEqual($endVoid);
     }
 }

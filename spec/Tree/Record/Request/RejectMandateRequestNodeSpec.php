@@ -13,9 +13,9 @@ use PhpSpec\ObjectBehavior;
 
 class RejectMandateRequestNodeSpec extends ObjectBehavior
 {
-    function let(PayeeBankgiroNode $bankgiro, PayerNumberNode $payerNr)
+    function let(PayeeBankgiroNode $bankgiro, PayerNumberNode $payerNr, TextNode $space, TextNode $reject, TextNode $endVoid)
     {
-        $this->beConstructedWith(0, $bankgiro, $payerNr);
+        $this->beConstructedWith(5, $bankgiro, $payerNr, $space, $reject, [$endVoid]);
     }
 
     function it_is_initializable()
@@ -33,9 +33,8 @@ class RejectMandateRequestNodeSpec extends ObjectBehavior
         $this->getType()->shouldEqual('RejectMandateRequestNode');
     }
 
-    function it_contains_a_line_number($bankgiro, $payerNr)
+    function it_contains_a_line_number()
     {
-        $this->beConstructedWith(5, $bankgiro, $payerNr);
         $this->getLineNr()->shouldEqual(5);
     }
 
@@ -49,9 +48,18 @@ class RejectMandateRequestNodeSpec extends ObjectBehavior
         $this->getChild('payer_number')->shouldEqual($payerNr);
     }
 
-    function it_may_contain_void_ending_nodes($bankgiro, $payerNr, TextNode $endVoid)
+    function it_contains_space($space)
     {
-        $this->beConstructedWith(0, $bankgiro, $payerNr, [$endVoid]);
+        $this->getChild('space_1')->shouldEqual($space);
+    }
+
+    function it_contains_a_reject_symbol($reject)
+    {
+        $this->getChild('reject')->shouldEqual($reject);
+    }
+
+    function it_may_contain_void_ending_nodes($endVoid)
+    {
         $this->getChild('end_0')->shouldEqual($endVoid);
     }
 }

@@ -24,6 +24,9 @@ namespace byrokrat\autogiro\Tree;
 
 /**
  * Node that wrapps a message id
+ *
+ * @see \byrokrat\autogiro\Visitor\MessageVisitor Creates attribute 'message'
+ *   from attribute 'message_id' if present.
  */
 class MessageNode extends Node
 {

@@ -233,7 +233,7 @@ class PrintingVisitorSpec extends ObjectBehavior
     {
         $this->setOutput($output);
         $this->afterRequestOpeningRecordNode();
-        $output->write("\n")->shouldHaveBeenCalled();
+        $output->write(PrintingVisitor::EOL)->shouldHaveBeenCalled();
     }
 
     function it_prints_transaction_code_before_delete_mandate(Output $output)
@@ -247,6 +247,6 @@ class PrintingVisitorSpec extends ObjectBehavior
     {
         $this->setOutput($output);
         $this->afterDeleteMandateRequestNode();
-        $output->write("\n")->shouldHaveBeenCalled();
+        $output->write(PrintingVisitor::EOL)->shouldHaveBeenCalled();
     }
 }

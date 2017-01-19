@@ -9,9 +9,8 @@ Feature: Mandate request writer
     And I generate the request file
     Then I get a file like:
     """
-    0120170111AUTOGIRO                                            6666660011111119  
-    0300111111190000003333333333                                                    
-
+    0120170111AUTOGIRO                                            6666660011111119
+    0300111111190000003333333333
     """
 
   Scenario: I parse a generated mandate deletion

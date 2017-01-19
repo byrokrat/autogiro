@@ -62,7 +62,7 @@ class Writer
         $this->printer->setOutput($output);
         $tree->accept($this->printer);
 
-        return $output->getContent();
+        return rtrim($output->getContent(), "\r\n");
     }
 
     /**

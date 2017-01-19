@@ -23,7 +23,9 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Tree;
 
 /**
- * Wrapps a payee bankgiro account number
+ * Wrapps a bankgiro account number
+ *
+ * @see \byrokrat\autogiro\Visitor\AccountVisitor Creates attribute 'account'
  */
 class PayeeBankgiroNode extends AccountNode
 {

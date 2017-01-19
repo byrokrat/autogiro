@@ -29,6 +29,7 @@ use byrokrat\autogiro\Tree\DateNode;
 use byrokrat\autogiro\Tree\IdNode;
 use byrokrat\autogiro\Tree\MessageNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
+use byrokrat\autogiro\Tree\TextNode;
 
 /**
  * Node with data representing a new mandate
@@ -41,6 +42,7 @@ class MandateResponseNode extends RecordNode
         PayerNumberNode $payerNr,
         AccountNode $account,
         IdNode $id,
+        TextNode $space,
         MessageNode $info,
         MessageNode $comment,
         DateNode $date,
@@ -50,6 +52,7 @@ class MandateResponseNode extends RecordNode
         $this->setChild('payer_number', $payerNr);
         $this->setChild('account', $account);
         $this->setChild('id', $id);
+        $this->setChild('space_1', $space);
         $this->setChild('info', $info);
         $this->setChild('comment', $comment);
         $this->setChild('date', $date);

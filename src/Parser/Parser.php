@@ -24,6 +24,7 @@ namespace byrokrat\autogiro\Parser;
 
 use byrokrat\autogiro\Visitor\Visitor;
 use byrokrat\autogiro\Tree\FileNode;
+use byrokrat\autogiro\Exception\ContentException;
 
 /**
  * Facade to Grammar with error handling
@@ -46,11 +47,18 @@ class Parser
         $this->visitor = $visitor;
     }
 
+    /**
+     * @throws ContentException If grammar fails
+     */
     public function parse(string $content): FileNode
     {
-        $tree = $this->grammar->parse($content);
-        $tree->accept($this->visitor);
+        try {
+            $tree = $this->grammar->parse($content);
+        } catch (\InvalidArgumentException $exception) {
+            throw new ContentException(["Parser: {$exception->getMessage()}"]);
+        }
 
+        $tree->accept($this->visitor);
         return $tree;
     }
 }

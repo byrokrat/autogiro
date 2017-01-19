@@ -55,3 +55,14 @@ Feature: Mandate response parser
     """
     Then I find a "LAYOUT_MANDATE_RESPONSE" layout
     And I find 6 "MandateResponseNode" nodes
+
+  Scenario: I extract a bankgiro account number
+    Given a parser
+    When I parse:
+    """
+    01AUTOGIRO              20080611            AG-MEDAVI           4711170009912346
+    7300099123460000000050501055                                 033320080611
+    092008061199000000001
+    """
+    Then I find a "LAYOUT_MANDATE_RESPONSE" layout
+    And the last "MandateResponseNode" contains account "0000000050501055"

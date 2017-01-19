@@ -20,30 +20,34 @@
 
 declare(strict_types = 1);
 
-namespace byrokrat\autogiro\Tree\Record\Request;
-
-use byrokrat\autogiro\Tree\Record\RecordNode;
-use byrokrat\autogiro\Tree\PayeeBankgiroNode;
-use byrokrat\autogiro\Tree\PayerNumberNode;
-use byrokrat\autogiro\Tree\TextNode;
+namespace byrokrat\autogiro\Exception;
 
 /**
- * Node representing a request that a mandate received from the internet bank be rejected
+ * Exception thrown when a parse tree contains invalid data
  */
-class RejectMandateRequestNode extends RecordNode
+class ContentException extends RuntimeException
 {
-    public function __construct(
-        int $lineNr,
-        PayeeBankgiroNode $payeeBg,
-        PayerNumberNode $payerNr,
-        TextNode $space,
-        TextNode $reject,
-        array $void = []
-    ) {
-        $this->setChild('payee_bankgiro', $payeeBg);
-        $this->setChild('payer_number', $payerNr);
-        $this->setChild('space_1', $space);
-        $this->setChild('reject', $reject);
-        parent::__construct($lineNr, $void);
+    /**
+     * @var string[]
+     */
+    private $errors;
+
+    /**
+     * Set list of errors at construct
+     *
+     * @param string[] $errors Messages describing found parsing errors
+     */
+    public function __construct(array $errors)
+    {
+        parent::__construct("Tree invalid due to the following issues:\n" . implode("\n", $errors));
+        $this->errors = $errors;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getErrors(): array
+    {
+        return $this->errors;
     }
 }

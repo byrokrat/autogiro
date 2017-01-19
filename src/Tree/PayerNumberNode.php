@@ -25,6 +25,10 @@ namespace byrokrat\autogiro\Tree;
 /**
  * Node that wrapps a payer number
  */
-class PayerNumberNode extends Node
+class PayerNumberNode extends TextNode
 {
+    public function __construct(int $lineNr = 0, string $value = '')
+    {
+        parent::__construct($lineNr, $value, '/^[0-9]*$/');
+    }
 }

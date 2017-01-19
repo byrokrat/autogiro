@@ -24,6 +24,8 @@ namespace byrokrat\autogiro\Tree;
 
 /**
  * Node representing an organizational or personal id
+ *
+ * @see \byrokrat\autogiro\Visitor\IdVisitor Creates attribute 'id'
  */
 class IdNode extends Node
 {

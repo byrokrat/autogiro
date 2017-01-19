@@ -24,6 +24,8 @@ namespace byrokrat\autogiro\Tree;
 
 /**
  * Node that wrapps a monetary amount
+ *
+ * @see \byrokrat\autogiro\Visitor\AmountVisitor Creates attribute 'amount'
  */
 class AmountNode extends Node
 {

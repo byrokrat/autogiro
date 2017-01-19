@@ -48,17 +48,19 @@ class MessageVisitor extends ErrorAwareVisitor
             return;
         }
 
-        if (!isset($messageMap[$node->getValue()])) {
+        $messageId = $node->hasAttribute('message_id') ? $node->getAttribute('message_id') : $node->getValue();
+
+        if (!isset($messageMap[$messageId])) {
             return $this->getErrorObject()->addError(
                 "Invalid message id %s on line %s",
-                $node->getValue(),
+                $messageId,
                 (string)$node->getLineNr()
             );
         }
 
         $node->setAttribute(
             'message',
-            $messageMap[$node->getValue()]
+            $messageMap[$messageId]
         );
     }
 }

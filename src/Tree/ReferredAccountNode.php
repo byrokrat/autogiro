@@ -15,39 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with byrokrat\autogiro. If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright 2016-17 Hannes Forsgård
+ * Copyright 2016 Hannes Forsgård
  */
 
 declare(strict_types = 1);
 
-namespace byrokrat\autogiro\Exception;
+namespace byrokrat\autogiro\Tree;
 
 /**
- * Exception thrown when a parse tree contains invalid data
+ * Wrapps a bank account number referred from another node
+ *
+ * @see \byrokrat\autogiro\Visitor\AccountVisitor Creates attribute 'account'
+ *   from attribute 'referred_value'.
  */
-class TreeException extends RuntimeException
+class ReferredAccountNode extends AccountNode
 {
-    /**
-     * @var string[]
-     */
-    private $errors;
-
-    /**
-     * Set list of errors at construct
-     *
-     * @param string[] $errors Messages describing found parsing errors
-     */
-    public function __construct(array $errors)
-    {
-        parent::__construct("Tree invalid due to the following issues:\n" . implode("\n", $errors));
-        $this->errors = $errors;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getErrors(): array
-    {
-        return $this->errors;
-    }
 }

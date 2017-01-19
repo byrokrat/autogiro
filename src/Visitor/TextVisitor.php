@@ -23,6 +23,8 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Visitor;
 
 use byrokrat\autogiro\Tree\IntervalNode;
+use byrokrat\autogiro\Tree\PayeeBgcNumberNode;
+use byrokrat\autogiro\Tree\PayerNumberNode;
 use byrokrat\autogiro\Tree\RepetitionsNode;
 use byrokrat\autogiro\Tree\TextNode;
 
@@ -31,31 +33,35 @@ use byrokrat\autogiro\Tree\TextNode;
  */
 class TextVisitor extends ErrorAwareVisitor
 {
-    /**
-     * Validate that text nodes contain values matching a regular expression
-     */
     public function beforeTextNode(TextNode $node)
     {
-        $regexp = $node->getAttribute('validation_regexp');
-
-        if ($regexp && !preg_match($regexp, $node->getValue())) {
-            $this->getErrorObject()->addError(
-                "Text value '%s' does not match expected %s on line %s",
-                $node->getValue(),
-                $regexp,
-                (string)$node->getLineNr()
-            );
-        }
+        $this->validateRegexp($node, "Text value '%s' does not match expected %s on line %s");
     }
 
-    /**
-     * Validate that repetition nodes contain values matching a regular expression
-     */
     public function beforeRepetitionsNode(RepetitionsNode $node)
     {
+        $this->validateRegexp($node, "Repeats '%s' does not match expected %s on line %s");
+    }
+
+    public function beforePayeeBgcNumberNode(PayeeBgcNumberNode $node)
+    {
+        $this->validateRegexp($node, "BGC customer number '%s' does not match expected %s on line %s");
+    }
+
+    public function beforePayerNumberNode(PayerNumberNode $node)
+    {
+        $this->validateRegexp($node, "Payer number '%s' does not match expected %s on line %s");
+    }
+
+    private function validateRegexp(TextNode $node, string $errorMsg)
+    {
+        if (!$node->hasAttribute('validation_regexp') || !$node->getAttribute('validation_regexp')) {
+            return;
+        }
+
         if (!preg_match($node->getAttribute('validation_regexp'), $node->getValue())) {
             $this->getErrorObject()->addError(
-                "Repeats '%s' does not match expected %s on line %s",
+                $errorMsg,
                 $node->getValue(),
                 $node->getAttribute('validation_regexp'),
                 (string)$node->getLineNr()

@@ -1,23 +1,14 @@
 TODO
 ====
 
-1. Kanske kan det vara värt att dokumentera vilket attribute som är aktuellt för nodes (i node)
-    alltså ex att attribute 'date' expanderas för DateNodes osv
-    gör det lite enklare för användare av koden att hitta information
-
-1. Är PayerNumberNode en TextNode som validerar att det är bara siffror??
-   Kanske finns det fler nodes som skulle kunna valideras på detta sätt..
-
 1. Writer as a Facade:
     Fortsätt med TreeBuilder
-        - Gå igenom Grammar och bestäm hur noder slutgiltigt ska definieras innan jag fortsätter...
         - Lägg till transaktionskoder och ny-rader i PrintingVisitor i takt med att jag lägger till TreeBuilder
 
-1. Generated files must NOT include (end with) and empty line
-   In the deprecated georg system this was solved using
-   ```php
-   return rtrim($this->buildNative(), "\r\n");
-   ```
+1. Grammar: I de fall som det bara finns en regel som mappar en transaktionskod
+    så kan antagligen cut operator användas efter TC för en snabbare parser..
+    Ingen idé att testa innan grammar är färdig, jag kommer bara att bli förstöra
+    för mig själv i de fall en cut operator felaktigt används...
 
 BGC specs
 ---------
@@ -30,16 +21,5 @@ BGC specs
    1. Medgivandeavisering
    1. Avvisade betalningar
    1. Medgivanden via Internetbanken
-
-1. För de betalare som har Medgivande med bankgironummer är betalarnumret alltid
-   bankgironumret (s. 14, avsnitt 5.3)
-
-1. S. 18 (avsnitt 6.1.4): Filer till Bankgirot ska vara i ASCII- eller EBCDIC-format,
-   beroende på val av Kommunikationssätt. För ASCII-filer rekommenderas ISO8859-1
-   (Latin-1) för teckenrepresentation, samt <CRLF> för att indikera radavslut.
-   Postlängden är fast, 80 positioner.
-
-1. OBS! I filer till bankgirot: Posten Byte av betalarnummer (TK05) är endast
-   tillåtet för Medgivanden med bankkontonummer.
 
 1. Sid. 31f innehåller lista över vad som skiljer gammal och ny layout. Bra!

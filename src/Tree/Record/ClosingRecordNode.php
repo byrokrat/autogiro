@@ -30,9 +30,10 @@ use byrokrat\autogiro\Tree\TextNode;
  */
 class ClosingRecordNode extends RecordNode
 {
-    public function __construct(int $lineNr, DateNode $date, TextNode $numberOfPosts, array $void = [])
+    public function __construct(int $lineNr, DateNode $date, TextNode $bgcClear, TextNode $numberOfPosts, array $void = [])
     {
         $this->setChild('date', $date);
+        $this->setChild('bgc_clearing', $bgcClear);
         $this->setChild('nr_of_posts', $numberOfPosts);
         parent::__construct($lineNr, $void);
     }

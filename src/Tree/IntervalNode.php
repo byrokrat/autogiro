@@ -24,6 +24,8 @@ namespace byrokrat\autogiro\Tree;
 
 /**
  * Node representing a transaction interval
+ *
+ * @see \byrokrat\autogiro\Visitor\MessageVisitor Creates attribute 'message'
  */
 class IntervalNode extends MessageNode
 {

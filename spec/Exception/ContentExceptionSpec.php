@@ -4,11 +4,11 @@ declare(strict_types = 1);
 
 namespace spec\byrokrat\autogiro\Exception;
 
-use byrokrat\autogiro\Exception\TreeException;
+use byrokrat\autogiro\Exception\ContentException;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
-class TreeExceptionSpec extends ObjectBehavior
+class ContentExceptionSpec extends ObjectBehavior
 {
     const ERRORS = ['foo', 'bar'];
 
@@ -19,7 +19,7 @@ class TreeExceptionSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(TreeException::CLASS);
+        $this->shouldHaveType(ContentException::CLASS);
     }
 
     function it_is_throwable()

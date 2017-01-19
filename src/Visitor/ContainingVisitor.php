@@ -23,7 +23,7 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Visitor;
 
 use byrokrat\autogiro\Tree\Node;
-use byrokrat\autogiro\Exception\TreeException;
+use byrokrat\autogiro\Exception\ContentException;
 
 /**
  * Container for multiple visitors
@@ -97,7 +97,7 @@ class ContainingVisitor extends ErrorAwareVisitor
     public function afterFileNode()
     {
         if ($this->getErrorObject()->hasErrors()) {
-            throw new TreeException($this->getErrorObject()->getErrors());
+            throw new ContentException($this->getErrorObject()->getErrors());
         }
     }
 }

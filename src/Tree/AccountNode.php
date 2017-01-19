@@ -24,6 +24,8 @@ namespace byrokrat\autogiro\Tree;
 
 /**
  * Wrapps a bank account number
+ *
+ * @see \byrokrat\autogiro\Visitor\AccountVisitor Creates attribute 'account'
  */
 class AccountNode extends Node
 {

@@ -24,6 +24,8 @@ namespace byrokrat\autogiro\Tree;
 
 /**
  * Node that wrapps a date
+ *
+ * @see \byrokrat\autogiro\Visitor\DateVisitor Creates attribute 'date'
  */
 class DateNode extends Node
 {

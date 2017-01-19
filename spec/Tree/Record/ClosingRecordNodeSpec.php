@@ -12,9 +12,9 @@ use PhpSpec\ObjectBehavior;
 
 class ClosingRecordNodeSpec extends ObjectBehavior
 {
-    function let(DateNode $date, TextNode $numberOfPosts, TextNode $endVoid)
+    function let(DateNode $date, TextNode $bgcClear, TextNode $numberOfPosts, TextNode $endVoid)
     {
-        $this->beConstructedWith(123, $date, $numberOfPosts, [$endVoid]);
+        $this->beConstructedWith(123, $date, $bgcClear, $numberOfPosts, [$endVoid]);
     }
 
     function it_is_initializable()
@@ -40,6 +40,11 @@ class ClosingRecordNodeSpec extends ObjectBehavior
     function it_contains_a_date($date)
     {
         $this->getChild('date')->shouldEqual($date);
+    }
+
+    function it_contains_the_bgc_clearing_nr($bgcClear)
+    {
+        $this->getChild('bgc_clearing')->shouldEqual($bgcClear);
     }
 
     function it_contains_record_count($numberOfPosts)
