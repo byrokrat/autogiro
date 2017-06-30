@@ -141,6 +141,18 @@ class FeatureContext implements Context, SnippetAcceptingContext
     }
 
     /**
+     * @When I request mandate :payerNr be added
+     */
+    public function iRequestMandateBeAdded($payerNr)
+    {
+        $this->writer->addNewMandate(
+            $payerNr,
+            (new \byrokrat\banking\AccountFactory)->createAccount('50001111116'),
+            new \byrokrat\id\PersonalId('820323-2775')
+        );
+    }
+
+    /**
      * @When I generate the request file
      */
     public function iGenerateTheRequestFile()

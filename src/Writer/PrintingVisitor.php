@@ -150,6 +150,16 @@ class PrintingVisitor extends Visitor
         $this->output->write(self::EOL);
     }
 
+    public function beforeCreateMandateRequestNode()
+    {
+        $this->output->write('04');
+    }
+
+    public function afterCreateMandateRequestNode()
+    {
+        $this->output->write(self::EOL);
+    }
+
     public function beforeDeleteMandateRequestNode()
     {
         $this->output->write('03');

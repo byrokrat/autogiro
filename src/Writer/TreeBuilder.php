@@ -25,6 +25,7 @@ namespace byrokrat\autogiro\Writer;
 use byrokrat\autogiro\Tree\Record\RecordNode;
 use byrokrat\autogiro\Tree\Record\Request\RequestOpeningRecordNode;
 use byrokrat\autogiro\Tree\Record\Request\DeleteMandateRequestNode;
+use byrokrat\autogiro\Tree\Record\Request\CreateMandateRequestNode;
 use byrokrat\autogiro\Tree\FileNode;
 use byrokrat\autogiro\Tree\LayoutNode;
 use byrokrat\autogiro\Tree\DateNode;
@@ -32,7 +33,11 @@ use byrokrat\autogiro\Tree\TextNode;
 use byrokrat\autogiro\Tree\PayeeBgcNumberNode;
 use byrokrat\autogiro\Tree\PayeeBankgiroNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
+use byrokrat\autogiro\Tree\AccountNode;
+use byrokrat\autogiro\Tree\IdNode;
+use byrokrat\banking\AccountNumber;
 use byrokrat\banking\Bankgiro;
+use byrokrat\id\Id;
 
 /**
  * Build trees representing autogiro request files
@@ -65,9 +70,9 @@ class TreeBuilder
     private $bgcNr;
 
     /**
-     * @var Bankgiro Payee bankgiro account number
+     * @var PayeeBankgiroNode Wrapper around payee bankgiro account number
      */
-    private $bankgiro;
+    private $payeeBgNode;
 
     /**
      * @var \DateTimeInterface Date of file creation
@@ -82,7 +87,7 @@ class TreeBuilder
     public function __construct(string $bgcNr, Bankgiro $bankgiro, \DateTimeInterface $date = null)
     {
         $this->bgcNr = $bgcNr;
-        $this->bankgiro = $bankgiro;
+        $this->payeeBgNode = (new PayeeBankgiroNode(0, $bankgiro->getNumber()))->setAttribute('account', $bankgiro);
         $this->date = $date ?: new \DateTimeImmutable;
         $this->reset();
     }
@@ -98,12 +103,27 @@ class TreeBuilder
             new TextNode(0, 'AUTOGIRO'),
             new TextNode(0, str_pad('', 44)),
             new PayeeBgcNumberNode(0, $this->bgcNr),
-            (new PayeeBankgiroNode(0, $this->bankgiro->getNumber()))->setAttribute('account', $this->bankgiro),
+            $this->payeeBgNode,
             [new TextNode(0, '  ')]
         );
         $this->mandateRecords = [];
         $this->transactionRecords = [];
         $this->amendmentRecords = [];
+    }
+
+    /**
+     * Add a new mandate record to tree
+     */
+    public function addCreateMandateRecord(string $payerNr, AccountNumber $account, Id $id)
+    {
+        $this->mandateRecords[] = new CreateMandateRequestNode(
+            0,
+            $this->payeeBgNode,
+            new PayerNumberNode(0, $payerNr),
+            (new AccountNode(0, $account->getNumber()))->setAttribute('account', $account),
+            (new IdNode(0, (string)$id))->setAttribute('id', $id),
+            [new TextNode(0, str_pad('', 24))]
+        );
     }
 
     /**
@@ -113,7 +133,7 @@ class TreeBuilder
     {
         $this->mandateRecords[] = new DeleteMandateRequestNode(
             0,
-            (new PayeeBankgiroNode(0, $this->bankgiro->getNumber()))->setAttribute('account', $this->bankgiro),
+            $this->payeeBgNode,
             new PayerNumberNode(0, $payerNr),
             [new TextNode(0, str_pad('', 52))]
         );

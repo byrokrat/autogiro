@@ -23,6 +23,8 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Writer;
 
 use byrokrat\autogiro\Visitor\Visitor;
+use byrokrat\banking\AccountNumber;
+use byrokrat\id\Id;
 
 /**
  * Facade for creating autogiro request files
@@ -71,6 +73,14 @@ class Writer
     public function reset()
     {
         $this->treeBuilder->reset();
+    }
+
+    /**
+     * Add a new mandate request to the build queue
+     */
+    public function addNewMandate(string $payerNr, AccountNumber $account, Id $id)
+    {
+        $this->treeBuilder->addCreateMandateRecord($payerNr, $account, $id);
     }
 
     /**

@@ -10,6 +10,8 @@ use byrokrat\autogiro\Writer\PrintingVisitor;
 use byrokrat\autogiro\Writer\Output;
 use byrokrat\autogiro\Visitor\Visitor;
 use byrokrat\autogiro\Tree\FileNode;
+use byrokrat\banking\AccountNumber;
+use byrokrat\id\Id;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -38,6 +40,12 @@ class WriterSpec extends ObjectBehavior
     {
         $this->reset();
         $treeBuilder->reset()->shouldHaveBeenCalled();
+    }
+
+    function it_calls_tree_builder_on_new_mandate($treeBuilder, AccountNumber $account, Id $id)
+    {
+        $this->addNewMandate('foobar', $account, $id);
+        $treeBuilder->addCreateMandateRecord('foobar', $account, $id)->shouldHaveBeenCalled();
     }
 
     function it_calls_tree_builder_on_delete_mandate($treeBuilder)

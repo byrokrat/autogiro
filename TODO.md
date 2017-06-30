@@ -1,10 +1,6 @@
 TODO
 ====
 
-1. Writer as a Facade:
-    Fortsätt med TreeBuilder
-        - Lägg till transaktionskoder och ny-rader i PrintingVisitor i takt med att jag lägger till TreeBuilder
-
 1. Grammar: I de fall som det bara finns en regel som mappar en transaktionskod
     så kan antagligen cut operator användas efter TC för en snabbare parser..
     Ingen idé att testa innan grammar är färdig, jag kommer bara att bli förstöra
