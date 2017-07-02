@@ -35,9 +35,18 @@ Feature: Mandate request writer
     Given a writer with BGC number "222222", bankgiro "1111-1119" and date "20170111"
     And a parser
     When I request mandate "1111111111" be accepted
-    And I request mandate "1111111111" be rejected
+    And I request mandate "2222222222" be rejected
     And I generate the request file
     And I parse the generated file
     Then I find a "LAYOUT_MANDATE_REQUEST" layout
     And I find 1 "AcceptMandateRequestNode" nodes
     And I find 1 "RejectMandateRequestNode" nodes
+
+  Scenario: I update a mandate
+    Given a writer with BGC number "222222", bankgiro "1111-1119" and date "20170111"
+    And a parser
+    When I request mandate "1111111111" be updated to "2222222222"
+    And I generate the request file
+    And I parse the generated file
+    Then I find a "LAYOUT_MANDATE_REQUEST" layout
+    And I find 1 "UpdateMandateRequestNode" nodes

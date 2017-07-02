@@ -65,4 +65,10 @@ class WriterSpec extends ObjectBehavior
         $this->rejectMandate('foobar');
         $treeBuilder->addRejectMandateRecord('foobar')->shouldHaveBeenCalled();
     }
+
+    function it_calls_tree_builder_on_update_mandate($treeBuilder)
+    {
+        $this->updateMandate('foo', 'bar');
+        $treeBuilder->addUpdateMandateRecord('foo', 'bar')->shouldHaveBeenCalled();
+    }
 }

@@ -106,4 +106,12 @@ class Writer
     {
         $this->treeBuilder->addRejectMandateRecord($payerNr);
     }
+
+    /**
+     * Add an update mandate request to the build queue
+     */
+    public function updateMandate(string $payerNr, string $newPayerNr)
+    {
+        $this->treeBuilder->addUpdateMandateRecord($payerNr, $newPayerNr);
+    }
 }

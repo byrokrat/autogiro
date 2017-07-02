@@ -169,6 +169,14 @@ class FeatureContext implements Context, SnippetAcceptingContext
     }
 
     /**
+     * @When I request mandate :payerNr be updated to :newPayerNr
+     */
+    public function iRequestMandateBeUpdatedTo($payerNr, $newPayerNr)
+    {
+        $this->writer->updateMandate($payerNr, $newPayerNr);
+    }
+
+    /**
      * @When I generate the request file
      */
     public function iGenerateTheRequestFile()

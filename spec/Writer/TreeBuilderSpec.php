@@ -10,6 +10,7 @@ use byrokrat\autogiro\Tree\Record\Request\AcceptMandateRequestNode;
 use byrokrat\autogiro\Tree\Record\Request\CreateMandateRequestNode;
 use byrokrat\autogiro\Tree\Record\Request\DeleteMandateRequestNode;
 use byrokrat\autogiro\Tree\Record\Request\RejectMandateRequestNode;
+use byrokrat\autogiro\Tree\Record\Request\UpdateMandateRequestNode;
 use byrokrat\autogiro\Tree\FileNode;
 use byrokrat\autogiro\Tree\LayoutNode;
 use byrokrat\autogiro\Tree\DateNode;
@@ -147,6 +148,28 @@ class TreeBuilderSpec extends ObjectBehavior
                     new TextNode(0, str_pad('', 48)),
                     new TextNode(0, 'AV'),
                     [new TextNode(0, '  ')]
+                )
+            )
+        );
+    }
+
+    function it_builds_update_mandate_trees($bankgiro, $date)
+    {
+        $this->addUpdateMandateRecord('foo', 'bar');
+
+        $payeeBgNode = (new PayeeBankgiroNode(0, self::BANKGIRO))->setAttribute('account', $bankgiro->getWrappedObject());
+
+        $this->buildTree()->shouldBeLike(
+            $this->a_tree(
+                $bankgiro,
+                $date,
+                new UpdateMandateRequestNode(
+                    0,
+                    $payeeBgNode,
+                    new PayerNumberNode(0, 'foo'),
+                    $payeeBgNode,
+                    new PayerNumberNode(0, 'bar'),
+                    [new TextNode(0, str_pad('', 26))]
                 )
             )
         );
