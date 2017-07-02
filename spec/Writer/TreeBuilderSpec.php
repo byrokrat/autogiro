@@ -5,24 +5,33 @@ declare(strict_types = 1);
 namespace spec\byrokrat\autogiro\Writer;
 
 use byrokrat\autogiro\Writer\TreeBuilder;
+use byrokrat\autogiro\Writer\IntervalFormatter;
+use byrokrat\autogiro\Writer\RepititionsFormatter;
 use byrokrat\autogiro\Tree\Record\Request\RequestOpeningRecordNode;
 use byrokrat\autogiro\Tree\Record\Request\AcceptDigitalMandateRequestNode;
 use byrokrat\autogiro\Tree\Record\Request\CreateMandateRequestNode;
 use byrokrat\autogiro\Tree\Record\Request\DeleteMandateRequestNode;
 use byrokrat\autogiro\Tree\Record\Request\RejectDigitalMandateRequestNode;
 use byrokrat\autogiro\Tree\Record\Request\UpdateMandateRequestNode;
+use byrokrat\autogiro\Tree\Record\Request\IncomingTransactionRequestNode;
+use byrokrat\autogiro\Tree\Record\Request\OutgoingTransactionRequestNode;
 use byrokrat\autogiro\Tree\FileNode;
 use byrokrat\autogiro\Tree\LayoutNode;
 use byrokrat\autogiro\Tree\DateNode;
+use byrokrat\autogiro\Tree\ImmediateDateNode;
 use byrokrat\autogiro\Tree\TextNode;
 use byrokrat\autogiro\Tree\PayeeBgcNumberNode;
 use byrokrat\autogiro\Tree\PayeeBankgiroNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
 use byrokrat\autogiro\Tree\AccountNode;
 use byrokrat\autogiro\Tree\IdNode;
+use byrokrat\autogiro\Tree\IntervalNode;
+use byrokrat\autogiro\Tree\RepetitionsNode;
+use byrokrat\autogiro\Tree\AmountNode;
 use byrokrat\banking\AccountNumber;
 use byrokrat\banking\Bankgiro;
 use byrokrat\id\Id;
+use byrokrat\amount\Currency\SEK;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -32,11 +41,15 @@ class TreeBuilderSpec extends ObjectBehavior
     const BANKGIRO = 'bankgiro';
     const DATE = 'date';
 
-    function let(Bankgiro $bankgiro, \DateTime $date)
-    {
+    function let(
+        Bankgiro $bankgiro,
+        \DateTime $date,
+        IntervalFormatter $intervalFormatter,
+        RepititionsFormatter $repititionsFormatter
+    ) {
         $bankgiro->getNumber()->willReturn(self::BANKGIRO);
         $date->format('Ymd')->willReturn(self::DATE);
-        $this->beConstructedWith(self::BCG_NR, $bankgiro, $date);
+        $this->beConstructedWith(self::BCG_NR, $bankgiro, $date, $intervalFormatter, $repititionsFormatter);
     }
 
     function it_is_initializable()
@@ -170,6 +183,114 @@ class TreeBuilderSpec extends ObjectBehavior
                     $payeeBgNode,
                     new PayerNumberNode(0, 'bar'),
                     [new TextNode(0, str_pad('', 26))]
+                )
+            )
+        );
+    }
+
+    function it_builds_incoming_transaction_trees(SEK $amount, $bankgiro, $date, $intervalFormatter, $repititionsFormatter)
+    {
+        $intervalFormatter->format(0)->shouldBeCalled()->willReturn('formatted_interval');
+        $repititionsFormatter->format(1)->shouldBeCalled()->willReturn('formatted_repititions');
+        $amount->getSignalString()->shouldBeCalled()->willReturn('formatted_amount');
+
+        $this->addIncomingTransactionRecord('foobar', $amount, $date, 'ref', 0, 1);
+
+        $this->buildTree()->shouldBeLike(
+            $this->a_tree(
+                $bankgiro,
+                $date,
+                new IncomingTransactionRequestNode(
+                    0,
+                    (new DateNode(0, self::DATE))->setAttribute('date', $date->getWrappedObject()),
+                    new IntervalNode(0, 'formatted_interval'),
+                    new RepetitionsNode(0, 'formatted_repititions'),
+                    new TextNode(0, ' '),
+                    new PayerNumberNode(0, 'foobar'),
+                    (new AmountNode(0, 'formatted_amount'))->setAttribute('amount', $amount->getWrappedObject()),
+                    (new PayeeBankgiroNode(0, self::BANKGIRO))->setAttribute('account', $bankgiro->getWrappedObject()),
+                    new TextNode(0, '             ref', '/^.{16}$/'),
+                    [new TextNode(0, str_pad('', 11))]
+                )
+            )
+        );
+    }
+
+    function it_builds_outgoing_transaction_trees(SEK $amount, $bankgiro, $date, $intervalFormatter, $repititionsFormatter)
+    {
+        $intervalFormatter->format(0)->shouldBeCalled()->willReturn('formatted_interval');
+        $repititionsFormatter->format(1)->shouldBeCalled()->willReturn('formatted_repititions');
+        $amount->getSignalString()->shouldBeCalled()->willReturn('formatted_amount');
+
+        $this->addOutgoingTransactionRecord('foobar', $amount, $date, 'ref', 0, 1);
+
+        $this->buildTree()->shouldBeLike(
+            $this->a_tree(
+                $bankgiro,
+                $date,
+                new OutgoingTransactionRequestNode(
+                    0,
+                    (new DateNode(0, self::DATE))->setAttribute('date', $date->getWrappedObject()),
+                    new IntervalNode(0, 'formatted_interval'),
+                    new RepetitionsNode(0, 'formatted_repititions'),
+                    new TextNode(0, ' '),
+                    new PayerNumberNode(0, 'foobar'),
+                    (new AmountNode(0, 'formatted_amount'))->setAttribute('amount', $amount->getWrappedObject()),
+                    (new PayeeBankgiroNode(0, self::BANKGIRO))->setAttribute('account', $bankgiro->getWrappedObject()),
+                    new TextNode(0, '             ref', '/^.{16}$/'),
+                    [new TextNode(0, str_pad('', 11))]
+                )
+            )
+        );
+    }
+
+    function it_builds_immediate_incoming_transaction_trees(SEK $amount, $bankgiro, $date)
+    {
+        $amount->getSignalString()->shouldBeCalled()->willReturn('formatted_amount');
+
+        $this->addImmediateIncomingTransactionRecord('foobar', $amount, 'ref');
+
+        $this->buildTree()->shouldBeLike(
+            $this->a_tree(
+                $bankgiro,
+                $date,
+                new IncomingTransactionRequestNode(
+                    0,
+                    new ImmediateDateNode,
+                    new IntervalNode(0, '0'),
+                    new RepetitionsNode(0, '   '),
+                    new TextNode(0, ' '),
+                    new PayerNumberNode(0, 'foobar'),
+                    (new AmountNode(0, 'formatted_amount'))->setAttribute('amount', $amount->getWrappedObject()),
+                    (new PayeeBankgiroNode(0, self::BANKGIRO))->setAttribute('account', $bankgiro->getWrappedObject()),
+                    new TextNode(0, '             ref', '/^.{16}$/'),
+                    [new TextNode(0, str_pad('', 11))]
+                )
+            )
+        );
+    }
+
+    function it_builds_immediate_outgoing_transaction_trees(SEK $amount, $bankgiro, $date)
+    {
+        $amount->getSignalString()->shouldBeCalled()->willReturn('formatted_amount');
+
+        $this->addImmediateOutgoingTransactionRecord('foobar', $amount, 'ref');
+
+        $this->buildTree()->shouldBeLike(
+            $this->a_tree(
+                $bankgiro,
+                $date,
+                new OutgoingTransactionRequestNode(
+                    0,
+                    new ImmediateDateNode,
+                    new IntervalNode(0, '0'),
+                    new RepetitionsNode(0, '   '),
+                    new TextNode(0, ' '),
+                    new PayerNumberNode(0, 'foobar'),
+                    (new AmountNode(0, 'formatted_amount'))->setAttribute('amount', $amount->getWrappedObject()),
+                    (new PayeeBankgiroNode(0, self::BANKGIRO))->setAttribute('account', $bankgiro->getWrappedObject()),
+                    new TextNode(0, '             ref', '/^.{16}$/'),
+                    [new TextNode(0, str_pad('', 11))]
                 )
             )
         );

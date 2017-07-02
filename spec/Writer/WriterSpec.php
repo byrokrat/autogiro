@@ -10,8 +10,10 @@ use byrokrat\autogiro\Writer\PrintingVisitor;
 use byrokrat\autogiro\Writer\Output;
 use byrokrat\autogiro\Visitor\Visitor;
 use byrokrat\autogiro\Tree\FileNode;
+use byrokrat\autogiro\Intervals;
 use byrokrat\banking\AccountNumber;
 use byrokrat\id\Id;
+use byrokrat\amount\Currency\SEK;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -70,5 +72,41 @@ class WriterSpec extends ObjectBehavior
     {
         $this->updateMandate('foo', 'bar');
         $treeBuilder->addUpdateMandateRecord('foo', 'bar')->shouldHaveBeenCalled();
+    }
+
+    function it_calls_tree_builder_on_add_transaction($treeBuilder, SEK $amount, \DateTime $date)
+    {
+        $this->addTransaction('foo', $amount, $date, 'ref', '10', 100);
+        $treeBuilder->addIncomingTransactionRecord('foo', $amount, $date, 'ref', '10', 100)->shouldHaveBeenCalled();
+    }
+
+    function it_defaults_to_creating_one_time_transactions($treeBuilder, SEK $amount, \DateTime $date)
+    {
+        $this->addTransaction('foo', $amount, $date);
+        $treeBuilder->addIncomingTransactionRecord('foo', $amount, $date, '', Intervals::INTERVAL_ONCE, 0)->shouldHaveBeenCalled();
+    }
+
+    function it_creates_monthly_transactions($treeBuilder, SEK $amount, \DateTime $date)
+    {
+        $this->addMonthlyTransaction('foo', $amount, $date, 'ref');
+        $treeBuilder->addIncomingTransactionRecord('foo', $amount, $date, 'ref', Intervals::INTERVAL_MONTHLY_ON_DATE, 0)->shouldHaveBeenCalled();
+    }
+
+    function it_creates_immediate_transactions($treeBuilder, SEK $amount)
+    {
+        $this->addImmediateTransaction('foo', $amount, 'ref');
+        $treeBuilder->addImmediateIncomingTransactionRecord('foo', $amount, 'ref')->shouldHaveBeenCalled();
+    }
+
+    function it_calls_tree_builder_on_add_outgoing_transaction($treeBuilder, SEK $amount, \DateTime $date)
+    {
+        $this->addOutgoingTransaction('foo', $amount, $date, 'ref', '10', 100);
+        $treeBuilder->addOutgoingTransactionRecord('foo', $amount, $date, 'ref', '10', 100)->shouldHaveBeenCalled();
+    }
+
+    function it_creates_immediate_outgoing_transactions($treeBuilder, SEK $amount)
+    {
+        $this->addImmediateOutgoingTransaction('foo', $amount, 'ref');
+        $treeBuilder->addImmediateOutgoingTransactionRecord('foo', $amount, 'ref')->shouldHaveBeenCalled();
     }
 }

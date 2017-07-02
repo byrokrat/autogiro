@@ -199,4 +199,24 @@ class PrintingVisitor extends Visitor
     {
         $this->output->write(self::EOL);
     }
+
+    public function beforeIncomingTransactionRequestNode()
+    {
+        $this->output->write('82');
+    }
+
+    public function afterIncomingTransactionRequestNode()
+    {
+        $this->output->write(self::EOL);
+    }
+
+    public function beforeOutgoingTransactionRequestNode()
+    {
+        $this->output->write('32');
+    }
+
+    public function afterOutgoingTransactionRequestNode()
+    {
+        $this->output->write(self::EOL);
+    }
 }

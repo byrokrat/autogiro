@@ -10,6 +10,7 @@ use byrokrat\autogiro\Parser\ParserFactory;
 use byrokrat\autogiro\Writer\WriterFactory;
 use byrokrat\autogiro\Enumerator;
 use byrokrat\autogiro\Exception\ContentException;
+use byrokrat\amount\Currency\SEK;
 
 /**
  * Defines application features from the specific context.
@@ -174,6 +175,38 @@ class FeatureContext implements Context, SnippetAcceptingContext
     public function iRequestMandateBeUpdatedTo($payerNr, $newPayerNr)
     {
         $this->writer->updateMandate($payerNr, $newPayerNr);
+    }
+
+    /**
+     * @When I request a transaction of :amount SEK from :payerNr
+     */
+    public function iRequestATransactionOfSekFrom($amount, $payerNr)
+    {
+        $this->writer->addTransaction($payerNr, new SEK($amount), new \DateTime);
+    }
+
+    /**
+     * @When I request a transaction of :amount SEK to :payerNr
+     */
+    public function iRequestATransactionOfSekTo($amount, $payerNr)
+    {
+        $this->writer->addOutgoingTransaction($payerNr, new SEK($amount), new \DateTime);
+    }
+
+    /**
+     * @When I request a monthly transaction of :amount SEK from :payerNr
+     */
+    public function iRequestAMonthlyTransactionOfSekFrom($amount, $payerNr)
+    {
+        $this->writer->addMonthlyTransaction($payerNr, new SEK($amount), new \DateTime);
+    }
+
+    /**
+     * @When I request an immediate transaction of :amount SEK from :payerNr
+     */
+    public function iRequestAnImmediateTransactionOfSekFrom($amount, $payerNr)
+    {
+        $this->writer->addImmediateTransaction($payerNr, new SEK($amount));
     }
 
     /**

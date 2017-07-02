@@ -29,18 +29,25 @@ use byrokrat\autogiro\Tree\Record\Request\CreateMandateRequestNode;
 use byrokrat\autogiro\Tree\Record\Request\DeleteMandateRequestNode;
 use byrokrat\autogiro\Tree\Record\Request\RejectDigitalMandateRequestNode;
 use byrokrat\autogiro\Tree\Record\Request\UpdateMandateRequestNode;
+use byrokrat\autogiro\Tree\Record\Request\IncomingTransactionRequestNode;
+use byrokrat\autogiro\Tree\Record\Request\OutgoingTransactionRequestNode;
 use byrokrat\autogiro\Tree\FileNode;
 use byrokrat\autogiro\Tree\LayoutNode;
 use byrokrat\autogiro\Tree\DateNode;
+use byrokrat\autogiro\Tree\ImmediateDateNode;
 use byrokrat\autogiro\Tree\TextNode;
 use byrokrat\autogiro\Tree\PayeeBgcNumberNode;
 use byrokrat\autogiro\Tree\PayeeBankgiroNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
 use byrokrat\autogiro\Tree\AccountNode;
 use byrokrat\autogiro\Tree\IdNode;
+use byrokrat\autogiro\Tree\IntervalNode;
+use byrokrat\autogiro\Tree\RepetitionsNode;
+use byrokrat\autogiro\Tree\AmountNode;
 use byrokrat\banking\AccountNumber;
 use byrokrat\banking\Bankgiro;
 use byrokrat\id\Id;
+use byrokrat\amount\Currency\SEK;
 
 /**
  * Build trees representing autogiro request files
@@ -83,15 +90,34 @@ class TreeBuilder
     private $date;
 
     /**
-     * @param string             $bgcNr    The BGC customer number of payee
-     * @param Bankgiro           $bankgiro Payee bankgiro account number
-     * @param \DateTimeInterface $date     Optional creation date
+     * @var IntervalFormatter
      */
-    public function __construct(string $bgcNr, Bankgiro $bankgiro, \DateTimeInterface $date = null)
-    {
+    private $intervalFormatter;
+
+    /**
+     * @var RepititionsFormatter
+     */
+    private $repititionsFormatter;
+
+    /**
+     * @param string               $bgcNr                The BGC customer number of payee
+     * @param Bankgiro             $bankgiro             Payee bankgiro account number
+     * @param \DateTimeInterface   $date                 Optional creation date
+     * @param IntervalFormatter    $intervalFormatter    Optional interval formatter
+     * @param RepititionsFormatter $repititionsFormatter Optional repititions formatter
+     */
+    public function __construct(
+        string $bgcNr,
+        Bankgiro $bankgiro,
+        \DateTimeInterface $date = null,
+        IntervalFormatter $intervalFormatter = null,
+        RepititionsFormatter $repititionsFormatter = null
+    ) {
         $this->bgcNr = $bgcNr;
         $this->payeeBgNode = (new PayeeBankgiroNode(0, $bankgiro->getNumber()))->setAttribute('account', $bankgiro);
         $this->date = $date ?: new \DateTimeImmutable;
+        $this->intervalFormatter = $intervalFormatter ?: new IntervalFormatter;
+        $this->repititionsFormatter = $repititionsFormatter ?: new RepititionsFormatter;
         $this->reset();
     }
 
@@ -186,6 +212,66 @@ class TreeBuilder
     }
 
     /**
+     * Add an incoming transaction record to tree
+     */
+    public function addIncomingTransactionRecord(
+        string $payerNr,
+        SEK $amount,
+        \DateTimeInterface $date,
+        string $ref,
+        string $interval,
+        int $repetitions
+    ) {
+        $this->addTransactionRecord(
+            IncomingTransactionRequestNode::CLASS,
+            $payerNr,
+            $amount,
+            $date,
+            $ref,
+            $interval,
+            $repetitions
+        );
+    }
+
+    /**
+     * Add an outgoing transaction record to tree
+     */
+    public function addOutgoingTransactionRecord(
+        string $payerNr,
+        SEK $amount,
+        \DateTimeInterface $date,
+        string $ref,
+        string $interval,
+        int $repetitions
+    ) {
+        $this->addTransactionRecord(
+            OutgoingTransactionRequestNode::CLASS,
+            $payerNr,
+            $amount,
+            $date,
+            $ref,
+            $interval,
+            $repetitions
+        );
+    }
+
+    /**
+     * Add an incoming transaction at next possible bank date record to tree
+     */
+    public function addImmediateIncomingTransactionRecord(string $payerNr, SEK $amount, string $ref = '')
+    {
+        $this->addImmediateTransactionRecord(IncomingTransactionRequestNode::CLASS, $payerNr, $amount, $ref);
+    }
+
+    /**
+     * Add an outgoing transaction at next possible bank date record to tree
+     */
+    public function addImmediateOutgoingTransactionRecord(string $payerNr, SEK $amount, string $ref = '')
+    {
+        $this->addImmediateTransactionRecord(OutgoingTransactionRequestNode::CLASS, $payerNr, $amount, $ref);
+    }
+
+    /**
      * Get the created request tree
      */
     public function buildTree(): FileNode
@@ -199,5 +285,44 @@ class TreeBuilder
         }
 
         return new FileNode(...$layouts);
+    }
+
+    private function addTransactionRecord(
+        string $classname,
+        string $payerNr,
+        SEK $amount,
+        \DateTimeInterface $date,
+        string $ref,
+        string $interval,
+        int $repetitions
+    ) {
+        $this->transactionRecords[] = new $classname(
+            0,
+            (new DateNode(0, $date->format('Ymd')))->setAttribute('date', $date),
+            new IntervalNode(0, $this->intervalFormatter->format($interval)),
+            new RepetitionsNode(0, $this->repititionsFormatter->format($repetitions)),
+            new TextNode(0, ' '),
+            new PayerNumberNode(0, $payerNr),
+            (new AmountNode(0, $amount->getSignalString()))->setAttribute('amount', $amount),
+            $this->payeeBgNode,
+            new TextNode(0, str_pad($ref, 16, ' ', STR_PAD_LEFT), '/^.{16}$/'),
+            [new TextNode(0, str_pad('', 11))]
+        );
+    }
+
+    private function addImmediateTransactionRecord(string $classname, string $payerNr, SEK $amount, string $ref = '')
+    {
+        $this->transactionRecords[] = new $classname(
+            0,
+            new ImmediateDateNode,
+            new IntervalNode(0, '0'),
+            new RepetitionsNode(0, '   '),
+            new TextNode(0, ' '),
+            new PayerNumberNode(0, $payerNr),
+            (new AmountNode(0, $amount->getSignalString()))->setAttribute('amount', $amount),
+            $this->payeeBgNode,
+            new TextNode(0, str_pad($ref, 16, ' ', STR_PAD_LEFT), '/^.{16}$/'),
+            [new TextNode(0, str_pad('', 11))]
+        );
     }
 }

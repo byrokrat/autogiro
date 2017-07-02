@@ -284,4 +284,28 @@ class PrintingVisitorSpec extends ObjectBehavior
         $this->afterUpdateMandateRequestNode();
         $output->write(PrintingVisitor::EOL)->shouldHaveBeenCalled();
     }
+
+    function it_prints_transaction_code_before_incoming_transaction($output)
+    {
+        $this->beforeIncomingTransactionRequestNode();
+        $output->write('82')->shouldHaveBeenCalled();
+    }
+
+    function it_prints_new_line_after_incoming_transaction($output)
+    {
+        $this->afterIncomingTransactionRequestNode();
+        $output->write(PrintingVisitor::EOL)->shouldHaveBeenCalled();
+    }
+
+    function it_prints_transaction_code_before_outgoing_transaction($output)
+    {
+        $this->beforeOutgoingTransactionRequestNode();
+        $output->write('32')->shouldHaveBeenCalled();
+    }
+
+    function it_prints_new_line_after_outgoing_transaction($output)
+    {
+        $this->afterOutgoingTransactionRequestNode();
+        $output->write(PrintingVisitor::EOL)->shouldHaveBeenCalled();
+    }
 }
