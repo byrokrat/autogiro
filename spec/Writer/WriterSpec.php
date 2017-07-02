@@ -53,4 +53,16 @@ class WriterSpec extends ObjectBehavior
         $this->deleteMandate('foobar');
         $treeBuilder->addDeleteMandateRecord('foobar')->shouldHaveBeenCalled();
     }
+
+    function it_calls_tree_builder_on_accept_mandate($treeBuilder)
+    {
+        $this->acceptMandate('foobar');
+        $treeBuilder->addAcceptMandateRecord('foobar')->shouldHaveBeenCalled();
+    }
+
+    function it_calls_tree_builder_on_reject_mandate($treeBuilder)
+    {
+        $this->rejectMandate('foobar');
+        $treeBuilder->addRejectMandateRecord('foobar')->shouldHaveBeenCalled();
+    }
 }

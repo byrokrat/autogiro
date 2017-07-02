@@ -90,4 +90,20 @@ class Writer
     {
         $this->treeBuilder->addDeleteMandateRecord($payerNr);
     }
+
+    /**
+     * Add an accept digital mandate request to the build queue
+     */
+    public function acceptMandate(string $payerNr)
+    {
+        $this->treeBuilder->addAcceptMandateRecord($payerNr);
+    }
+
+    /**
+     * Add a reject digital mandate request to the build queue
+     */
+    public function rejectMandate(string $payerNr)
+    {
+        $this->treeBuilder->addRejectMandateRecord($payerNr);
+    }
 }

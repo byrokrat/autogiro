@@ -248,4 +248,28 @@ class PrintingVisitorSpec extends ObjectBehavior
         $this->afterDeleteMandateRequestNode();
         $output->write(PrintingVisitor::EOL)->shouldHaveBeenCalled();
     }
+
+    function it_prints_transaction_code_before_accept_mandate($output)
+    {
+        $this->beforeAcceptMandateRequestNode();
+        $output->write('04')->shouldHaveBeenCalled();
+    }
+
+    function it_prints_new_line_after_accept_mandate($output)
+    {
+        $this->afterAcceptMandateRequestNode();
+        $output->write(PrintingVisitor::EOL)->shouldHaveBeenCalled();
+    }
+
+    function it_prints_transaction_code_before_reject_mandate($output)
+    {
+        $this->beforeRejectMandateRequestNode();
+        $output->write('04')->shouldHaveBeenCalled();
+    }
+
+    function it_prints_new_line_after_reject_mandate($output)
+    {
+        $this->afterRejectMandateRequestNode();
+        $output->write(PrintingVisitor::EOL)->shouldHaveBeenCalled();
+    }
 }

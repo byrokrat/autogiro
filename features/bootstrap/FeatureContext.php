@@ -153,6 +153,22 @@ class FeatureContext implements Context, SnippetAcceptingContext
     }
 
     /**
+     * @When I request mandate :payerNr be accepted
+     */
+    public function iRequestMandateBeAccepted($payerNr)
+    {
+        $this->writer->acceptMandate($payerNr);
+    }
+
+    /**
+     * @When I request mandate :payerNr be rejected
+     */
+    public function iRequestMandateBeRejected($payerNr)
+    {
+        $this->writer->rejectMandate($payerNr);
+    }
+
+    /**
      * @When I generate the request file
      */
     public function iGenerateTheRequestFile()

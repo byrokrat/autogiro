@@ -24,8 +24,10 @@ namespace byrokrat\autogiro\Writer;
 
 use byrokrat\autogiro\Tree\Record\RecordNode;
 use byrokrat\autogiro\Tree\Record\Request\RequestOpeningRecordNode;
-use byrokrat\autogiro\Tree\Record\Request\DeleteMandateRequestNode;
+use byrokrat\autogiro\Tree\Record\Request\AcceptMandateRequestNode;
 use byrokrat\autogiro\Tree\Record\Request\CreateMandateRequestNode;
+use byrokrat\autogiro\Tree\Record\Request\DeleteMandateRequestNode;
+use byrokrat\autogiro\Tree\Record\Request\RejectMandateRequestNode;
 use byrokrat\autogiro\Tree\FileNode;
 use byrokrat\autogiro\Tree\LayoutNode;
 use byrokrat\autogiro\Tree\DateNode;
@@ -136,6 +138,34 @@ class TreeBuilder
             $this->payeeBgNode,
             new PayerNumberNode(0, $payerNr),
             [new TextNode(0, str_pad('', 52))]
+        );
+    }
+
+    /**
+     * Add an accept digital mandate record to tree
+     */
+    public function addAcceptMandateRecord(string $payerNr)
+    {
+        $this->mandateRecords[] = new AcceptMandateRequestNode(
+            0,
+            $this->payeeBgNode,
+            new PayerNumberNode(0, $payerNr),
+            [new TextNode(0, str_pad('', 52))]
+        );
+    }
+
+    /**
+     * Add a reject digital mandate record to tree
+     */
+    public function addRejectMandateRecord(string $payerNr)
+    {
+        $this->mandateRecords[] = new RejectMandateRequestNode(
+            0,
+            $this->payeeBgNode,
+            new PayerNumberNode(0, $payerNr),
+            new TextNode(0, str_pad('', 48)),
+            new TextNode(0, 'AV'),
+            [new TextNode(0, '  ')]
         );
     }
 

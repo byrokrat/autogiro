@@ -113,4 +113,42 @@ class TreeBuilderSpec extends ObjectBehavior
             )
         );
     }
+
+    function it_builds_accept_mandate_trees($bankgiro, $date)
+    {
+        $this->addAcceptMandateRecord('payerNr');
+
+        $this->buildTree()->shouldBeLike(
+            $this->a_tree(
+                $bankgiro,
+                $date,
+                new AcceptMandateRequestNode(
+                    0,
+                    (new PayeeBankgiroNode(0, self::BANKGIRO))->setAttribute('account', $bankgiro->getWrappedObject()),
+                    new PayerNumberNode(0, 'payerNr'),
+                    [new TextNode(0, str_pad('', 52))]
+                )
+            )
+        );
+    }
+
+    function it_builds_reject_mandate_trees($bankgiro, $date)
+    {
+        $this->addRejectMandateRecord('payerNr');
+
+        $this->buildTree()->shouldBeLike(
+            $this->a_tree(
+                $bankgiro,
+                $date,
+                new RejectMandateRequestNode(
+                    0,
+                    (new PayeeBankgiroNode(0, self::BANKGIRO))->setAttribute('account', $bankgiro->getWrappedObject()),
+                    new PayerNumberNode(0, 'payerNr'),
+                    new TextNode(0, str_pad('', 48)),
+                    new TextNode(0, 'AV'),
+                    [new TextNode(0, '  ')]
+                )
+            )
+        );
+    }
 }
