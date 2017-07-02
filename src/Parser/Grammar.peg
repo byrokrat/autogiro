@@ -80,13 +80,13 @@ grammar Grammar
     };
 
     REQ_REJECT_MANDATE_RECORD = '04' payeeBg:PAYEE_BG payerNr:PAYER_NR space:TEXT48 'AV' void:EOR {
-        return new Request\RejectMandateRequestNode($this->lineNr, $payeeBg, $payerNr, $space, new TextNode($this->lineNr, 'AV'), $void);
+        return new Request\RejectDigitalMandateRequestNode($this->lineNr, $payeeBg, $payerNr, $space, new TextNode($this->lineNr, 'AV'), $void);
     };
 
     REQ_CREATE_MANDATE_RECORD = '04' payeeBg:PAYEE_BG payerNr:PAYER_NR account:ACCOUNT? id:ID? void:EOR {
         return $id && trim($id->getValue())
             ? new Request\CreateMandateRequestNode($this->lineNr, $payeeBg, $payerNr, $account, $id, $void)
-            : new Request\AcceptMandateRequestNode($this->lineNr, $payeeBg, $payerNr, $void);
+            : new Request\AcceptDigitalMandateRequestNode($this->lineNr, $payeeBg, $payerNr, $void);
     };
 
     REQ_UPDATE_MANDATE_RECORD = '05' oldPayeeBg:PAYEE_BG oldPayerNr:PAYER_NR newPayeeBg:PAYEE_BG newPayerNr:PAYER_NR void:EOR {

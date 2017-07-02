@@ -22,9 +22,19 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Tree\Record\Request;
 
+use byrokrat\autogiro\Tree\Record\RecordNode;
+use byrokrat\autogiro\Tree\PayeeBankgiroNode;
+use byrokrat\autogiro\Tree\PayerNumberNode;
+
 /**
  * Node representing a request that a mandate be deleted
  */
-class DeleteMandateRequestNode extends AcceptMandateRequestNode
+class DeleteMandateRequestNode extends RecordNode
 {
+    public function __construct(int $lineNr, PayeeBankgiroNode $payeeBg, PayerNumberNode $payerNr, array $void = [])
+    {
+        $this->setChild('payee_bankgiro', $payeeBg);
+        $this->setChild('payer_number', $payerNr);
+        parent::__construct($lineNr, $void);
+    }
 }

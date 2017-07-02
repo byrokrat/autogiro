@@ -39,8 +39,8 @@ Feature: Mandate request writer
     And I generate the request file
     And I parse the generated file
     Then I find a "LAYOUT_MANDATE_REQUEST" layout
-    And I find 1 "AcceptMandateRequestNode" nodes
-    And I find 1 "RejectMandateRequestNode" nodes
+    And I find 1 "AcceptDigitalMandateRequestNode" nodes
+    And I find 1 "RejectDigitalMandateRequestNode" nodes
 
   Scenario: I update a mandate
     Given a writer with BGC number "222222", bankgiro "1111-1119" and date "20170111"

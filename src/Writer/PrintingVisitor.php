@@ -170,22 +170,22 @@ class PrintingVisitor extends Visitor
         $this->output->write(self::EOL);
     }
 
-    public function beforeAcceptMandateRequestNode()
+    public function beforeAcceptDigitalMandateRequestNode()
     {
         $this->output->write('04');
     }
 
-    public function afterAcceptMandateRequestNode()
+    public function afterAcceptDigitalMandateRequestNode()
     {
         $this->output->write(self::EOL);
     }
 
-    public function beforeRejectMandateRequestNode()
+    public function beforeRejectDigitalMandateRequestNode()
     {
         $this->output->write('04');
     }
 
-    public function afterRejectMandateRequestNode()
+    public function afterRejectDigitalMandateRequestNode()
     {
         $this->output->write(self::EOL);
     }

@@ -24,8 +24,8 @@ Feature: Mandate request parser
     """
     Then I find a "LAYOUT_MANDATE_REQUEST" layout
     And I find 3 "CreateMandateRequestNode" nodes
-    And I find 3 "AcceptMandateRequestNode" nodes
-    And I find 2 "RejectMandateRequestNode" nodes
+    And I find 3 "AcceptDigitalMandateRequestNode" nodes
+    And I find 2 "RejectDigitalMandateRequestNode" nodes
     And I find 2 "DeleteMandateRequestNode" nodes
     And I find 3 "UpdateMandateRequestNode" nodes
 
@@ -40,7 +40,7 @@ Feature: Mandate request parser
     0300099123460000000005555242
     """
     Then I find a "LAYOUT_MANDATE_REQUEST" layout
-    And I find 3 "AcceptMandateRequestNode" nodes
+    And I find 3 "AcceptDigitalMandateRequestNode" nodes
     And I find 1 "DeleteMandateRequestNode" nodes
 
   Scenario: I parse the BGC testfile autogiro_gl_medgivandeunderlag_till-bankgirot-medgivanden-kontonummer_exempelfiler_sv.txt
@@ -57,5 +57,5 @@ Feature: Mandate request parser
     """
     Then I find a "LAYOUT_MANDATE_REQUEST" layout
     And I find 4 "CreateMandateRequestNode" nodes
-    And I find 1 "RejectMandateRequestNode" nodes
+    And I find 1 "RejectDigitalMandateRequestNode" nodes
     And I find 1 "DeleteMandateRequestNode" nodes

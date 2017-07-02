@@ -29,7 +29,7 @@ use byrokrat\autogiro\Tree\PayerNumberNode;
 /**
  * Node representing a request that a mandate received from the internet bank be accepted
  */
-class AcceptMandateRequestNode extends RecordNode
+class AcceptDigitalMandateRequestNode extends RecordNode
 {
     public function __construct(int $lineNr, PayeeBankgiroNode $payeeBg, PayerNumberNode $payerNr, array $void = [])
     {

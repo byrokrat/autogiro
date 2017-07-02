@@ -6,10 +6,10 @@ namespace spec\byrokrat\autogiro\Writer;
 
 use byrokrat\autogiro\Writer\TreeBuilder;
 use byrokrat\autogiro\Tree\Record\Request\RequestOpeningRecordNode;
-use byrokrat\autogiro\Tree\Record\Request\AcceptMandateRequestNode;
+use byrokrat\autogiro\Tree\Record\Request\AcceptDigitalMandateRequestNode;
 use byrokrat\autogiro\Tree\Record\Request\CreateMandateRequestNode;
 use byrokrat\autogiro\Tree\Record\Request\DeleteMandateRequestNode;
-use byrokrat\autogiro\Tree\Record\Request\RejectMandateRequestNode;
+use byrokrat\autogiro\Tree\Record\Request\RejectDigitalMandateRequestNode;
 use byrokrat\autogiro\Tree\Record\Request\UpdateMandateRequestNode;
 use byrokrat\autogiro\Tree\FileNode;
 use byrokrat\autogiro\Tree\LayoutNode;
@@ -117,13 +117,13 @@ class TreeBuilderSpec extends ObjectBehavior
 
     function it_builds_accept_mandate_trees($bankgiro, $date)
     {
-        $this->addAcceptMandateRecord('payerNr');
+        $this->addAcceptDigitalMandateRecord('payerNr');
 
         $this->buildTree()->shouldBeLike(
             $this->a_tree(
                 $bankgiro,
                 $date,
-                new AcceptMandateRequestNode(
+                new AcceptDigitalMandateRequestNode(
                     0,
                     (new PayeeBankgiroNode(0, self::BANKGIRO))->setAttribute('account', $bankgiro->getWrappedObject()),
                     new PayerNumberNode(0, 'payerNr'),
@@ -135,13 +135,13 @@ class TreeBuilderSpec extends ObjectBehavior
 
     function it_builds_reject_mandate_trees($bankgiro, $date)
     {
-        $this->addRejectMandateRecord('payerNr');
+        $this->addRejectDigitalMandateRecord('payerNr');
 
         $this->buildTree()->shouldBeLike(
             $this->a_tree(
                 $bankgiro,
                 $date,
-                new RejectMandateRequestNode(
+                new RejectDigitalMandateRequestNode(
                     0,
                     (new PayeeBankgiroNode(0, self::BANKGIRO))->setAttribute('account', $bankgiro->getWrappedObject()),
                     new PayerNumberNode(0, 'payerNr'),

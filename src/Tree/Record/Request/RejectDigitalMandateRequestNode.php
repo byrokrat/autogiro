@@ -30,7 +30,7 @@ use byrokrat\autogiro\Tree\TextNode;
 /**
  * Node representing a request that a mandate received from the internet bank be rejected
  */
-class RejectMandateRequestNode extends RecordNode
+class RejectDigitalMandateRequestNode extends RecordNode
 {
     public function __construct(
         int $lineNr,

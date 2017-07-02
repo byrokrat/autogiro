@@ -4,14 +4,14 @@ declare(strict_types = 1);
 
 namespace spec\byrokrat\autogiro\Tree\Record\Request;
 
-use byrokrat\autogiro\Tree\Record\Request\AcceptMandateRequestNode;
+use byrokrat\autogiro\Tree\Record\Request\AcceptDigitalMandateRequestNode;
 use byrokrat\autogiro\Tree\Record\RecordNode;
 use byrokrat\autogiro\Tree\PayeeBankgiroNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
 use byrokrat\autogiro\Tree\TextNode;
 use PhpSpec\ObjectBehavior;
 
-class AcceptMandateRequestNodeSpec extends ObjectBehavior
+class AcceptDigitalMandateRequestNodeSpec extends ObjectBehavior
 {
     function let(PayeeBankgiroNode $bankgiro, PayerNumberNode $payerNr)
     {
@@ -20,7 +20,7 @@ class AcceptMandateRequestNodeSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(AcceptMandateRequestNode::CLASS);
+        $this->shouldHaveType(AcceptDigitalMandateRequestNode::CLASS);
     }
 
     function it_implements_record_interface()
@@ -30,7 +30,7 @@ class AcceptMandateRequestNodeSpec extends ObjectBehavior
 
     function it_contains_a_type()
     {
-        $this->getType()->shouldEqual('AcceptMandateRequestNode');
+        $this->getType()->shouldEqual('AcceptDigitalMandateRequestNode');
     }
 
     function it_contains_a_line_number($bankgiro, $payerNr)

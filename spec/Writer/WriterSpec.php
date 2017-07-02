@@ -56,14 +56,14 @@ class WriterSpec extends ObjectBehavior
 
     function it_calls_tree_builder_on_accept_mandate($treeBuilder)
     {
-        $this->acceptMandate('foobar');
-        $treeBuilder->addAcceptMandateRecord('foobar')->shouldHaveBeenCalled();
+        $this->acceptDigitalMandate('foobar');
+        $treeBuilder->addAcceptDigitalMandateRecord('foobar')->shouldHaveBeenCalled();
     }
 
     function it_calls_tree_builder_on_reject_mandate($treeBuilder)
     {
-        $this->rejectMandate('foobar');
-        $treeBuilder->addRejectMandateRecord('foobar')->shouldHaveBeenCalled();
+        $this->rejectDigitalMandate('foobar');
+        $treeBuilder->addRejectDigitalMandateRecord('foobar')->shouldHaveBeenCalled();
     }
 
     function it_calls_tree_builder_on_update_mandate($treeBuilder)

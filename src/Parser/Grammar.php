@@ -768,7 +768,7 @@ class Grammar
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$payeeBg, &$payerNr, &$space, &$void) {
-                return new Request\RejectMandateRequestNode($this->lineNr, $payeeBg, $payerNr, $space, new TextNode($this->lineNr, 'AV'), $void);
+                return new Request\RejectDigitalMandateRequestNode($this->lineNr, $payeeBg, $payerNr, $space, new TextNode($this->lineNr, 'AV'), $void);
             });
         }
 
@@ -893,7 +893,7 @@ class Grammar
             $this->value = call_user_func(function () use (&$payeeBg, &$payerNr, &$account, &$id, &$void) {
                 return $id && trim($id->getValue())
                     ? new Request\CreateMandateRequestNode($this->lineNr, $payeeBg, $payerNr, $account, $id, $void)
-                    : new Request\AcceptMandateRequestNode($this->lineNr, $payeeBg, $payerNr, $void);
+                    : new Request\AcceptDigitalMandateRequestNode($this->lineNr, $payeeBg, $payerNr, $void);
             });
         }
 

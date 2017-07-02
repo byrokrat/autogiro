@@ -157,7 +157,7 @@ class FeatureContext implements Context, SnippetAcceptingContext
      */
     public function iRequestMandateBeAccepted($payerNr)
     {
-        $this->writer->acceptMandate($payerNr);
+        $this->writer->acceptDigitalMandate($payerNr);
     }
 
     /**
@@ -165,7 +165,7 @@ class FeatureContext implements Context, SnippetAcceptingContext
      */
     public function iRequestMandateBeRejected($payerNr)
     {
-        $this->writer->rejectMandate($payerNr);
+        $this->writer->rejectDigitalMandate($payerNr);
     }
 
     /**

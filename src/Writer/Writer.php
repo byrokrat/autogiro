@@ -94,17 +94,17 @@ class Writer
     /**
      * Add an accept digital mandate request to the build queue
      */
-    public function acceptMandate(string $payerNr)
+    public function acceptDigitalMandate(string $payerNr)
     {
-        $this->treeBuilder->addAcceptMandateRecord($payerNr);
+        $this->treeBuilder->addAcceptDigitalMandateRecord($payerNr);
     }
 
     /**
      * Add a reject digital mandate request to the build queue
      */
-    public function rejectMandate(string $payerNr)
+    public function rejectDigitalMandate(string $payerNr)
     {
-        $this->treeBuilder->addRejectMandateRecord($payerNr);
+        $this->treeBuilder->addRejectDigitalMandateRecord($payerNr);
     }
 
     /**
