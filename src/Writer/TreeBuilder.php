@@ -258,7 +258,7 @@ class TreeBuilder
     /**
      * Add an incoming transaction at next possible bank date record to tree
      */
-    public function addImmediateIncomingTransactionRecord(string $payerNr, SEK $amount, string $ref = '')
+    public function addImmediateIncomingTransactionRecord(string $payerNr, SEK $amount, string $ref)
     {
         $this->addImmediateTransactionRecord(IncomingTransactionRequestNode::CLASS, $payerNr, $amount, $ref);
     }
@@ -266,7 +266,7 @@ class TreeBuilder
     /**
      * Add an outgoing transaction at next possible bank date record to tree
      */
-    public function addImmediateOutgoingTransactionRecord(string $payerNr, SEK $amount, string $ref = '')
+    public function addImmediateOutgoingTransactionRecord(string $payerNr, SEK $amount, string $ref)
     {
         $this->addImmediateTransactionRecord(OutgoingTransactionRequestNode::CLASS, $payerNr, $amount, $ref);
     }
@@ -310,7 +310,7 @@ class TreeBuilder
         );
     }
 
-    private function addImmediateTransactionRecord(string $classname, string $payerNr, SEK $amount, string $ref = '')
+    private function addImmediateTransactionRecord(string $classname, string $payerNr, SEK $amount, string $ref)
     {
         $this->transactionRecords[] = new $classname(
             0,

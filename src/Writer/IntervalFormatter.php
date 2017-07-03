@@ -36,6 +36,6 @@ class IntervalFormatter
             throw new LogicException("Invalid interval: $interval");
         }
 
-        return (string)$interval;
+        return $interval;
     }
 }
