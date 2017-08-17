@@ -1,7 +1,0 @@
-{
-    "ignore": [
-        "src/Parser/Grammar.php",
-        "features/*",
-        "spec/*"
-    ]
-}

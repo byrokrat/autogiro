@@ -8,7 +8,7 @@
 
 Read and write files for the swedish direct debit system autogirot.
 
-> Please note that this package is under development and the api is subject to change.
+> Please note that this package is under development.
 
 Installation
 ------------
@@ -19,8 +19,8 @@ composer require byrokrat/autogiro
 Autogiro specifications
 -----------------------
 This library is developed against the technichal manual (in swedish) of the
-direct debit system (autogirot) revised 2014-08-05. For updated versions of this
-document contact [Bankgirocentralen](http://bgc.se).
+direct debit system (autogirot) revised 2016-12-13. For current versions of this
+document see [Bankgirocentralen](http://bgc.se).
 
 Instantiating a parser
 ----------------------
