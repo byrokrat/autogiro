@@ -13,10 +13,13 @@ use byrokrat\autogiro\Tree\MessageNode;
 use byrokrat\autogiro\Tree\PayeeBankgiroNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
 use byrokrat\autogiro\Tree\TextNode;
+use byrokrat\autogiro\Messages;
 use PhpSpec\ObjectBehavior;
 
 class MandateResponseNodeSpec extends ObjectBehavior
 {
+    const LINE_NR = 100;
+
     function let(
         PayeeBankgiroNode $bankgiro,
         PayerNumberNode $payerNr,
@@ -24,11 +27,11 @@ class MandateResponseNodeSpec extends ObjectBehavior
         IdNode $id,
         TextNode $space,
         MessageNode $info,
-        MessageNode $comment,
+        MessageNode $status,
         DateNode $date,
         TextNode $endVoid
     ) {
-        $this->beConstructedWith(100, $bankgiro, $payerNr, $account, $id, $space, $info, $comment, $date, [$endVoid]);
+        $this->beConstructedWith(self::LINE_NR, $bankgiro, $payerNr, $account, $id, $space, $info, $status, $date, [$endVoid]);
     }
 
     function it_is_initializable()
@@ -46,9 +49,9 @@ class MandateResponseNodeSpec extends ObjectBehavior
         $this->getType()->shouldEqual('MandateResponseNode');
     }
 
-    function it_contains_a_line_number($bankgiro, $payerNr, $account, $id, $info, $comment, $date)
+    function it_contains_a_line_number()
     {
-        $this->getLineNr()->shouldEqual(100);
+        $this->getLineNr()->shouldEqual(self::LINE_NR);
     }
 
     function it_contains_a_bankgiro($bankgiro)
@@ -81,9 +84,9 @@ class MandateResponseNodeSpec extends ObjectBehavior
         $this->getChild('info')->shouldEqual($info);
     }
 
-    function it_contains_a_comment($comment)
+    function it_contains_a_status($status)
     {
-        $this->getChild('comment')->shouldEqual($comment);
+        $this->getChild('status')->shouldEqual($status);
     }
 
     function it_contains_a_date($date)

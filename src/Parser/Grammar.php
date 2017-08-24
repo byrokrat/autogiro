@@ -1675,7 +1675,7 @@ class Grammar
             $_success = $this->parseMESSAGE();
 
             if ($_success) {
-                $comment = $this->value;
+                $status = $this->value;
             }
         }
 
@@ -1748,7 +1748,7 @@ class Grammar
         }
 
         if ($_success) {
-            $this->value = call_user_func(function () use (&$payeeBg, &$payerNr, &$account, &$id, &$space, &$info, &$comment, &$date, &$validDate, &$void) {
+            $this->value = call_user_func(function () use (&$payeeBg, &$payerNr, &$account, &$id, &$space, &$info, &$status, &$date, &$validDate, &$void) {
                 // If account is empty a valid bankgiro number may be read from the payer number field
                 if (!trim($account->getValue())) {
                     $account = (new ReferredAccountNode($account->getLineNr(), $account->getValue()))->setAttribute('referred_value', $payerNr->getValue());
@@ -1766,8 +1766,8 @@ class Grammar
                     $account,
                     $id,
                     new TextNode($this->lineNr, $space, '/^( |0){5}$/'),
-                    $info->setAttribute('message_id', "73.{$info->getValue()}"),
-                    $comment->setAttribute('message_id', "73.comment.{$comment->getValue()}"),
+                    $info->setAttribute('message_id', "73.info.{$info->getValue()}"),
+                    $status->setAttribute('message_id', "73.status.{$status->getValue()}"),
                     $date,
                     $void
                 );

@@ -138,7 +138,7 @@ grammar Grammar
         );
     };
 
-    RESP_MANDATE_RECORD = '73' payeeBg:PAYEE_BG payerNr:PAYER_NR account:ACCOUNT id:ID space:$(A5) info:MESSAGE comment:MESSAGE date:DATE validDate:$(A5 A)? void:EOR {
+    RESP_MANDATE_RECORD = '73' payeeBg:PAYEE_BG payerNr:PAYER_NR account:ACCOUNT id:ID space:$(A5) info:MESSAGE status:MESSAGE date:DATE validDate:$(A5 A)? void:EOR {
         // If account is empty a valid bankgiro number may be read from the payer number field
         if (!trim($account->getValue())) {
             $account = (new ReferredAccountNode($account->getLineNr(), $account->getValue()))->setAttribute('referred_value', $payerNr->getValue());
@@ -156,8 +156,8 @@ grammar Grammar
             $account,
             $id,
             new TextNode($this->lineNr, $space, '/^( |0){5}$/'),
-            $info->setAttribute('message_id', "73.{$info->getValue()}"),
-            $comment->setAttribute('message_id', "73.comment.{$comment->getValue()}"),
+            $info->setAttribute('message_id', "73.info.{$info->getValue()}"),
+            $status->setAttribute('message_id', "73.status.{$status->getValue()}"),
             $date,
             $void
         );
