@@ -13,7 +13,6 @@ use byrokrat\autogiro\Tree\MessageNode;
 use byrokrat\autogiro\Tree\PayeeBankgiroNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
 use byrokrat\autogiro\Tree\TextNode;
-use byrokrat\autogiro\Messages;
 use PhpSpec\ObjectBehavior;
 
 class MandateResponseNodeSpec extends ObjectBehavior

@@ -30,7 +30,6 @@ use byrokrat\autogiro\Tree\IdNode;
 use byrokrat\autogiro\Tree\MessageNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
 use byrokrat\autogiro\Tree\TextNode;
-use byrokrat\autogiro\Messages;
 
 /**
  * Feedback on the request to add, delete or update a mandate
