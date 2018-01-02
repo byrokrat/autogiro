@@ -74,20 +74,23 @@ class WriterSpec extends ObjectBehavior
         $treeBuilder->addUpdateMandateRecord('foo', 'bar')->shouldHaveBeenCalled();
     }
 
-    function it_calls_tree_builder_on_add_transaction($treeBuilder, SEK $amount, \DateTime $date)
+    function it_calls_tree_builder_on_add_transaction($treeBuilder, SEK $amount)
     {
+        $date = new \DateTime;
         $this->addTransaction('foo', $amount, $date, 'ref', '10', 100);
         $treeBuilder->addIncomingTransactionRecord('foo', $amount, $date, 'ref', '10', 100)->shouldHaveBeenCalled();
     }
 
-    function it_defaults_to_creating_one_time_transactions($treeBuilder, SEK $amount, \DateTime $date)
+    function it_defaults_to_creating_one_time_transactions($treeBuilder, SEK $amount)
     {
+        $date = new \DateTime;
         $this->addTransaction('foo', $amount, $date);
         $treeBuilder->addIncomingTransactionRecord('foo', $amount, $date, '', Intervals::INTERVAL_ONCE, 0)->shouldHaveBeenCalled();
     }
 
-    function it_creates_monthly_transactions($treeBuilder, SEK $amount, \DateTime $date)
+    function it_creates_monthly_transactions($treeBuilder, SEK $amount)
     {
+        $date = new \DateTime;
         $this->addMonthlyTransaction('foo', $amount, $date, 'ref');
         $treeBuilder->addIncomingTransactionRecord('foo', $amount, $date, 'ref', Intervals::INTERVAL_MONTHLY_ON_DATE, 0)->shouldHaveBeenCalled();
     }
@@ -98,8 +101,9 @@ class WriterSpec extends ObjectBehavior
         $treeBuilder->addImmediateIncomingTransactionRecord('foo', $amount, 'ref')->shouldHaveBeenCalled();
     }
 
-    function it_calls_tree_builder_on_add_outgoing_transaction($treeBuilder, SEK $amount, \DateTime $date)
+    function it_calls_tree_builder_on_add_outgoing_transaction($treeBuilder, SEK $amount)
     {
+        $date = new \DateTime;
         $this->addOutgoingTransaction('foo', $amount, $date, 'ref', '10', 100);
         $treeBuilder->addOutgoingTransactionRecord('foo', $amount, $date, 'ref', '10', 100)->shouldHaveBeenCalled();
     }
