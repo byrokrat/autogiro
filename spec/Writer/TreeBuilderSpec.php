@@ -30,7 +30,7 @@ use byrokrat\autogiro\Tree\RepetitionsNode;
 use byrokrat\autogiro\Tree\AmountNode;
 use byrokrat\banking\AccountNumber;
 use byrokrat\banking\Bankgiro;
-use byrokrat\id\Id;
+use byrokrat\id\IdInterface;
 use byrokrat\amount\Currency\SEK;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -87,7 +87,7 @@ class TreeBuilderSpec extends ObjectBehavior
         );
     }
 
-    function it_builds_create_mandate_trees($bankgiro, $date, AccountNumber $account, Id $id)
+    function it_builds_create_mandate_trees($bankgiro, $date, AccountNumber $account, IdInterface $id)
     {
         $account->getNumber()->willReturn('account_number');
         $id->__tostring()->willReturn('id_number');

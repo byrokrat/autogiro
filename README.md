@@ -55,7 +55,7 @@ When in use access the created objects as follows:
 /** @var \byrokrat\amount\Amount */
 $amount = $amountNode->getAttribute('amount');
 
-/** @var \byrokrat\id\Id */
+/** @var \byrokrat\id\IdInterface */
 $id = $idNode->getAttribute('id');
 
 /** @var \byrokrat\banking\AccountNumber */

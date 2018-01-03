@@ -37,7 +37,7 @@ use byrokrat\autogiro\Tree\IdNode;
 use byrokrat\autogiro\Tree\RepetitionsNode;
 use byrokrat\amount\Currency\SEK;
 use byrokrat\banking\AccountNumber;
-use byrokrat\id\Id;
+use byrokrat\id\IdInterface;
 use byrokrat\id\PersonalId;
 use byrokrat\id\OrganizationId;
 
@@ -124,7 +124,7 @@ class PrintingVisitor extends Visitor
 
     public function beforeIdNode(IdNode $node)
     {
-        $this->assertAttribute($node, 'id', Id::CLASS);
+        $this->assertAttribute($node, 'id', IdInterface::CLASS);
         if ($node->getAttribute('id') instanceof PersonalId) {
             $this->output->write($node->getAttribute('id')->format('Ymdsk'));
         }

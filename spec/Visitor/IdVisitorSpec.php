@@ -10,7 +10,7 @@ use byrokrat\autogiro\Visitor\ErrorObject;
 use byrokrat\autogiro\Tree\IdNode;
 use byrokrat\id\OrganizationIdFactory;
 use byrokrat\id\PersonalIdFactory;
-use byrokrat\id\Id;
+use byrokrat\id\IdInterface;
 use byrokrat\id\Exception\RuntimeException as IdException;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -21,12 +21,12 @@ class IdVisitorSpec extends ObjectBehavior
         ErrorObject $errorObj,
         OrganizationIdFactory $organizationIdFactory,
         PersonalIdFactory $personalIdFactory,
-        Id $id
+        IdInterface $id
     ) {
-        $organizationIdFactory->create('-not-valid')->willThrow(IdException::CLASS);
-        $organizationIdFactory->create('-valid')->willReturn($id);
-        $personalIdFactory->create('19-not-valid')->willThrow(IdException::CLASS);
-        $personalIdFactory->create('20-valid')->willReturn($id);
+        $organizationIdFactory->createId('-not-valid')->willThrow(IdException::CLASS);
+        $organizationIdFactory->createId('-valid')->willReturn($id);
+        $personalIdFactory->createId('19-not-valid')->willThrow(IdException::CLASS);
+        $personalIdFactory->createId('20-valid')->willReturn($id);
         $this->beConstructedWith($errorObj, $organizationIdFactory, $personalIdFactory);
     }
 

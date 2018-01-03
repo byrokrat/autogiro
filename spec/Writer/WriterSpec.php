@@ -12,7 +12,7 @@ use byrokrat\autogiro\Visitor\Visitor;
 use byrokrat\autogiro\Tree\FileNode;
 use byrokrat\autogiro\Intervals;
 use byrokrat\banking\AccountNumber;
-use byrokrat\id\Id;
+use byrokrat\id\IdInterface;
 use byrokrat\amount\Currency\SEK;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -44,7 +44,7 @@ class WriterSpec extends ObjectBehavior
         $treeBuilder->reset()->shouldHaveBeenCalled();
     }
 
-    function it_calls_tree_builder_on_new_mandate($treeBuilder, AccountNumber $account, Id $id)
+    function it_calls_tree_builder_on_new_mandate($treeBuilder, AccountNumber $account, IdInterface $id)
     {
         $this->addNewMandate('foobar', $account, $id);
         $treeBuilder->addCreateMandateRecord('foobar', $account, $id)->shouldHaveBeenCalled();

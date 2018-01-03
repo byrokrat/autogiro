@@ -77,7 +77,7 @@ class IdVisitor extends ErrorAwareVisitor
     {
         $node->setAttribute(
             'id',
-            $this->organizationIdFactory->create(substr($node->getValue(), 2))
+            $this->organizationIdFactory->createId(substr($node->getValue(), 2))
         );
     }
 
@@ -85,7 +85,7 @@ class IdVisitor extends ErrorAwareVisitor
     {
         $node->setAttribute(
             'id',
-            $this->personalIdFactory->create($node->getValue())
+            $this->personalIdFactory->createId($node->getValue())
         );
     }
 }

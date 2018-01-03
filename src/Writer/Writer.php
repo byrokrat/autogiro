@@ -25,7 +25,7 @@ namespace byrokrat\autogiro\Writer;
 use byrokrat\autogiro\Intervals;
 use byrokrat\autogiro\Visitor\Visitor;
 use byrokrat\banking\AccountNumber;
-use byrokrat\id\Id;
+use byrokrat\id\IdInterface;
 use byrokrat\amount\Currency\SEK;
 
 /**
@@ -82,9 +82,9 @@ class Writer
      *
      * @param string        $payerNr Number identifying the payer
      * @param AccountNumber $account Payer account number
-     * @param Id            $id      Payer id number
+     * @param IdInterface   $id      Payer id number
      */
-    public function addNewMandate(string $payerNr, AccountNumber $account, Id $id)
+    public function addNewMandate(string $payerNr, AccountNumber $account, IdInterface $id)
     {
         $this->treeBuilder->addCreateMandateRecord($payerNr, $account, $id);
     }

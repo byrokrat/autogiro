@@ -46,7 +46,7 @@ use byrokrat\autogiro\Tree\RepetitionsNode;
 use byrokrat\autogiro\Tree\AmountNode;
 use byrokrat\banking\AccountNumber;
 use byrokrat\banking\Bankgiro;
-use byrokrat\id\Id;
+use byrokrat\id\IdInterface;
 use byrokrat\amount\Currency\SEK;
 
 /**
@@ -143,7 +143,7 @@ class TreeBuilder
     /**
      * Add a new mandate record to tree
      */
-    public function addCreateMandateRecord(string $payerNr, AccountNumber $account, Id $id)
+    public function addCreateMandateRecord(string $payerNr, AccountNumber $account, IdInterface $id)
     {
         $this->mandateRecords[] = new CreateMandateRequestNode(
             0,
