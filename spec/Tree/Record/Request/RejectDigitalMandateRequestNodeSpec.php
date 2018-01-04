@@ -13,8 +13,13 @@ use PhpSpec\ObjectBehavior;
 
 class RejectDigitalMandateRequestNodeSpec extends ObjectBehavior
 {
-    function let(PayeeBankgiroNode $bankgiro, PayerNumberNode $payerNr, TextNode $space, TextNode $reject, TextNode $endVoid)
-    {
+    function let(
+        PayeeBankgiroNode $bankgiro,
+        PayerNumberNode $payerNr,
+        TextNode $space,
+        TextNode $reject,
+        TextNode $endVoid
+    ) {
         $this->beConstructedWith(5, $bankgiro, $payerNr, $space, $reject, [$endVoid]);
     }
 

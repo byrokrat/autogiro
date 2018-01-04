@@ -42,8 +42,11 @@ class IdVisitor extends ErrorAwareVisitor
      */
     private $personalIdFactory;
 
-    public function __construct(ErrorObject $errorObj, OrganizationIdFactory $organizationIdFactory, PersonalIdFactory $personalIdFactory)
-    {
+    public function __construct(
+        ErrorObject $errorObj,
+        OrganizationIdFactory $organizationIdFactory,
+        PersonalIdFactory $personalIdFactory
+    ) {
         parent::__construct($errorObj);
         $this->organizationIdFactory = $organizationIdFactory;
         $this->personalIdFactory = $personalIdFactory;
@@ -56,13 +59,11 @@ class IdVisitor extends ErrorAwareVisitor
         }
 
         try {
-
             if (in_array(substr($node->getValue(), 0, 2), ['00', '99'])) {
                 return $this->createOrganizationId($node);
             }
 
             return $this->createPersonalId($node);
-
         } catch (IdException $exception) {
             $this->getErrorObject()->addError(
                 "Invalid id number %s (%s) on line %s",

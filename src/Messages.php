@@ -57,35 +57,64 @@ interface Messages
     const STATUS_MANDATE_MAX_AMOUNT_NOT_ALLOWED                     = '73.status.24';
 
     const MESSAGE_MAP = [
-        self::INFO_MANDATE_DELETED_BY_RECIPIENT                        => 'Makulering: Initierat av betalningsmottagaren.',
-        self::INFO_MANDATE_CREATED_BY_RECIPIENT                        => 'Nyupplägg: Initierat av betalningsmottagaren.',
-        self::INFO_MANDATE_UPDATED_PAYER_NUMBER_BY_RECIPIENT           => 'Byte av betalarnummer: Initierat av betalningsmottagaren.',
-        self::INFO_MANDATE_DELETED_DUE_TO_CLOSED_RECIPIENT_BG          => 'Makulerat på grund av att betalningsmottagarens bankgironummer är avslutat.',
-        self::INFO_MANDATE_ACCOUNT_RESPONSE_FROM_BANK                  => 'Svar på kontoförfrågan från bank på ny betalare i Autogiro.',
-        self::INFO_MANDATE_DELETED_DUE_TO_UNANSWERED_ACCOUNT_REQUEST   => 'Makulerat/borttaget på grund av obesvarad kontoförfrågan.',
-        self::INFO_MANDATE_DELETED_DUE_TO_CLOSED_PAYER_BG              => 'Makulerat på grund av att betalarens bankgironummer är avslutat.',
-        self::INFO_MANDATE_DELETED_BY_PAYER_OR_BANK                    => 'Makulering: Initierat av betalaren eller betalarens bank.',
-        self::INFO_MANDATE_DELETED_BY_PAYER                            => 'Makulering: Initierad av betalaren',
+        self::INFO_MANDATE_DELETED_BY_RECIPIENT
+            => 'Makulering: Initierat av betalningsmottagaren.',
+        self::INFO_MANDATE_CREATED_BY_RECIPIENT
+            => 'Nyupplägg: Initierat av betalningsmottagaren.',
+        self::INFO_MANDATE_UPDATED_PAYER_NUMBER_BY_RECIPIENT
+            => 'Byte av betalarnummer: Initierat av betalningsmottagaren.',
+        self::INFO_MANDATE_DELETED_DUE_TO_CLOSED_RECIPIENT_BG
+            => 'Makulerat på grund av att betalningsmottagarens bankgironummer är avslutat.',
+        self::INFO_MANDATE_ACCOUNT_RESPONSE_FROM_BANK
+            => 'Svar på kontoförfrågan från bank på ny betalare i Autogiro.',
+        self::INFO_MANDATE_DELETED_DUE_TO_UNANSWERED_ACCOUNT_REQUEST
+            => 'Makulerat/borttaget på grund av obesvarad kontoförfrågan.',
+        self::INFO_MANDATE_DELETED_DUE_TO_CLOSED_PAYER_BG
+            => 'Makulerat på grund av att betalarens bankgironummer är avslutat.',
+        self::INFO_MANDATE_DELETED_BY_PAYER_OR_BANK
+            => 'Makulering: Initierat av betalaren eller betalarens bank.',
+        self::INFO_MANDATE_DELETED_BY_PAYER
+            => 'Makulering: Initierad av betalaren',
 
-        self::STATUS_MANDATE_DELETED_BY_PAYER                          => 'Medgivandet är makulerat på initiativ av betalaren eller betalarens bank.',
-        self::STATUS_MANDATE_ACCOUNT_NOT_ALLOWED                       => 'Kontoslaget är inte godkänt för Autogiro.',
-        self::STATUS_MANDATE_DOES_NOT_EXIST                            => 'Medgivandet saknas i Bankgirots Medgivanderegister.',
-        self::STATUS_MANDATE_INVALID_ACCOUNT_OR_ID                     => 'Felaktiga bankkonto- eller personuppgifter.',
-        self::STATUS_MANDATE_DELETED_DUE_TO_UNANSWERED_ACCOUNT_REQUEST => 'Makulerat/borttaget på grund av obesvarad kontoförfrågan.',
-        self::STATUS_MANDATE_PAYER_NUMBER_DOES_NOT_EXIST               => 'Betalarbankgironumret saknas hos Bankgirot.',
-        self::STATUS_MANDATE_ALREADY_EXISTS                            => 'Medgivandet finns redan upplagt i Bankgirots register eller är under förfrågan.',
-        self::STATUS_MANDATE_INVALID_ID_OR_BG_NOT_ALLOWED              => 'Felaktigt person-/organisationsnummer eller avtal om medgivande med bankgironummer saknas.',
-        self::STATUS_MANDATE_INVALID_PAYER_NUMBER                      => 'Felaktigt betalarnummer.',
-        self::STATUS_MANDATE_INVALID_ACCOUNT                           => 'Felaktigt bankkontonummer.',
-        self::STATUS_MANDATE_INVALID_PAYEE_ACCOUNT                     => 'Mottagarbankgironummer är felaktigt.',
-        self::STATUS_MANDATE_INACTIVE_PAYEE_ACCOUNT                    => 'Mottagarbankgironummer är avregistrerat.',
-        self::STATUS_MANDATE_CREATED                                   => 'Nytt Medgivande.',
-        self::STATUS_MANDATE_DELETED                                   => 'Makulerad.',
-        self::STATUS_MANDATE_DELETED_DUE_TO_CLOSED_PAYER_BG            => 'Medgivandet är makulerat på grund av makulerat betalarbankgironummer.',
-        self::STATUS_MANDATE_DELETED_BY_BANK                           => 'Medgivandet makulerat på initiativ av banken.',
-        self::STATUS_MANDATE_DELETED_BY_BGC                            => 'Medgivandet makulerat av Bankgirot.',
-        self::STATUS_MANDATE_BLOCKED_BY_PAYER                          => 'Medgivandet stoppat av betalaren.',
-        self::STATUS_MANDATE_BLOCK_REMOVED                             => 'Hävning av stopp av Medgivandet.',
-        self::STATUS_MANDATE_MAX_AMOUNT_NOT_ALLOWED                    => 'Maxbelopp ej tillåtet',
+        self::STATUS_MANDATE_DELETED_BY_PAYER
+            => 'Medgivandet är makulerat på initiativ av betalaren eller betalarens bank.',
+        self::STATUS_MANDATE_ACCOUNT_NOT_ALLOWED
+            => 'Kontoslaget är inte godkänt för Autogiro.',
+        self::STATUS_MANDATE_DOES_NOT_EXIST
+            => 'Medgivandet saknas i Bankgirots Medgivanderegister.',
+        self::STATUS_MANDATE_INVALID_ACCOUNT_OR_ID
+            => 'Felaktiga bankkonto- eller personuppgifter.',
+        self::STATUS_MANDATE_DELETED_DUE_TO_UNANSWERED_ACCOUNT_REQUEST
+            => 'Makulerat/borttaget på grund av obesvarad kontoförfrågan.',
+        self::STATUS_MANDATE_PAYER_NUMBER_DOES_NOT_EXIST
+            => 'Betalarbankgironumret saknas hos Bankgirot.',
+        self::STATUS_MANDATE_ALREADY_EXISTS
+            => 'Medgivandet finns redan upplagt i Bankgirots register eller är under förfrågan.',
+        self::STATUS_MANDATE_INVALID_ID_OR_BG_NOT_ALLOWED
+            => 'Felaktigt person-/organisationsnummer eller avtal om medgivande med bankgironummer saknas.',
+        self::STATUS_MANDATE_INVALID_PAYER_NUMBER
+            => 'Felaktigt betalarnummer.',
+        self::STATUS_MANDATE_INVALID_ACCOUNT
+            => 'Felaktigt bankkontonummer.',
+        self::STATUS_MANDATE_INVALID_PAYEE_ACCOUNT
+            => 'Mottagarbankgironummer är felaktigt.',
+        self::STATUS_MANDATE_INACTIVE_PAYEE_ACCOUNT
+            => 'Mottagarbankgironummer är avregistrerat.',
+        self::STATUS_MANDATE_CREATED
+            => 'Nytt Medgivande.',
+        self::STATUS_MANDATE_DELETED
+            => 'Makulerad.',
+        self::STATUS_MANDATE_DELETED_DUE_TO_CLOSED_PAYER_BG
+            => 'Medgivandet är makulerat på grund av makulerat betalarbankgironummer.',
+        self::STATUS_MANDATE_DELETED_BY_BANK
+            => 'Medgivandet makulerat på initiativ av banken.',
+        self::STATUS_MANDATE_DELETED_BY_BGC
+            => 'Medgivandet makulerat av Bankgirot.',
+        self::STATUS_MANDATE_BLOCKED_BY_PAYER
+            => 'Medgivandet stoppat av betalaren.',
+        self::STATUS_MANDATE_BLOCK_REMOVED
+            => 'Hävning av stopp av Medgivandet.',
+        self::STATUS_MANDATE_MAX_AMOUNT_NOT_ALLOWED
+            => 'Maxbelopp ej tillåtet',
     ];
 }

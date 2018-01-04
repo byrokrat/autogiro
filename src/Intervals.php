@@ -74,14 +74,23 @@ interface Intervals
      * Map of constants to descriptions
      */
     const MESSAGE_MAP = [
-        self::INTERVAL_ONCE                             => 'En gång',
-        self::INTERVAL_MONTHLY_ON_DATE                  => 'En gång per månad på den kalenderdag som anges i betalningsposten.',
-        self::INTERVAL_QUARTERLY_ON_DATE                => 'En gång per kvartal på den kalenderdag som anges i betalningsposten.',
-        self::INTERVAL_SEMIANUALLY_ON_DATE              => 'En gång per halvår på den kalenderdag som anges i betalningsposten.',
-        self::INTERVAL_ANUALLY_ON_DATE                  => 'En gång per år på den kalenderdag som anges i betalningsposten.',
-        self::INTERVAL_MONTHLY_ON_LAST_CALENDAR_DAY     => 'En gång per månad på sista möjliga bankdag.',
-        self::INTERVAL_QUARTERLY_ON_LAST_CALENDAR_DAY   => 'En gång per kvartal på sista möjliga bankdag.',
-        self::INTERVAL_SEMIANUALLY_ON_LAST_CALENDAR_DAY => 'En gång per halvår på sista möjliga bankdag.',
-        self::INTERVAL_ANUALLY_ON_LAST_CALENDAR_DAY     => 'En gång per år på sista möjliga bankdag.'
+        self::INTERVAL_ONCE
+            => 'En gång',
+        self::INTERVAL_MONTHLY_ON_DATE
+            => 'En gång per månad på den kalenderdag som anges i betalningsposten.',
+        self::INTERVAL_QUARTERLY_ON_DATE
+            => 'En gång per kvartal på den kalenderdag som anges i betalningsposten.',
+        self::INTERVAL_SEMIANUALLY_ON_DATE
+            => 'En gång per halvår på den kalenderdag som anges i betalningsposten.',
+        self::INTERVAL_ANUALLY_ON_DATE
+            => 'En gång per år på den kalenderdag som anges i betalningsposten.',
+        self::INTERVAL_MONTHLY_ON_LAST_CALENDAR_DAY
+            => 'En gång per månad på sista möjliga bankdag.',
+        self::INTERVAL_QUARTERLY_ON_LAST_CALENDAR_DAY
+            => 'En gång per kvartal på sista möjliga bankdag.',
+        self::INTERVAL_SEMIANUALLY_ON_LAST_CALENDAR_DAY
+            => 'En gång per halvår på sista möjliga bankdag.',
+        self::INTERVAL_ANUALLY_ON_LAST_CALENDAR_DAY
+            => 'En gång per år på sista möjliga bankdag.',
     ];
 }

@@ -85,14 +85,16 @@ class WriterSpec extends ObjectBehavior
     {
         $date = new \DateTime;
         $this->addTransaction('foo', $amount, $date);
-        $treeBuilder->addIncomingTransactionRecord('foo', $amount, $date, '', Intervals::INTERVAL_ONCE, 0)->shouldHaveBeenCalled();
+        $treeBuilder->addIncomingTransactionRecord('foo', $amount, $date, '', Intervals::INTERVAL_ONCE, 0)
+            ->shouldHaveBeenCalled();
     }
 
     function it_creates_monthly_transactions($treeBuilder, SEK $amount)
     {
         $date = new \DateTime;
         $this->addMonthlyTransaction('foo', $amount, $date, 'ref');
-        $treeBuilder->addIncomingTransactionRecord('foo', $amount, $date, 'ref', Intervals::INTERVAL_MONTHLY_ON_DATE, 0)->shouldHaveBeenCalled();
+        $treeBuilder->addIncomingTransactionRecord('foo', $amount, $date, 'ref', Intervals::INTERVAL_MONTHLY_ON_DATE, 0)
+            ->shouldHaveBeenCalled();
     }
 
     function it_creates_immediate_transactions($treeBuilder, SEK $amount)

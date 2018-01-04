@@ -52,7 +52,9 @@ class VisitorFactory
     /**
      * Ignore all visitors based on external dependencies
      */
-    const VISITOR_IGNORE_EXTERNAL = self::VISITOR_IGNORE_ACCOUNTS | self::VISITOR_IGNORE_AMOUNTS | self::VISITOR_IGNORE_IDS;
+    const VISITOR_IGNORE_EXTERNAL = self::VISITOR_IGNORE_ACCOUNTS
+        | self::VISITOR_IGNORE_AMOUNTS
+        | self::VISITOR_IGNORE_IDS;
 
     /**
      * Create the standard set of visitors used when processing a parse tree

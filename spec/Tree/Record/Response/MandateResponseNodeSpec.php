@@ -30,7 +30,18 @@ class MandateResponseNodeSpec extends ObjectBehavior
         DateNode $date,
         TextNode $endVoid
     ) {
-        $this->beConstructedWith(self::LINE_NR, $bankgiro, $payerNr, $account, $id, $space, $info, $status, $date, [$endVoid]);
+        $this->beConstructedWith(
+            self::LINE_NR,
+            $bankgiro,
+            $payerNr,
+            $account,
+            $id,
+            $space,
+            $info,
+            $status,
+            $date,
+            [$endVoid]
+        );
     }
 
     function it_is_initializable()

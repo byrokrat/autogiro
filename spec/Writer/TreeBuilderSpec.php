@@ -46,11 +46,11 @@ class TreeBuilderSpec extends ObjectBehavior
         Bankgiro $bankgiro,
         \DateTime $date,
         IntervalFormatter $intervalFormatter,
-        RepititionsFormatter $repititionsFormatter
+        RepititionsFormatter $repsFormatter
     ) {
         $bankgiro->getNumber()->willReturn(self::BANKGIRO);
         $date->format('Ymd')->willReturn(self::DATE);
-        $this->beConstructedWith(self::BCG_NR, $bankgiro, $date, $intervalFormatter, $repititionsFormatter);
+        $this->beConstructedWith(self::BCG_NR, $bankgiro, $date, $intervalFormatter, $repsFormatter);
     }
 
     function it_is_initializable()
@@ -195,10 +195,10 @@ class TreeBuilderSpec extends ObjectBehavior
         );
     }
 
-    function it_builds_incoming_transaction_trees(SEK $amount, $bankgiro, $date, $intervalFormatter, $repititionsFormatter)
+    function it_builds_incoming_transaction_trees(SEK $amount, $bankgiro, $date, $intervalFormatter, $repsFormatter)
     {
         $intervalFormatter->format(0)->shouldBeCalled()->willReturn('formatted_interval');
-        $repititionsFormatter->format(1)->shouldBeCalled()->willReturn('formatted_repititions');
+        $repsFormatter->format(1)->shouldBeCalled()->willReturn('formatted_repititions');
         $amount->getSignalString()->shouldBeCalled()->willReturn('formatted_amount');
 
         $this->addIncomingTransactionRecord('foobar', $amount, $date, 'ref', 0, 1);
@@ -224,10 +224,10 @@ class TreeBuilderSpec extends ObjectBehavior
         );
     }
 
-    function it_builds_outgoing_transaction_trees(SEK $amount, $bankgiro, $date, $intervalFormatter, $repititionsFormatter)
+    function it_builds_outgoing_transaction_trees(SEK $amount, $bankgiro, $date, $intervalFormatter, $repsFormatter)
     {
         $intervalFormatter->format(0)->shouldBeCalled()->willReturn('formatted_interval');
-        $repititionsFormatter->format(1)->shouldBeCalled()->willReturn('formatted_repititions');
+        $repsFormatter->format(1)->shouldBeCalled()->willReturn('formatted_repititions');
         $amount->getSignalString()->shouldBeCalled()->willReturn('formatted_amount');
 
         $this->addOutgoingTransactionRecord('foobar', $amount, $date, 'ref', 0, 1);

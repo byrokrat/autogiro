@@ -13,8 +13,12 @@ use PhpSpec\ObjectBehavior;
 
 class UpdateMandateRequestNodeSpec extends ObjectBehavior
 {
-    function let(PayeeBankgiroNode $bankgiro, PayerNumberNode $payerNr, PayeeBankgiroNode $newBankgiro, PayerNumberNode $newPayerNr)
-    {
+    function let(
+        PayeeBankgiroNode $bankgiro,
+        PayerNumberNode $payerNr,
+        PayeeBankgiroNode $newBankgiro,
+        PayerNumberNode $newPayerNr
+    ) {
         $this->beConstructedWith(0, $bankgiro, $payerNr, $newBankgiro, $newPayerNr);
     }
 

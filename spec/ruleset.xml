@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<ruleset name="PHPSpec">
+    <description>Simple PHPSpec codesniffing, based on PSR1 and PSR2</description>
+
+    <rule ref="PSR1">
+        <exclude name="PSR1.Methods.CamelCapsMethodName.NotCamelCaps"/>
+    </rule>
+
+    <rule ref="PSR2">
+        <exclude name="Squiz.Scope.MethodScope.Missing"/>
+    </rule>
+</ruleset>
