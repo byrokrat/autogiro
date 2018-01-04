@@ -56,45 +56,45 @@ class PrintingVisitor extends Visitor
      */
     private $output;
 
-    public function setOutput(Output $output)
+    public function setOutput(Output $output): void
     {
         $this->output = $output;
     }
 
-    public function beforeDateNode(DateNode $node)
+    public function beforeDateNode(DateNode $node): void
     {
         $this->assertAttribute($node, 'date', \DateTimeInterface::CLASS);
         $this->output->write($node->getAttribute('date')->format('Ymd'));
     }
 
-    public function beforeImmediateDateNode()
+    public function beforeImmediateDateNode(): void
     {
         $this->output->write('GENAST  ');
     }
 
-    public function beforeTextNode(TextNode $node)
+    public function beforeTextNode(TextNode $node): void
     {
         $this->output->write($node->getValue());
     }
 
-    public function beforePayeeBgcNumberNode(PayeeBgcNumberNode $node)
+    public function beforePayeeBgcNumberNode(PayeeBgcNumberNode $node): void
     {
         $this->output->write(str_pad($node->getValue(), 6, '0', STR_PAD_LEFT));
     }
 
-    public function beforePayeeBankgiroNode(PayeeBankgiroNode $node)
+    public function beforePayeeBankgiroNode(PayeeBankgiroNode $node): void
     {
         $this->assertAttribute($node, 'account', AccountNumber::CLASS);
         $number = $node->getAttribute('account')->getSerialNumber() . $node->getAttribute('account')->getCheckDigit();
         $this->output->write(str_pad($number, 10, '0', STR_PAD_LEFT));
     }
 
-    public function beforePayerNumberNode(PayerNumberNode $node)
+    public function beforePayerNumberNode(PayerNumberNode $node): void
     {
         $this->output->write(str_pad($node->getValue(), 16, '0', STR_PAD_LEFT));
     }
 
-    public function beforeAccountNode(AccountNode $node)
+    public function beforeAccountNode(AccountNode $node): void
     {
         $this->assertAttribute($node, 'account', AccountNumber::CLASS);
         $number = $node->getAttribute('account')->getSerialNumber() . $node->getAttribute('account')->getCheckDigit();
@@ -104,17 +104,17 @@ class PrintingVisitor extends Visitor
         );
     }
 
-    public function beforeIntervalNode(IntervalNode $node)
+    public function beforeIntervalNode(IntervalNode $node): void
     {
         $this->output->write($node->getValue());
     }
 
-    public function beforeRepetitionsNode(RepetitionsNode $node)
+    public function beforeRepetitionsNode(RepetitionsNode $node): void
     {
         $this->output->write($node->getValue());
     }
 
-    public function beforeAmountNode(AmountNode $node)
+    public function beforeAmountNode(AmountNode $node): void
     {
         $this->assertAttribute($node, 'amount', SEK::CLASS);
         $this->output->write(
@@ -122,7 +122,7 @@ class PrintingVisitor extends Visitor
         );
     }
 
-    public function beforeIdNode(IdNode $node)
+    public function beforeIdNode(IdNode $node): void
     {
         $this->assertAttribute($node, 'id', IdInterface::CLASS);
         if ($node->getAttribute('id') instanceof PersonalId) {
@@ -133,89 +133,89 @@ class PrintingVisitor extends Visitor
         }
     }
 
-    private function assertAttribute(Node $node, string $attr, string $classname)
+    private function assertAttribute(Node $node, string $attr, string $classname): void
     {
         if (!$node->hasAttribute($attr) || !$node->getAttribute($attr) instanceof $classname) {
             throw new LogicException("Failing attribute '$attr' in {$node->getType()}");
         }
     }
 
-    public function beforeRequestOpeningRecordNode()
+    public function beforeRequestOpeningRecordNode(): void
     {
         $this->output->write('01');
     }
 
-    public function afterRequestOpeningRecordNode()
+    public function afterRequestOpeningRecordNode(): void
     {
         $this->output->write(self::EOL);
     }
 
-    public function beforeCreateMandateRequestNode()
+    public function beforeCreateMandateRequestNode(): void
     {
         $this->output->write('04');
     }
 
-    public function afterCreateMandateRequestNode()
+    public function afterCreateMandateRequestNode(): void
     {
         $this->output->write(self::EOL);
     }
 
-    public function beforeDeleteMandateRequestNode()
+    public function beforeDeleteMandateRequestNode(): void
     {
         $this->output->write('03');
     }
 
-    public function afterDeleteMandateRequestNode()
+    public function afterDeleteMandateRequestNode(): void
     {
         $this->output->write(self::EOL);
     }
 
-    public function beforeAcceptDigitalMandateRequestNode()
+    public function beforeAcceptDigitalMandateRequestNode(): void
     {
         $this->output->write('04');
     }
 
-    public function afterAcceptDigitalMandateRequestNode()
+    public function afterAcceptDigitalMandateRequestNode(): void
     {
         $this->output->write(self::EOL);
     }
 
-    public function beforeRejectDigitalMandateRequestNode()
+    public function beforeRejectDigitalMandateRequestNode(): void
     {
         $this->output->write('04');
     }
 
-    public function afterRejectDigitalMandateRequestNode()
+    public function afterRejectDigitalMandateRequestNode(): void
     {
         $this->output->write(self::EOL);
     }
 
-    public function beforeUpdateMandateRequestNode()
+    public function beforeUpdateMandateRequestNode(): void
     {
         $this->output->write('05');
     }
 
-    public function afterUpdateMandateRequestNode()
+    public function afterUpdateMandateRequestNode(): void
     {
         $this->output->write(self::EOL);
     }
 
-    public function beforeIncomingTransactionRequestNode()
+    public function beforeIncomingTransactionRequestNode(): void
     {
         $this->output->write('82');
     }
 
-    public function afterIncomingTransactionRequestNode()
+    public function afterIncomingTransactionRequestNode(): void
     {
         $this->output->write(self::EOL);
     }
 
-    public function beforeOutgoingTransactionRequestNode()
+    public function beforeOutgoingTransactionRequestNode(): void
     {
         $this->output->write('32');
     }
 
-    public function afterOutgoingTransactionRequestNode()
+    public function afterOutgoingTransactionRequestNode(): void
     {
         $this->output->write(self::EOL);
     }

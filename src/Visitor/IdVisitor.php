@@ -52,7 +52,7 @@ class IdVisitor extends ErrorAwareVisitor
         $this->personalIdFactory = $personalIdFactory;
     }
 
-    public function beforeIdNode(IdNode $node)
+    public function beforeIdNode(IdNode $node): void
     {
         if ($node->hasAttribute('id')) {
             return;
@@ -60,10 +60,12 @@ class IdVisitor extends ErrorAwareVisitor
 
         try {
             if (in_array(substr($node->getValue(), 0, 2), ['00', '99'])) {
-                return $this->createOrganizationId($node);
+                $this->createOrganizationId($node);
+                return;
             }
 
-            return $this->createPersonalId($node);
+            $this->createPersonalId($node);
+            return;
         } catch (IdException $exception) {
             $this->getErrorObject()->addError(
                 "Invalid id number %s (%s) on line %s",
@@ -74,7 +76,7 @@ class IdVisitor extends ErrorAwareVisitor
         }
     }
 
-    private function createOrganizationId(IdNode $node)
+    private function createOrganizationId(IdNode $node): void
     {
         $node->setAttribute(
             'id',
@@ -82,7 +84,7 @@ class IdVisitor extends ErrorAwareVisitor
         );
     }
 
-    private function createPersonalId(IdNode $node)
+    private function createPersonalId(IdNode $node): void
     {
         $node->setAttribute(
             'id',

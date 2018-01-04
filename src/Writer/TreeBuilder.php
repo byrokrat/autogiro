@@ -134,7 +134,7 @@ class TreeBuilder
     /**
      * Reset builder to initial state
      */
-    public function reset()
+    public function reset(): void
     {
         $this->opening = new RequestOpeningRecordNode(
             0,
@@ -153,7 +153,7 @@ class TreeBuilder
     /**
      * Add a new mandate record to tree
      */
-    public function addCreateMandateRecord(string $payerNr, AccountNumber $account, IdInterface $id)
+    public function addCreateMandateRecord(string $payerNr, AccountNumber $account, IdInterface $id): void
     {
         $this->mandateRecords[] = new CreateMandateRequestNode(
             0,
@@ -168,7 +168,7 @@ class TreeBuilder
     /**
      * Add a delete mandate record to tree
      */
-    public function addDeleteMandateRecord(string $payerNr)
+    public function addDeleteMandateRecord(string $payerNr): void
     {
         $this->mandateRecords[] = new DeleteMandateRequestNode(
             0,
@@ -181,7 +181,7 @@ class TreeBuilder
     /**
      * Add an accept digital mandate record to tree
      */
-    public function addAcceptDigitalMandateRecord(string $payerNr)
+    public function addAcceptDigitalMandateRecord(string $payerNr): void
     {
         $this->mandateRecords[] = new AcceptDigitalMandateRequestNode(
             0,
@@ -194,7 +194,7 @@ class TreeBuilder
     /**
      * Add a reject digital mandate record to tree
      */
-    public function addRejectDigitalMandateRecord(string $payerNr)
+    public function addRejectDigitalMandateRecord(string $payerNr): void
     {
         $this->mandateRecords[] = new RejectDigitalMandateRequestNode(
             0,
@@ -209,7 +209,7 @@ class TreeBuilder
     /**
      * Add an update mandate record to tree
      */
-    public function addUpdateMandateRecord(string $payerNr, string $newPayerNr)
+    public function addUpdateMandateRecord(string $payerNr, string $newPayerNr): void
     {
         $this->mandateRecords[] = new UpdateMandateRequestNode(
             0,
@@ -231,7 +231,7 @@ class TreeBuilder
         string $ref,
         string $interval,
         int $repetitions
-    ) {
+    ): void {
         $this->addTransactionRecord(
             IncomingTransactionRequestNode::CLASS,
             $payerNr,
@@ -253,7 +253,7 @@ class TreeBuilder
         string $ref,
         string $interval,
         int $repetitions
-    ) {
+    ): void {
         $this->addTransactionRecord(
             OutgoingTransactionRequestNode::CLASS,
             $payerNr,
@@ -268,7 +268,7 @@ class TreeBuilder
     /**
      * Add an incoming transaction at next possible bank date record to tree
      */
-    public function addImmediateIncomingTransactionRecord(string $payerNr, SEK $amount, string $ref)
+    public function addImmediateIncomingTransactionRecord(string $payerNr, SEK $amount, string $ref): void
     {
         $this->addImmediateTransactionRecord(IncomingTransactionRequestNode::CLASS, $payerNr, $amount, $ref);
     }
@@ -276,7 +276,7 @@ class TreeBuilder
     /**
      * Add an outgoing transaction at next possible bank date record to tree
      */
-    public function addImmediateOutgoingTransactionRecord(string $payerNr, SEK $amount, string $ref)
+    public function addImmediateOutgoingTransactionRecord(string $payerNr, SEK $amount, string $ref): void
     {
         $this->addImmediateTransactionRecord(OutgoingTransactionRequestNode::CLASS, $payerNr, $amount, $ref);
     }
@@ -305,7 +305,7 @@ class TreeBuilder
         string $ref,
         string $interval,
         int $repetitions
-    ) {
+    ): void {
         $this->transactionRecords[] = new $classname(
             0,
             DateNode::fromDate($date),
@@ -320,7 +320,7 @@ class TreeBuilder
         );
     }
 
-    private function addImmediateTransactionRecord(string $classname, string $payerNr, SEK $amount, string $ref)
+    private function addImmediateTransactionRecord(string $classname, string $payerNr, SEK $amount, string $ref): void
     {
         $this->transactionRecords[] = new $classname(
             0,

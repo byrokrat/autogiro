@@ -31,7 +31,7 @@ use byrokrat\amount\Exception as AmountException;
  */
 class AmountVisitor extends ErrorAwareVisitor
 {
-    public function beforeAmountNode(AmountNode $node)
+    public function beforeAmountNode(AmountNode $node): void
     {
         if ($node->hasAttribute('amount')) {
             return;

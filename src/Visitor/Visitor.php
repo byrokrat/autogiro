@@ -37,7 +37,7 @@ class Visitor
     /**
      * Generic method for visiting a node before its children
      */
-    public function visitBefore(Node $node)
+    public function visitBefore(Node $node): void
     {
         $this->dispatch('before' . $node->getType(), $node);
     }
@@ -45,7 +45,7 @@ class Visitor
     /**
      * Generic method for visiting a node after its children
      */
-    public function visitAfter(Node $node)
+    public function visitAfter(Node $node): void
     {
         $this->dispatch('after' . $node->getType(), $node);
     }
@@ -53,7 +53,7 @@ class Visitor
     /**
      * Dispatch to method if method exists
      */
-    private function dispatch(string $method, Node $node)
+    private function dispatch(string $method, Node $node): void
     {
         if (method_exists($this, $method)) {
             $this->$method($node);

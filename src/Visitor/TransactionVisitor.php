@@ -31,18 +31,18 @@ use byrokrat\autogiro\Tree\ImmediateDateNode;
  */
 class TransactionVisitor extends ErrorAwareVisitor
 {
-    public function beforeIncomingTransactionRequestNode(IncomingTransactionRequestNode $node)
+    public function beforeIncomingTransactionRequestNode(IncomingTransactionRequestNode $node): void
     {
         $this->validateImmediateDateWithInterval($node);
         $this->validateRepetitionsWithoutInterval($node);
     }
 
-    public function beforeOutgoingTransactionRequestNode(OutgoingTransactionRequestNode $node)
+    public function beforeOutgoingTransactionRequestNode(OutgoingTransactionRequestNode $node): void
     {
         $this->validateImmediateDateWithInterval($node);
     }
 
-    private function validateImmediateDateWithInterval(IncomingTransactionRequestNode $node)
+    private function validateImmediateDateWithInterval(IncomingTransactionRequestNode $node): void
     {
         if ($node->getChild('date') instanceof ImmediateDateNode && $node->getChild('interval')->getValue() != '0') {
             $this->getErrorObject()->addError(
@@ -52,7 +52,7 @@ class TransactionVisitor extends ErrorAwareVisitor
         }
     }
 
-    private function validateRepetitionsWithoutInterval(IncomingTransactionRequestNode $node)
+    private function validateRepetitionsWithoutInterval(IncomingTransactionRequestNode $node): void
     {
         if ($node->getChild('interval')->getValue() == '0' && trim($node->getChild('repetitions')->getValue()) != '') {
             $this->getErrorObject()->addError(

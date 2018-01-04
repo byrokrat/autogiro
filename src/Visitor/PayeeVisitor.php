@@ -43,7 +43,7 @@ class PayeeVisitor extends ErrorAwareVisitor
     /**
      * Reset payee bankgiro and customer number before a new file is traversed
      */
-    public function beforeFileNode()
+    public function beforeFileNode(): void
     {
         $this->payeeBg = '';
         $this->payeeBgcNr = '';
@@ -52,7 +52,7 @@ class PayeeVisitor extends ErrorAwareVisitor
     /**
      * Validate payee bankgiro number
      */
-    public function beforePayeeBankgiroNode(PayeeBankgiroNode $node)
+    public function beforePayeeBankgiroNode(PayeeBankgiroNode $node): void
     {
         if (!$this->payeeBg) {
             $this->payeeBg = $node->getValue();
@@ -71,7 +71,7 @@ class PayeeVisitor extends ErrorAwareVisitor
     /**
      * Validate payee BGC customer number
      */
-    public function beforePayeeBgcNumberNode(PayeeBgcNumberNode $node)
+    public function beforePayeeBgcNumberNode(PayeeBgcNumberNode $node): void
     {
         if (!$this->payeeBgcNr) {
             $this->payeeBgcNr = $node->getValue();

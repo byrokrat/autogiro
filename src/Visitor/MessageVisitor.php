@@ -32,17 +32,17 @@ use byrokrat\autogiro\Intervals;
  */
 class MessageVisitor extends ErrorAwareVisitor
 {
-    public function beforeMessageNode(MessageNode $node)
+    public function beforeMessageNode(MessageNode $node): void
     {
         $this->setMessageAttr($node, Messages::MESSAGE_MAP);
     }
 
-    public function beforeIntervalNode(IntervalNode $node)
+    public function beforeIntervalNode(IntervalNode $node): void
     {
         $this->setMessageAttr($node, Intervals::MESSAGE_MAP);
     }
 
-    private function setMessageAttr(MessageNode $node, array $messageMap)
+    private function setMessageAttr(MessageNode $node, array $messageMap): void
     {
         if ($node->hasAttribute('message')) {
             return;
@@ -51,11 +51,12 @@ class MessageVisitor extends ErrorAwareVisitor
         $messageId = $node->hasAttribute('message_id') ? $node->getAttribute('message_id') : $node->getValue();
 
         if (!isset($messageMap[$messageId])) {
-            return $this->getErrorObject()->addError(
+            $this->getErrorObject()->addError(
                 "Invalid message id %s on line %s",
                 $messageId,
                 (string)$node->getLineNr()
             );
+            return;
         }
 
         $node->setAttribute(

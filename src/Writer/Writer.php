@@ -72,7 +72,7 @@ class Writer
     /**
      * Reset internal build queue
      */
-    public function reset()
+    public function reset(): void
     {
         $this->treeBuilder->reset();
     }
@@ -84,7 +84,7 @@ class Writer
      * @param AccountNumber $account Payer account number
      * @param IdInterface   $id      Payer id number
      */
-    public function addNewMandate(string $payerNr, AccountNumber $account, IdInterface $id)
+    public function addNewMandate(string $payerNr, AccountNumber $account, IdInterface $id): void
     {
         $this->treeBuilder->addCreateMandateRecord($payerNr, $account, $id);
     }
@@ -94,7 +94,7 @@ class Writer
      *
      * @param string $payerNr Number identifying the payer
      */
-    public function deleteMandate(string $payerNr)
+    public function deleteMandate(string $payerNr): void
     {
         $this->treeBuilder->addDeleteMandateRecord($payerNr);
     }
@@ -104,7 +104,7 @@ class Writer
      *
      * @param string $payerNr Number identifying the payer
      */
-    public function acceptDigitalMandate(string $payerNr)
+    public function acceptDigitalMandate(string $payerNr): void
     {
         $this->treeBuilder->addAcceptDigitalMandateRecord($payerNr);
     }
@@ -114,7 +114,7 @@ class Writer
      *
      * @param string $payerNr Number identifying the payer
      */
-    public function rejectDigitalMandate(string $payerNr)
+    public function rejectDigitalMandate(string $payerNr): void
     {
         $this->treeBuilder->addRejectDigitalMandateRecord($payerNr);
     }
@@ -125,7 +125,7 @@ class Writer
      * @param string $payerNr    Old number identifying the payer
      * @param string $newPayerNr New number identifying the payer
      */
-    public function updateMandate(string $payerNr, string $newPayerNr)
+    public function updateMandate(string $payerNr, string $newPayerNr): void
     {
         $this->treeBuilder->addUpdateMandateRecord($payerNr, $newPayerNr);
     }
@@ -147,7 +147,7 @@ class Writer
         string $ref = '',
         string $interval = Intervals::INTERVAL_ONCE,
         int $repetitions = 0
-    ) {
+    ): void {
         $this->treeBuilder->addIncomingTransactionRecord($payerNr, $amount, $date, $ref, $interval, $repetitions);
     }
 
@@ -159,8 +159,12 @@ class Writer
      * @param \DateTimeInterface $date        Requested  first date of transaction
      * @param string             $ref         Custom transaction reference number
      */
-    public function addMonthlyTransaction(string $payerNr, SEK $amount, \DateTimeInterface $date, string $ref = '')
-    {
+    public function addMonthlyTransaction(
+        string $payerNr,
+        SEK $amount,
+        \DateTimeInterface $date,
+        string $ref = ''
+    ): void {
         $this->addTransaction($payerNr, $amount, $date, $ref, Intervals::INTERVAL_MONTHLY_ON_DATE, 0);
     }
 
@@ -171,7 +175,7 @@ class Writer
      * @param SEK    $amount  The requested transaction amount
      * @param string $ref     Custom transaction reference number
      */
-    public function addImmediateTransaction(string $payerNr, SEK $amount, string $ref = '')
+    public function addImmediateTransaction(string $payerNr, SEK $amount, string $ref = ''): void
     {
         $this->treeBuilder->addImmediateIncomingTransactionRecord($payerNr, $amount, $ref);
     }
@@ -193,7 +197,7 @@ class Writer
         string $ref = '',
         string $interval = Intervals::INTERVAL_ONCE,
         int $repetitions = 1
-    ) {
+    ): void {
         $this->treeBuilder->addOutgoingTransactionRecord($payerNr, $amount, $date, $ref, $interval, $repetitions);
     }
 
@@ -204,7 +208,7 @@ class Writer
      * @param SEK    $amount  The requested transaction amount
      * @param string $ref     Custom transaction reference number
      */
-    public function addImmediateOutgoingTransaction(string $payerNr, SEK $amount, string $ref = '')
+    public function addImmediateOutgoingTransaction(string $payerNr, SEK $amount, string $ref = ''): void
     {
         $this->treeBuilder->addImmediateOutgoingTransactionRecord($payerNr, $amount, $ref);
     }

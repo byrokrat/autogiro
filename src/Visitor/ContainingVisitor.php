@@ -54,7 +54,7 @@ class ContainingVisitor extends ErrorAwareVisitor
     /**
      * Add a visitor to container
      */
-    public function addVisitor(Visitor $visitor)
+    public function addVisitor(Visitor $visitor): void
     {
         $this->visitors[] = $visitor;
     }
@@ -62,7 +62,7 @@ class ContainingVisitor extends ErrorAwareVisitor
     /**
      * Delegate visit before to registered visitors
      */
-    public function visitBefore(Node $node)
+    public function visitBefore(Node $node): void
     {
         parent::visitBefore($node);
 
@@ -74,7 +74,7 @@ class ContainingVisitor extends ErrorAwareVisitor
     /**
      * Delegate visit after to registered visitors
      */
-    public function visitAfter(Node $node)
+    public function visitAfter(Node $node): void
     {
         foreach ($this->visitors as $visitor) {
             $visitor->visitAfter($node);
@@ -86,7 +86,7 @@ class ContainingVisitor extends ErrorAwareVisitor
     /**
      * Reset the error container before a file node
      */
-    public function beforeFileNode()
+    public function beforeFileNode(): void
     {
         $this->getErrorObject()->resetErrors();
     }
@@ -94,7 +94,7 @@ class ContainingVisitor extends ErrorAwareVisitor
     /**
      * Throw exception if there are errors after iteration
      */
-    public function afterFileNode()
+    public function afterFileNode(): void
     {
         if ($this->getErrorObject()->hasErrors()) {
             throw new ContentException($this->getErrorObject()->getErrors());

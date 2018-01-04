@@ -44,7 +44,7 @@ class LayoutVisitor extends ErrorAwareVisitor
     /**
      * Collect date from opening record
      */
-    public function beforeOpeningRecordNode(OpeningRecordNode $node)
+    public function beforeOpeningRecordNode(OpeningRecordNode $node): void
     {
         $this->date = $node->getChild('date')->getValue();
     }
@@ -52,7 +52,7 @@ class LayoutVisitor extends ErrorAwareVisitor
     /**
      * Validate that date in closing record matches date in opening record
      */
-    public function beforeClosingRecordNode(ClosingRecordNode $node)
+    public function beforeClosingRecordNode(ClosingRecordNode $node): void
     {
         if ($node->getChild('date')->getValue() != $this->date) {
             $this->getErrorObject()->addError(
@@ -67,7 +67,7 @@ class LayoutVisitor extends ErrorAwareVisitor
     /**
      * Collect the number of expected records in layout
      */
-    public function afterClosingRecordNode(ClosingRecordNode $node)
+    public function afterClosingRecordNode(ClosingRecordNode $node): void
     {
         $this->recordCount = (int)$node->getChild('nr_of_posts')->getValue();
     }
@@ -75,7 +75,7 @@ class LayoutVisitor extends ErrorAwareVisitor
     /**
     * Validate that the number of records in layout matches the expected value
      */
-    public function afterLayoutNode(LayoutNode $node)
+    public function afterLayoutNode(LayoutNode $node): void
     {
         if ($this->recordCount && $this->recordCount != count($node->getChildren()) - 2) {
             $this->getErrorObject()->addError(

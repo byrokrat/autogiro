@@ -32,7 +32,7 @@ class Output
      */
     private $content = '';
 
-    public function write(string $string)
+    public function write(string $string): void
     {
         $this->content .= $string;
     }

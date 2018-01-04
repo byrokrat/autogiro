@@ -29,7 +29,7 @@ use byrokrat\autogiro\Tree\DateNode;
  */
 class DateVisitor extends ErrorAwareVisitor
 {
-    public function beforeDateNode(DateNode $node)
+    public function beforeDateNode(DateNode $node): void
     {
         if ($node->hasAttribute('date')) {
             return;

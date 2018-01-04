@@ -59,7 +59,7 @@ class Node
     /**
      * Accept a visitor
      */
-    public function accept(Visitor $visitor)
+    public function accept(Visitor $visitor): void
     {
         $visitor->visitBefore($this);
 
@@ -100,7 +100,7 @@ class Node
      * @param string $name  Name of attribute
      * @param mixed  $value Value of attribute
      */
-    public function setAttribute(string $name, $value)
+    public function setAttribute(string $name, $value): void
     {
         $this->attributes[$name] = $value;
     }
@@ -135,7 +135,7 @@ class Node
     /**
      * Set a child node
      */
-    public function setChild(string $name, Node $child)
+    public function setChild(string $name, Node $child): void
     {
         $this->children[$name] = $child;
     }
