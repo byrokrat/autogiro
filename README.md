@@ -1,19 +1,17 @@
-# Byrokrat.Autogiro
+# Autogiro
 
 [![Packagist Version](https://img.shields.io/packagist/v/byrokrat/autogiro.svg?style=flat-square)](https://packagist.org/packages/byrokrat/autogiro)
-[![license](https://img.shields.io/github/license/byrokrat/autogiro.svg?maxAge=2592000&style=flat-square)](LICENSE.md)
+[![license](https://img.shields.io/github/license/byrokrat/autogiro.svg?maxAge=2592000&style=flat-square)](LICENSE)
 [![Build Status](https://img.shields.io/travis/byrokrat/autogiro/master.svg?style=flat-square)](https://travis-ci.org/byrokrat/autogiro)
 [![Quality Score](https://img.shields.io/scrutinizer/g/byrokrat/autogiro.svg?style=flat-square)](https://scrutinizer-ci.com/g/byrokrat/autogiro)
 [![Dependency Status](https://img.shields.io/gemnasium/byrokrat/autogiro.svg?style=flat-square)](https://gemnasium.com/byrokrat/autogiro)
 
 Read and write files for the swedish direct debit system autogirot.
 
-> Please note that this package is under development.
-
 Installation
 ------------
 ```shell
-composer require byrokrat/autogiro
+composer require byrokrat/autogiro:^1.0@alpha
 ```
 
 Autogiro specifications
@@ -24,7 +22,7 @@ document see [Bankgirocentralen](http://bgc.se).
 
 Instantiating a parser
 ----------------------
-Create a parser using [ParserFactory](/src/ParserFactory.php).
+Create a parser using [ParserFactory](/src/Parser/ParserFactory.php).
 
 <!--
     @example factory-n-parser
@@ -52,13 +50,13 @@ When in use access the created objects as follows:
 
 <!-- @ignore -->
 ```php
-/** @var \byrokrat\amount\Amount */
+/** @var \byrokrat\amount\Amount $amount */
 $amount = $amountNode->getAttribute('amount');
 
-/** @var \byrokrat\id\IdInterface */
+/** @var \byrokrat\id\IdInterface $id */
 $id = $idNode->getAttribute('id');
 
-/** @var \byrokrat\banking\AccountNumber */
+/** @var \byrokrat\banking\AccountNumber $account */
 $account = $accountNode->getAttribute('account');
 ```
 
@@ -67,7 +65,7 @@ Parsing
 
 <!-- @ignore -->
 ```php
-/** @var \byrokrat\autogiro\Tree\FileNode */
+/** @var \byrokrat\autogiro\Tree\FileNode $fileNode */
 $fileNode = $parser->parse($raw_content);
 ```
 
@@ -86,7 +84,7 @@ For a list of possible node types see the [Tree](/src/Tree) namespace;
 
 Generating autogiro request files
 ---------------------------------
-Create a writer by supplying your bankgiro and BGC customer number to WriterFactory.
+Create a writer by supplying your bankgiro and BGC customer numbers to `WriterFactory`.
 
 <!-- @example WriterFactory -->
 ```php
@@ -96,7 +94,7 @@ $writer = (new \byrokrat\autogiro\Writer\WriterFactory)->createWriter(
 );
 ```
 
-Then perform actions on the writer and generate contents to output.
+Then perform actions on the writer and generate contents.
 
 <!--
     @extends WriterFactory

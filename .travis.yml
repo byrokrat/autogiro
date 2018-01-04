@@ -3,19 +3,21 @@ sudo: false
 language: php
 
 matrix:
-    include:
-        - php: 7.2
-        - php: 7.1
-        - php: 7.0
-        - php: nightly
-    allow_failures:
-        - php: nightly
-    fast_finish: true
+  include:
+    - php: 7.2
+    - php: 7.1
+    - php: 7.0
+    - php: nightly
+  allow_failures:
+    - php: nightly
+  fast_finish: true
 
 install:
-    - composer require phpspec/phpspec:^3.1 behat/behat:^3.2 hanneskod/readme-tester:^1.0@beta --no-interaction
+  - composer install --no-dev
+  - composer global require phpspec/phpspec:^4 behat/behat:^3.3 hanneskod/readme-tester:^1.0@beta
+  - export PATH=$PATH:$HOME/.composer/vendor/bin/
 
 script:
-    - vendor/bin/phpspec run --verbose
-    - vendor/bin/behat --verbose
-    - vendor/bin/readme-tester test README.md
+  - phpspec run --verbose
+  - behat --verbose
+  - readme-tester test README.md
