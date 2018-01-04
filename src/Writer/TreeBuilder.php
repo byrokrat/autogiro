@@ -112,22 +112,22 @@ class TreeBuilder
     /**
      * @param string               $bgcNr                The BGC customer number of payee
      * @param Bankgiro             $bankgiro             Payee bankgiro account number
-     * @param \DateTimeInterface   $date                 Optional creation date
-     * @param IntervalFormatter    $intervalFormatter    Optional interval formatter
-     * @param RepititionsFormatter $repititionsFormatter Optional repititions formatter
+     * @param \DateTimeInterface   $date                 Creation date
+     * @param IntervalFormatter    $intervalFormatter    Interval formatter
+     * @param RepititionsFormatter $repititionsFormatter Repititions formatter
      */
     public function __construct(
         string $bgcNr,
         Bankgiro $bankgiro,
-        \DateTimeInterface $date = null,
-        IntervalFormatter $intervalFormatter = null,
-        RepititionsFormatter $repititionsFormatter = null
+        \DateTimeInterface $date,
+        IntervalFormatter $intervalFormatter,
+        RepititionsFormatter $repititionsFormatter
     ) {
         $this->bgcNr = $bgcNr;
         $this->payeeBgNode = PayeeBankgiroNode::fromBankgiro($bankgiro);
-        $this->date = $date ?: new \DateTimeImmutable;
-        $this->intervalFormatter = $intervalFormatter ?: new IntervalFormatter;
-        $this->repititionsFormatter = $repititionsFormatter ?: new RepititionsFormatter;
+        $this->date = $date;
+        $this->intervalFormatter = $intervalFormatter;
+        $this->repititionsFormatter = $repititionsFormatter;
         $this->reset();
     }
 

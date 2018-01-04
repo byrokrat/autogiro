@@ -38,7 +38,13 @@ class WriterFactory extends VisitorFactory
     public function createWriter(string $bgcNr, Bankgiro $bankgiro, \DateTimeInterface $date = null): Writer
     {
         return new Writer(
-            new TreeBuilder($bgcNr, $bankgiro, $date),
+            new TreeBuilder(
+                $bgcNr,
+                $bankgiro,
+                $date ?: new \DateTimeImmutable,
+                new IntervalFormatter,
+                new RepititionsFormatter
+            ),
             new PrintingVisitor,
             $this->createVisitors()
         );
