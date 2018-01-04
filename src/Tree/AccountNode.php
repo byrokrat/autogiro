@@ -22,6 +22,8 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Tree;
 
+use byrokrat\banking\AccountNumber;
+
 /**
  * Wrapps a bank account number
  *
@@ -29,4 +31,10 @@ namespace byrokrat\autogiro\Tree;
  */
 class AccountNode extends Node
 {
+    public static function fromAccount(AccountNumber $account): self
+    {
+        $node = new self(0, $account->getNumber());
+        $node->setAttribute('account', $account);
+        return $node;
+    }
 }

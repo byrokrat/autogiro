@@ -24,4 +24,13 @@ class DateNodeSpec extends ObjectBehavior
     {
         $this->getType()->shouldEqual('DateNode');
     }
+
+    function it_can_be_created_using_factory()
+    {
+        $date = new \DateTime('20180101');
+        $this->beConstructedThrough('fromDate', [$date]);
+        $this->getLineNr()->shouldEqual(0);
+        $this->getValue()->shouldEqual('20180101');
+        $this->getAttribute('date')->shouldEqual($date);
+    }
 }

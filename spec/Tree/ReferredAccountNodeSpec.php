@@ -24,4 +24,10 @@ class ReferredAccountNodeSpec extends ObjectBehavior
     {
         $this->getType()->shouldEqual('ReferredAccountNode');
     }
+
+    function it_contains_a_referred_value()
+    {
+        $this->beConstructedWith(0, 'referred');
+        $this->getAttribute('referred_value')->shouldEqual('referred');
+    }
 }

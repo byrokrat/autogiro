@@ -22,6 +22,7 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Writer;
 
+use byrokrat\autogiro\Layouts;
 use byrokrat\autogiro\Tree\Record\RecordNode;
 use byrokrat\autogiro\Tree\Record\Request\RequestOpeningRecordNode;
 use byrokrat\autogiro\Tree\Record\Request\AcceptDigitalMandateRequestNode;
@@ -54,6 +55,15 @@ use byrokrat\amount\Currency\SEK;
  */
 class TreeBuilder
 {
+    /**
+     * Map layout names to record store array names
+     */
+    private const LAYOUT_TO_RECORD_STORE_MAP = [
+        Layouts::LAYOUT_MANDATE_REQUEST => 'mandateRecords',
+        Layouts::LAYOUT_PAYMENT_REQUEST => 'transactionRecords',
+        Layouts::LAYOUT_AMENDMENT_REQUEST => 'amendmentRecords'
+    ];
+
     /**
      * @var RequestOpeningRecordNode Opening record used for each layout
      */
@@ -114,7 +124,7 @@ class TreeBuilder
         RepititionsFormatter $repititionsFormatter = null
     ) {
         $this->bgcNr = $bgcNr;
-        $this->payeeBgNode = (new PayeeBankgiroNode(0, $bankgiro->getNumber()))->setAttribute('account', $bankgiro);
+        $this->payeeBgNode = PayeeBankgiroNode::fromBankgiro($bankgiro);
         $this->date = $date ?: new \DateTimeImmutable;
         $this->intervalFormatter = $intervalFormatter ?: new IntervalFormatter;
         $this->repititionsFormatter = $repititionsFormatter ?: new RepititionsFormatter;
@@ -128,7 +138,7 @@ class TreeBuilder
     {
         $this->opening = new RequestOpeningRecordNode(
             0,
-            (new DateNode(0, $this->date->format('Ymd')))->setAttribute('date', $this->date),
+            DateNode::fromDate($this->date),
             new TextNode(0, 'AUTOGIRO'),
             new TextNode(0, str_pad('', 44)),
             new PayeeBgcNumberNode(0, $this->bgcNr),
@@ -149,8 +159,8 @@ class TreeBuilder
             0,
             $this->payeeBgNode,
             new PayerNumberNode(0, $payerNr),
-            (new AccountNode(0, $account->getNumber()))->setAttribute('account', $account),
-            (new IdNode(0, (string)$id))->setAttribute('id', $id),
+            AccountNode::fromAccount($account),
+            IdNode::fromId($id),
             [new TextNode(0, str_pad('', 24))]
         );
     }
@@ -278,9 +288,9 @@ class TreeBuilder
     {
         $layouts = [];
 
-        foreach (['mandateRecords', 'transactionRecords', 'amendmentRecords'] as $records) {
-            if (!empty($this->$records)) {
-                $layouts[] = new LayoutNode($this->opening, ...$this->$records);
+        foreach (self::LAYOUT_TO_RECORD_STORE_MAP as $layoutName => $recordStore) {
+            if (!empty($this->$recordStore)) {
+                $layouts[] = new LayoutNode($layoutName, $this->opening, ...$this->$recordStore);
             }
         }
 
@@ -298,12 +308,12 @@ class TreeBuilder
     ) {
         $this->transactionRecords[] = new $classname(
             0,
-            (new DateNode(0, $date->format('Ymd')))->setAttribute('date', $date),
+            DateNode::fromDate($date),
             new IntervalNode(0, $this->intervalFormatter->format($interval)),
             new RepetitionsNode(0, $this->repititionsFormatter->format($repetitions)),
             new TextNode(0, ' '),
             new PayerNumberNode(0, $payerNr),
-            (new AmountNode(0, $amount->getSignalString()))->setAttribute('amount', $amount),
+            AmountNode::fromAmount($amount),
             $this->payeeBgNode,
             new TextNode(0, str_pad($ref, 16, ' ', STR_PAD_LEFT), '/^.{16}$/'),
             [new TextNode(0, str_pad('', 11))]
@@ -319,7 +329,7 @@ class TreeBuilder
             new RepetitionsNode(0, '   '),
             new TextNode(0, ' '),
             new PayerNumberNode(0, $payerNr),
-            (new AmountNode(0, $amount->getSignalString()))->setAttribute('amount', $amount),
+            AmountNode::fromAmount($amount),
             $this->payeeBgNode,
             new TextNode(0, str_pad($ref, 16, ' ', STR_PAD_LEFT), '/^.{16}$/'),
             [new TextNode(0, str_pad('', 11))]

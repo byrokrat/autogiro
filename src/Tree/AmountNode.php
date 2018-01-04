@@ -22,6 +22,8 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Tree;
 
+use byrokrat\amount\Currency\SEK;
+
 /**
  * Node that wrapps a monetary amount
  *
@@ -29,4 +31,10 @@ namespace byrokrat\autogiro\Tree;
  */
 class AmountNode extends Node
 {
+    public static function fromAmount(SEK $amount): self
+    {
+        $node = new self(0, $amount->getSignalString());
+        $node->setAttribute('amount', $amount);
+        return $node;
+    }
 }

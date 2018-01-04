@@ -29,6 +29,8 @@ class FileNode extends Node
 {
     public function __construct(LayoutNode ...$layoutNodes)
     {
+        parent::__construct();
+
         foreach ($layoutNodes as $key => $layoutNode) {
             $this->setChild((string)($key + 1), $layoutNode);
         }

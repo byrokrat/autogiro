@@ -16,7 +16,7 @@ class LayoutNodeSpec extends ObjectBehavior
     function let(RecordNode $record1, RecordNode $record2)
     {
         $record1->hasChild('layout_name')->willReturn(false);
-        $this->beConstructedWith($record1, $record2);
+        $this->beConstructedWith('', $record1, $record2);
     }
 
     function it_is_initializable()
@@ -56,6 +56,12 @@ class LayoutNodeSpec extends ObjectBehavior
         $this->getLineNr()->shouldEqual(100);
     }
 
+    function it_sets_layout_name_from_argument()
+    {
+        $this->beConstructedWith('some-name');
+        $this->getAttribute('layout_name')->shouldEqual('some-name');
+    }
+
     function it_sets_the_layout_name_attribute(RecordNode $opening, TextNode $layoutName)
     {
         $layoutName->getValue()->willReturn('foobar');
@@ -63,7 +69,7 @@ class LayoutNodeSpec extends ObjectBehavior
         $opening->hasChild('layout_name')->willReturn(true);
         $opening->getChild('layout_name')->willReturn($layoutName);
 
-        $this->beConstructedWith($opening);
+        $this->beConstructedWith('', $opening);
 
         $this->getAttribute('layout_name')->shouldEqual('foobar');
     }

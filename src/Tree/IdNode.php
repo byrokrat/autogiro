@@ -22,6 +22,8 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Tree;
 
+use byrokrat\id\IdInterface;
+
 /**
  * Node representing an organizational or personal id
  *
@@ -29,4 +31,10 @@ namespace byrokrat\autogiro\Tree;
  */
 class IdNode extends Node
 {
+    public static function fromId(IdInterface $id): self
+    {
+        $node = new self(0, (string)$id);
+        $node->setAttribute('id', $id);
+        return $node;
+    }
 }

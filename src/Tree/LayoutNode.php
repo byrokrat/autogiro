@@ -29,14 +29,20 @@ use byrokrat\autogiro\Tree\Record\RecordNode;
  */
 class LayoutNode extends Node
 {
-    public function __construct(RecordNode ...$nodes)
+    public function __construct(string $layoutName, RecordNode ...$nodes)
     {
+        parent::__construct();
+
         foreach ($nodes as $key => $node) {
             $this->setChild((string)($key + 1), $node);
         }
 
+        if ($layoutName) {
+            $this->setAttribute('layout_name', $layoutName);
+        }
+
         if (isset($nodes[0]) && $nodes[0]->hasChild('layout_name')) {
-            $this->setAttribute('layout_name', $nodes[0]->getChild('layout_name')->getValue());
+            $this->setAttribute('layout_name', trim($nodes[0]->getChild('layout_name')->getValue()));
         }
     }
 

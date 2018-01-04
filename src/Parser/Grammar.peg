@@ -72,7 +72,7 @@ grammar Grammar
     // MANDATE REQUESTS
 
     REQ_MANDATE_LAYOUT = open:REQ_OPENING_RECORD records:(REQ_DEL_MANDATE_RECORD / REQ_REJECT_MANDATE_RECORD / REQ_CREATE_MANDATE_RECORD / REQ_UPDATE_MANDATE_RECORD)+ {
-        return (new LayoutNode($open, ...$records))->setAttribute('layout_name', Layouts::LAYOUT_MANDATE_REQUEST);
+        return new LayoutNode(Layouts::LAYOUT_MANDATE_REQUEST, $open, ...$records);
     };
 
     REQ_DEL_MANDATE_RECORD = '03' payeeBg:PAYEE_BG payerNr:PAYER_NR void:EOR {
@@ -96,7 +96,7 @@ grammar Grammar
     // PAYMENT REQUESTS
 
     REQ_PAYMENT_LAYOUT = open:REQ_OPENING_RECORD records:(REQ_TRANSACTION_RECORD)+ {
-        return (new LayoutNode($open, ...$records))->setAttribute('layout_name', Layouts::LAYOUT_PAYMENT_REQUEST);
+        return new LayoutNode(Layouts::LAYOUT_PAYMENT_REQUEST, $open, ...$records);
     };
 
     REQ_TRANSACTION_RECORD = tc:('32' / '82') date:(IMMEDIATE_DATE / DATE) ival:INTERVAL reps:REPS space:VOID payerNr:PAYER_NR amount:AMOUNT payeeBg:PAYEE_BG ref:VARIABLE_TEXT void:EOR {
@@ -109,7 +109,7 @@ grammar Grammar
 
     REQ_AMENDMENT_LAYOUT = open:REQ_OPENING_RECORD records:('TODO')+ {
         // TODO this is just a stub...
-        return (new LayoutNode($open, ...$records))->setAttribute('layout_name', Layouts::LAYOUT_AMENDMENT_REQUEST);
+        return new LayoutNode(Layouts::LAYOUT_AMENDMENT_REQUEST, $open, ...$records);
     };
 
     //
@@ -120,7 +120,7 @@ grammar Grammar
 
     RESP_MANDATE_FILE = open:(RESP_MANDATE_OPENING_OLD_RECORD / GENERIC_OPENING_RECORD) mands:RESP_MANDATE_RECORD* close:RESP_MANDATE_CLOSING_RECORD {
         return new FileNode(
-            (new LayoutNode($open, $close, ...$mands))->setAttribute('layout_name', Layouts::LAYOUT_MANDATE_RESPONSE)
+            new LayoutNode(Layouts::LAYOUT_MANDATE_RESPONSE, $open, $close, ...$mands)
         );
     };
 
@@ -141,13 +141,16 @@ grammar Grammar
     RESP_MANDATE_RECORD = '73' payeeBg:PAYEE_BG payerNr:PAYER_NR account:ACCOUNT id:ID space:$(A5) info:MESSAGE status:MESSAGE date:DATE validDate:$(A5 A)? void:EOR {
         // If account is empty a valid bankgiro number may be read from the payer number field
         if (!trim($account->getValue())) {
-            $account = (new ReferredAccountNode($account->getLineNr(), $account->getValue()))->setAttribute('referred_value', $payerNr->getValue());
+            $account = new ReferredAccountNode($account->getLineNr(), $payerNr->getValue());
         }
 
         // A mandate-valid-from-date is only present in the old layout
         if ($validDate) {
             array_unshift($void, new TextNode($this->lineNr, (string)$validDate));
         }
+
+        $info->setAttribute('message_id', "73.info.{$info->getValue()}");
+        $status->setAttribute('message_id', "73.status.{$status->getValue()}");
 
         return new Response\MandateResponseNode(
             $this->lineNr,
@@ -156,8 +159,8 @@ grammar Grammar
             $account,
             $id,
             new TextNode($this->lineNr, $space, '/^( |0){5}$/'),
-            $info->setAttribute('message_id', "73.info.{$info->getValue()}"),
-            $status->setAttribute('message_id', "73.status.{$status->getValue()}"),
+            $info,
+            $status,
             $date,
             $void
         );

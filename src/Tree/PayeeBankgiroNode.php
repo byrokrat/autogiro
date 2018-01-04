@@ -22,11 +22,19 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Tree;
 
+use byrokrat\banking\Bankgiro;
+
 /**
  * Wrapps a bankgiro account number
  *
  * @see \byrokrat\autogiro\Visitor\AccountVisitor Creates attribute 'account'
  */
-class PayeeBankgiroNode extends AccountNode
+class PayeeBankgiroNode extends Node
 {
+    public static function fromBankgiro(Bankgiro $bankgiro): self
+    {
+        $node = new self(0, $bankgiro->getNumber());
+        $node->setAttribute('account', $bankgiro);
+        return $node;
+    }
 }

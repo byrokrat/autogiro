@@ -586,7 +586,7 @@ class Grammar
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$open, &$records) {
-                return (new LayoutNode($open, ...$records))->setAttribute('layout_name', Layouts::LAYOUT_MANDATE_REQUEST);
+                return new LayoutNode(Layouts::LAYOUT_MANDATE_REQUEST, $open, ...$records);
             });
         }
 
@@ -1073,7 +1073,7 @@ class Grammar
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$open, &$records) {
-                return (new LayoutNode($open, ...$records))->setAttribute('layout_name', Layouts::LAYOUT_PAYMENT_REQUEST);
+                return new LayoutNode(Layouts::LAYOUT_PAYMENT_REQUEST, $open, ...$records);
             });
         }
 
@@ -1348,7 +1348,7 @@ class Grammar
         if ($_success) {
             $this->value = call_user_func(function () use (&$open, &$records) {
                 // TODO this is just a stub...
-                return (new LayoutNode($open, ...$records))->setAttribute('layout_name', Layouts::LAYOUT_AMENDMENT_REQUEST);
+                return new LayoutNode(Layouts::LAYOUT_AMENDMENT_REQUEST, $open, ...$records);
             });
         }
 
@@ -1448,7 +1448,7 @@ class Grammar
         if ($_success) {
             $this->value = call_user_func(function () use (&$open, &$mands, &$close) {
                 return new FileNode(
-                    (new LayoutNode($open, $close, ...$mands))->setAttribute('layout_name', Layouts::LAYOUT_MANDATE_RESPONSE)
+                    new LayoutNode(Layouts::LAYOUT_MANDATE_RESPONSE, $open, $close, ...$mands)
                 );
             });
         }
@@ -1751,13 +1751,16 @@ class Grammar
             $this->value = call_user_func(function () use (&$payeeBg, &$payerNr, &$account, &$id, &$space, &$info, &$status, &$date, &$validDate, &$void) {
                 // If account is empty a valid bankgiro number may be read from the payer number field
                 if (!trim($account->getValue())) {
-                    $account = (new ReferredAccountNode($account->getLineNr(), $account->getValue()))->setAttribute('referred_value', $payerNr->getValue());
+                    $account = new ReferredAccountNode($account->getLineNr(), $payerNr->getValue());
                 }
 
                 // A mandate-valid-from-date is only present in the old layout
                 if ($validDate) {
                     array_unshift($void, new TextNode($this->lineNr, (string)$validDate));
                 }
+
+                $info->setAttribute('message_id', "73.info.{$info->getValue()}");
+                $status->setAttribute('message_id', "73.status.{$status->getValue()}");
 
                 return new Response\MandateResponseNode(
                     $this->lineNr,
@@ -1766,8 +1769,8 @@ class Grammar
                     $account,
                     $id,
                     new TextNode($this->lineNr, $space, '/^( |0){5}$/'),
-                    $info->setAttribute('message_id', "73.info.{$info->getValue()}"),
-                    $status->setAttribute('message_id', "73.status.{$status->getValue()}"),
+                    $info,
+                    $status,
                     $date,
                     $void
                 );
