@@ -4,13 +4,13 @@ declare(strict_types = 1);
 
 namespace spec\byrokrat\autogiro\Tree\Record;
 
-use byrokrat\autogiro\Tree\Record\ClosingRecordNode;
+use byrokrat\autogiro\Tree\Record\MandateResponseClosingRecord;
 use byrokrat\autogiro\Tree\Record\RecordNode;
 use byrokrat\autogiro\Tree\DateNode;
 use byrokrat\autogiro\Tree\TextNode;
 use PhpSpec\ObjectBehavior;
 
-class ClosingRecordNodeSpec extends ObjectBehavior
+class MandateResponseClosingRecordSpec extends ObjectBehavior
 {
     function let(DateNode $date, TextNode $bgcClear, TextNode $numberOfPosts, TextNode $endVoid)
     {
@@ -19,7 +19,7 @@ class ClosingRecordNodeSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(ClosingRecordNode::CLASS);
+        $this->shouldHaveType(MandateResponseClosingRecord::CLASS);
     }
 
     function it_implements_record_interface()
@@ -29,7 +29,7 @@ class ClosingRecordNodeSpec extends ObjectBehavior
 
     function it_contains_a_type()
     {
-        $this->getType()->shouldEqual('ClosingRecordNode');
+        $this->getType()->shouldEqual('MandateResponseClosingRecord');
     }
 
     function it_contains_a_line_number()

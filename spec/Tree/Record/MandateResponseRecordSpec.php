@@ -2,9 +2,9 @@
 
 declare(strict_types = 1);
 
-namespace spec\byrokrat\autogiro\Tree\Record\Response;
+namespace spec\byrokrat\autogiro\Tree\Record;
 
-use byrokrat\autogiro\Tree\Record\Response\MandateResponseNode;
+use byrokrat\autogiro\Tree\Record\MandateResponseRecord;
 use byrokrat\autogiro\Tree\Record\RecordNode;
 use byrokrat\autogiro\Tree\AccountNode;
 use byrokrat\autogiro\Tree\DateNode;
@@ -15,7 +15,7 @@ use byrokrat\autogiro\Tree\PayerNumberNode;
 use byrokrat\autogiro\Tree\TextNode;
 use PhpSpec\ObjectBehavior;
 
-class MandateResponseNodeSpec extends ObjectBehavior
+class MandateResponseRecordSpec extends ObjectBehavior
 {
     const LINE_NR = 100;
 
@@ -46,7 +46,7 @@ class MandateResponseNodeSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(MandateResponseNode::CLASS);
+        $this->shouldHaveType(MandateResponseRecord::CLASS);
     }
 
     function it_implements_record_interface()
@@ -56,7 +56,7 @@ class MandateResponseNodeSpec extends ObjectBehavior
 
     function it_contains_a_type()
     {
-        $this->getType()->shouldEqual('MandateResponseNode');
+        $this->getType()->shouldEqual('MandateResponseRecord');
     }
 
     function it_contains_a_line_number()

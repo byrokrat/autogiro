@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace spec\byrokrat\autogiro\Tree\Record;
 
-use byrokrat\autogiro\Tree\Record\OpeningRecordNode;
+use byrokrat\autogiro\Tree\Record\ResponseOpeningRecord;
 use byrokrat\autogiro\Tree\DateNode;
 use byrokrat\autogiro\Tree\PayeeBankgiroNode;
 use byrokrat\autogiro\Tree\PayeeBgcNumberNode;
@@ -12,9 +12,8 @@ use byrokrat\autogiro\Tree\Record\RecordNode;
 use byrokrat\autogiro\Tree\TextNode;
 use PhpSpec\ObjectBehavior;
 
-class OpeningRecordNodeSpec extends ObjectBehavior
+class ResponseOpeningRecordSpec extends ObjectBehavior
 {
-
     function let(
         TextNode $agTxt,
         TextNode $space1,
@@ -30,7 +29,7 @@ class OpeningRecordNodeSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(OpeningRecordNode::CLASS);
+        $this->shouldHaveType(ResponseOpeningRecord::CLASS);
     }
 
     function it_implements_record_interface()
@@ -40,7 +39,7 @@ class OpeningRecordNodeSpec extends ObjectBehavior
 
     function it_contains_a_type()
     {
-        $this->getType()->shouldEqual('OpeningRecordNode');
+        $this->getType()->shouldEqual('ResponseOpeningRecord');
     }
 
     function it_contains_a_line_number()

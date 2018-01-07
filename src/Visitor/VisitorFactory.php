@@ -70,7 +70,7 @@ class VisitorFactory
         $visitors = new ContainingVisitor(
             $errorObj,
             new DateVisitor($errorObj),
-            new LayoutVisitor($errorObj),
+            new MandateResponseVisitor($errorObj),
             new MessageVisitor($errorObj),
             new PayeeVisitor($errorObj),
             new TextVisitor($errorObj),

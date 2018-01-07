@@ -4,19 +4,19 @@ declare(strict_types = 1);
 
 namespace spec\byrokrat\autogiro\Visitor;
 
-use byrokrat\autogiro\Visitor\LayoutVisitor;
+use byrokrat\autogiro\Visitor\MandateResponseVisitor;
 use byrokrat\autogiro\Visitor\ErrorAwareVisitor;
 use byrokrat\autogiro\Visitor\ErrorObject;
 use byrokrat\autogiro\Tree\LayoutNode;
 use byrokrat\autogiro\Tree\Record\RecordNode;
-use byrokrat\autogiro\Tree\Record\OpeningRecordNode;
-use byrokrat\autogiro\Tree\Record\ClosingRecordNode;
+use byrokrat\autogiro\Tree\Record\ResponseOpeningRecord;
+use byrokrat\autogiro\Tree\Record\MandateResponseClosingRecord;
 use byrokrat\autogiro\Tree\DateNode;
 use byrokrat\autogiro\Tree\TextNode;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
-class LayoutVisitorSpec extends ObjectBehavior
+class MandateResponseVisitorSpec extends ObjectBehavior
 {
     function let(ErrorObject $errorObj)
     {
@@ -25,7 +25,7 @@ class LayoutVisitorSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(LayoutVisitor::CLASS);
+        $this->shouldHaveType(MandateResponseVisitor::CLASS);
     }
 
     function it_is_an_error_aware_visitor()
@@ -34,8 +34,8 @@ class LayoutVisitorSpec extends ObjectBehavior
     }
 
     function it_fails_on_missmatching_dates(
-        OpeningRecordNode $opening,
-        ClosingRecordNode $closing,
+        ResponseOpeningRecord $opening,
+        MandateResponseClosingRecord $closing,
         DateNode $dateA,
         DateNode $dateB,
         $errorObj
@@ -43,30 +43,29 @@ class LayoutVisitorSpec extends ObjectBehavior
         $dateA->getValue()->willReturn('2010');
         $opening->getChild('date')->willReturn($dateA);
 
-        $this->beforeOpeningRecordNode($opening);
+        $this->beforeResponseOpeningRecord($opening);
 
         $dateB->getValue()->willReturn('2011');
         $closing->getChild('date')->willReturn($dateB);
         $closing->getLineNr()->willReturn(1);
 
-        $this->beforeClosingRecordNode($closing);
+        $this->beforeMandateResponseClosingRecord($closing);
 
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 
     function it_fails_on_wrong_record_count(
         LayoutNode $layout,
-        OpeningRecordNode $opening,
+        ResponseOpeningRecord $opening,
         RecordNode $record,
-        ClosingRecordNode $closing,
+        MandateResponseClosingRecord $closing,
         TextNode $nrOfPosts,
         $errorObj
     ) {
-
         $nrOfPosts->getValue()->willReturn('2');
         $closing->getChild('nr_of_posts')->willReturn($nrOfPosts);
 
-        $this->afterClosingRecordNode($closing);
+        $this->afterMandateResponseClosingRecord($closing);
 
         $layout->getChildren()->willReturn([$opening, $record, $closing]);
         $layout->getLineNr()->willReturn(1);

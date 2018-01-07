@@ -33,10 +33,8 @@ use byrokrat\autogiro\Tree\IntervalNode;
 use byrokrat\autogiro\Tree\LayoutNode;
 use byrokrat\autogiro\Tree\MessageNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
-use byrokrat\autogiro\Tree\Record\ClosingRecordNode;
-use byrokrat\autogiro\Tree\Record\OpeningRecordNode;
 use byrokrat\autogiro\Tree\Record\Request;
-use byrokrat\autogiro\Tree\Record\Response;
+use byrokrat\autogiro\Tree\Record;
 use byrokrat\autogiro\Tree\ReferredAccountNode;
 use byrokrat\autogiro\Tree\RepetitionsNode;
 use byrokrat\autogiro\Tree\TextNode;
@@ -118,7 +116,7 @@ grammar Grammar
 
     RESP_PAYMENT_OPENING_RECORD = '01' ag:AUTOGIRO space1:VOID14 date:DATE space2:VOID12 layout:$(A10 A10) payeeBgcNr:BGC_NR payeeBg:PAYEE_BG void:EOR {
         // TODO this is not valid!!
-        return new OpeningRecordNode(
+        return new Record\ResponseOpeningRecord(
             $this->lineNr,
             $ag,
             $space1,
@@ -138,7 +136,7 @@ grammar Grammar
     };
 
     RESP_MANDATE_OPENING_RECORD = '01' ag:AUTOGIRO space1:VOID14 date:DATE space2:VOID12 layout:$(A10 A10) payeeBgcNr:BGC_NR payeeBg:PAYEE_BG void:EOR {
-        return new OpeningRecordNode(
+        return new Record\ResponseOpeningRecord(
             $this->lineNr,
             $ag,
             $space1,
@@ -152,7 +150,7 @@ grammar Grammar
     };
 
     RESP_MANDATE_OPENING_OLD_RECORD = '01' date:DATE clear:BGC_CLEARING payeeBg:PAYEE_BG 'AG-MEDAVI' void:EOR {
-        return new OpeningRecordNode(
+        return new Record\ResponseOpeningRecord(
             $this->lineNr,
             new TextNode($this->lineNr, ''),
             new TextNode($this->lineNr, ''),
@@ -179,7 +177,7 @@ grammar Grammar
         $info->setAttribute('message_id', "73.info.{$info->getValue()}");
         $status->setAttribute('message_id', "73.status.{$status->getValue()}");
 
-        return new Response\MandateResponseNode(
+        return new Record\MandateResponseRecord(
             $this->lineNr,
             $payeeBg,
             $payerNr,
@@ -194,7 +192,7 @@ grammar Grammar
     };
 
     RESP_MANDATE_CLOSING_RECORD = '09' date:DATE clear:BGC_CLEARING nrOfPosts:INT7 void:EOR {
-        return new ClosingRecordNode($this->lineNr, $date, $clear, $nrOfPosts, $void);
+        return new Record\MandateResponseClosingRecord($this->lineNr, $date, $clear, $nrOfPosts, $void);
     };
 
     // EXTERNAL TYPES

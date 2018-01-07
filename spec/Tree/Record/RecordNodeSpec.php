@@ -34,7 +34,3 @@ class RecordNodeSpec extends ObjectBehavior
         $this->getChild('end_1')->shouldEqual($end2);
     }
 }
-
-class ConcreteRecordNode extends RecordNode
-{
-}

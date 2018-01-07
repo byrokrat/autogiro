@@ -15,10 +15,8 @@ use byrokrat\autogiro\Tree\IntervalNode;
 use byrokrat\autogiro\Tree\LayoutNode;
 use byrokrat\autogiro\Tree\MessageNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
-use byrokrat\autogiro\Tree\Record\ClosingRecordNode;
-use byrokrat\autogiro\Tree\Record\OpeningRecordNode;
 use byrokrat\autogiro\Tree\Record\Request;
-use byrokrat\autogiro\Tree\Record\Response;
+use byrokrat\autogiro\Tree\Record;
 use byrokrat\autogiro\Tree\ReferredAccountNode;
 use byrokrat\autogiro\Tree\RepetitionsNode;
 use byrokrat\autogiro\Tree\TextNode;
@@ -1462,7 +1460,7 @@ class Grammar
         if ($_success) {
             $this->value = call_user_func(function () use (&$ag, &$space1, &$date, &$space2, &$layout, &$payeeBgcNr, &$payeeBg, &$void) {
                 // TODO this is not valid!!
-                return new OpeningRecordNode(
+                return new Record\ResponseOpeningRecord(
                     $this->lineNr,
                     $ag,
                     $space1,
@@ -1720,7 +1718,7 @@ class Grammar
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$ag, &$space1, &$date, &$space2, &$layout, &$payeeBgcNr, &$payeeBg, &$void) {
-                return new OpeningRecordNode(
+                return new Record\ResponseOpeningRecord(
                     $this->lineNr,
                     $ag,
                     $space1,
@@ -1833,7 +1831,7 @@ class Grammar
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$clear, &$payeeBg, &$void) {
-                return new OpeningRecordNode(
+                return new Record\ResponseOpeningRecord(
                     $this->lineNr,
                     new TextNode($this->lineNr, ''),
                     new TextNode($this->lineNr, ''),
@@ -2043,7 +2041,7 @@ class Grammar
                 $info->setAttribute('message_id', "73.info.{$info->getValue()}");
                 $status->setAttribute('message_id', "73.status.{$status->getValue()}");
 
-                return new Response\MandateResponseNode(
+                return new Record\MandateResponseRecord(
                     $this->lineNr,
                     $payeeBg,
                     $payerNr,
@@ -2143,7 +2141,7 @@ class Grammar
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$clear, &$nrOfPosts, &$void) {
-                return new ClosingRecordNode($this->lineNr, $date, $clear, $nrOfPosts, $void);
+                return new Record\MandateResponseClosingRecord($this->lineNr, $date, $clear, $nrOfPosts, $void);
             });
         }
 

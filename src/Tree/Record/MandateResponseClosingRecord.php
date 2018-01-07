@@ -28,7 +28,7 @@ use byrokrat\autogiro\Tree\TextNode;
 /**
  * Standard closing record node
  */
-class ClosingRecordNode extends RecordNode
+class MandateResponseClosingRecord extends RecordNode
 {
     public function __construct(int $lineNr, DateNode $date, TextNode $bgcClear, TextNode $nrOfPosts, array $void = [])
     {

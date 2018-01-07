@@ -28,9 +28,9 @@ use byrokrat\autogiro\Tree\DateNode;
 use byrokrat\autogiro\Tree\TextNode;
 
 /**
- * Generic opening record node
+ * Response opening record node
  */
-class OpeningRecordNode extends RecordNode
+class ResponseOpeningRecord extends RecordNode
 {
     public function __construct(
         int $lineNr,
