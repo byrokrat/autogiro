@@ -61,16 +61,4 @@ class LayoutNodeSpec extends ObjectBehavior
         $this->beConstructedWith('some-name');
         $this->getAttribute('layout_name')->shouldEqual('some-name');
     }
-
-    function it_sets_the_layout_name_attribute(RecordNode $opening, TextNode $layoutName)
-    {
-        $layoutName->getValue()->willReturn('foobar');
-
-        $opening->hasChild('layout_name')->willReturn(true);
-        $opening->getChild('layout_name')->willReturn($layoutName);
-
-        $this->beConstructedWith('', $opening);
-
-        $this->getAttribute('layout_name')->shouldEqual('foobar');
-    }
 }

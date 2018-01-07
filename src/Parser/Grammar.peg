@@ -43,18 +43,12 @@ use byrokrat\autogiro\Tree\TextNode;
 
 grammar Grammar
 {
-    start FILE = RESET_LINE_COUNT file:(REQUEST_FILE / RESP_MANDATE_FILE) {
+    start FILE = RESET_LINE_COUNT file:(REQUEST_FILE / RESP_MANDATE_FILE / RESP_PAYMENT_FILE) {
         return $file;
     };
 
     RESET_LINE_COUNT = '' {
         $this->lineNr = 0;
-    };
-
-    // GENERIC RECORDS
-
-    GENERIC_OPENING_RECORD = '01' ag:AUTOGIRO space1:VOID14 date:DATE space2:VOID12 layout:TEXT20 payeeBgcNr:BGC_NR payeeBg:PAYEE_BG void:EOR {
-        return new OpeningRecordNode($this->lineNr, $ag, $space1, $date, $space2, $layout, $payeeBgcNr, $payeeBg, $void);
     };
 
     //
@@ -116,11 +110,44 @@ grammar Grammar
     // RESPONSE LAYOUTS
     //
 
+    // PAYMENT RESPONSES
+
+    RESP_PAYMENT_FILE = open:RESP_PAYMENT_OPENING_RECORD mands:RESP_MANDATE_RECORD* close:RESP_MANDATE_CLOSING_RECORD {
+        return new FileNode(new LayoutNode(Layouts::LAYOUT_PAYMENT_RESPONSE, $open, $close, ...$mands));
+    };
+
+    RESP_PAYMENT_OPENING_RECORD = '01' ag:AUTOGIRO space1:VOID14 date:DATE space2:VOID12 layout:$(A10 A10) payeeBgcNr:BGC_NR payeeBg:PAYEE_BG void:EOR {
+        // TODO this is not valid!!
+        return new OpeningRecordNode(
+            $this->lineNr,
+            $ag,
+            $space1,
+            $date,
+            $space2,
+            new TextNode($this->lineNr + 1, $layout, '/^AG-MEDAVI\s{11}$/'),
+            $payeeBgcNr,
+            $payeeBg,
+            $void
+        );
+    };
+
     // MANDATE RESPONSES
 
-    RESP_MANDATE_FILE = open:(RESP_MANDATE_OPENING_OLD_RECORD / GENERIC_OPENING_RECORD) mands:RESP_MANDATE_RECORD* close:RESP_MANDATE_CLOSING_RECORD {
-        return new FileNode(
-            new LayoutNode(Layouts::LAYOUT_MANDATE_RESPONSE, $open, $close, ...$mands)
+    RESP_MANDATE_FILE = open:(RESP_MANDATE_OPENING_OLD_RECORD / RESP_MANDATE_OPENING_RECORD) mands:RESP_MANDATE_RECORD* close:RESP_MANDATE_CLOSING_RECORD {
+        return new FileNode(new LayoutNode(Layouts::LAYOUT_MANDATE_RESPONSE, $open, $close, ...$mands));
+    };
+
+    RESP_MANDATE_OPENING_RECORD = '01' ag:AUTOGIRO space1:VOID14 date:DATE space2:VOID12 layout:$(A10 A10) payeeBgcNr:BGC_NR payeeBg:PAYEE_BG void:EOR {
+        return new OpeningRecordNode(
+            $this->lineNr,
+            $ag,
+            $space1,
+            $date,
+            $space2,
+            new TextNode($this->lineNr + 1, $layout, '/^AG-MEDAVI\s{11}$/'),
+            $payeeBgcNr,
+            $payeeBg,
+            $void
         );
     };
 
@@ -233,10 +260,6 @@ grammar Grammar
     };
 
     VARIABLE_TEXT = text:$(A*) {
-        return new TextNode($this->lineNr + 1, $text);
-    };
-
-    TEXT20 = text:$(A10 A10) {
         return new TextNode($this->lineNr + 1, $text);
     };
 

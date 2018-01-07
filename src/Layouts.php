@@ -43,7 +43,7 @@ interface Layouts
     /**
      * Layout for receiving responses the previously made mandate requests
      */
-    const LAYOUT_MANDATE_RESPONSE = 'AG-MEDAVI';
+    const LAYOUT_MANDATE_RESPONSE = 'LAYOUT_MANDATE_RESPONSE';
 
     /**
      * Layout for receiving new digital mandates
