@@ -28,7 +28,6 @@ use byrokrat\autogiro\Tree\DateNode;
 use byrokrat\autogiro\Tree\IdNode;
 use byrokrat\autogiro\Tree\MessageNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
-use byrokrat\autogiro\Tree\TextNode;
 
 /**
  * Feedback on the request to add, delete or update a mandate
@@ -41,7 +40,6 @@ class MandateResponseRecord extends RecordNode
         PayerNumberNode $payerNr,
         AccountNode $account,
         IdNode $id,
-        TextNode $space,
         MessageNode $info,
         MessageNode $status,
         DateNode $date,
@@ -51,7 +49,6 @@ class MandateResponseRecord extends RecordNode
         $this->setChild('payer_number', $payerNr);
         $this->setChild('account', $account);
         $this->setChild('id', $id);
-        $this->setChild('space_1', $space);
         $this->setChild('info', $info);
         $this->setChild('status', $status);
         $this->setChild('date', $date);

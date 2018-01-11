@@ -14,17 +14,9 @@ use PhpSpec\ObjectBehavior;
 
 class ResponseOpeningRecordSpec extends ObjectBehavior
 {
-    function let(
-        TextNode $agTxt,
-        TextNode $space1,
-        DateNode $date,
-        TextNode $space2,
-        TextNode $layoutTxt,
-        PayeeBgcNumberNode $custNr,
-        PayeeBankgiroNode $payeeBg,
-        TextNode $endVoid
-    ) {
-        $this->beConstructedWith(10, $agTxt, $space1, $date, $space2, $layoutTxt, $custNr, $payeeBg, [$endVoid]);
+    function let(DateNode $date, PayeeBgcNumberNode $custNr, PayeeBankgiroNode $payeeBg, TextNode $endVoid)
+    {
+        $this->beConstructedWith(10, $date, $custNr, $payeeBg, [$endVoid]);
     }
 
     function it_is_initializable()
@@ -45,16 +37,6 @@ class ResponseOpeningRecordSpec extends ObjectBehavior
     function it_contains_a_line_number()
     {
         $this->getLineNr()->shouldEqual(10);
-    }
-
-    function it_contains_a_autogiro_text_node($agTxt)
-    {
-        $this->getChild('autogiro_txt')->shouldEqual($agTxt);
-    }
-
-    function it_contains_a_layout_name($layoutTxt)
-    {
-        $this->getChild('layout_name')->shouldEqual($layoutTxt);
     }
 
     function it_contains_a_date($date)

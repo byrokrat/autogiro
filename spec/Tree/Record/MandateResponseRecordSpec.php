@@ -24,7 +24,6 @@ class MandateResponseRecordSpec extends ObjectBehavior
         PayerNumberNode $payerNr,
         AccountNode $account,
         IdNode $id,
-        TextNode $space,
         MessageNode $info,
         MessageNode $status,
         DateNode $date,
@@ -36,7 +35,6 @@ class MandateResponseRecordSpec extends ObjectBehavior
             $payerNr,
             $account,
             $id,
-            $space,
             $info,
             $status,
             $date,
@@ -82,11 +80,6 @@ class MandateResponseRecordSpec extends ObjectBehavior
     function it_contains_an_id($id)
     {
         $this->getChild('id')->shouldEqual($id);
-    }
-
-    function it_contains_space($space)
-    {
-        $this->getChild('space_1')->shouldEqual($space);
     }
 
     function it_contains_a_message($info)

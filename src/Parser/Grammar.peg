@@ -57,8 +57,16 @@ grammar Grammar
         return new FileNode(...$layouts);
     };
 
-    REQ_OPENING_RECORD = '01' date:DATE ag:AUTOGIRO space:VOID44 payeeBgcNr:BGC_NR payeeBg:PAYEE_BG void:EOR {
-        return new Request\RequestOpeningRecordNode($this->lineNr, $date, $ag, $space, $payeeBgcNr, $payeeBg, $void);
+    REQ_OPENING_RECORD = '01' date:DATE 'AUTOGIRO' S20 S20 S4 payeeBgcNr:BGC_NR payeeBg:PAYEE_BG void:EOR {
+        return new Request\RequestOpeningRecordNode(
+            $this->lineNr,
+            $date,
+            new TextNode($this->lineNr + 1, 'AUTOGIRO'),
+            new TextNode($this->lineNr + 1, str_repeat(' ', 44)),
+            $payeeBgcNr,
+            $payeeBg,
+            $void
+        );
     };
 
     // MANDATE REQUESTS
@@ -114,19 +122,11 @@ grammar Grammar
         return new FileNode(new LayoutNode(Layouts::LAYOUT_PAYMENT_RESPONSE, $open, $close, ...$mands));
     };
 
-    RESP_PAYMENT_OPENING_RECORD = '01' ag:AUTOGIRO space1:VOID14 date:DATE space2:VOID12 layout:$(A10 A10) payeeBgcNr:BGC_NR payeeBg:PAYEE_BG void:EOR {
+    RESP_PAYMENT_OPENING_RECORD = '01' 'AUTOGIRO' S10 S4 date:DATE S10 S2 layout:$(A10 A10) payeeBgcNr:BGC_NR payeeBg:PAYEE_BG void:EOR {
         // TODO this is not valid!!
-        return new Record\ResponseOpeningRecord(
-            $this->lineNr,
-            $ag,
-            $space1,
-            $date,
-            $space2,
-            new TextNode($this->lineNr + 1, $layout, '/^AG-MEDAVI\s{11}$/'),
-            $payeeBgcNr,
-            $payeeBg,
-            $void
-        );
+            // DATETIME
+            // $layout ID text...
+        return new Record\ResponseOpeningRecord($this->lineNr, $date, $payeeBgcNr, $payeeBg, $void);
     };
 
     // MANDATE RESPONSES
@@ -135,35 +135,15 @@ grammar Grammar
         return new FileNode(new LayoutNode(Layouts::LAYOUT_MANDATE_RESPONSE, $open, $close, ...$mands));
     };
 
-    RESP_MANDATE_OPENING_RECORD = '01' ag:AUTOGIRO space1:VOID14 date:DATE space2:VOID12 layout:$(A10 A10) payeeBgcNr:BGC_NR payeeBg:PAYEE_BG void:EOR {
-        return new Record\ResponseOpeningRecord(
-            $this->lineNr,
-            $ag,
-            $space1,
-            $date,
-            $space2,
-            new TextNode($this->lineNr + 1, $layout, '/^AG-MEDAVI\s{11}$/'),
-            $payeeBgcNr,
-            $payeeBg,
-            $void
-        );
+    RESP_MANDATE_OPENING_RECORD = '01' 'AUTOGIRO' S10 S4 date:DATE S10 S2 'AG-MEDAVI' ^ S10 S payeeBgcNr:BGC_NR payeeBg:PAYEE_BG void:EOR {
+        return new Record\ResponseOpeningRecord($this->lineNr, $date, $payeeBgcNr, $payeeBg, $void);
     };
 
-    RESP_MANDATE_OPENING_OLD_RECORD = '01' date:DATE clear:BGC_CLEARING payeeBg:PAYEE_BG 'AG-MEDAVI' void:EOR {
-        return new Record\ResponseOpeningRecord(
-            $this->lineNr,
-            new TextNode($this->lineNr, ''),
-            new TextNode($this->lineNr, ''),
-            $date,
-            $clear,
-            new TextNode($this->lineNr, 'AG-MEDAVI'),
-            new PayeeBgcNumberNode($this->lineNr, ''),
-            $payeeBg,
-            $void
-        );
+    RESP_MANDATE_OPENING_OLD_RECORD = '01' date:DATE '9900' payeeBg:PAYEE_BG 'AG-MEDAVI' ^ void:EOR {
+        return new Record\ResponseOpeningRecord($this->lineNr, $date, new PayeeBgcNumberNode($this->lineNr, ''), $payeeBg, $void);
     };
 
-    RESP_MANDATE_RECORD = '73' payeeBg:PAYEE_BG payerNr:PAYER_NR account:ACCOUNT id:ID space:$(A5) info:MESSAGE status:MESSAGE date:DATE validDate:$(A5 A)? void:EOR {
+    RESP_MANDATE_RECORD = '73' payeeBg:PAYEE_BG payerNr:PAYER_NR account:ACCOUNT id:ID (S5 / '00000') info:MESSAGE status:MESSAGE date:DATE validDate:$(A5 A)? void:EOR {
         // If account is empty a valid bankgiro number may be read from the payer number field
         if (!trim($account->getValue())) {
             $account = new ReferredAccountNode($account->getLineNr(), $payerNr->getValue());
@@ -177,22 +157,11 @@ grammar Grammar
         $info->setAttribute('message_id', "73.info.{$info->getValue()}");
         $status->setAttribute('message_id', "73.status.{$status->getValue()}");
 
-        return new Record\MandateResponseRecord(
-            $this->lineNr,
-            $payeeBg,
-            $payerNr,
-            $account,
-            $id,
-            new TextNode($this->lineNr, $space, '/^( |0){5}$/'),
-            $info,
-            $status,
-            $date,
-            $void
-        );
+        return new Record\MandateResponseRecord($this->lineNr, $payeeBg, $payerNr, $account, $id, $info, $status, $date, $void);
     };
 
-    RESP_MANDATE_CLOSING_RECORD = '09' date:DATE clear:BGC_CLEARING nrOfPosts:INT7 void:EOR {
-        return new Record\MandateResponseClosingRecord($this->lineNr, $date, $clear, $nrOfPosts, $void);
+    RESP_MANDATE_CLOSING_RECORD = '09' date:DATE '9900' nrOfPosts:INT7 void:EOR {
+        return new Record\MandateResponseClosingRecord($this->lineNr, $date, $nrOfPosts, $void);
     };
 
     // EXTERNAL TYPES
@@ -214,14 +183,6 @@ grammar Grammar
     };
 
     // SIMPLE TYPES
-
-    AUTOGIRO = text:$(A5 A2 A) {
-        return new TextNode($this->lineNr + 1, $text, '/^AUTOGIRO$/');
-    };
-
-    BGC_CLEARING = clear:$(A2 A2) {
-        return new TextNode($this->lineNr, $clear, '/^9900$/');
-    };
 
     BGC_NR = nr:$(A5 A) {
         return new PayeeBgcNumberNode($this->lineNr + 1, $nr);
@@ -269,27 +230,7 @@ grammar Grammar
         return new TextNode($this->lineNr + 1, $text, '/^ $/');
     };
 
-    VOID10 = text:$(A10) {
-        return new TextNode($this->lineNr + 1, $text, '/^ {10}$/');
-    };
-
-    VOID12 = text:$(A10 A2) {
-        return new TextNode($this->lineNr + 1, $text, '/^ {12}$/');
-    };
-
-    VOID14 = text:$(A10 A2 A2) {
-        return new TextNode($this->lineNr + 1, $text, '/^ {14}$/');
-    };
-
-    VOID20 = text:$(A10 A10) {
-        return new TextNode($this->lineNr + 1, $text, '/^ {20}$/');
-    };
-
-    VOID44 = text:$(A10 A10 A10 A10 A2 A2) {
-        return new TextNode($this->lineNr + 1, $text, '/^ {44}$/');
-    };
-
-    // HELPERS
+    // ALPHA-NUM
 
     A "ALPHA-NUMERIC" = [a-zA-Z0-9 \/&åäöÅÄÖ-];
 
@@ -298,6 +239,20 @@ grammar Grammar
     A5 = $(A A A A A);
 
     A10 = $(A5 A5);
+
+    // SPACE
+
+    S "SPACE" = ' ';
+
+    S2 = S S;
+
+    S4 = S2 S2;
+
+    S5 = S4 S;
+
+    S10 = S5 S5;
+
+    S20 = S10 S10;
 
     // ENDINGS
 

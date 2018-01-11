@@ -26,14 +26,13 @@ use byrokrat\autogiro\Tree\DateNode;
 use byrokrat\autogiro\Tree\TextNode;
 
 /**
- * Standard closing record node
+ * Mandate response closing record node
  */
 class MandateResponseClosingRecord extends RecordNode
 {
-    public function __construct(int $lineNr, DateNode $date, TextNode $bgcClear, TextNode $nrOfPosts, array $void = [])
+    public function __construct(int $lineNr, DateNode $date, TextNode $nrOfPosts, array $void = [])
     {
         $this->setChild('date', $date);
-        $this->setChild('bgc_clearing', $bgcClear);
         $this->setChild('nr_of_posts', $nrOfPosts);
         parent::__construct($lineNr, $void);
     }
