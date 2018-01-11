@@ -23,7 +23,7 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Visitor;
 
 use byrokrat\autogiro\Tree\IntervalNode;
-use byrokrat\autogiro\Tree\PayeeBgcNumberNode;
+use byrokrat\autogiro\Tree\BgcNumberNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
 use byrokrat\autogiro\Tree\RepetitionsNode;
 use byrokrat\autogiro\Tree\TextNode;
@@ -43,7 +43,7 @@ class TextVisitor extends ErrorAwareVisitor
         $this->validateRegexp($node, "Repeats '%s' does not match expected %s on line %s");
     }
 
-    public function beforePayeeBgcNumberNode(PayeeBgcNumberNode $node): void
+    public function beforeBgcNumberNode(BgcNumberNode $node): void
     {
         $this->validateRegexp($node, "BGC customer number '%s' does not match expected %s on line %s");
     }

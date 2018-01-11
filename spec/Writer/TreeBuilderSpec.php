@@ -21,8 +21,8 @@ use byrokrat\autogiro\Tree\LayoutNode;
 use byrokrat\autogiro\Tree\DateNode;
 use byrokrat\autogiro\Tree\ImmediateDateNode;
 use byrokrat\autogiro\Tree\TextNode;
-use byrokrat\autogiro\Tree\PayeeBgcNumberNode;
-use byrokrat\autogiro\Tree\PayeeBankgiroNode;
+use byrokrat\autogiro\Tree\BgcNumberNode;
+use byrokrat\autogiro\Tree\BankgiroNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
 use byrokrat\autogiro\Tree\AccountNode;
 use byrokrat\autogiro\Tree\IdNode;
@@ -83,8 +83,8 @@ class TreeBuilderSpec extends ObjectBehavior
             DateNode::fromDate($date->getWrappedObject()),
             new TextNode(0, 'AUTOGIRO'),
             new TextNode(0, str_pad('', 44)),
-            new PayeeBgcNumberNode(0, self::BCG_NR),
-            PayeeBankgiroNode::fromBankgiro($bankgiro->getWrappedObject()),
+            new BgcNumberNode(0, self::BCG_NR),
+            BankgiroNode::fromBankgiro($bankgiro->getWrappedObject()),
             [new TextNode(0, '  ')]
         );
     }
@@ -103,7 +103,7 @@ class TreeBuilderSpec extends ObjectBehavior
                 $date,
                 new CreateMandateRequestNode(
                     0,
-                    PayeeBankgiroNode::fromBankgiro($bankgiro->getWrappedObject()),
+                    BankgiroNode::fromBankgiro($bankgiro->getWrappedObject()),
                     new PayerNumberNode(0, 'payerNr'),
                     AccountNode::fromAccount($account->getWrappedObject()),
                     IdNode::fromId($id->getWrappedObject()),
@@ -124,7 +124,7 @@ class TreeBuilderSpec extends ObjectBehavior
                 $date,
                 new DeleteMandateRequestNode(
                     0,
-                    PayeeBankgiroNode::fromBankgiro($bankgiro->getWrappedObject()),
+                    BankgiroNode::fromBankgiro($bankgiro->getWrappedObject()),
                     new PayerNumberNode(0, 'payerNr'),
                     [new TextNode(0, str_pad('', 52))]
                 )
@@ -143,7 +143,7 @@ class TreeBuilderSpec extends ObjectBehavior
                 $date,
                 new AcceptDigitalMandateRequestNode(
                     0,
-                    PayeeBankgiroNode::fromBankgiro($bankgiro->getWrappedObject()),
+                    BankgiroNode::fromBankgiro($bankgiro->getWrappedObject()),
                     new PayerNumberNode(0, 'payerNr'),
                     [new TextNode(0, str_pad('', 52))]
                 )
@@ -162,7 +162,7 @@ class TreeBuilderSpec extends ObjectBehavior
                 $date,
                 new RejectDigitalMandateRequestNode(
                     0,
-                    PayeeBankgiroNode::fromBankgiro($bankgiro->getWrappedObject()),
+                    BankgiroNode::fromBankgiro($bankgiro->getWrappedObject()),
                     new PayerNumberNode(0, 'payerNr'),
                     new TextNode(0, str_pad('', 48)),
                     new TextNode(0, 'AV'),
@@ -176,7 +176,7 @@ class TreeBuilderSpec extends ObjectBehavior
     {
         $this->addUpdateMandateRecord('foo', 'bar');
 
-        $payeeBgNode = PayeeBankgiroNode::fromBankgiro($bankgiro->getWrappedObject());
+        $payeeBgNode = BankgiroNode::fromBankgiro($bankgiro->getWrappedObject());
 
         $this->buildTree()->shouldBeLike(
             $this->a_tree(
@@ -216,7 +216,7 @@ class TreeBuilderSpec extends ObjectBehavior
                     new TextNode(0, ' '),
                     new PayerNumberNode(0, 'foobar'),
                     AmountNode::fromAmount($amount->getWrappedObject()),
-                    PayeeBankgiroNode::fromBankgiro($bankgiro->getWrappedObject()),
+                    BankgiroNode::fromBankgiro($bankgiro->getWrappedObject()),
                     new TextNode(0, '             ref', '/^.{16}$/'),
                     [new TextNode(0, str_pad('', 11))]
                 )
@@ -245,7 +245,7 @@ class TreeBuilderSpec extends ObjectBehavior
                     new TextNode(0, ' '),
                     new PayerNumberNode(0, 'foobar'),
                     AmountNode::fromAmount($amount->getWrappedObject()),
-                    PayeeBankgiroNode::fromBankgiro($bankgiro->getWrappedObject()),
+                    BankgiroNode::fromBankgiro($bankgiro->getWrappedObject()),
                     new TextNode(0, '             ref', '/^.{16}$/'),
                     [new TextNode(0, str_pad('', 11))]
                 )
@@ -272,7 +272,7 @@ class TreeBuilderSpec extends ObjectBehavior
                     new TextNode(0, ' '),
                     new PayerNumberNode(0, 'foobar'),
                     AmountNode::fromAmount($amount->getWrappedObject()),
-                    PayeeBankgiroNode::fromBankgiro($bankgiro->getWrappedObject()),
+                    BankgiroNode::fromBankgiro($bankgiro->getWrappedObject()),
                     new TextNode(0, '             ref', '/^.{16}$/'),
                     [new TextNode(0, str_pad('', 11))]
                 )
@@ -299,7 +299,7 @@ class TreeBuilderSpec extends ObjectBehavior
                     new TextNode(0, ' '),
                     new PayerNumberNode(0, 'foobar'),
                     AmountNode::fromAmount($amount->getWrappedObject()),
-                    PayeeBankgiroNode::fromBankgiro($bankgiro->getWrappedObject()),
+                    BankgiroNode::fromBankgiro($bankgiro->getWrappedObject()),
                     new TextNode(0, '             ref', '/^.{16}$/'),
                     [new TextNode(0, str_pad('', 11))]
                 )

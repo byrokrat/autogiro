@@ -9,7 +9,7 @@ use byrokrat\autogiro\Visitor\ErrorAwareVisitor;
 use byrokrat\autogiro\Visitor\ErrorObject;
 use byrokrat\autogiro\Tree\AccountNode;
 use byrokrat\autogiro\Tree\ReferredAccountNode;
-use byrokrat\autogiro\Tree\PayeeBankgiroNode;
+use byrokrat\autogiro\Tree\BankgiroNode;
 use byrokrat\banking\AccountFactory;
 use byrokrat\banking\AccountNumber;
 use byrokrat\banking\Exception\InvalidAccountNumberException as BankingException;
@@ -85,29 +85,29 @@ class AccountVisitorSpec extends ObjectBehavior
         $accountNode->setAttribute('account', Argument::any())->shouldNotHaveBeenCalled();
     }
 
-    function it_fails_on_unvalid_bankgiro_number(PayeeBankgiroNode $bankgiroNode, $errorObj)
+    function it_fails_on_unvalid_bankgiro_number(BankgiroNode $bankgiroNode, $errorObj)
     {
         $bankgiroNode->hasAttribute('account')->willReturn(false);
         $bankgiroNode->getValue()->willReturn('not-valid');
         $bankgiroNode->getLineNr()->willReturn(1);
-        $this->beforePayeeBankgiroNode($bankgiroNode);
+        $this->beforeBankgiroNode($bankgiroNode);
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 
-    function it_creates_valid_bankgiro_numbers(PayeeBankgiroNode $bankgiroNode, $accountNumber, $errorObj)
+    function it_creates_valid_bankgiro_numbers(BankgiroNode $bankgiroNode, $accountNumber, $errorObj)
     {
         $bankgiroNode->hasAttribute('account')->willReturn(false);
         $bankgiroNode->getValue()->willReturn('valid');
         $bankgiroNode->setAttribute('account', $accountNumber)->shouldBeCalled();
-        $this->beforePayeeBankgiroNode($bankgiroNode);
+        $this->beforeBankgiroNode($bankgiroNode);
         $errorObj->addError(Argument::cetera())->shouldNotHaveBeenCalled();
     }
 
-    function it_does_not_create_bankgiro_if_attr_is_set(PayeeBankgiroNode $bankgiroNode)
+    function it_does_not_create_bankgiro_if_attr_is_set(BankgiroNode $bankgiroNode)
     {
         $bankgiroNode->hasAttribute('account')->willReturn(true);
         $bankgiroNode->getValue()->willReturn('');
-        $this->beforePayeeBankgiroNode($bankgiroNode);
+        $this->beforeBankgiroNode($bankgiroNode);
         $bankgiroNode->setAttribute('account', Argument::any())->shouldNotHaveBeenCalled();
     }
 }

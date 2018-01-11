@@ -6,14 +6,14 @@ namespace spec\byrokrat\autogiro\Tree\Record\Request;
 
 use byrokrat\autogiro\Tree\Record\Request\AcceptDigitalMandateRequestNode;
 use byrokrat\autogiro\Tree\Record\RecordNode;
-use byrokrat\autogiro\Tree\PayeeBankgiroNode;
+use byrokrat\autogiro\Tree\BankgiroNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
 use byrokrat\autogiro\Tree\TextNode;
 use PhpSpec\ObjectBehavior;
 
 class AcceptDigitalMandateRequestNodeSpec extends ObjectBehavior
 {
-    function let(PayeeBankgiroNode $bankgiro, PayerNumberNode $payerNr)
+    function let(BankgiroNode $bankgiro, PayerNumberNode $payerNr)
     {
         $this->beConstructedWith(0, $bankgiro, $payerNr);
     }

@@ -7,8 +7,8 @@ namespace spec\byrokrat\autogiro\Visitor;
 use byrokrat\autogiro\Visitor\PayeeVisitor;
 use byrokrat\autogiro\Visitor\ErrorAwareVisitor;
 use byrokrat\autogiro\Visitor\ErrorObject;
-use byrokrat\autogiro\Tree\PayeeBankgiroNode;
-use byrokrat\autogiro\Tree\PayeeBgcNumberNode;
+use byrokrat\autogiro\Tree\BankgiroNode;
+use byrokrat\autogiro\Tree\BgcNumberNode;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -26,10 +26,10 @@ class PayeeVisitorSpec extends ObjectBehavior
 
     function let(
         ErrorObject $errorObj,
-        PayeeBankgiroNode $bgA,
-        PayeeBankgiroNode $bgB,
-        PayeeBgcNumberNode $custA,
-        PayeeBgcNumberNode $custB
+        BankgiroNode $bgA,
+        BankgiroNode $bgB,
+        BgcNumberNode $custA,
+        BgcNumberNode $custB
     ) {
         $this->beConstructedWith($errorObj);
         $bgA->getValue()->willReturn('A');
@@ -42,32 +42,32 @@ class PayeeVisitorSpec extends ObjectBehavior
 
     function it_ignores_consistent_payee_info($bgA, $custA, $errorObj)
     {
-        $this->beforePayeeBankgiroNode($bgA);
-        $this->beforePayeeBankgiroNode($bgA);
-        $this->beforePayeeBgcNumberNode($custA);
-        $this->beforePayeeBgcNumberNode($custA);
+        $this->beforeBankgiroNode($bgA);
+        $this->beforeBankgiroNode($bgA);
+        $this->beforeBgcNumberNode($custA);
+        $this->beforeBgcNumberNode($custA);
         $errorObj->addError(Argument::cetera())->shouldNotHaveBeenCalled();
     }
 
     function it_failes_on_inconsistent_payee_bankgiro($bgA, $bgB, $errorObj)
     {
-        $this->beforePayeeBankgiroNode($bgA);
-        $this->beforePayeeBankgiroNode($bgB);
+        $this->beforeBankgiroNode($bgA);
+        $this->beforeBankgiroNode($bgB);
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 
     function it_failes_on_inconsistent_payee_bgc_numbers($custA, $custB, $errorObj)
     {
-        $this->beforePayeeBgcNumberNode($custA);
-        $this->beforePayeeBgcNumberNode($custB);
+        $this->beforeBgcNumberNode($custA);
+        $this->beforeBgcNumberNode($custB);
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 
     function it_ignores_inconsistent_payee_info_in_different_files($bgA, $bgB, $errorObj)
     {
-        $this->beforePayeeBankgiroNode($bgA);
+        $this->beforeBankgiroNode($bgA);
         $this->beforeFileNode();
-        $this->beforePayeeBankgiroNode($bgB);
+        $this->beforeBankgiroNode($bgB);
         $errorObj->addError(Argument::cetera())->shouldNotHaveBeenCalled();
     }
 }

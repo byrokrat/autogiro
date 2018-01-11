@@ -27,8 +27,8 @@ use byrokrat\autogiro\Exception\LogicException;
 use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Tree\DateNode;
 use byrokrat\autogiro\Tree\TextNode;
-use byrokrat\autogiro\Tree\PayeeBgcNumberNode;
-use byrokrat\autogiro\Tree\PayeeBankgiroNode;
+use byrokrat\autogiro\Tree\BgcNumberNode;
+use byrokrat\autogiro\Tree\BankgiroNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
 use byrokrat\autogiro\Tree\AccountNode;
 use byrokrat\autogiro\Tree\AmountNode;
@@ -77,12 +77,12 @@ class PrintingVisitor extends Visitor
         $this->output->write($node->getValue());
     }
 
-    public function beforePayeeBgcNumberNode(PayeeBgcNumberNode $node): void
+    public function beforeBgcNumberNode(BgcNumberNode $node): void
     {
         $this->output->write(str_pad($node->getValue(), 6, '0', STR_PAD_LEFT));
     }
 
-    public function beforePayeeBankgiroNode(PayeeBankgiroNode $node): void
+    public function beforeBankgiroNode(BankgiroNode $node): void
     {
         $this->assertAttribute($node, 'account', AccountNumber::CLASS);
         $number = $node->getAttribute('account')->getSerialNumber() . $node->getAttribute('account')->getCheckDigit();

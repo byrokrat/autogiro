@@ -4,16 +4,16 @@ declare(strict_types = 1);
 
 namespace spec\byrokrat\autogiro\Tree;
 
-use byrokrat\autogiro\Tree\PayeeBankgiroNode;
+use byrokrat\autogiro\Tree\BankgiroNode;
 use byrokrat\autogiro\Tree\Node;
 use byrokrat\banking\Bankgiro;
 use PhpSpec\ObjectBehavior;
 
-class PayeeBankgiroNodeSpec extends ObjectBehavior
+class BankgiroNodeSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType(PayeeBankgiroNode::CLASS);
+        $this->shouldHaveType(BankgiroNode::CLASS);
     }
 
     function it_is_a_node()
@@ -23,7 +23,7 @@ class PayeeBankgiroNodeSpec extends ObjectBehavior
 
     function it_contains_a_type()
     {
-        $this->getType()->shouldEqual('PayeeBankgiroNode');
+        $this->getType()->shouldEqual('BankgiroNode');
     }
 
     function it_can_be_created_using_factory(Bankgiro $bankgiro)

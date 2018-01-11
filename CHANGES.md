@@ -2,6 +2,11 @@
 
 ## Node tree
 
+Standard nodes renamed:
+
+* `PayeeBgcNumberNode` => `BgcNumberNode`
+* `PayeeBankgiroNode` => `BankgiroNode`
+
 Record nodes renamed:
 
 * `OpeningRecordNode` => `ResponseOpeningRecord`

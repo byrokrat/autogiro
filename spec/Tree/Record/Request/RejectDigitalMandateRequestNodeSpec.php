@@ -6,7 +6,7 @@ namespace spec\byrokrat\autogiro\Tree\Record\Request;
 
 use byrokrat\autogiro\Tree\Record\Request\RejectDigitalMandateRequestNode;
 use byrokrat\autogiro\Tree\Record\RecordNode;
-use byrokrat\autogiro\Tree\PayeeBankgiroNode;
+use byrokrat\autogiro\Tree\BankgiroNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
 use byrokrat\autogiro\Tree\TextNode;
 use PhpSpec\ObjectBehavior;
@@ -14,7 +14,7 @@ use PhpSpec\ObjectBehavior;
 class RejectDigitalMandateRequestNodeSpec extends ObjectBehavior
 {
     function let(
-        PayeeBankgiroNode $bankgiro,
+        BankgiroNode $bankgiro,
         PayerNumberNode $payerNr,
         TextNode $space,
         TextNode $reject,

@@ -29,7 +29,7 @@ use byrokrat\banking\Bankgiro;
  *
  * @see \byrokrat\autogiro\Visitor\AccountVisitor Creates attribute 'account'
  */
-class PayeeBankgiroNode extends Node
+class BankgiroNode extends Node
 {
     public static function fromBankgiro(Bankgiro $bankgiro): self
     {

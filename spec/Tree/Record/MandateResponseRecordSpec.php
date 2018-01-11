@@ -10,7 +10,7 @@ use byrokrat\autogiro\Tree\AccountNode;
 use byrokrat\autogiro\Tree\DateNode;
 use byrokrat\autogiro\Tree\IdNode;
 use byrokrat\autogiro\Tree\MessageNode;
-use byrokrat\autogiro\Tree\PayeeBankgiroNode;
+use byrokrat\autogiro\Tree\BankgiroNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
 use byrokrat\autogiro\Tree\TextNode;
 use PhpSpec\ObjectBehavior;
@@ -20,7 +20,7 @@ class MandateResponseRecordSpec extends ObjectBehavior
     const LINE_NR = 100;
 
     function let(
-        PayeeBankgiroNode $bankgiro,
+        BankgiroNode $bankgiro,
         PayerNumberNode $payerNr,
         AccountNode $account,
         IdNode $id,

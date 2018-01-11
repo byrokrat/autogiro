@@ -23,7 +23,7 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Tree\Record\Request;
 
 use byrokrat\autogiro\Tree\Record\RecordNode;
-use byrokrat\autogiro\Tree\PayeeBankgiroNode;
+use byrokrat\autogiro\Tree\BankgiroNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
 use byrokrat\autogiro\Tree\TextNode;
 
@@ -34,7 +34,7 @@ class RejectDigitalMandateRequestNode extends RecordNode
 {
     public function __construct(
         int $lineNr,
-        PayeeBankgiroNode $payeeBg,
+        BankgiroNode $payeeBg,
         PayerNumberNode $payerNr,
         TextNode $space,
         TextNode $reject,

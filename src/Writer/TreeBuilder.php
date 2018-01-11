@@ -37,8 +37,8 @@ use byrokrat\autogiro\Tree\LayoutNode;
 use byrokrat\autogiro\Tree\DateNode;
 use byrokrat\autogiro\Tree\ImmediateDateNode;
 use byrokrat\autogiro\Tree\TextNode;
-use byrokrat\autogiro\Tree\PayeeBgcNumberNode;
-use byrokrat\autogiro\Tree\PayeeBankgiroNode;
+use byrokrat\autogiro\Tree\BgcNumberNode;
+use byrokrat\autogiro\Tree\BankgiroNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
 use byrokrat\autogiro\Tree\AccountNode;
 use byrokrat\autogiro\Tree\IdNode;
@@ -90,7 +90,7 @@ class TreeBuilder
     private $bgcNr;
 
     /**
-     * @var PayeeBankgiroNode Wrapper around payee bankgiro account number
+     * @var BankgiroNode Wrapper around payee bankgiro account number
      */
     private $payeeBgNode;
 
@@ -124,7 +124,7 @@ class TreeBuilder
         RepititionsFormatter $repititionsFormatter
     ) {
         $this->bgcNr = $bgcNr;
-        $this->payeeBgNode = PayeeBankgiroNode::fromBankgiro($bankgiro);
+        $this->payeeBgNode = BankgiroNode::fromBankgiro($bankgiro);
         $this->date = $date;
         $this->intervalFormatter = $intervalFormatter;
         $this->repititionsFormatter = $repititionsFormatter;
@@ -141,7 +141,7 @@ class TreeBuilder
             DateNode::fromDate($this->date),
             new TextNode(0, 'AUTOGIRO'),
             new TextNode(0, str_pad('', 44)),
-            new PayeeBgcNumberNode(0, $this->bgcNr),
+            new BgcNumberNode(0, $this->bgcNr),
             $this->payeeBgNode,
             [new TextNode(0, '  ')]
         );

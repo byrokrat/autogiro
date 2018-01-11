@@ -6,7 +6,7 @@ namespace spec\byrokrat\autogiro\Tree\Record\Request;
 
 use byrokrat\autogiro\Tree\Record\Request\UpdateMandateRequestNode;
 use byrokrat\autogiro\Tree\Record\RecordNode;
-use byrokrat\autogiro\Tree\PayeeBankgiroNode;
+use byrokrat\autogiro\Tree\BankgiroNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
 use byrokrat\autogiro\Tree\TextNode;
 use PhpSpec\ObjectBehavior;
@@ -14,9 +14,9 @@ use PhpSpec\ObjectBehavior;
 class UpdateMandateRequestNodeSpec extends ObjectBehavior
 {
     function let(
-        PayeeBankgiroNode $bankgiro,
+        BankgiroNode $bankgiro,
         PayerNumberNode $payerNr,
-        PayeeBankgiroNode $newBankgiro,
+        BankgiroNode $newBankgiro,
         PayerNumberNode $newPayerNr
     ) {
         $this->beConstructedWith(0, $bankgiro, $payerNr, $newBankgiro, $newPayerNr);

@@ -23,7 +23,7 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Tree\Record\Request;
 
 use byrokrat\autogiro\Tree\Record\RecordNode;
-use byrokrat\autogiro\Tree\PayeeBankgiroNode;
+use byrokrat\autogiro\Tree\BankgiroNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
 
 /**
@@ -31,7 +31,7 @@ use byrokrat\autogiro\Tree\PayerNumberNode;
  */
 class DeleteMandateRequestNode extends RecordNode
 {
-    public function __construct(int $lineNr, PayeeBankgiroNode $payeeBg, PayerNumberNode $payerNr, array $void = [])
+    public function __construct(int $lineNr, BankgiroNode $payeeBg, PayerNumberNode $payerNr, array $void = [])
     {
         $this->setChild('payee_bankgiro', $payeeBg);
         $this->setChild('payer_number', $payerNr);

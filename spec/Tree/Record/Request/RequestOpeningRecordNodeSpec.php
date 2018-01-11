@@ -6,8 +6,8 @@ namespace spec\byrokrat\autogiro\Tree\Record\Request;
 
 use byrokrat\autogiro\Tree\Record\Request\RequestOpeningRecordNode;
 use byrokrat\autogiro\Tree\DateNode;
-use byrokrat\autogiro\Tree\PayeeBankgiroNode;
-use byrokrat\autogiro\Tree\PayeeBgcNumberNode;
+use byrokrat\autogiro\Tree\BankgiroNode;
+use byrokrat\autogiro\Tree\BgcNumberNode;
 use byrokrat\autogiro\Tree\Record\RecordNode;
 use byrokrat\autogiro\Tree\TextNode;
 use PhpSpec\ObjectBehavior;
@@ -18,8 +18,8 @@ class RequestOpeningRecordNodeSpec extends ObjectBehavior
         DateNode $date,
         TextNode $agTxt,
         TextNode $space,
-        PayeeBgcNumberNode $bgcNr,
-        PayeeBankgiroNode $bankgiro,
+        BgcNumberNode $bgcNr,
+        BankgiroNode $bankgiro,
         TextNode $end
     ) {
         $this->beConstructedWith(0, $date, $agTxt, $space, $bgcNr, $bankgiro, [$end]);

@@ -23,7 +23,7 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Tree\Record\Request;
 
 use byrokrat\autogiro\Tree\Record\RecordNode;
-use byrokrat\autogiro\Tree\PayeeBankgiroNode;
+use byrokrat\autogiro\Tree\BankgiroNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
 
 /**
@@ -33,9 +33,9 @@ class UpdateMandateRequestNode extends RecordNode
 {
     public function __construct(
         int $lineNr,
-        PayeeBankgiroNode $payeeBg,
+        BankgiroNode $payeeBg,
         PayerNumberNode $payerNr,
-        PayeeBankgiroNode $newPayeeBg,
+        BankgiroNode $newPayeeBg,
         PayerNumberNode $newPayerNr,
         array $void = []
     ) {

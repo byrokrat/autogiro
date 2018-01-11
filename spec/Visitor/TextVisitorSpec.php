@@ -7,7 +7,7 @@ namespace spec\byrokrat\autogiro\Visitor;
 use byrokrat\autogiro\Visitor\TextVisitor;
 use byrokrat\autogiro\Visitor\ErrorAwareVisitor;
 use byrokrat\autogiro\Visitor\ErrorObject;
-use byrokrat\autogiro\Tree\PayeeBgcNumberNode;
+use byrokrat\autogiro\Tree\BgcNumberNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
 use byrokrat\autogiro\Tree\RepetitionsNode;
 use byrokrat\autogiro\Tree\TextNode;
@@ -72,9 +72,9 @@ class TextVisitorSpec extends ObjectBehavior
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 
-    function it_captures_invalid_bgc_customer_numbers(PayeeBgcNumberNode $node, $errorObj)
+    function it_captures_invalid_bgc_customer_numbers(BgcNumberNode $node, $errorObj)
     {
-        $this->beforePayeeBgcNumberNode($this->a_failing_regexp($node));
+        $this->beforeBgcNumberNode($this->a_failing_regexp($node));
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 

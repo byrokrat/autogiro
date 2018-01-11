@@ -22,8 +22,8 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Visitor;
 
-use byrokrat\autogiro\Tree\PayeeBankgiroNode;
-use byrokrat\autogiro\Tree\PayeeBgcNumberNode;
+use byrokrat\autogiro\Tree\BankgiroNode;
+use byrokrat\autogiro\Tree\BgcNumberNode;
 
 /**
  * Validate that payee bankgiro and BGC customer number are constant within tree
@@ -52,7 +52,7 @@ class PayeeVisitor extends ErrorAwareVisitor
     /**
      * Validate payee bankgiro number
      */
-    public function beforePayeeBankgiroNode(PayeeBankgiroNode $node): void
+    public function beforeBankgiroNode(BankgiroNode $node): void
     {
         if (!$this->payeeBg) {
             $this->payeeBg = $node->getValue();
@@ -71,7 +71,7 @@ class PayeeVisitor extends ErrorAwareVisitor
     /**
      * Validate payee BGC customer number
      */
-    public function beforePayeeBgcNumberNode(PayeeBgcNumberNode $node): void
+    public function beforeBgcNumberNode(BgcNumberNode $node): void
     {
         if (!$this->payeeBgcNr) {
             $this->payeeBgcNr = $node->getValue();

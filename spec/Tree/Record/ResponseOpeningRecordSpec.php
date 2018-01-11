@@ -6,15 +6,15 @@ namespace spec\byrokrat\autogiro\Tree\Record;
 
 use byrokrat\autogiro\Tree\Record\ResponseOpeningRecord;
 use byrokrat\autogiro\Tree\DateNode;
-use byrokrat\autogiro\Tree\PayeeBankgiroNode;
-use byrokrat\autogiro\Tree\PayeeBgcNumberNode;
+use byrokrat\autogiro\Tree\BankgiroNode;
+use byrokrat\autogiro\Tree\BgcNumberNode;
 use byrokrat\autogiro\Tree\Record\RecordNode;
 use byrokrat\autogiro\Tree\TextNode;
 use PhpSpec\ObjectBehavior;
 
 class ResponseOpeningRecordSpec extends ObjectBehavior
 {
-    function let(DateNode $date, PayeeBgcNumberNode $custNr, PayeeBankgiroNode $payeeBg, TextNode $endVoid)
+    function let(DateNode $date, BgcNumberNode $custNr, BankgiroNode $payeeBg, TextNode $endVoid)
     {
         $this->beConstructedWith(10, $date, $custNr, $payeeBg, [$endVoid]);
     }

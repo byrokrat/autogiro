@@ -22,8 +22,8 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Tree\Record;
 
-use byrokrat\autogiro\Tree\PayeeBankgiroNode;
-use byrokrat\autogiro\Tree\PayeeBgcNumberNode;
+use byrokrat\autogiro\Tree\BankgiroNode;
+use byrokrat\autogiro\Tree\BgcNumberNode;
 use byrokrat\autogiro\Tree\DateNode;
 
 /**
@@ -31,16 +31,11 @@ use byrokrat\autogiro\Tree\DateNode;
  */
 class ResponseOpeningRecord extends RecordNode
 {
-    public function __construct(
-        int $lineNr,
-        DateNode $date,
-        PayeeBgcNumberNode $payeeBgcNr,
-        PayeeBankgiroNode $payeeBg,
-        array $void = []
-    ) {
+    public function __construct(int $line, DateNode $date, BgcNumberNode $bgcNr, BankgiroNode $bg, array $void = [])
+    {
         $this->setChild('date', $date);
-        $this->setChild('payee_bgc_number', $payeeBgcNr);
-        $this->setChild('payee_bankgiro', $payeeBg);
-        parent::__construct($lineNr, $void);
+        $this->setChild('payee_bgc_number', $bgcNr);
+        $this->setChild('payee_bankgiro', $bg);
+        parent::__construct($line, $void);
     }
 }

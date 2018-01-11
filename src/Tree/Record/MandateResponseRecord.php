@@ -23,7 +23,7 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Tree\Record;
 
 use byrokrat\autogiro\Tree\AccountNode;
-use byrokrat\autogiro\Tree\PayeeBankgiroNode;
+use byrokrat\autogiro\Tree\BankgiroNode;
 use byrokrat\autogiro\Tree\DateNode;
 use byrokrat\autogiro\Tree\IdNode;
 use byrokrat\autogiro\Tree\MessageNode;
@@ -36,7 +36,7 @@ class MandateResponseRecord extends RecordNode
 {
     public function __construct(
         int $lineNr,
-        PayeeBankgiroNode $payeeBg,
+        BankgiroNode $payeeBg,
         PayerNumberNode $payerNr,
         AccountNode $account,
         IdNode $id,

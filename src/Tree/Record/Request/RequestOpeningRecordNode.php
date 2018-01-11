@@ -23,8 +23,8 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Tree\Record\Request;
 
 use byrokrat\autogiro\Tree\Record\RecordNode;
-use byrokrat\autogiro\Tree\PayeeBankgiroNode;
-use byrokrat\autogiro\Tree\PayeeBgcNumberNode;
+use byrokrat\autogiro\Tree\BankgiroNode;
+use byrokrat\autogiro\Tree\BgcNumberNode;
 use byrokrat\autogiro\Tree\DateNode;
 use byrokrat\autogiro\Tree\TextNode;
 
@@ -38,8 +38,8 @@ class RequestOpeningRecordNode extends RecordNode
         DateNode $date,
         TextNode $agTxt,
         TextNode $space,
-        PayeeBgcNumberNode $payeeBgcNr,
-        PayeeBankgiroNode $payeeBg,
+        BgcNumberNode $payeeBgcNr,
+        BankgiroNode $payeeBg,
         array $void = []
     ) {
         $this->setChild('date', $date);

@@ -12,7 +12,7 @@ use byrokrat\autogiro\Tree\RepetitionsNode;
 use byrokrat\autogiro\Tree\TextNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
 use byrokrat\autogiro\Tree\AmountNode;
-use byrokrat\autogiro\Tree\PayeeBankgiroNode;
+use byrokrat\autogiro\Tree\BankgiroNode;
 use PhpSpec\ObjectBehavior;
 
 class OutgoingTransactionRequestNodeSpec extends ObjectBehavior
@@ -24,7 +24,7 @@ class OutgoingTransactionRequestNodeSpec extends ObjectBehavior
         TextNode $space,
         PayerNumberNode $payerNr,
         AmountNode $amount,
-        PayeeBankgiroNode $payeeBg,
+        BankgiroNode $payeeBg,
         TextNode $ref,
         TextNode $endVoid
     ) {

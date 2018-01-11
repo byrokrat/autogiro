@@ -8,14 +8,14 @@ use byrokrat\autogiro\Tree\Record\Request\CreateMandateRequestNode;
 use byrokrat\autogiro\Tree\Record\RecordNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
 use byrokrat\autogiro\Tree\AccountNode;
-use byrokrat\autogiro\Tree\PayeeBankgiroNode;
+use byrokrat\autogiro\Tree\BankgiroNode;
 use byrokrat\autogiro\Tree\IdNode;
 use byrokrat\autogiro\Tree\TextNode;
 use PhpSpec\ObjectBehavior;
 
 class CreateMandateRequestNodeSpec extends ObjectBehavior
 {
-    function let(PayeeBankgiroNode $bankgiro, PayerNumberNode $payerNr, AccountNode $account, IdNode $id)
+    function let(BankgiroNode $bankgiro, PayerNumberNode $payerNr, AccountNode $account, IdNode $id)
     {
         $this->beConstructedWith(0, $bankgiro, $payerNr, $account, $id);
     }

@@ -25,7 +25,7 @@ namespace byrokrat\autogiro\Tree;
 /**
  * Node that wrapps a BGC customer number
  */
-class PayeeBgcNumberNode extends TextNode
+class BgcNumberNode extends TextNode
 {
     public function __construct(int $lineNr = 0, string $value = '')
     {

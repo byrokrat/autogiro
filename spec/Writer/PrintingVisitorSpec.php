@@ -9,8 +9,8 @@ use byrokrat\autogiro\Writer\Output;
 use byrokrat\autogiro\Exception\LogicException;
 use byrokrat\autogiro\Tree\DateNode;
 use byrokrat\autogiro\Tree\TextNode;
-use byrokrat\autogiro\Tree\PayeeBgcNumberNode;
-use byrokrat\autogiro\Tree\PayeeBankgiroNode;
+use byrokrat\autogiro\Tree\BgcNumberNode;
+use byrokrat\autogiro\Tree\BankgiroNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
 use byrokrat\autogiro\Tree\AccountNode;
 use byrokrat\autogiro\Tree\AmountNode;
@@ -77,36 +77,36 @@ class PrintingVisitorSpec extends ObjectBehavior
         $output->write('foobar')->shouldHaveBeenCalled();
     }
 
-    function it_prints_payee_bgc_numbers(PayeeBgcNumberNode $node, $output)
+    function it_prints_payee_bgc_numbers(BgcNumberNode $node, $output)
     {
         $node->getValue()->willReturn('111');
-        $this->beforePayeeBgcNumberNode($node);
+        $this->beforeBgcNumberNode($node);
         $output->write(Argument::is('000111'))->shouldHaveBeenCalled();
     }
 
-    function it_prints_payee_bankgiro_numbers(PayeeBankgiroNode $node, AccountNumber $account, $output)
+    function it_prints_payee_bankgiro_numbers(BankgiroNode $node, AccountNumber $account, $output)
     {
         $account->getSerialNumber()->willReturn('1234567');
         $account->getCheckDigit()->willReturn('8');
         $node->hasAttribute('account')->willReturn(true);
         $node->getAttribute('account')->willReturn($account);
-        $this->beforePayeeBankgiroNode($node);
+        $this->beforeBankgiroNode($node);
         $output->write(Argument::is('0012345678'))->shouldHaveBeenCalled();
     }
 
-    function it_fails_on_missing_payee_bankgiro_numbers(PayeeBankgiroNode $node)
+    function it_fails_on_missing_payee_bankgiro_numbers(BankgiroNode $node)
     {
         $node->hasAttribute('account')->willReturn(false);
         $node->getType()->willReturn('');
-        $this->shouldThrow(LogicException::CLASS)->duringBeforePayeeBankgiroNode($node);
+        $this->shouldThrow(LogicException::CLASS)->duringBeforeBankgiroNode($node);
     }
 
-    function it_fails_on_unvalid_payee_bankgiro_numbers(PayeeBankgiroNode $node)
+    function it_fails_on_unvalid_payee_bankgiro_numbers(BankgiroNode $node)
     {
         $node->hasAttribute('account')->willReturn(true);
         $node->getAttribute('account')->willReturn('not-an-object');
         $node->getType()->willReturn('');
-        $this->shouldThrow(LogicException::CLASS)->duringBeforePayeeBankgiroNode($node);
+        $this->shouldThrow(LogicException::CLASS)->duringBeforeBankgiroNode($node);
     }
 
     function it_prints_payer_numbers(PayerNumberNode $node, $output)
