@@ -20,9 +20,9 @@ This library is developed against the technichal manual (in swedish) of the
 direct debit system (autogirot) revised 2016-12-13. For current versions of this
 document see [Bankgirocentralen](http://bgc.se).
 
-## Parsing
+## Parsing autogiro files
 
-Create a parser using [ParserFactory](/src/Parser/ParserFactory.php).
+Create a parser using a [ParserFactory](/src/Parser/ParserFactory.php).
 
 <!-- @example ParserFactory -->
 ```php
@@ -40,7 +40,7 @@ packages respectively. Opt out of this functionality by using one of the visitor
 $parser = $factory->createParser(\byrokrat\autogiro\Parser\ParserFactory::VISITOR_IGNORE_EXTERNAL);
 ```
 
-Access the created objects through the created attributes.
+Access the created objects through attributes.
 
 <!-- @ignore -->
 ```php
@@ -77,7 +77,7 @@ $writer = (new \byrokrat\autogiro\Writer\WriterFactory)->createWriter(
 );
 ```
 
-Then perform actions on the writer and generate contents.
+Perform actions on the writer and generate file.
 
 <!--
     @example RawFile
@@ -90,9 +90,14 @@ $rawFile = $writer->getContent();
 echo $rawFile;
 ```
 
-## Writing a simple visitor
+Will output something like:
 
-Grep based on node type using visitors.
+```
+0120180114AUTOGIRO                                            1234560011111119  
+0300111111190000001234567890                                                    
+```
+
+## Grep nodes based on type
 
 <!--
     @extends RawFile
@@ -110,4 +115,24 @@ $visitor = new class extends \byrokrat\autogiro\Visitor\Visitor {
 $fileNode->accept($visitor);
 ```
 
-For a list of possible node types see the [Tree](/src/Tree) namespace;
+This can also be done dynamically.
+
+<!--
+    @extends RawFile
+    @expectOutput "/Delete mandate request found!/"
+-->
+```php
+$fileNode = $parser->parse($rawFile);
+
+$visitor = new class extends \byrokrat\autogiro\Visitor\Visitor {};
+
+$dynamicNodeType = "DeleteMandateRequest";
+
+$visitor->{"before$dynamicNodeType"} = function ($node) {
+    echo "Delete mandate request found!";
+};
+
+$fileNode->accept($visitor);
+```
+
+For a list of possible node types see the [Tree](/src/Tree) namespace.
