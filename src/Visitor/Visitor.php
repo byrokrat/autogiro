@@ -58,5 +58,9 @@ class Visitor
         if (method_exists($this, $method)) {
             $this->$method($node);
         }
+
+        if (property_exists($this, $method) && is_callable($this->$method)) {
+            ($this->$method)($node);
+        }
     }
 }

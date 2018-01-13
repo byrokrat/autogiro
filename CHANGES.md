@@ -7,11 +7,13 @@ Standard nodes renamed:
 * `PayeeBgcNumberNode` => `BgcNumberNode`
 * `PayeeBankgiroNode` => `BankgiroNode`
 
-Record nodes renamed:
+Response nodes renamed:
 
 * `Record/OpeningRecordNode` => `Response/ResponseOpening`
 * `Record/ClosingRecordNode` => `Response/MandateResponseClosing`
 * `Record/Response/MandateResponseNode` => `Response/MandateResponse`
+
+Request nodes renamed:
 
 * `Record/Request/AcceptDigitalMandateRequestNode` => `Request/AcceptDigitalMandateRequest`
 * `Record/Request/CreateMandateRequestNode` => `Request/CreateMandateRequest`

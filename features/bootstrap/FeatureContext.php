@@ -7,8 +7,8 @@ use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Parser\ParserFactory;
+use byrokrat\autogiro\Visitor\Visitor;
 use byrokrat\autogiro\Writer\WriterFactory;
-use byrokrat\autogiro\Enumerator;
 use byrokrat\autogiro\Exception\ContentException;
 use byrokrat\amount\Currency\SEK;
 
@@ -76,14 +76,14 @@ class FeatureContext implements Context, SnippetAcceptingContext
      */
     public function iFindNodes($number, $nodeType)
     {
-        $enumerator = new Enumerator;
-
         $count = 0;
-        $enumerator->on($nodeType, function () use (&$count) {
-            $count++;
-        });
 
-        $enumerator->enumerate($this->fileNode);
+        $visitor = new class extends Visitor {};
+        $visitor->{"before$nodeType"} = function () use (&$count) {
+            $count++;
+        };
+
+        $this->fileNode->accept($visitor);
 
         Assertions::assertEquals((integer)$number, $count);
     }

@@ -1,7 +1,7 @@
 <?php
 
-use byrokrat\autogiro\Enumerator;
 use byrokrat\autogiro\Tree\Node;
+use byrokrat\autogiro\Visitor\Visitor;
 use Behat\Gherkin\Node\PyStringNode;
 
 /**
@@ -14,16 +14,14 @@ class Utils
      */
     public static function extractNodeFromTree(string $nodeType, Node $tree): Node
     {
-        $enumerator = new Enumerator;
+        $visitor = new class extends Visitor {};
+        $visitor->{"before$nodeType"} = function (Node $node) use ($visitor) {
+            $visitor->node = $node;
+        };
 
-        $return = null;
-        $enumerator->on($nodeType, function (Node $node) use (&$return) {
-            $return = $node;
-        });
+        $tree->accept($visitor);
 
-        $enumerator->enumerate($tree);
-
-        return $return;
+        return $visitor->node;
     }
 
     /**

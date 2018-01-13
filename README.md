@@ -8,25 +8,23 @@
 
 Read and write files for the swedish direct debit system autogirot.
 
-Installation
-------------
+## Installation
+
 ```shell
 composer require byrokrat/autogiro:^1.0@alpha
 ```
 
-Autogiro specifications
------------------------
+## Autogiro specifications
+
 This library is developed against the technichal manual (in swedish) of the
 direct debit system (autogirot) revised 2016-12-13. For current versions of this
 document see [Bankgirocentralen](http://bgc.se).
 
-Instantiating a parser
-----------------------
+## Parsing
+
 Create a parser using [ParserFactory](/src/Parser/ParserFactory.php).
 
-<!--
-    @example factory-n-parser
--->
+<!-- @example ParserFactory -->
 ```php
 $factory = new \byrokrat\autogiro\Parser\ParserFactory;
 $parser = $factory->createParser();
@@ -35,18 +33,14 @@ $parser = $factory->createParser();
 The created parser can parse and validate monetary amounts, account numbers and
 identification numbers using the [Amount](https://github.com/byrokrat/amount),
 [Id](https://github.com/byrokrat/id) and [Banking](https://github.com/byrokrat/banking)
-packages respectively.
+packages respectively. Opt out of this functionality by using one of the visitor constants:
 
-You can opt out of this functionality using one of the visitor constants:
-
-<!--
-    @extends factory-n-parser
--->
+<!-- @extends ParserFactory -->
 ```php
 $parser = $factory->createParser(\byrokrat\autogiro\Parser\ParserFactory::VISITOR_IGNORE_EXTERNAL);
 ```
 
-When in use access the created objects as follows:
+Access the created objects through the created attributes.
 
 <!-- @ignore -->
 ```php
@@ -60,33 +54,22 @@ $id = $idNode->getAttribute('id');
 $account = $accountNode->getAttribute('account');
 ```
 
-Parsing
--------
+Parsing an autogiro file creates a `FileNode`.
 
 <!-- @ignore -->
 ```php
 /** @var \byrokrat\autogiro\Tree\FileNode $fileNode */
-$fileNode = $parser->parse($raw_content);
+$fileNode = $parser->parse($rawFile);
 ```
 
-Grep nodes based on type using the [Enumerator](/src/Enumerator.php):
+## Generating autogiro request files
 
-<!-- @ignore -->
-```php
-$enum = new Enumerator;
-
-$enum->onMandateResponse($custom_callback);
-
-$enum->enumerate($fileNode);
-```
-
-For a list of possible node types see the [Tree](/src/Tree) namespace;
-
-Generating autogiro request files
----------------------------------
 Create a writer by supplying your bankgiro and BGC customer numbers to `WriterFactory`.
 
-<!-- @example WriterFactory -->
+<!--
+    @example WriterFactory
+    @extends ParserFactory
+-->
 ```php
 $writer = (new \byrokrat\autogiro\Writer\WriterFactory)->createWriter(
     '123456',
@@ -97,10 +80,34 @@ $writer = (new \byrokrat\autogiro\Writer\WriterFactory)->createWriter(
 Then perform actions on the writer and generate contents.
 
 <!--
+    @example RawFile
     @extends WriterFactory
     @expectOutput /AUTOGIRO/
 -->
 ```php
 $writer->deleteMandate('1234567890');
-echo $writer->getContent();
+$rawFile = $writer->getContent();
+echo $rawFile;
 ```
+
+## Writing a simple visitor
+
+Grep based on node type using visitors.
+
+<!--
+    @extends RawFile
+    @expectOutput "/Delete mandate request found!/"
+-->
+```php
+$fileNode = $parser->parse($rawFile);
+
+$visitor = new class extends \byrokrat\autogiro\Visitor\Visitor {
+    function beforeDeleteMandateRequest($node) {
+        echo "Delete mandate request found!";
+    }
+};
+
+$fileNode->accept($visitor);
+```
+
+For a list of possible node types see the [Tree](/src/Tree) namespace;
