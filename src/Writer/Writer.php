@@ -86,7 +86,7 @@ class Writer
      */
     public function addNewMandate(string $payerNr, AccountNumber $account, IdInterface $id): void
     {
-        $this->treeBuilder->addCreateMandateRecord($payerNr, $account, $id);
+        $this->treeBuilder->addCreateMandateRequest($payerNr, $account, $id);
     }
 
     /**
@@ -96,7 +96,7 @@ class Writer
      */
     public function deleteMandate(string $payerNr): void
     {
-        $this->treeBuilder->addDeleteMandateRecord($payerNr);
+        $this->treeBuilder->addDeleteMandateRequest($payerNr);
     }
 
     /**
@@ -106,7 +106,7 @@ class Writer
      */
     public function acceptDigitalMandate(string $payerNr): void
     {
-        $this->treeBuilder->addAcceptDigitalMandateRecord($payerNr);
+        $this->treeBuilder->addAcceptDigitalMandateRequest($payerNr);
     }
 
     /**
@@ -116,7 +116,7 @@ class Writer
      */
     public function rejectDigitalMandate(string $payerNr): void
     {
-        $this->treeBuilder->addRejectDigitalMandateRecord($payerNr);
+        $this->treeBuilder->addRejectDigitalMandateRequest($payerNr);
     }
 
     /**
@@ -127,20 +127,20 @@ class Writer
      */
     public function updateMandate(string $payerNr, string $newPayerNr): void
     {
-        $this->treeBuilder->addUpdateMandateRecord($payerNr, $newPayerNr);
+        $this->treeBuilder->addUpdateMandateRequest($payerNr, $newPayerNr);
     }
 
     /**
-     * Add an incoming transaction request to the build queue
+     * Add an incoming payment request to the build queue
      *
      * @param string             $payerNr     Number identifying the payer
-     * @param SEK                $amount      The requested transaction amount
-     * @param \DateTimeInterface $date        Requested date of transaction (or first date for repeated transactions)
-     * @param string             $ref         Custom transaction reference number
-     * @param string             $interval    Interval for repeted transaction, use one of the Intervals constants
-     * @param integer            $repetitions Number of repititions (0 repeates transactions indefinitely)
+     * @param SEK                $amount      The requested payment amount
+     * @param \DateTimeInterface $date        Requested date of payment (or first date for repeated payments)
+     * @param string             $ref         Custom payment reference number
+     * @param string             $interval    Interval for repeted payment, use one of the Intervals constants
+     * @param integer            $repetitions Number of repititions (0 repeates payments indefinitely)
      */
-    public function addTransaction(
+    public function addPayment(
         string $payerNr,
         SEK $amount,
         \DateTimeInterface $date,
@@ -148,49 +148,49 @@ class Writer
         string $interval = Intervals::INTERVAL_ONCE,
         int $repetitions = 0
     ): void {
-        $this->treeBuilder->addIncomingTransactionRecord($payerNr, $amount, $date, $ref, $interval, $repetitions);
+        $this->treeBuilder->addIncomingPaymentRequest($payerNr, $amount, $date, $ref, $interval, $repetitions);
     }
 
     /**
-     * Add an incoming transaction request to the build queue
+     * Add an incoming payment request to the build queue
      *
      * @param string             $payerNr     Number identifying the payer
-     * @param SEK                $amount      The requested transaction amount
-     * @param \DateTimeInterface $date        Requested  first date of transaction
-     * @param string             $ref         Custom transaction reference number
+     * @param SEK                $amount      The requested payment amount
+     * @param \DateTimeInterface $date        Requested  first date of payment
+     * @param string             $ref         Custom payment reference number
      */
-    public function addMonthlyTransaction(
+    public function addMonthlyPayment(
         string $payerNr,
         SEK $amount,
         \DateTimeInterface $date,
         string $ref = ''
     ): void {
-        $this->addTransaction($payerNr, $amount, $date, $ref, Intervals::INTERVAL_MONTHLY_ON_DATE, 0);
+        $this->addPayment($payerNr, $amount, $date, $ref, Intervals::INTERVAL_MONTHLY_ON_DATE, 0);
     }
 
     /**
-     * Add an incoming transaction at next possible bank date request to the build queue
+     * Add an incoming payment at next possible bank date request to the build queue
      *
      * @param string $payerNr Number identifying the payer
-     * @param SEK    $amount  The requested transaction amount
-     * @param string $ref     Custom transaction reference number
+     * @param SEK    $amount  The requested payment amount
+     * @param string $ref     Custom payment reference number
      */
-    public function addImmediateTransaction(string $payerNr, SEK $amount, string $ref = ''): void
+    public function addImmediatePayment(string $payerNr, SEK $amount, string $ref = ''): void
     {
-        $this->treeBuilder->addImmediateIncomingTransactionRecord($payerNr, $amount, $ref);
+        $this->treeBuilder->addImmediateIncomingPaymentRequest($payerNr, $amount, $ref);
     }
 
     /**
-     * Add an outgoing transaction request to the build queue
+     * Add an outgoing payment request to the build queue
      *
      * @param string             $payerNr     Number identifying the payer
-     * @param SEK                $amount      The requested transaction amount
-     * @param \DateTimeInterface $date        Requested date of transaction (or first date for repeated transactions)
-     * @param string             $ref         Custom transaction reference number
-     * @param string             $interval    Interval for repeted transaction, use one of the Intervals constants
-     * @param integer            $repetitions Number of repititions (0 repeateds transactions indefinitely)
+     * @param SEK                $amount      The requested payment amount
+     * @param \DateTimeInterface $date        Requested date of payment (or first date for repeated payments)
+     * @param string             $ref         Custom payment reference number
+     * @param string             $interval    Interval for repeted payment, use one of the Intervals constants
+     * @param integer            $repetitions Number of repititions (0 repeateds payments indefinitely)
      */
-    public function addOutgoingTransaction(
+    public function addOutgoingPayment(
         string $payerNr,
         SEK $amount,
         \DateTimeInterface $date,
@@ -198,18 +198,18 @@ class Writer
         string $interval = Intervals::INTERVAL_ONCE,
         int $repetitions = 1
     ): void {
-        $this->treeBuilder->addOutgoingTransactionRecord($payerNr, $amount, $date, $ref, $interval, $repetitions);
+        $this->treeBuilder->addOutgoingPaymentRequest($payerNr, $amount, $date, $ref, $interval, $repetitions);
     }
 
     /**
-     * Add an outgoing transaction on next possible bank date request to the build queue
+     * Add an outgoing payment on next possible bank date request to the build queue
      *
      * @param string $payerNr Number identifying the payer
-     * @param SEK    $amount  The requested transaction amount
-     * @param string $ref     Custom transaction reference number
+     * @param SEK    $amount  The requested payment amount
+     * @param string $ref     Custom payment reference number
      */
-    public function addImmediateOutgoingTransaction(string $payerNr, SEK $amount, string $ref = ''): void
+    public function addImmediateOutgoingPayment(string $payerNr, SEK $amount, string $ref = ''): void
     {
-        $this->treeBuilder->addImmediateOutgoingTransactionRecord($payerNr, $amount, $ref);
+        $this->treeBuilder->addImmediateOutgoingPaymentRequest($payerNr, $amount, $ref);
     }
 }

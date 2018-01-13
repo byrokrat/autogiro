@@ -8,6 +8,7 @@ use byrokrat\autogiro\Visitor\DateVisitor;
 use byrokrat\autogiro\Visitor\ErrorAwareVisitor;
 use byrokrat\autogiro\Visitor\ErrorObject;
 use byrokrat\autogiro\Tree\DateNode;
+use byrokrat\autogiro\Tree\DateTimeNode;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -49,7 +50,17 @@ class DateVisitorSpec extends ObjectBehavior
     function it_does_not_create_date_if_attr_is_set(DateNode $dateNode)
     {
         $dateNode->hasAttribute('date')->willReturn(true);
+        $dateNode->getValue()->willReturn('20161109');
         $this->beforeDateNode($dateNode);
         $dateNode->setAttribute('date', Argument::any())->shouldNotHaveBeenCalled();
+    }
+
+    function it_creates_date_times(DateTimeNode $dateNode, $errorObj)
+    {
+        $dateNode->hasAttribute('date')->willReturn(false);
+        $dateNode->getValue()->willReturn('20091110193055123456');
+        $dateNode->setAttribute('date', new \DateTimeImmutable('20091110193055'))->shouldBeCalled();
+        $this->beforeDateTimeNode($dateNode);
+        $errorObj->addError(Argument::cetera())->shouldNotHaveBeenCalled();
     }
 }

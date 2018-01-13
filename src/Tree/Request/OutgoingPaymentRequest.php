@@ -20,11 +20,11 @@
 
 declare(strict_types = 1);
 
-namespace byrokrat\autogiro\Tree;
+namespace byrokrat\autogiro\Tree\Request;
 
 /**
- * Node representing the nearest possible date
+ * Node representing a request of an outgoing payment
  */
-class ImmediateDateNode extends DateNode
+class OutgoingPaymentRequest extends IncomingPaymentRequest
 {
 }

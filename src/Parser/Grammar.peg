@@ -27,16 +27,17 @@ use byrokrat\autogiro\Tree\BankgiroNode;
 use byrokrat\autogiro\Tree\BgcNumberNode;
 use byrokrat\autogiro\Tree\ImmediateDateNode;
 use byrokrat\autogiro\Tree\DateNode;
+use byrokrat\autogiro\Tree\DateTimeNode;
 use byrokrat\autogiro\Tree\FileNode;
 use byrokrat\autogiro\Tree\IdNode;
 use byrokrat\autogiro\Tree\IntervalNode;
 use byrokrat\autogiro\Tree\LayoutNode;
 use byrokrat\autogiro\Tree\MessageNode;
 use byrokrat\autogiro\Tree\PayerNumberNode;
-use byrokrat\autogiro\Tree\Record\Request;
-use byrokrat\autogiro\Tree\Record;
 use byrokrat\autogiro\Tree\ReferredAccountNode;
 use byrokrat\autogiro\Tree\RepetitionsNode;
+use byrokrat\autogiro\Tree\Request;
+use byrokrat\autogiro\Tree\Response;
 use byrokrat\autogiro\Tree\TextNode;
 
 grammar Grammar
@@ -57,8 +58,8 @@ grammar Grammar
         return new FileNode(...$layouts);
     };
 
-    REQ_OPENING_RECORD = '01' date:DATE 'AUTOGIRO' S20 S20 S4 bgcNr:BGC_NR bg:BANKGIRO void:EOR {
-        return new Request\RequestOpeningRecordNode(
+    REQ_OPENING_REC = '01' date:DATE 'AUTOGIRO' S20 S20 S4 bgcNr:BGC_NR bg:BANKGIRO void:EOR {
+        return new Request\RequestOpening(
             $this->lineNr,
             $date,
             new TextNode($this->lineNr + 1, 'AUTOGIRO'),
@@ -71,77 +72,119 @@ grammar Grammar
 
     // MANDATE REQUESTS
 
-    REQ_MANDATE_LAYOUT = open:REQ_OPENING_RECORD records:(REQ_DEL_MANDATE_RECORD / REQ_REJECT_MANDATE_RECORD / REQ_CREATE_MANDATE_RECORD / REQ_UPDATE_MANDATE_RECORD)+ {
+    REQ_MANDATE_LAYOUT = open:REQ_OPENING_REC records:(REQ_DEL_MANDATE_REC / REQ_REJECT_MANDATE_REC / REQ_CREATE_MANDATE_REC / REQ_UPDATE_MANDATE_REC)+ {
         return new LayoutNode(Layouts::LAYOUT_MANDATE_REQUEST, $open, ...$records);
     };
 
-    REQ_DEL_MANDATE_RECORD = '03' bg:BANKGIRO payerNr:PAYER_NR void:EOR {
-        return new Request\DeleteMandateRequestNode($this->lineNr, $bg, $payerNr, $void);
+    REQ_DEL_MANDATE_REC = '03' bg:BANKGIRO payerNr:PAYER_NR void:EOR {
+        return new Request\DeleteMandateRequest($this->lineNr, $bg, $payerNr, $void);
     };
 
-    REQ_REJECT_MANDATE_RECORD = '04' bg:BANKGIRO payerNr:PAYER_NR space:TEXT48 'AV' void:EOR {
-        return new Request\RejectDigitalMandateRequestNode($this->lineNr, $bg, $payerNr, $space, new TextNode($this->lineNr, 'AV'), $void);
+    REQ_REJECT_MANDATE_REC = '04' bg:BANKGIRO payerNr:PAYER_NR space:TXT48 'AV' void:EOR {
+        return new Request\RejectDigitalMandateRequest($this->lineNr, $bg, $payerNr, $space, new TextNode($this->lineNr, 'AV'), $void);
     };
 
-    REQ_CREATE_MANDATE_RECORD = '04' bg:BANKGIRO payerNr:PAYER_NR account:ACCOUNT? id:ID? void:EOR {
+    REQ_CREATE_MANDATE_REC = '04' bg:BANKGIRO payerNr:PAYER_NR account:ACCOUNT16? id:ID? void:EOR {
         return $id && trim($id->getValue())
-            ? new Request\CreateMandateRequestNode($this->lineNr, $bg, $payerNr, $account, $id, $void)
-            : new Request\AcceptDigitalMandateRequestNode($this->lineNr, $bg, $payerNr, $void);
+            ? new Request\CreateMandateRequest($this->lineNr, $bg, $payerNr, $account, $id, $void)
+            : new Request\AcceptDigitalMandateRequest($this->lineNr, $bg, $payerNr, $void);
     };
 
-    REQ_UPDATE_MANDATE_RECORD = '05' oldBg:BANKGIRO oldPayerNr:PAYER_NR newBg:BANKGIRO newPayerNr:PAYER_NR void:EOR {
-        return new Request\UpdateMandateRequestNode($this->lineNr, $oldBg, $oldPayerNr, $newBg, $newPayerNr, $void);
+    REQ_UPDATE_MANDATE_REC = '05' oldBg:BANKGIRO oldPayerNr:PAYER_NR newBg:BANKGIRO newPayerNr:PAYER_NR void:EOR {
+        return new Request\UpdateMandateRequest($this->lineNr, $oldBg, $oldPayerNr, $newBg, $newPayerNr, $void);
     };
 
     // PAYMENT REQUESTS
 
-    REQ_PAYMENT_LAYOUT = open:REQ_OPENING_RECORD records:(REQ_TRANSACTION_RECORD)+ {
+    REQ_PAYMENT_LAYOUT = open:REQ_OPENING_REC records:(REQ_PAYMENT_REC)+ {
         return new LayoutNode(Layouts::LAYOUT_PAYMENT_REQUEST, $open, ...$records);
     };
 
-    REQ_TRANSACTION_RECORD = tc:('32' / '82') date:(IMMEDIATE_DATE / DATE) ival:INTERVAL reps:REPS space:VOID payerNr:PAYER_NR amount:AMOUNT bg:BANKGIRO ref:VARIABLE_TEXT void:EOR {
+    REQ_PAYMENT_REC = tc:('32' / '82') date:(IMMEDIATE_DATE / DATE) ival:INTERVAL reps:REPS space:VOID payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:VAR_TXT void:EOR {
         return $tc == '82'
-            ? new Request\IncomingTransactionRequestNode($this->lineNr, $date, $ival, $reps, $space, $payerNr, $amount, $bg, $ref, $void)
-            : new Request\OutgoingTransactionRequestNode($this->lineNr, $date, $ival, $reps, $space, $payerNr, $amount, $bg, $ref, $void);
+            ? new Request\IncomingPaymentRequest($this->lineNr, $date, $ival, $reps, $space, $payerNr, $amount, $bg, $ref, $void)
+            : new Request\OutgoingPaymentRequest($this->lineNr, $date, $ival, $reps, $space, $payerNr, $amount, $bg, $ref, $void);
     };
 
     // AMENDMENT REQUESTS
 
-    REQ_AMENDMENT_LAYOUT = open:REQ_OPENING_RECORD records:('TODO')+ {
+    REQ_AMENDMENT_LAYOUT = open:REQ_OPENING_REC records:('TODO')+ {
         // TODO this is just a stub...
         return new LayoutNode(Layouts::LAYOUT_AMENDMENT_REQUEST, $open, ...$records);
     };
 
     //
-    // RESPONSE LAYOUTS
+    // PAYMENT RESPONSES
     //
 
-    // PAYMENT RESPONSES
-
-    RESP_PAYMENT_FILE = open:RESP_PAYMENT_OPENING_RECORD mands:RESP_MANDATE_RECORD* close:RESP_MANDATE_CLOSING_RECORD {
-        return new FileNode(new LayoutNode(Layouts::LAYOUT_PAYMENT_RESPONSE, $open, $close, ...$mands));
+    RESP_PAYMENT_FILE = open:RESP_PAYMENT_OPENING_REC layouts:(RESP_PAYMENT_INCOMING_LAYOUT / RESP_PAYMENT_OUTGOING_LAYOUT / RESP_PAYMENT_REFUND_LAYOUT)+ close:RESP_PAYMENT_CLOSING_REC {
+        $layouts[] = $close;
+        return new FileNode($open, ...$layouts);
     };
 
-    RESP_PAYMENT_OPENING_RECORD = '01' 'AUTOGIRO' S10 S4 date:DATE S10 S2 'BET. SPEC & STOPP TK' ^ bgcNr:BGC_NR bg:BANKGIRO void:EOR {
-        // TODO DATETIME...
-        return new Record\ResponseOpeningRecord($this->lineNr, $date, $bgcNr, $bg, $void);
+    RESP_PAYMENT_OPENING_REC = '01' 'AUTOGIRO' S10 S4 datetime:DATETIME 'BET. SPEC & STOPP TK' ^ bgcNr:BGC_NR bg:BANKGIRO void:EOR {
+        return new Response\ResponseOpening($this->lineNr, $datetime, $bgcNr, $bg, $void);
     };
 
+    RESP_PAYMENT_CLOSING_REC = '09' date:DATE '9900' nrInLays:INT6 nrInRecs:INT12 nrOutLays:INT6 nrOutRecs:INT12 nrRefLays:INT6 nrRefRecs:INT12 void:EOR {
+        return new Record\PaymentResponseClosingRecord($this->lineNr, $date, $nrInLays, $nrInRecs, $nrOutLays, $nrOutRecs, $nrRefLays, $nrRefRecs, $void);
+    };
+
+    RESP_PAYMENT_INCOMING_LAYOUT = open:RESP_PAYMENT_LAYOUT_OPENING records:(RESP_PAYMENT_REC)* {
+        // TODO hur göra med layout id här???
+        // TODO LAYOUT_ID är bra. Men vi borde ha någonting som FILE_TYPE_ID också...
+        // TODO för att fånga det LAYOUT_ID var tänkt att fånga...
+        return new LayoutNode(Layouts::LAYOUT_PAYMENT_RESPONSE, $open, ...$records);
+    };
+
+    RESP_PAYMENT_OUTGOING_LAYOUT = open:RESP_PAYMENT_LAYOUT_OPENING records:(RESP_PAYMENT_REC)* {
+        // TODO layout id här...
+        return new LayoutNode(Layouts::LAYOUT_PAYMENT_RESPONSE, $open, ...$records);
+    };
+
+    RESP_PAYMENT_REFUND_LAYOUT = open:RESP_PAYMENT_LAYOUT_OPENING records:(RESP_PAYMENT_REFUND_REC)* {
+        // TODO layout id här...
+        return new LayoutNode(Layouts::LAYOUT_PAYMENT_RESPONSE, $open, ...$records);
+    };
+
+    RESP_PAYMENT_LAYOUT_OPENING = tc:('15' / '16' / '17') account:ACCOUNT35 date:DATE serial:INT5 amount:AMOUNT18 A2 A nrRecs:INT8 void:EOR {
+        if ('15' == $tc) {
+            return new Record\IncomingPaymentResponseOpening($this->lineNr, $account, $date, $serial, $amount, $nrRecs, $void);
+        } elseif ('16' == $tc) {
+            return new Record\OutgoingPaymentResponseOpening($this->lineNr, $account, $date, $serial, $amount, $nrRecs, $void);
+        } else {
+            return new Record\RefundPaymentResponseOpening($this->lineNr, $account, $date, $serial, $amount, $nrRecs, $void);
+        }
+    };
+
+    RESP_PAYMENT_REC = tc:('82' / '32') date:DATE ival:INTERVAL reps:REPS A payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:TXT16 A10 status:MSG1 void:EOR {
+        return $tc == '82'
+            ? new Record\IncomingPaymentResponse($this->lineNr, $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $status, $void)
+            : new Record\OutgoingPaymentResponse($this->lineNr, $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $status, $void);
+    };
+
+    RESP_PAYMENT_REFUND_REC = '77' date:DATE ival:INTERVAL reps:REPS A payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:TXT16 refundDate:DATE status:MSG2 void:EOR {
+        return new Record\RefundPaymentResponse($this->lineNr, $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $refundDate, $status, $void);
+    };
+
+    //
     // MANDATE RESPONSES
+    //
 
-    RESP_MANDATE_FILE = open:(RESP_MANDATE_OPENING_OLD_RECORD / RESP_MANDATE_OPENING_RECORD) mands:RESP_MANDATE_RECORD* close:RESP_MANDATE_CLOSING_RECORD {
-        return new FileNode(new LayoutNode(Layouts::LAYOUT_MANDATE_RESPONSE, $open, $close, ...$mands));
+    RESP_MANDATE_FILE = open:(RESP_MANDATE_OPENING_OLD_REC / RESP_MANDATE_OPENING_REC) mands:RESP_MANDATE_REC* close:RESP_MANDATE_CLOSING_REC {
+        $mands[] = $close;
+        return new FileNode(new LayoutNode(Layouts::LAYOUT_MANDATE_RESPONSE, $open, ...$mands));
     };
 
-    RESP_MANDATE_OPENING_RECORD = '01' 'AUTOGIRO' S10 S4 date:DATE S10 S2 'AG-MEDAVI' ^ S10 S bgcNr:BGC_NR bg:BANKGIRO void:EOR {
-        return new Record\ResponseOpeningRecord($this->lineNr, $date, $bgcNr, $bg, $void);
+    RESP_MANDATE_OPENING_REC = '01' 'AUTOGIRO' S10 S4 date:DATE S10 S2 'AG-MEDAVI' ^ S10 S bgcNr:BGC_NR bg:BANKGIRO void:EOR {
+        return new Response\ResponseOpening($this->lineNr, $date, $bgcNr, $bg, $void);
     };
 
-    RESP_MANDATE_OPENING_OLD_RECORD = '01' date:DATE '9900' bg:BANKGIRO 'AG-MEDAVI' ^ void:EOR {
-        return new Record\ResponseOpeningRecord($this->lineNr, $date, new BgcNumberNode($this->lineNr, ''), $bg, $void);
+    RESP_MANDATE_OPENING_OLD_REC = '01' date:DATE '9900' bg:BANKGIRO 'AG-MEDAVI' ^ void:EOR {
+        return new Response\ResponseOpening($this->lineNr, $date, new BgcNumberNode($this->lineNr, ''), $bg, $void);
     };
 
-    RESP_MANDATE_RECORD = '73' bg:BANKGIRO payerNr:PAYER_NR account:ACCOUNT id:ID (S5 / '00000') info:MESSAGE status:MESSAGE date:DATE validDate:$(A5 A)? void:EOR {
+    RESP_MANDATE_REC = '73' bg:BANKGIRO payerNr:PAYER_NR account:ACCOUNT16 id:ID (S5 / '00000') info:MSG2 status:MSG2 date:DATE validDate:$(A5 A)? void:EOR {
         // If account is empty a valid bankgiro number may be read from the payer number field
         if (!trim($account->getValue())) {
             $account = new ReferredAccountNode($account->getLineNr(), $payerNr->getValue());
@@ -155,20 +198,28 @@ grammar Grammar
         $info->setAttribute('message_id', "73.info.{$info->getValue()}");
         $status->setAttribute('message_id', "73.status.{$status->getValue()}");
 
-        return new Record\MandateResponseRecord($this->lineNr, $bg, $payerNr, $account, $id, $info, $status, $date, $void);
+        return new Response\MandateResponse($this->lineNr, $bg, $payerNr, $account, $id, $info, $status, $date, $void);
     };
 
-    RESP_MANDATE_CLOSING_RECORD = '09' date:DATE '9900' nrOfPosts:INT7 void:EOR {
-        return new Record\MandateResponseClosingRecord($this->lineNr, $date, $nrOfPosts, $void);
+    RESP_MANDATE_CLOSING_REC = '09' date:DATE '9900' nrOfPosts:INT7 void:EOR {
+        return new Response\MandateResponseClosing($this->lineNr, $date, $nrOfPosts, $void);
     };
 
     // EXTERNAL TYPES
 
-    ACCOUNT = number:$(A10 A5 A) {
+    ACCOUNT16 = number:$(A10 A5 A) {
         return new AccountNode($this->lineNr + 1, $number);
     };
 
-    AMOUNT = amount:$(A10 A2) {
+    ACCOUNT35 = number:$(A10 A10 A10 A5) {
+        return new AccountNode($this->lineNr + 1, $number);
+    };
+
+    AMOUNT12 = amount:$(A10 A2) {
+        return new AmountNode($this->lineNr + 1, $amount);
+    };
+
+    AMOUNT18 = amount:$(A10 A5 A2 A) {
         return new AmountNode($this->lineNr + 1, $amount);
     };
 
@@ -194,11 +245,19 @@ grammar Grammar
         return new ImmediateDateNode($this->lineNr + 1);
     };
 
+    DATETIME = datetime:$(A10 A10) {
+        return new DateTimeNode($this->lineNr + 1, $datetime);
+    };
+
     INTERVAL = interval:$(A) {
         return new IntervalNode($this->lineNr + 1, $interval);
     };
 
-    MESSAGE = msg:$(A A) {
+    MSG1 = msg:$(A) {
+        return new MessageNode($this->lineNr + 1, $msg);
+    };
+
+    MSG2 = msg:$(A A) {
         return new MessageNode($this->lineNr + 1, $msg);
     };
 
@@ -212,15 +271,35 @@ grammar Grammar
 
     // CONVENIENCE TYPES
 
+    INT5 = integer:$(A5) {
+        return new TextNode($this->lineNr + 1, $integer, '/^\d{5}$/');
+    };
+
+    INT6 = integer:$(A5 A) {
+        return new TextNode($this->lineNr + 1, $integer, '/^\d{6}$/');
+    };
+
     INT7 = integer:$(A5 A2) {
         return new TextNode($this->lineNr + 1, $integer, '/^\d{7}$/');
     };
 
-    VARIABLE_TEXT = text:$(A*) {
+    INT8 = integer:$(A5 A2 A) {
+        return new TextNode($this->lineNr + 1, $integer, '/^\d{8}$/');
+    };
+
+    INT12 = integer:$(A10 A2) {
+        return new TextNode($this->lineNr + 1, $integer, '/^\d{12}$/');
+    };
+
+    VAR_TXT = text:$(A*) {
         return new TextNode($this->lineNr + 1, $text);
     };
 
-    TEXT48 = text:$(A10 A10 A10 A10 A5 A2 A) {
+    TXT16 = text:$(A10 A5 A) {
+        return new TextNode($this->lineNr + 1, $text);
+    };
+
+    TXT48 = text:$(A10 A10 A10 A10 A5 A2 A) {
         return new TextNode($this->lineNr + 1, $text);
     };
 
@@ -242,15 +321,15 @@ grammar Grammar
 
     S "SPACE" = ' ';
 
-    S2 = S S;
+    S2 = $(S S);
 
-    S4 = S2 S2;
+    S4 = $(S2 S2);
 
-    S5 = S4 S;
+    S5 = $(S4 S);
 
-    S10 = S5 S5;
+    S10 = $(S5 S5);
 
-    S20 = S10 S10;
+    S20 = $(S10 S10);
 
     // ENDINGS
 

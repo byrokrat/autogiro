@@ -21,7 +21,7 @@ Feature: Mandate response parser
     092008061199000000010
     """
     Then I find a "LAYOUT_MANDATE_RESPONSE" layout
-    And I find 10 "MandateResponseRecord" nodes
+    And I find 10 "MandateResponse" nodes
 
   Scenario: I parse the BGC testfile autogiro_gl_exempelfil_medgivandeavisering_fran-bankgirot-medgivanden-kontonummer_exemeplfil_sv.txt
     Given a parser that ignores account and id structures
@@ -38,7 +38,7 @@ Feature: Mandate response parser
     092004011899000000007
     """
     Then I find a "LAYOUT_MANDATE_RESPONSE" layout
-    And I find 7 "MandateResponseRecord" nodes
+    And I find 7 "MandateResponse" nodes
 
   Scenario: I parse the BGC testfile autogiro_gl_medgivandeavisering_fran-bankgirot-medgivanden-bankgironummer_exempelfil_sv.txt
     Given a parser that ignores account and id structures
@@ -54,7 +54,7 @@ Feature: Mandate response parser
     092004110899000000006
     """
     Then I find a "LAYOUT_MANDATE_RESPONSE" layout
-    And I find 6 "MandateResponseRecord" nodes
+    And I find 6 "MandateResponse" nodes
 
   Scenario: I extract a bankgiro account number
     Given a parser
@@ -65,4 +65,4 @@ Feature: Mandate response parser
     092008061199000000001
     """
     Then I find a "LAYOUT_MANDATE_RESPONSE" layout
-    And the last "MandateResponseRecord" contains account "5050-1055"
+    And the last "MandateResponse" contains account "5050-1055"

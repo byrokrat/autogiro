@@ -23,7 +23,7 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Tree;
 
 /**
- * Node representing the number of transaction repititions
+ * Node representing the number of payment repititions
  */
 class RepetitionsNode extends TextNode
 {

@@ -178,35 +178,35 @@ class FeatureContext implements Context, SnippetAcceptingContext
     }
 
     /**
-     * @When I request a transaction of :amount SEK from :payerNr
+     * @When I request a payment of :amount SEK from :payerNr
      */
-    public function iRequestATransactionOfSekFrom($amount, $payerNr)
+    public function iRequestAPaymentOfSekFrom($amount, $payerNr)
     {
-        $this->writer->addTransaction($payerNr, new SEK($amount), new \DateTime);
+        $this->writer->addPayment($payerNr, new SEK($amount), new \DateTime);
     }
 
     /**
-     * @When I request a transaction of :amount SEK to :payerNr
+     * @When I request a payment of :amount SEK to :payerNr
      */
-    public function iRequestATransactionOfSekTo($amount, $payerNr)
+    public function iRequestAPaymentOfSekTo($amount, $payerNr)
     {
-        $this->writer->addOutgoingTransaction($payerNr, new SEK($amount), new \DateTime);
+        $this->writer->addOutgoingPayment($payerNr, new SEK($amount), new \DateTime);
     }
 
     /**
-     * @When I request a monthly transaction of :amount SEK from :payerNr
+     * @When I request a monthly payment of :amount SEK from :payerNr
      */
-    public function iRequestAMonthlyTransactionOfSekFrom($amount, $payerNr)
+    public function iRequestAMonthlyPaymentOfSekFrom($amount, $payerNr)
     {
-        $this->writer->addMonthlyTransaction($payerNr, new SEK($amount), new \DateTime);
+        $this->writer->addMonthlyPayment($payerNr, new SEK($amount), new \DateTime);
     }
 
     /**
-     * @When I request an immediate transaction of :amount SEK from :payerNr
+     * @When I request an immediate payment of :amount SEK from :payerNr
      */
-    public function iRequestAnImmediateTransactionOfSekFrom($amount, $payerNr)
+    public function iRequestAnImmediatePaymentOfSekFrom($amount, $payerNr)
     {
-        $this->writer->addImmediateTransaction($payerNr, new SEK($amount));
+        $this->writer->addImmediatePayment($payerNr, new SEK($amount));
     }
 
     /**

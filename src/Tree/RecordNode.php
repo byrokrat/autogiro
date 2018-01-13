@@ -23,8 +23,23 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Tree;
 
 /**
- * Node representing the nearest possible date
+ * A record maps to a line in autogiro files
+ *
+ * @see \byrokrat\autogiro\Tree\Request for the set of request records
+ * @see \byrokrat\autogiro\Tree\Response for the set of response records
  */
-class ImmediateDateNode extends DateNode
+class RecordNode extends Node
 {
+    /**
+     * @param integer    $lineNr Line number of record definition
+     * @param TextNode[] $end    Text nodes at end of record
+     */
+    public function __construct(int $lineNr = 0, array $end = [])
+    {
+        parent::__construct($lineNr);
+
+        foreach ($end as $index => $node) {
+            $this->setChild("end_$index", $node);
+        }
+    }
 }

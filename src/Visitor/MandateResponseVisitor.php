@@ -23,8 +23,8 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Visitor;
 
 use byrokrat\autogiro\Tree\LayoutNode;
-use byrokrat\autogiro\Tree\Record\ResponseOpeningRecord;
-use byrokrat\autogiro\Tree\Record\MandateResponseClosingRecord;
+use byrokrat\autogiro\Tree\Response\ResponseOpening;
+use byrokrat\autogiro\Tree\Response\MandateResponseClosing;
 
 /**
  * Validate dates and record count in mandate response layouts
@@ -44,7 +44,7 @@ class MandateResponseVisitor extends ErrorAwareVisitor
     /**
      * Collect date from opening record
      */
-    public function beforeResponseOpeningRecord(ResponseOpeningRecord $node): void
+    public function beforeResponseOpening(ResponseOpening $node): void
     {
         $this->date = $node->getChild('date')->getValue();
     }
@@ -52,7 +52,7 @@ class MandateResponseVisitor extends ErrorAwareVisitor
     /**
      * Validate that date in closing record matches date in opening record
      */
-    public function beforeMandateResponseClosingRecord(MandateResponseClosingRecord $node): void
+    public function beforeMandateResponseClosing(MandateResponseClosing $node): void
     {
         if ($node->getChild('date')->getValue() != $this->date) {
             $this->getErrorObject()->addError(
@@ -67,7 +67,7 @@ class MandateResponseVisitor extends ErrorAwareVisitor
     /**
      * Collect the number of expected records in layout
      */
-    public function afterMandateResponseClosingRecord(MandateResponseClosingRecord $node): void
+    public function afterMandateResponseClosing(MandateResponseClosing $node): void
     {
         $this->recordCount = (int)$node->getChild('nr_of_posts')->getValue();
     }

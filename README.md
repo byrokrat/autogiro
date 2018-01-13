@@ -75,7 +75,7 @@ Grep nodes based on type using the [Enumerator](/src/Enumerator.php):
 ```php
 $enum = new Enumerator;
 
-$enum->onMandateResponseRecord($custom_callback);
+$enum->onMandateResponse($custom_callback);
 
 $enum->enumerate($fileNode);
 ```

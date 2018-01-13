@@ -23,15 +23,15 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Writer;
 
 use byrokrat\autogiro\Layouts;
-use byrokrat\autogiro\Tree\Record\RecordNode;
-use byrokrat\autogiro\Tree\Record\Request\RequestOpeningRecordNode;
-use byrokrat\autogiro\Tree\Record\Request\AcceptDigitalMandateRequestNode;
-use byrokrat\autogiro\Tree\Record\Request\CreateMandateRequestNode;
-use byrokrat\autogiro\Tree\Record\Request\DeleteMandateRequestNode;
-use byrokrat\autogiro\Tree\Record\Request\RejectDigitalMandateRequestNode;
-use byrokrat\autogiro\Tree\Record\Request\UpdateMandateRequestNode;
-use byrokrat\autogiro\Tree\Record\Request\IncomingTransactionRequestNode;
-use byrokrat\autogiro\Tree\Record\Request\OutgoingTransactionRequestNode;
+use byrokrat\autogiro\Tree\RecordNode;
+use byrokrat\autogiro\Tree\Request\RequestOpening;
+use byrokrat\autogiro\Tree\Request\AcceptDigitalMandateRequest;
+use byrokrat\autogiro\Tree\Request\CreateMandateRequest;
+use byrokrat\autogiro\Tree\Request\DeleteMandateRequest;
+use byrokrat\autogiro\Tree\Request\RejectDigitalMandateRequest;
+use byrokrat\autogiro\Tree\Request\UpdateMandateRequest;
+use byrokrat\autogiro\Tree\Request\IncomingPaymentRequest;
+use byrokrat\autogiro\Tree\Request\OutgoingPaymentRequest;
 use byrokrat\autogiro\Tree\FileNode;
 use byrokrat\autogiro\Tree\LayoutNode;
 use byrokrat\autogiro\Tree\DateNode;
@@ -59,30 +59,30 @@ class TreeBuilder
      * Map layout names to record store array names
      */
     private const LAYOUT_TO_RECORD_STORE_MAP = [
-        Layouts::LAYOUT_MANDATE_REQUEST => 'mandateRecords',
-        Layouts::LAYOUT_PAYMENT_REQUEST => 'transactionRecords',
-        Layouts::LAYOUT_AMENDMENT_REQUEST => 'amendmentRecords'
+        Layouts::LAYOUT_MANDATE_REQUEST => 'mandates',
+        Layouts::LAYOUT_PAYMENT_REQUEST => 'payments',
+        Layouts::LAYOUT_AMENDMENT_REQUEST => 'amendments'
     ];
 
     /**
-     * @var RequestOpeningRecordNode Opening record used for each layout
+     * @var RequestOpening Opening record used for each layout
      */
     private $opening;
 
     /**
-     * @var RecordNode[] List of created mandate records
+     * @var RecordNode[] List of created mandate requests
      */
-    private $mandateRecords;
+    private $mandates;
 
     /**
-     * @var RecordNode[] List of created transaction records
+     * @var RecordNode[] List of created payment requests
      */
-    private $transactionRecords;
+    private $payments;
 
     /**
-     * @var RecordNode[] List of created amendment records
+     * @var RecordNode[] List of created amendment requests
      */
-    private $amendmentRecords;
+    private $amendments;
 
     /**
      * @var string Payee BGC customer number
@@ -136,7 +136,7 @@ class TreeBuilder
      */
     public function reset(): void
     {
-        $this->opening = new RequestOpeningRecordNode(
+        $this->opening = new RequestOpening(
             0,
             DateNode::fromDate($this->date),
             new TextNode(0, 'AUTOGIRO'),
@@ -145,17 +145,17 @@ class TreeBuilder
             $this->payeeBgNode,
             [new TextNode(0, '  ')]
         );
-        $this->mandateRecords = [];
-        $this->transactionRecords = [];
-        $this->amendmentRecords = [];
+        $this->mandates = [];
+        $this->payments = [];
+        $this->amendments = [];
     }
 
     /**
-     * Add a new mandate record to tree
+     * Add a new mandate request to tree
      */
-    public function addCreateMandateRecord(string $payerNr, AccountNumber $account, IdInterface $id): void
+    public function addCreateMandateRequest(string $payerNr, AccountNumber $account, IdInterface $id): void
     {
-        $this->mandateRecords[] = new CreateMandateRequestNode(
+        $this->mandates[] = new CreateMandateRequest(
             0,
             $this->payeeBgNode,
             new PayerNumberNode(0, $payerNr),
@@ -166,11 +166,11 @@ class TreeBuilder
     }
 
     /**
-     * Add a delete mandate record to tree
+     * Add a delete mandate request to tree
      */
-    public function addDeleteMandateRecord(string $payerNr): void
+    public function addDeleteMandateRequest(string $payerNr): void
     {
-        $this->mandateRecords[] = new DeleteMandateRequestNode(
+        $this->mandates[] = new DeleteMandateRequest(
             0,
             $this->payeeBgNode,
             new PayerNumberNode(0, $payerNr),
@@ -179,11 +179,11 @@ class TreeBuilder
     }
 
     /**
-     * Add an accept digital mandate record to tree
+     * Add an accept digital mandate request to tree
      */
-    public function addAcceptDigitalMandateRecord(string $payerNr): void
+    public function addAcceptDigitalMandateRequest(string $payerNr): void
     {
-        $this->mandateRecords[] = new AcceptDigitalMandateRequestNode(
+        $this->mandates[] = new AcceptDigitalMandateRequest(
             0,
             $this->payeeBgNode,
             new PayerNumberNode(0, $payerNr),
@@ -192,11 +192,11 @@ class TreeBuilder
     }
 
     /**
-     * Add a reject digital mandate record to tree
+     * Add a reject digital mandate request to tree
      */
-    public function addRejectDigitalMandateRecord(string $payerNr): void
+    public function addRejectDigitalMandateRequest(string $payerNr): void
     {
-        $this->mandateRecords[] = new RejectDigitalMandateRequestNode(
+        $this->mandates[] = new RejectDigitalMandateRequest(
             0,
             $this->payeeBgNode,
             new PayerNumberNode(0, $payerNr),
@@ -207,11 +207,11 @@ class TreeBuilder
     }
 
     /**
-     * Add an update mandate record to tree
+     * Add an update mandate request to tree
      */
-    public function addUpdateMandateRecord(string $payerNr, string $newPayerNr): void
+    public function addUpdateMandateRequest(string $payerNr, string $newPayerNr): void
     {
-        $this->mandateRecords[] = new UpdateMandateRequestNode(
+        $this->mandates[] = new UpdateMandateRequest(
             0,
             $this->payeeBgNode,
             new PayerNumberNode(0, $payerNr),
@@ -222,9 +222,9 @@ class TreeBuilder
     }
 
     /**
-     * Add an incoming transaction record to tree
+     * Add an incoming payment request to tree
      */
-    public function addIncomingTransactionRecord(
+    public function addIncomingPaymentRequest(
         string $payerNr,
         SEK $amount,
         \DateTimeInterface $date,
@@ -232,8 +232,8 @@ class TreeBuilder
         string $interval,
         int $repetitions
     ): void {
-        $this->addTransactionRecord(
-            IncomingTransactionRequestNode::CLASS,
+        $this->addPaymentRequest(
+            IncomingPaymentRequest::CLASS,
             $payerNr,
             $amount,
             $date,
@@ -244,9 +244,9 @@ class TreeBuilder
     }
 
     /**
-     * Add an outgoing transaction record to tree
+     * Add an outgoing payment request to tree
      */
-    public function addOutgoingTransactionRecord(
+    public function addOutgoingPaymentRequest(
         string $payerNr,
         SEK $amount,
         \DateTimeInterface $date,
@@ -254,8 +254,8 @@ class TreeBuilder
         string $interval,
         int $repetitions
     ): void {
-        $this->addTransactionRecord(
-            OutgoingTransactionRequestNode::CLASS,
+        $this->addPaymentRequest(
+            OutgoingPaymentRequest::CLASS,
             $payerNr,
             $amount,
             $date,
@@ -266,19 +266,19 @@ class TreeBuilder
     }
 
     /**
-     * Add an incoming transaction at next possible bank date record to tree
+     * Add an incoming payment at next possible bank date request to tree
      */
-    public function addImmediateIncomingTransactionRecord(string $payerNr, SEK $amount, string $ref): void
+    public function addImmediateIncomingPaymentRequest(string $payerNr, SEK $amount, string $ref): void
     {
-        $this->addImmediateTransactionRecord(IncomingTransactionRequestNode::CLASS, $payerNr, $amount, $ref);
+        $this->addImmediatePaymentRequest(IncomingPaymentRequest::CLASS, $payerNr, $amount, $ref);
     }
 
     /**
-     * Add an outgoing transaction at next possible bank date record to tree
+     * Add an outgoing payment at next possible bank date request to tree
      */
-    public function addImmediateOutgoingTransactionRecord(string $payerNr, SEK $amount, string $ref): void
+    public function addImmediateOutgoingPaymentRequest(string $payerNr, SEK $amount, string $ref): void
     {
-        $this->addImmediateTransactionRecord(OutgoingTransactionRequestNode::CLASS, $payerNr, $amount, $ref);
+        $this->addImmediatePaymentRequest(OutgoingPaymentRequest::CLASS, $payerNr, $amount, $ref);
     }
 
     /**
@@ -297,7 +297,7 @@ class TreeBuilder
         return new FileNode(...$layouts);
     }
 
-    private function addTransactionRecord(
+    private function addPaymentRequest(
         string $classname,
         string $payerNr,
         SEK $amount,
@@ -306,7 +306,7 @@ class TreeBuilder
         string $interval,
         int $repetitions
     ): void {
-        $this->transactionRecords[] = new $classname(
+        $this->payments[] = new $classname(
             0,
             DateNode::fromDate($date),
             new IntervalNode(0, $this->intervalFormatter->format($interval)),
@@ -320,9 +320,9 @@ class TreeBuilder
         );
     }
 
-    private function addImmediateTransactionRecord(string $classname, string $payerNr, SEK $amount, string $ref): void
+    private function addImmediatePaymentRequest(string $classname, string $payerNr, SEK $amount, string $ref): void
     {
-        $this->transactionRecords[] = new $classname(
+        $this->payments[] = new $classname(
             0,
             new ImmediateDateNode,
             new IntervalNode(0, '0'),

@@ -21,52 +21,52 @@
 namespace byrokrat\autogiro;
 
 /**
- * Collection of valid interval ids
+ * Collection of valid payment interval ids
  */
 interface Intervals
 {
     /**
-     * Perform transaction once
+     * Perform payment once
      */
     const INTERVAL_ONCE = '0';
 
     /**
-     * Perform transaction once every month on the date specified in record
+     * Perform payment once every month on the date specified in record
      */
     const INTERVAL_MONTHLY_ON_DATE = '1';
 
     /**
-     * Perform transaction once every quarter on the date specified in record
+     * Perform payment once every quarter on the date specified in record
      */
     const INTERVAL_QUARTERLY_ON_DATE = '2';
 
     /**
-     * Perform transaction once every six months on the date specified in record
+     * Perform payment once every six months on the date specified in record
      */
     const INTERVAL_SEMIANUALLY_ON_DATE = '3';
 
     /**
-     * Perform transaction once every year on the date specified in record
+     * Perform payment once every year on the date specified in record
      */
     const INTERVAL_ANUALLY_ON_DATE = '4';
 
     /**
-     * Perform transaction once every month on the last calender day
+     * Perform payment once every month on the last calender day
      */
     const INTERVAL_MONTHLY_ON_LAST_CALENDAR_DAY = '5';
 
     /**
-     * Perform transaction once every quarter on the last calender day
+     * Perform payment once every quarter on the last calender day
      */
     const INTERVAL_QUARTERLY_ON_LAST_CALENDAR_DAY = '6';
 
     /**
-     * Perform transaction once every six months on the last calender day
+     * Perform payment once every six months on the last calender day
      */
     const INTERVAL_SEMIANUALLY_ON_LAST_CALENDAR_DAY = '7';
 
     /**
-     * Perform transaction once every year on the last calender day
+     * Perform payment once every year on the last calender day
      */
     const INTERVAL_ANUALLY_ON_LAST_CALENDAR_DAY = '8';
 

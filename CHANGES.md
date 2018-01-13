@@ -9,6 +9,15 @@ Standard nodes renamed:
 
 Record nodes renamed:
 
-* `OpeningRecordNode` => `ResponseOpeningRecord`
-* `ClosingRecordNode` => `MandateResponseClosingRecord`
-* `Response/MandateResponseNode` => `MandateResponseRecord`
+* `Record/OpeningRecordNode` => `Response/ResponseOpening`
+* `Record/ClosingRecordNode` => `Response/MandateResponseClosing`
+* `Record/Response/MandateResponseNode` => `Response/MandateResponse`
+
+* `Record/Request/AcceptDigitalMandateRequestNode` => `Request/AcceptDigitalMandateRequest`
+* `Record/Request/CreateMandateRequestNode` => `Request/CreateMandateRequest`
+* `Record/Request/DeleteMandateRequestNode` => `Request/DeleteMandateRequest`
+* `Record/Request/IncomingTransactionRequestNode` => `Request/IncomingPaymentRequest`
+* `Record/Request/OutgoingTransactionRequestNode` => `Request/OutgoingPaymentRequest`
+* `Record/Request/RejectDigitalMandateRequestNode` => `Request/RejectDigitalMandateRequest`
+* `Record/Request/RequestOpeningRecordNode` => `Request/RequestOpening`
+* `Record/Request/UpdateMandateRequestNode` => `Request/UpdateMandateRequest`

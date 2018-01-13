@@ -3,5 +3,4 @@ suites:
         namespace: byrokrat\autogiro
         psr4_prefix: byrokrat\autogiro
 
-bootstrap: spec/Tree/Record/ConcreteRecordNode.php
 formatter.name: dot

@@ -140,82 +140,82 @@ class PrintingVisitor extends Visitor
         }
     }
 
-    public function beforeRequestOpeningRecordNode(): void
+    public function beforeRequestOpening(): void
     {
         $this->output->write('01');
     }
 
-    public function afterRequestOpeningRecordNode(): void
+    public function afterRequestOpening(): void
     {
         $this->output->write(self::EOL);
     }
 
-    public function beforeCreateMandateRequestNode(): void
+    public function beforeCreateMandateRequest(): void
     {
         $this->output->write('04');
     }
 
-    public function afterCreateMandateRequestNode(): void
+    public function afterCreateMandateRequest(): void
     {
         $this->output->write(self::EOL);
     }
 
-    public function beforeDeleteMandateRequestNode(): void
+    public function beforeDeleteMandateRequest(): void
     {
         $this->output->write('03');
     }
 
-    public function afterDeleteMandateRequestNode(): void
+    public function afterDeleteMandateRequest(): void
     {
         $this->output->write(self::EOL);
     }
 
-    public function beforeAcceptDigitalMandateRequestNode(): void
+    public function beforeAcceptDigitalMandateRequest(): void
     {
         $this->output->write('04');
     }
 
-    public function afterAcceptDigitalMandateRequestNode(): void
+    public function afterAcceptDigitalMandateRequest(): void
     {
         $this->output->write(self::EOL);
     }
 
-    public function beforeRejectDigitalMandateRequestNode(): void
+    public function beforeRejectDigitalMandateRequest(): void
     {
         $this->output->write('04');
     }
 
-    public function afterRejectDigitalMandateRequestNode(): void
+    public function afterRejectDigitalMandateRequest(): void
     {
         $this->output->write(self::EOL);
     }
 
-    public function beforeUpdateMandateRequestNode(): void
+    public function beforeUpdateMandateRequest(): void
     {
         $this->output->write('05');
     }
 
-    public function afterUpdateMandateRequestNode(): void
+    public function afterUpdateMandateRequest(): void
     {
         $this->output->write(self::EOL);
     }
 
-    public function beforeIncomingTransactionRequestNode(): void
+    public function beforeIncomingPaymentRequest(): void
     {
         $this->output->write('82');
     }
 
-    public function afterIncomingTransactionRequestNode(): void
+    public function afterIncomingPaymentRequest(): void
     {
         $this->output->write(self::EOL);
     }
 
-    public function beforeOutgoingTransactionRequestNode(): void
+    public function beforeOutgoingPaymentRequest(): void
     {
         $this->output->write('32');
     }
 
-    public function afterOutgoingTransactionRequestNode(): void
+    public function afterOutgoingPaymentRequest(): void
     {
         $this->output->write(self::EOL);
     }

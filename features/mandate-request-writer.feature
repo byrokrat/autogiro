@@ -20,7 +20,7 @@ Feature: Mandate request writer
     And I generate the request file
     And I parse the generated file
     Then I find a "LAYOUT_MANDATE_REQUEST" layout
-    And I find 1 "DeleteMandateRequestNode" nodes
+    And I find 1 "DeleteMandateRequest" nodes
 
   Scenario: I parse a generated added mandate file
     Given a writer with BGC number "222222", bankgiro "1111-1119" and date "20170111"
@@ -29,7 +29,7 @@ Feature: Mandate request writer
     And I generate the request file
     And I parse the generated file
     Then I find a "LAYOUT_MANDATE_REQUEST" layout
-    And I find 1 "CreateMandateRequestNode" nodes
+    And I find 1 "CreateMandateRequest" nodes
 
   Scenario: I respond to received digital mandates
     Given a writer with BGC number "222222", bankgiro "1111-1119" and date "20170111"
@@ -39,8 +39,8 @@ Feature: Mandate request writer
     And I generate the request file
     And I parse the generated file
     Then I find a "LAYOUT_MANDATE_REQUEST" layout
-    And I find 1 "AcceptDigitalMandateRequestNode" nodes
-    And I find 1 "RejectDigitalMandateRequestNode" nodes
+    And I find 1 "AcceptDigitalMandateRequest" nodes
+    And I find 1 "RejectDigitalMandateRequest" nodes
 
   Scenario: I update a mandate
     Given a writer with BGC number "222222", bankgiro "1111-1119" and date "20170111"
@@ -49,17 +49,17 @@ Feature: Mandate request writer
     And I generate the request file
     And I parse the generated file
     Then I find a "LAYOUT_MANDATE_REQUEST" layout
-    And I find 1 "UpdateMandateRequestNode" nodes
+    And I find 1 "UpdateMandateRequest" nodes
 
-  Scenario: I request transaction
+  Scenario: I request payment
     Given a writer with BGC number "222222", bankgiro "1111-1119" and date "20170111"
     And a parser
-    When I request a transaction of "100" SEK from "1111111111"
-    And I request a transaction of "100" SEK to "1111111111"
-    And I request a monthly transaction of "100" SEK from "1111111111"
-    And I request an immediate transaction of "100" SEK from "1111111111"
+    When I request a payment of "100" SEK from "1111111111"
+    And I request a payment of "100" SEK to "1111111111"
+    And I request a monthly payment of "100" SEK from "1111111111"
+    And I request an immediate payment of "100" SEK from "1111111111"
     And I generate the request file
     And I parse the generated file
     Then I find a "LAYOUT_PAYMENT_REQUEST" layout
-    And I find 3 "IncomingTransactionRequestNode" nodes
-    And I find 1 "OutgoingTransactionRequestNode" nodes
+    And I find 3 "IncomingPaymentRequest" nodes
+    And I find 1 "OutgoingPaymentRequest" nodes

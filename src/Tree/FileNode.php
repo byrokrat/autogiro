@@ -27,12 +27,12 @@ namespace byrokrat\autogiro\Tree;
  */
 class FileNode extends Node
 {
-    public function __construct(LayoutNode ...$layoutNodes)
+    public function __construct(Node ...$nodes)
     {
         parent::__construct();
 
-        foreach ($layoutNodes as $key => $layoutNode) {
-            $this->setChild((string)($key + 1), $layoutNode);
+        foreach ($nodes as $key => $node) {
+            $this->setChild((string)($key + 1), $node);
         }
     }
 

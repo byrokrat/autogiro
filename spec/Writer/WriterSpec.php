@@ -47,72 +47,72 @@ class WriterSpec extends ObjectBehavior
     function it_calls_tree_builder_on_new_mandate($treeBuilder, AccountNumber $account, IdInterface $id)
     {
         $this->addNewMandate('foobar', $account, $id);
-        $treeBuilder->addCreateMandateRecord('foobar', $account, $id)->shouldHaveBeenCalled();
+        $treeBuilder->addCreateMandateRequest('foobar', $account, $id)->shouldHaveBeenCalled();
     }
 
     function it_calls_tree_builder_on_delete_mandate($treeBuilder)
     {
         $this->deleteMandate('foobar');
-        $treeBuilder->addDeleteMandateRecord('foobar')->shouldHaveBeenCalled();
+        $treeBuilder->addDeleteMandateRequest('foobar')->shouldHaveBeenCalled();
     }
 
     function it_calls_tree_builder_on_accept_mandate($treeBuilder)
     {
         $this->acceptDigitalMandate('foobar');
-        $treeBuilder->addAcceptDigitalMandateRecord('foobar')->shouldHaveBeenCalled();
+        $treeBuilder->addAcceptDigitalMandateRequest('foobar')->shouldHaveBeenCalled();
     }
 
     function it_calls_tree_builder_on_reject_mandate($treeBuilder)
     {
         $this->rejectDigitalMandate('foobar');
-        $treeBuilder->addRejectDigitalMandateRecord('foobar')->shouldHaveBeenCalled();
+        $treeBuilder->addRejectDigitalMandateRequest('foobar')->shouldHaveBeenCalled();
     }
 
     function it_calls_tree_builder_on_update_mandate($treeBuilder)
     {
         $this->updateMandate('foo', 'bar');
-        $treeBuilder->addUpdateMandateRecord('foo', 'bar')->shouldHaveBeenCalled();
+        $treeBuilder->addUpdateMandateRequest('foo', 'bar')->shouldHaveBeenCalled();
     }
 
-    function it_calls_tree_builder_on_add_transaction($treeBuilder, SEK $amount)
+    function it_calls_tree_builder_on_add_payment($treeBuilder, SEK $amount)
     {
         $date = new \DateTime;
-        $this->addTransaction('foo', $amount, $date, 'ref', '10', 100);
-        $treeBuilder->addIncomingTransactionRecord('foo', $amount, $date, 'ref', '10', 100)->shouldHaveBeenCalled();
+        $this->addPayment('foo', $amount, $date, 'ref', '10', 100);
+        $treeBuilder->addIncomingPaymentRequest('foo', $amount, $date, 'ref', '10', 100)->shouldHaveBeenCalled();
     }
 
-    function it_defaults_to_creating_one_time_transactions($treeBuilder, SEK $amount)
+    function it_defaults_to_creating_one_time_payments($treeBuilder, SEK $amount)
     {
         $date = new \DateTime;
-        $this->addTransaction('foo', $amount, $date);
-        $treeBuilder->addIncomingTransactionRecord('foo', $amount, $date, '', Intervals::INTERVAL_ONCE, 0)
+        $this->addPayment('foo', $amount, $date);
+        $treeBuilder->addIncomingPaymentRequest('foo', $amount, $date, '', Intervals::INTERVAL_ONCE, 0)
             ->shouldHaveBeenCalled();
     }
 
-    function it_creates_monthly_transactions($treeBuilder, SEK $amount)
+    function it_creates_monthly_payments($treeBuilder, SEK $amount)
     {
         $date = new \DateTime;
-        $this->addMonthlyTransaction('foo', $amount, $date, 'ref');
-        $treeBuilder->addIncomingTransactionRecord('foo', $amount, $date, 'ref', Intervals::INTERVAL_MONTHLY_ON_DATE, 0)
+        $this->addMonthlyPayment('foo', $amount, $date, 'ref');
+        $treeBuilder->addIncomingPaymentRequest('foo', $amount, $date, 'ref', Intervals::INTERVAL_MONTHLY_ON_DATE, 0)
             ->shouldHaveBeenCalled();
     }
 
-    function it_creates_immediate_transactions($treeBuilder, SEK $amount)
+    function it_creates_immediate_payments($treeBuilder, SEK $amount)
     {
-        $this->addImmediateTransaction('foo', $amount, 'ref');
-        $treeBuilder->addImmediateIncomingTransactionRecord('foo', $amount, 'ref')->shouldHaveBeenCalled();
+        $this->addImmediatePayment('foo', $amount, 'ref');
+        $treeBuilder->addImmediateIncomingPaymentRequest('foo', $amount, 'ref')->shouldHaveBeenCalled();
     }
 
-    function it_calls_tree_builder_on_add_outgoing_transaction($treeBuilder, SEK $amount)
+    function it_calls_tree_builder_on_add_outgoing_payment($treeBuilder, SEK $amount)
     {
         $date = new \DateTime;
-        $this->addOutgoingTransaction('foo', $amount, $date, 'ref', '10', 100);
-        $treeBuilder->addOutgoingTransactionRecord('foo', $amount, $date, 'ref', '10', 100)->shouldHaveBeenCalled();
+        $this->addOutgoingPayment('foo', $amount, $date, 'ref', '10', 100);
+        $treeBuilder->addOutgoingPaymentRequest('foo', $amount, $date, 'ref', '10', 100)->shouldHaveBeenCalled();
     }
 
-    function it_creates_immediate_outgoing_transactions($treeBuilder, SEK $amount)
+    function it_creates_immediate_outgoing_payments($treeBuilder, SEK $amount)
     {
-        $this->addImmediateOutgoingTransaction('foo', $amount, 'ref');
-        $treeBuilder->addImmediateOutgoingTransactionRecord('foo', $amount, 'ref')->shouldHaveBeenCalled();
+        $this->addImmediateOutgoingPayment('foo', $amount, 'ref');
+        $treeBuilder->addImmediateOutgoingPaymentRequest('foo', $amount, 'ref')->shouldHaveBeenCalled();
     }
 }

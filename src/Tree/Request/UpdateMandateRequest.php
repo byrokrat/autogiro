@@ -20,11 +20,29 @@
 
 declare(strict_types = 1);
 
-namespace byrokrat\autogiro\Tree;
+namespace byrokrat\autogiro\Tree\Request;
+
+use byrokrat\autogiro\Tree\RecordNode;
+use byrokrat\autogiro\Tree\BankgiroNode;
+use byrokrat\autogiro\Tree\PayerNumberNode;
 
 /**
- * Node representing the nearest possible date
+ * Node representing a request that a mandate be updated
  */
-class ImmediateDateNode extends DateNode
+class UpdateMandateRequest extends RecordNode
 {
+    public function __construct(
+        int $lineNr,
+        BankgiroNode $payeeBg,
+        PayerNumberNode $payerNr,
+        BankgiroNode $newPayeeBg,
+        PayerNumberNode $newPayerNr,
+        array $void = []
+    ) {
+        $this->setChild('payee_bankgiro', $payeeBg);
+        $this->setChild('payer_number', $payerNr);
+        $this->setChild('new_payee_bankgiro', $newPayeeBg);
+        $this->setChild('new_payer_number', $newPayerNr);
+        parent::__construct($lineNr, $void);
+    }
 }

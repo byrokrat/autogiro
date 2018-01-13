@@ -23,8 +23,10 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Tree;
 
 /**
- * Node representing the nearest possible date
+ * Node that wrapps a date time
+ *
+ * @see \byrokrat\autogiro\Visitor\DateVisitor Creates attribute 'date'
  */
-class ImmediateDateNode extends DateNode
+class DateTimeNode extends DateNode
 {
 }

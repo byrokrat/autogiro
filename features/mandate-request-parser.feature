@@ -23,11 +23,11 @@ Feature: Mandate request parser
     050009912346000000000555524200099123460000000003330202
     """
     Then I find a "LAYOUT_MANDATE_REQUEST" layout
-    And I find 3 "CreateMandateRequestNode" nodes
-    And I find 3 "AcceptDigitalMandateRequestNode" nodes
-    And I find 2 "RejectDigitalMandateRequestNode" nodes
-    And I find 2 "DeleteMandateRequestNode" nodes
-    And I find 3 "UpdateMandateRequestNode" nodes
+    And I find 3 "CreateMandateRequest" nodes
+    And I find 3 "AcceptDigitalMandateRequest" nodes
+    And I find 2 "RejectDigitalMandateRequest" nodes
+    And I find 2 "DeleteMandateRequest" nodes
+    And I find 3 "UpdateMandateRequest" nodes
 
   Scenario: I parse the BGC testfile autogiro_gl_medgivandeunderlag_till-bankgirot-medgivanden-bankgironummer_exempelfil_sv.txt
     Given a parser that ignores account and id structures
@@ -40,8 +40,8 @@ Feature: Mandate request parser
     0300099123460000000005555242
     """
     Then I find a "LAYOUT_MANDATE_REQUEST" layout
-    And I find 3 "AcceptDigitalMandateRequestNode" nodes
-    And I find 1 "DeleteMandateRequestNode" nodes
+    And I find 3 "AcceptDigitalMandateRequest" nodes
+    And I find 1 "DeleteMandateRequest" nodes
 
   Scenario: I parse the BGC testfile autogiro_gl_medgivandeunderlag_till-bankgirot-medgivanden-kontonummer_exempelfiler_sv.txt
     Given a parser that ignores account and id structures
@@ -56,6 +56,6 @@ Feature: Mandate request parser
     0300099123460000000000000242
     """
     Then I find a "LAYOUT_MANDATE_REQUEST" layout
-    And I find 4 "CreateMandateRequestNode" nodes
-    And I find 1 "RejectDigitalMandateRequestNode" nodes
-    And I find 1 "DeleteMandateRequestNode" nodes
+    And I find 4 "CreateMandateRequest" nodes
+    And I find 1 "RejectDigitalMandateRequest" nodes
+    And I find 1 "DeleteMandateRequest" nodes

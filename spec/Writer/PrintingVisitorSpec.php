@@ -215,97 +215,97 @@ class PrintingVisitorSpec extends ObjectBehavior
 
     function it_prints_transaction_code_before_opening($output)
     {
-        $this->beforeRequestOpeningRecordNode();
+        $this->beforeRequestOpening();
         $output->write('01')->shouldHaveBeenCalled();
     }
 
     function it_prints_new_line_after_opening($output)
     {
-        $this->afterRequestOpeningRecordNode();
+        $this->afterRequestOpening();
         $output->write(PrintingVisitor::EOL)->shouldHaveBeenCalled();
     }
 
     function it_prints_transaction_code_before_create_mandate($output)
     {
-        $this->beforeCreateMandateRequestNode();
+        $this->beforeCreateMandateRequest();
         $output->write('04')->shouldHaveBeenCalled();
     }
 
     function it_prints_new_line_after_create_mandate($output)
     {
-        $this->afterCreateMandateRequestNode();
+        $this->afterCreateMandateRequest();
         $output->write(PrintingVisitor::EOL)->shouldHaveBeenCalled();
     }
 
     function it_prints_transaction_code_before_delete_mandate($output)
     {
-        $this->beforeDeleteMandateRequestNode();
+        $this->beforeDeleteMandateRequest();
         $output->write('03')->shouldHaveBeenCalled();
     }
 
     function it_prints_new_line_after_delete_mandate($output)
     {
-        $this->afterDeleteMandateRequestNode();
+        $this->afterDeleteMandateRequest();
         $output->write(PrintingVisitor::EOL)->shouldHaveBeenCalled();
     }
 
     function it_prints_transaction_code_before_accept_mandate($output)
     {
-        $this->beforeAcceptDigitalMandateRequestNode();
+        $this->beforeAcceptDigitalMandateRequest();
         $output->write('04')->shouldHaveBeenCalled();
     }
 
     function it_prints_new_line_after_accept_mandate($output)
     {
-        $this->afterAcceptDigitalMandateRequestNode();
+        $this->afterAcceptDigitalMandateRequest();
         $output->write(PrintingVisitor::EOL)->shouldHaveBeenCalled();
     }
 
     function it_prints_transaction_code_before_reject_mandate($output)
     {
-        $this->beforeRejectDigitalMandateRequestNode();
+        $this->beforeRejectDigitalMandateRequest();
         $output->write('04')->shouldHaveBeenCalled();
     }
 
     function it_prints_new_line_after_reject_mandate($output)
     {
-        $this->afterRejectDigitalMandateRequestNode();
+        $this->afterRejectDigitalMandateRequest();
         $output->write(PrintingVisitor::EOL)->shouldHaveBeenCalled();
     }
 
     function it_prints_transaction_code_before_update_mandate($output)
     {
-        $this->beforeUpdateMandateRequestNode();
+        $this->beforeUpdateMandateRequest();
         $output->write('05')->shouldHaveBeenCalled();
     }
 
     function it_prints_new_line_after_update_mandate($output)
     {
-        $this->afterUpdateMandateRequestNode();
+        $this->afterUpdateMandateRequest();
         $output->write(PrintingVisitor::EOL)->shouldHaveBeenCalled();
     }
 
-    function it_prints_transaction_code_before_incoming_transaction($output)
+    function it_prints_transaction_code_before_incoming_payment($output)
     {
-        $this->beforeIncomingTransactionRequestNode();
+        $this->beforeIncomingPaymentRequest();
         $output->write('82')->shouldHaveBeenCalled();
     }
 
-    function it_prints_new_line_after_incoming_transaction($output)
+    function it_prints_new_line_after_incoming_payment($output)
     {
-        $this->afterIncomingTransactionRequestNode();
+        $this->afterIncomingPaymentRequest();
         $output->write(PrintingVisitor::EOL)->shouldHaveBeenCalled();
     }
 
-    function it_prints_transaction_code_before_outgoing_transaction($output)
+    function it_prints_transaction_code_before_outgoing_payment($output)
     {
-        $this->beforeOutgoingTransactionRequestNode();
+        $this->beforeOutgoingPaymentRequest();
         $output->write('32')->shouldHaveBeenCalled();
     }
 
-    function it_prints_new_line_after_outgoing_transaction($output)
+    function it_prints_new_line_after_outgoing_payment($output)
     {
-        $this->afterOutgoingTransactionRequestNode();
+        $this->afterOutgoingPaymentRequest();
         $output->write(PrintingVisitor::EOL)->shouldHaveBeenCalled();
     }
 }

@@ -74,7 +74,7 @@ class VisitorFactory
             new MessageVisitor($errorObj),
             new PayeeVisitor($errorObj),
             new TextVisitor($errorObj),
-            new TransactionVisitor($errorObj)
+            new PaymentVisitor($errorObj)
         );
 
         if (!$flag(self::VISITOR_IGNORE_ACCOUNTS)) {

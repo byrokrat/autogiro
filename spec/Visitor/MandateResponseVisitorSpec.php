@@ -8,9 +8,9 @@ use byrokrat\autogiro\Visitor\MandateResponseVisitor;
 use byrokrat\autogiro\Visitor\ErrorAwareVisitor;
 use byrokrat\autogiro\Visitor\ErrorObject;
 use byrokrat\autogiro\Tree\LayoutNode;
-use byrokrat\autogiro\Tree\Record\RecordNode;
-use byrokrat\autogiro\Tree\Record\ResponseOpeningRecord;
-use byrokrat\autogiro\Tree\Record\MandateResponseClosingRecord;
+use byrokrat\autogiro\Tree\RecordNode;
+use byrokrat\autogiro\Tree\Response\ResponseOpening;
+use byrokrat\autogiro\Tree\Response\MandateResponseClosing;
 use byrokrat\autogiro\Tree\DateNode;
 use byrokrat\autogiro\Tree\TextNode;
 use PhpSpec\ObjectBehavior;
@@ -34,8 +34,8 @@ class MandateResponseVisitorSpec extends ObjectBehavior
     }
 
     function it_fails_on_missmatching_dates(
-        ResponseOpeningRecord $opening,
-        MandateResponseClosingRecord $closing,
+        ResponseOpening $opening,
+        MandateResponseClosing $closing,
         DateNode $dateA,
         DateNode $dateB,
         $errorObj
@@ -43,29 +43,29 @@ class MandateResponseVisitorSpec extends ObjectBehavior
         $dateA->getValue()->willReturn('2010');
         $opening->getChild('date')->willReturn($dateA);
 
-        $this->beforeResponseOpeningRecord($opening);
+        $this->beforeResponseOpening($opening);
 
         $dateB->getValue()->willReturn('2011');
         $closing->getChild('date')->willReturn($dateB);
         $closing->getLineNr()->willReturn(1);
 
-        $this->beforeMandateResponseClosingRecord($closing);
+        $this->beforeMandateResponseClosing($closing);
 
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 
     function it_fails_on_wrong_record_count(
         LayoutNode $layout,
-        ResponseOpeningRecord $opening,
+        ResponseOpening $opening,
         RecordNode $record,
-        MandateResponseClosingRecord $closing,
+        MandateResponseClosing $closing,
         TextNode $nrOfPosts,
         $errorObj
     ) {
         $nrOfPosts->getValue()->willReturn('2');
         $closing->getChild('nr_of_posts')->willReturn($nrOfPosts);
 
-        $this->afterMandateResponseClosingRecord($closing);
+        $this->afterMandateResponseClosing($closing);
 
         $layout->getChildren()->willReturn([$opening, $record, $closing]);
         $layout->getLineNr()->willReturn(1);

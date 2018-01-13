@@ -20,11 +20,21 @@
 
 declare(strict_types = 1);
 
-namespace byrokrat\autogiro\Tree;
+namespace byrokrat\autogiro\Tree\Response;
+
+use byrokrat\autogiro\Tree\DateNode;
+use byrokrat\autogiro\Tree\RecordNode;
+use byrokrat\autogiro\Tree\TextNode;
 
 /**
- * Node representing the nearest possible date
+ * Mandate response closing record node
  */
-class ImmediateDateNode extends DateNode
+class MandateResponseClosing extends RecordNode
 {
+    public function __construct(int $lineNr, DateNode $date, TextNode $nrOfPosts, array $void = [])
+    {
+        $this->setChild('date', $date);
+        $this->setChild('nr_of_posts', $nrOfPosts);
+        parent::__construct($lineNr, $void);
+    }
 }

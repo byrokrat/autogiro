@@ -23,7 +23,7 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Tree;
 
 /**
- * Node representing a transaction interval
+ * Node representing a payment interval
  *
  * @see \byrokrat\autogiro\Visitor\MessageVisitor Creates attribute 'message'
  */

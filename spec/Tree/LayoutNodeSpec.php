@@ -6,7 +6,7 @@ namespace spec\byrokrat\autogiro\Tree;
 
 use byrokrat\autogiro\Tree\LayoutNode;
 use byrokrat\autogiro\Tree\Node;
-use byrokrat\autogiro\Tree\Record\RecordNode;
+use byrokrat\autogiro\Tree\RecordNode;
 use byrokrat\autogiro\Tree\TextNode;
 use byrokrat\autogiro\Visitor\Visitor;
 use PhpSpec\ObjectBehavior;
