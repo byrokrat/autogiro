@@ -31,7 +31,7 @@ use byrokrat\banking\AccountNumber;
  */
 class AccountNode extends Node
 {
-    public static function fromAccount(AccountNumber $account): self
+    public static function fromAccount(AccountNumber $account): AccountNode
     {
         $node = new self(0, $account->getNumber());
         $node->setAttribute('account', $account);

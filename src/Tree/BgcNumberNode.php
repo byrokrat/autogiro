@@ -24,6 +24,8 @@ namespace byrokrat\autogiro\Tree;
 
 /**
  * Node that wrapps a BGC customer number
+ *
+ * @see \byrokrat\autogiro\Visitor\TextVisitor Validates node content
  */
 class BgcNumberNode extends TextNode
 {

@@ -31,7 +31,7 @@ use byrokrat\banking\Bankgiro;
  */
 class BankgiroNode extends Node
 {
-    public static function fromBankgiro(Bankgiro $bankgiro): self
+    public static function fromBankgiro(Bankgiro $bankgiro): BankgiroNode
     {
         $node = new self(0, $bankgiro->getNumber());
         $node->setAttribute('account', $bankgiro);

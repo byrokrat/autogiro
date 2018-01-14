@@ -31,7 +31,7 @@ use byrokrat\id\IdInterface;
  */
 class IdNode extends Node
 {
-    public static function fromId(IdInterface $id): self
+    public static function fromId(IdInterface $id): IdNode
     {
         $node = new self(0, (string)$id);
         $node->setAttribute('id', $id);

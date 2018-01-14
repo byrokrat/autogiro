@@ -24,6 +24,8 @@ namespace byrokrat\autogiro\Tree;
 
 /**
  * Node that wrapps a payer number
+ *
+ * @see \byrokrat\autogiro\Visitor\TextVisitor Validates node content
  */
 class PayerNumberNode extends TextNode
 {

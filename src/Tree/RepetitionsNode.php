@@ -24,6 +24,8 @@ namespace byrokrat\autogiro\Tree;
 
 /**
  * Node representing the number of payment repititions
+ *
+ * @see \byrokrat\autogiro\Visitor\TextVisitor Validates node content
  */
 class RepetitionsNode extends TextNode
 {

@@ -24,6 +24,8 @@ namespace byrokrat\autogiro\Tree;
 
 /**
  * Node representing free text
+ *
+ * @see \byrokrat\autogiro\Visitor\TextVisitor Validates node content
  */
 class TextNode extends Node
 {
