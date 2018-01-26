@@ -4,7 +4,7 @@
     "keywords": ["autogiro"],
     "homepage": "https://github.com/byrokrat/autogiro",
     "type": "library",
-    "license": "GPL-3.0",
+    "license": "GPL-3.0-or-later",
     "authors": [
         {
             "name": "Hannes Forsgård",
