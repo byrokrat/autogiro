@@ -7,7 +7,7 @@ namespace spec\byrokrat\autogiro\Visitor;
 use byrokrat\autogiro\Visitor\MandateResponseVisitor;
 use byrokrat\autogiro\Visitor\ErrorAwareVisitor;
 use byrokrat\autogiro\Visitor\ErrorObject;
-use byrokrat\autogiro\Tree\LayoutNode;
+use byrokrat\autogiro\Tree\FileNode;
 use byrokrat\autogiro\Tree\RecordNode;
 use byrokrat\autogiro\Tree\Response\ResponseOpening;
 use byrokrat\autogiro\Tree\Response\MandateResponseClosing;
@@ -55,7 +55,7 @@ class MandateResponseVisitorSpec extends ObjectBehavior
     }
 
     function it_fails_on_wrong_record_count(
-        LayoutNode $layout,
+        FileNode $fileNode,
         ResponseOpening $opening,
         RecordNode $record,
         MandateResponseClosing $closing,
@@ -67,10 +67,10 @@ class MandateResponseVisitorSpec extends ObjectBehavior
 
         $this->afterMandateResponseClosing($closing);
 
-        $layout->getChildren()->willReturn([$opening, $record, $closing]);
-        $layout->getLineNr()->willReturn(1);
+        $fileNode->getChildren()->willReturn([$opening, $record, $closing]);
+        $fileNode->getLineNr()->willReturn(1);
 
-        $this->afterLayoutNode($layout);
+        $this->afterFileNode($fileNode);
 
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }

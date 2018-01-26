@@ -20,13 +20,10 @@
 
 declare(strict_types = 1);
 
-namespace byrokrat\autogiro\Tree\Response;
+namespace byrokrat\autogiro\Tree\Request;
 
-use byrokrat\autogiro\Tree\RecordNode;
+use byrokrat\autogiro\Tree\SectionNode;
 
-/**
- * Header wrapping a set of incoming payment response records
- */
-class IncomingPaymentResponseOpening extends RecordNode
+class MandateRequestSection extends SectionNode
 {
 }

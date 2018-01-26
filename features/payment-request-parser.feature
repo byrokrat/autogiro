@@ -18,7 +18,7 @@ Feature: Payment request parser
     32200806120    00000000000001050000000030000009902346UTBETALN1
     32200806120    00000000055510040000000030000009902346UTBETALN2
     """
-    Then I find a "LAYOUT_PAYMENT_REQUEST" layout
+    Then I find a "LAYOUT_REQUEST" layout
     And I find 5 "IncomingPaymentRequest" nodes
     And I find 4 "OutgoingPaymentRequest" nodes
 
@@ -31,7 +31,7 @@ Feature: Payment request parser
     82200410270    00000020304050620000000250000009912346KVARTAL-2005
     32200410280    00000030405060730000000125000009912346ÅTERBET
     """
-    Then I find a "LAYOUT_PAYMENT_REQUEST" layout
+    Then I find a "LAYOUT_REQUEST" layout
     And I find 2 "IncomingPaymentRequest" nodes
     And I find 1 "OutgoingPaymentRequest" nodes
 
@@ -44,6 +44,6 @@ Feature: Payment request parser
     82200410270    00000000044450620000000250000009912346FAKT 34567899
     32200410280    00000000055507310000001250000009912346FAKT 78787878
     """
-    Then I find a "LAYOUT_PAYMENT_REQUEST" layout
+    Then I find a "LAYOUT_REQUEST" layout
     And I find 2 "IncomingPaymentRequest" nodes
     And I find 1 "OutgoingPaymentRequest" nodes

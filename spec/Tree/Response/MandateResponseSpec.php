@@ -6,40 +6,13 @@ namespace spec\byrokrat\autogiro\Tree\Response;
 
 use byrokrat\autogiro\Tree\Response\MandateResponse;
 use byrokrat\autogiro\Tree\RecordNode;
-use byrokrat\autogiro\Tree\AccountNode;
-use byrokrat\autogiro\Tree\DateNode;
-use byrokrat\autogiro\Tree\IdNode;
-use byrokrat\autogiro\Tree\MessageNode;
-use byrokrat\autogiro\Tree\BankgiroNode;
-use byrokrat\autogiro\Tree\PayerNumberNode;
-use byrokrat\autogiro\Tree\TextNode;
 use PhpSpec\ObjectBehavior;
 
 class MandateResponseSpec extends ObjectBehavior
 {
-    const LINE_NR = 100;
-
-    function let(
-        BankgiroNode $bankgiro,
-        PayerNumberNode $payerNr,
-        AccountNode $account,
-        IdNode $id,
-        MessageNode $info,
-        MessageNode $status,
-        DateNode $date,
-        TextNode $endVoid
-    ) {
-        $this->beConstructedWith(
-            self::LINE_NR,
-            $bankgiro,
-            $payerNr,
-            $account,
-            $id,
-            $info,
-            $status,
-            $date,
-            [$endVoid]
-        );
+    function let()
+    {
+        $this->beConstructedWith(0, []);
     }
 
     function it_is_initializable()
@@ -47,58 +20,13 @@ class MandateResponseSpec extends ObjectBehavior
         $this->shouldHaveType(MandateResponse::CLASS);
     }
 
-    function it_implements_record_interface()
-    {
-        $this->shouldHaveType(RecordNode::CLASS);
-    }
-
     function it_contains_a_type()
     {
         $this->getType()->shouldEqual('MandateResponse');
     }
 
-    function it_contains_a_line_number()
+    function it_is_a_record()
     {
-        $this->getLineNr()->shouldEqual(self::LINE_NR);
-    }
-
-    function it_contains_a_bankgiro($bankgiro)
-    {
-        $this->getChild('payee_bankgiro')->shouldEqual($bankgiro);
-    }
-
-    function it_contains_a_payer_number($payerNr)
-    {
-        $this->getChild('payer_number')->shouldEqual($payerNr);
-    }
-
-    function it_contains_an_account($account)
-    {
-        $this->getChild('account')->shouldEqual($account);
-    }
-
-    function it_contains_an_id($id)
-    {
-        $this->getChild('id')->shouldEqual($id);
-    }
-
-    function it_contains_a_message($info)
-    {
-        $this->getChild('info')->shouldEqual($info);
-    }
-
-    function it_contains_a_status($status)
-    {
-        $this->getChild('status')->shouldEqual($status);
-    }
-
-    function it_contains_a_date($date)
-    {
-        $this->getChild('date')->shouldEqual($date);
-    }
-
-    function it_may_contain_void_ending_nodes($endVoid)
-    {
-        $this->getChild('end_0')->shouldEqual($endVoid);
+        $this->shouldHaveType(RecordNode::CLASS);
     }
 }

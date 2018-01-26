@@ -25,8 +25,8 @@ namespace byrokrat\autogiro\Tree\Response;
 use byrokrat\autogiro\Tree\RecordNode;
 
 /**
- * Header wrapping a set of incoming payment response records
+ * Incoming payment response node
  */
-class IncomingPaymentResponseOpening extends RecordNode
+class IncomingPaymentResponse extends RecordNode
 {
 }

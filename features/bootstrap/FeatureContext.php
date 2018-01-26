@@ -58,16 +58,9 @@ class FeatureContext implements Context, SnippetAcceptingContext
             throw $this->exception;
         }
 
-        $layoutIds = [];
-
-        foreach ($this->fileNode->getChildren() as $layoutNode) {
-            $layoutIds[] = $layoutNode->getAttribute('layout_name');
-        }
-
-        Assertions::assertInArray(
+        Assertions::assertEquals(
             constant("byrokrat\autogiro\Layouts::$layoutType"),
-            $layoutIds,
-            $this->fileNode->getAttribute('layout_ids')
+            $this->fileNode->getAttribute('layout')
         );
     }
 

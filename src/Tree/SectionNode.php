@@ -22,23 +22,17 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Tree;
 
-use byrokrat\autogiro\Tree\RecordNode;
-
 /**
- * Generic record container node
+ * A node containing other nodes
  */
-class LayoutNode extends Node
+class SectionNode extends Node
 {
-    public function __construct(string $layoutName, RecordNode ...$nodes)
+    public function __construct(Node ...$nodes)
     {
         parent::__construct();
 
-        if ($layoutName) {
-            $this->setAttribute('layout_name', $layoutName);
-        }
-
-        foreach ($nodes as $key => $node) {
-            $this->setChild((string)($key + 1), $node);
+        foreach ($nodes as $index => $node) {
+            $this->setChild((string)($index + 1), $node);
         }
     }
 

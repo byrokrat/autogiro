@@ -23,3 +23,7 @@ Request nodes renamed:
 * `Record/Request/RejectDigitalMandateRequestNode` => `Request/RejectDigitalMandateRequest`
 * `Record/Request/RequestOpeningRecordNode` => `Request/RequestOpening`
 * `Record/Request/UpdateMandateRequestNode` => `Request/UpdateMandateRequest`
+
+## Writer
+
+Updated API to match name changes in node tree.

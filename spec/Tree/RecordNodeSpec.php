@@ -5,11 +5,16 @@ declare(strict_types = 1);
 namespace spec\byrokrat\autogiro\Tree;
 
 use byrokrat\autogiro\Tree\RecordNode;
-use byrokrat\autogiro\Tree\TextNode;
+use byrokrat\autogiro\Tree\Node;
 use PhpSpec\ObjectBehavior;
 
 class RecordNodeSpec extends ObjectBehavior
 {
+    function let()
+    {
+        $this->beConstructedWith(0, []);
+    }
+
     function it_is_initializable()
     {
         $this->shouldHaveType(RecordNode::CLASS);
@@ -17,14 +22,14 @@ class RecordNodeSpec extends ObjectBehavior
 
     function it_contains_a_line_number()
     {
-        $this->beConstructedWith(123);
+        $this->beConstructedWith(123, []);
         $this->getLineNr()->shouldEqual(123);
     }
 
-    function it_may_contain_void_ending_nodes(TextNode $end1, TextNode $end2)
+    function it_contains_nodes(Node $node1, Node $node2)
     {
-        $this->beConstructedWith(0, [$end1, $end2]);
-        $this->getChild('end_0')->shouldEqual($end1);
-        $this->getChild('end_1')->shouldEqual($end2);
+        $this->beConstructedWith(0, ['open' => $node1, 'close' => $node2]);
+        $this->getChild('open')->shouldEqual($node1);
+        $this->getChild('close')->shouldEqual($node2);
     }
 }

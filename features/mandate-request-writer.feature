@@ -19,7 +19,7 @@ Feature: Mandate request writer
     When I request mandate "1111111111" be deleted
     And I generate the request file
     And I parse the generated file
-    Then I find a "LAYOUT_MANDATE_REQUEST" layout
+    Then I find a "LAYOUT_REQUEST" layout
     And I find 1 "DeleteMandateRequest" nodes
 
   Scenario: I parse a generated added mandate file
@@ -28,7 +28,7 @@ Feature: Mandate request writer
     When I request mandate "1111111111" be added
     And I generate the request file
     And I parse the generated file
-    Then I find a "LAYOUT_MANDATE_REQUEST" layout
+    Then I find a "LAYOUT_REQUEST" layout
     And I find 1 "CreateMandateRequest" nodes
 
   Scenario: I respond to received digital mandates
@@ -38,7 +38,7 @@ Feature: Mandate request writer
     And I request mandate "2222222222" be rejected
     And I generate the request file
     And I parse the generated file
-    Then I find a "LAYOUT_MANDATE_REQUEST" layout
+    Then I find a "LAYOUT_REQUEST" layout
     And I find 1 "AcceptDigitalMandateRequest" nodes
     And I find 1 "RejectDigitalMandateRequest" nodes
 
@@ -48,7 +48,7 @@ Feature: Mandate request writer
     When I request mandate "1111111111" be updated to "2222222222"
     And I generate the request file
     And I parse the generated file
-    Then I find a "LAYOUT_MANDATE_REQUEST" layout
+    Then I find a "LAYOUT_REQUEST" layout
     And I find 1 "UpdateMandateRequest" nodes
 
   Scenario: I request payment
@@ -60,6 +60,6 @@ Feature: Mandate request writer
     And I request an immediate payment of "100" SEK from "1111111111"
     And I generate the request file
     And I parse the generated file
-    Then I find a "LAYOUT_PAYMENT_REQUEST" layout
+    Then I find a "LAYOUT_REQUEST" layout
     And I find 3 "IncomingPaymentRequest" nodes
     And I find 1 "OutgoingPaymentRequest" nodes

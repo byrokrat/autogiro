@@ -23,7 +23,7 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Tree;
 
 /**
- * A record maps to a line in autogiro files
+ * A record maps to a line in an autogiro files
  *
  * @see \byrokrat\autogiro\Tree\Request for the set of request records
  * @see \byrokrat\autogiro\Tree\Response for the set of response records
@@ -31,15 +31,15 @@ namespace byrokrat\autogiro\Tree;
 class RecordNode extends Node
 {
     /**
-     * @param integer    $lineNr Line number of record definition
-     * @param TextNode[] $end    Text nodes at end of record
+     * @param integer $lineNr Line number of record definition
+     * @param Node[]  $nodes  The nodes composing record
      */
-    public function __construct(int $lineNr = 0, array $end = [])
+    public function __construct(int $lineNr, array $nodes)
     {
         parent::__construct($lineNr);
 
-        foreach ($end as $index => $node) {
-            $this->setChild("end_$index", $node);
+        foreach ($nodes as $name => $node) {
+            $this->setChild((string)$name, $node);
         }
     }
 }

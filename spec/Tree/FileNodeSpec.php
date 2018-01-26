@@ -5,16 +5,16 @@ declare(strict_types = 1);
 namespace spec\byrokrat\autogiro\Tree;
 
 use byrokrat\autogiro\Tree\FileNode;
-use byrokrat\autogiro\Tree\Node;
+use byrokrat\autogiro\Tree\SectionNode;
 use byrokrat\autogiro\Visitor\Visitor;
 use byrokrat\autogiro\Exception\LogicException;
 use PhpSpec\ObjectBehavior;
 
 class FileNodeSpec extends ObjectBehavior
 {
-    function let(Node $nodeA, Node $nodeB)
+    function let()
     {
-        $this->beConstructedWith($nodeA, $nodeB);
+        $this->beConstructedWith('');
     }
 
     function it_is_initializable()
@@ -22,19 +22,9 @@ class FileNodeSpec extends ObjectBehavior
         $this->shouldHaveType(FileNode::CLASS);
     }
 
-    function it_implements_node_interface()
+    function it_is_a_section_node()
     {
-        $this->shouldHaveType(Node::CLASS);
-    }
-
-    function it_accepts_a_visitor($nodeA, $nodeB, Visitor $visitor)
-    {
-        $visitor->visitBefore($this)->shouldBeCalled();
-        $nodeA->accept($visitor)->shouldBeCalled();
-        $nodeB->accept($visitor)->shouldBeCalled();
-        $visitor->visitAfter($this)->shouldBeCalled();
-
-        $this->accept($visitor);
+        $this->shouldHaveType(SectionNode::CLASS);
     }
 
     function it_contains_a_type()
@@ -42,21 +32,9 @@ class FileNodeSpec extends ObjectBehavior
         $this->getType()->shouldEqual('FileNode');
     }
 
-    function it_contains_nodes($nodeA, $nodeB)
+    function it_contains_a_layout_name()
     {
-        $this->getChildren()->shouldEqual(['1' => $nodeA, '2' => $nodeB]);
-        $this->getChild('1')->shouldEqual($nodeA);
-        $this->getChild('2')->shouldEqual($nodeB);
-    }
-
-    function it_throws_exception_if_index_is_out_of_range()
-    {
-        $this->shouldThrow(LogicException::CLASS)->duringGetChild('100');
-    }
-
-    function it_contains_a_line_number($nodeA)
-    {
-        $nodeA->getLineNr()->willReturn(15);
-        $this->getLineNr()->shouldEqual(15);
+        $this->beConstructedWith('some-name');
+        $this->getAttribute('layout')->shouldEqual('some-name');
     }
 }

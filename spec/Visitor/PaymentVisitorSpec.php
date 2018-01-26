@@ -94,7 +94,7 @@ class PaymentVisitorSpec extends ObjectBehavior
         $request->getChild('interval')->willReturn($ival);
         $request->getChild('repetitions')->willReturn($reps);
         $request->getLineNr()->willReturn(1);
-        $this->beforeIncomingPaymentRequest($request);
+        $this->beforeOutgoingPaymentRequest($request);
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 }

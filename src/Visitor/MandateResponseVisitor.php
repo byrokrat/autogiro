@@ -22,7 +22,7 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Visitor;
 
-use byrokrat\autogiro\Tree\LayoutNode;
+use byrokrat\autogiro\Tree\FileNode;
 use byrokrat\autogiro\Tree\Response\ResponseOpening;
 use byrokrat\autogiro\Tree\Response\MandateResponseClosing;
 
@@ -75,7 +75,7 @@ class MandateResponseVisitor extends ErrorAwareVisitor
     /**
     * Validate that the number of records in layout matches the expected value
      */
-    public function afterLayoutNode(LayoutNode $node): void
+    public function afterFileNode(FileNode $node): void
     {
         if ($this->recordCount && $this->recordCount != count($node->getChildren()) - 2) {
             $this->getErrorObject()->addError(

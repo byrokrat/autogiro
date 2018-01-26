@@ -26,19 +26,9 @@ namespace byrokrat\autogiro;
 interface Layouts
 {
     /**
-     * Layout for sending mandate requests
+     * Layout for sending requests
      */
-    const LAYOUT_MANDATE_REQUEST = 'LAYOUT_MANDATE_REQUEST';
-
-    /**
-     * Layout for sending payment requests
-     */
-    const LAYOUT_PAYMENT_REQUEST = 'LAYOUT_PAYMENT_REQUEST';
-
-    /**
-     * Layout for sending payment amendments and revocations
-     */
-    const LAYOUT_AMENDMENT_REQUEST = 'LAYOUT_AMENDMENT_REQUEST';
+    const LAYOUT_REQUEST = 'LAYOUT_REQUEST';
 
     /**
      * Layout for receiving responses the previously made mandate requests

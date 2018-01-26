@@ -23,27 +23,10 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Tree\Request;
 
 use byrokrat\autogiro\Tree\RecordNode;
-use byrokrat\autogiro\Tree\BankgiroNode;
-use byrokrat\autogiro\Tree\PayerNumberNode;
-use byrokrat\autogiro\Tree\TextNode;
 
 /**
  * Node representing a request that a mandate received from the internet bank be rejected
  */
 class RejectDigitalMandateRequest extends RecordNode
 {
-    public function __construct(
-        int $lineNr,
-        BankgiroNode $payeeBg,
-        PayerNumberNode $payerNr,
-        TextNode $space,
-        TextNode $reject,
-        array $void = []
-    ) {
-        $this->setChild('payee_bankgiro', $payeeBg);
-        $this->setChild('payer_number', $payerNr);
-        $this->setChild('space_1', $space);
-        $this->setChild('reject', $reject);
-        parent::__construct($lineNr, $void);
-    }
 }

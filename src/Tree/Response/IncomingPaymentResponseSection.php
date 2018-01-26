@@ -22,11 +22,8 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Tree\Response;
 
-use byrokrat\autogiro\Tree\RecordNode;
+use byrokrat\autogiro\Tree\SectionNode;
 
-/**
- * Header wrapping a set of incoming payment response records
- */
-class IncomingPaymentResponseOpening extends RecordNode
+class IncomingPaymentResponseSection extends SectionNode
 {
 }

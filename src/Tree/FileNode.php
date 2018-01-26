@@ -25,19 +25,14 @@ namespace byrokrat\autogiro\Tree;
 /**
  * Node representing a file to or from autogirot
  */
-class FileNode extends Node
+class FileNode extends SectionNode
 {
-    public function __construct(Node ...$nodes)
+    public function __construct(string $layout, Node ...$nodes)
     {
-        parent::__construct();
+        parent::__construct(...$nodes);
 
-        foreach ($nodes as $key => $node) {
-            $this->setChild((string)($key + 1), $node);
+        if ($layout) {
+            $this->setAttribute('layout', $layout);
         }
-    }
-
-    public function getLineNr(): int
-    {
-        return $this->getChild('1')->getLineNr();
     }
 }

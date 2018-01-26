@@ -22,6 +22,8 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Visitor;
 
+use byrokrat\autogiro\Intervals;
+use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Tree\Request\IncomingPaymentRequest;
 use byrokrat\autogiro\Tree\Request\OutgoingPaymentRequest;
 use byrokrat\autogiro\Tree\ImmediateDateNode;
@@ -40,11 +42,15 @@ class PaymentVisitor extends ErrorAwareVisitor
     public function beforeOutgoingPaymentRequest(OutgoingPaymentRequest $node): void
     {
         $this->validateImmediateDateWithInterval($node);
+
+        $this->validateRepetitionsWithoutInterval($node);
     }
 
-    private function validateImmediateDateWithInterval(IncomingPaymentRequest $node): void
+    private function validateImmediateDateWithInterval(Node $node): void
     {
-        if ($node->getChild('date') instanceof ImmediateDateNode && $node->getChild('interval')->getValue() != '0') {
+        if ($node->getChild('date') instanceof ImmediateDateNode
+            && $node->getChild('interval')->getValue() != Intervals::INTERVAL_ONCE
+        ) {
             $this->getErrorObject()->addError(
                 "Immediate dates and intervals can not be mixed in payment on line %s",
                 (string)$node->getLineNr()
@@ -52,12 +58,15 @@ class PaymentVisitor extends ErrorAwareVisitor
         }
     }
 
-    private function validateRepetitionsWithoutInterval(IncomingPaymentRequest $node): void
+    private function validateRepetitionsWithoutInterval(Node $node): void
     {
-        if ($node->getChild('interval')->getValue() == '0' && trim($node->getChild('repetitions')->getValue()) != '') {
+        if ($node->getChild('interval')->getValue() == Intervals::INTERVAL_ONCE
+            && trim($node->getChild('repetitions')->getValue()) != ''
+        ) {
             $this->getErrorObject()->addError(
-                "Repetitions set (%s) but no interval is definied on line %s",
+                "Repetitions set (%s) but interval is once (%s) on line %s",
                 $node->getChild('repetitions')->getValue(),
+                $node->getChild('interval')->getValue(),
                 (string)$node->getLineNr()
             );
         }

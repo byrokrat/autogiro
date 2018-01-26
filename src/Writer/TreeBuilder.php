@@ -32,8 +32,10 @@ use byrokrat\autogiro\Tree\Request\RejectDigitalMandateRequest;
 use byrokrat\autogiro\Tree\Request\UpdateMandateRequest;
 use byrokrat\autogiro\Tree\Request\IncomingPaymentRequest;
 use byrokrat\autogiro\Tree\Request\OutgoingPaymentRequest;
+use byrokrat\autogiro\Tree\Request\MandateRequestSection;
+use byrokrat\autogiro\Tree\Request\PaymentRequestSection;
+use byrokrat\autogiro\Tree\Request\AmendmentRequestSection;
 use byrokrat\autogiro\Tree\FileNode;
-use byrokrat\autogiro\Tree\LayoutNode;
 use byrokrat\autogiro\Tree\DateNode;
 use byrokrat\autogiro\Tree\ImmediateDateNode;
 use byrokrat\autogiro\Tree\TextNode;
@@ -56,16 +58,16 @@ use byrokrat\amount\Currency\SEK;
 class TreeBuilder
 {
     /**
-     * Map layout names to record store array names
+     * Map section classes to record store array names
      */
-    private const LAYOUT_TO_RECORD_STORE_MAP = [
-        Layouts::LAYOUT_MANDATE_REQUEST => 'mandates',
-        Layouts::LAYOUT_PAYMENT_REQUEST => 'payments',
-        Layouts::LAYOUT_AMENDMENT_REQUEST => 'amendments'
+    private const SECTION_TO_RECORD_STORE_MAP = [
+        MandateRequestSection::CLASS => 'mandates',
+        PaymentRequestSection::CLASS => 'payments',
+        AmendmentRequestSection::CLASS => 'amendments'
     ];
 
     /**
-     * @var RequestOpening Opening record used for each layout
+     * @var RequestOpening Opening record used for each section
      */
     private $opening;
 
@@ -138,12 +140,14 @@ class TreeBuilder
     {
         $this->opening = new RequestOpening(
             0,
-            DateNode::fromDate($this->date),
-            new TextNode(0, 'AUTOGIRO'),
-            new TextNode(0, str_pad('', 44)),
-            new BgcNumberNode(0, $this->bgcNr),
-            $this->payeeBgNode,
-            [new TextNode(0, '  ')]
+            [
+                'date' => DateNode::fromDate($this->date),
+                'autogiro_txt' => new TextNode(0, 'AUTOGIRO'),
+                'space' => new TextNode(0, str_pad('', 44)),
+                'payee_bgc_number' => new BgcNumberNode(0, $this->bgcNr),
+                'payee_bankgiro' => $this->payeeBgNode,
+                'end' => new TextNode(0, '  ')
+            ]
         );
         $this->mandates = [];
         $this->payments = [];
@@ -157,11 +161,13 @@ class TreeBuilder
     {
         $this->mandates[] = new CreateMandateRequest(
             0,
-            $this->payeeBgNode,
-            new PayerNumberNode(0, $payerNr),
-            AccountNode::fromAccount($account),
-            IdNode::fromId($id),
-            [new TextNode(0, str_pad('', 24))]
+            [
+                'payee_bankgiro' => $this->payeeBgNode,
+                'payer_number' => new PayerNumberNode(0, $payerNr),
+                'account' => AccountNode::fromAccount($account),
+                'id' => IdNode::fromId($id),
+                'end' => new TextNode(0, str_pad('', 24))
+            ]
         );
     }
 
@@ -172,9 +178,11 @@ class TreeBuilder
     {
         $this->mandates[] = new DeleteMandateRequest(
             0,
-            $this->payeeBgNode,
-            new PayerNumberNode(0, $payerNr),
-            [new TextNode(0, str_pad('', 52))]
+            [
+                'payee_bankgiro' => $this->payeeBgNode,
+                'payer_number' => new PayerNumberNode(0, $payerNr),
+                'end' => new TextNode(0, str_pad('', 52))
+            ]
         );
     }
 
@@ -185,9 +193,11 @@ class TreeBuilder
     {
         $this->mandates[] = new AcceptDigitalMandateRequest(
             0,
-            $this->payeeBgNode,
-            new PayerNumberNode(0, $payerNr),
-            [new TextNode(0, str_pad('', 52))]
+            [
+                'payee_bankgiro' => $this->payeeBgNode,
+                'payer_number' => new PayerNumberNode(0, $payerNr),
+                'end' => new TextNode(0, str_pad('', 52))
+            ]
         );
     }
 
@@ -198,11 +208,13 @@ class TreeBuilder
     {
         $this->mandates[] = new RejectDigitalMandateRequest(
             0,
-            $this->payeeBgNode,
-            new PayerNumberNode(0, $payerNr),
-            new TextNode(0, str_pad('', 48)),
-            new TextNode(0, 'AV'),
-            [new TextNode(0, '  ')]
+            [
+                'payee_bankgiro' => $this->payeeBgNode,
+                'payer_number' => new PayerNumberNode(0, $payerNr),
+                'space' => new TextNode(0, str_pad('', 48)),
+                'reject' => new TextNode(0, 'AV'),
+                'end' => new TextNode(0, '  ')
+            ]
         );
     }
 
@@ -213,11 +225,13 @@ class TreeBuilder
     {
         $this->mandates[] = new UpdateMandateRequest(
             0,
-            $this->payeeBgNode,
-            new PayerNumberNode(0, $payerNr),
-            $this->payeeBgNode,
-            new PayerNumberNode(0, $newPayerNr),
-            [new TextNode(0, str_pad('', 26))]
+            [
+                'payee_bankgiro' => $this->payeeBgNode,
+                'payer_number' => new PayerNumberNode(0, $payerNr),
+                'new_payee_bankgiro' => $this->payeeBgNode,
+                'new_payer_number' => new PayerNumberNode(0, $newPayerNr),
+                'end' => new TextNode(0, str_pad('', 26))
+            ]
         );
     }
 
@@ -286,15 +300,15 @@ class TreeBuilder
      */
     public function buildTree(): FileNode
     {
-        $layouts = [];
+        $sections = [];
 
-        foreach (self::LAYOUT_TO_RECORD_STORE_MAP as $layoutName => $recordStore) {
+        foreach (self::SECTION_TO_RECORD_STORE_MAP as $sectionClass => $recordStore) {
             if (!empty($this->$recordStore)) {
-                $layouts[] = new LayoutNode($layoutName, $this->opening, ...$this->$recordStore);
+                $sections[] = new $sectionClass($this->opening, ...$this->$recordStore);
             }
         }
 
-        return new FileNode(...$layouts);
+        return new FileNode(Layouts::LAYOUT_REQUEST, ...$sections);
     }
 
     private function addPaymentRequest(
@@ -308,15 +322,17 @@ class TreeBuilder
     ): void {
         $this->payments[] = new $classname(
             0,
-            DateNode::fromDate($date),
-            new IntervalNode(0, $this->intervalFormatter->format($interval)),
-            new RepetitionsNode(0, $this->repititionsFormatter->format($repetitions)),
-            new TextNode(0, ' '),
-            new PayerNumberNode(0, $payerNr),
-            AmountNode::fromAmount($amount),
-            $this->payeeBgNode,
-            new TextNode(0, str_pad($ref, 16, ' ', STR_PAD_LEFT), '/^.{16}$/'),
-            [new TextNode(0, str_pad('', 11))]
+            [
+                'date' => DateNode::fromDate($date),
+                'interval' => new IntervalNode(0, $this->intervalFormatter->format($interval)),
+                'repetitions' => new RepetitionsNode(0, $this->repititionsFormatter->format($repetitions)),
+                'space' => new TextNode(0, ' '),
+                'payer_number' => new PayerNumberNode(0, $payerNr),
+                'amount' => AmountNode::fromAmount($amount),
+                'payee_bankgiro' => $this->payeeBgNode,
+                'reference' => new TextNode(0, str_pad($ref, 16, ' ', STR_PAD_LEFT), '/^.{16}$/'),
+                'end' => new TextNode(0, str_pad('', 11))
+            ]
         );
     }
 
@@ -324,15 +340,17 @@ class TreeBuilder
     {
         $this->payments[] = new $classname(
             0,
-            new ImmediateDateNode,
-            new IntervalNode(0, '0'),
-            new RepetitionsNode(0, '   '),
-            new TextNode(0, ' '),
-            new PayerNumberNode(0, $payerNr),
-            AmountNode::fromAmount($amount),
-            $this->payeeBgNode,
-            new TextNode(0, str_pad($ref, 16, ' ', STR_PAD_LEFT), '/^.{16}$/'),
-            [new TextNode(0, str_pad('', 11))]
+            [
+                'date' => new ImmediateDateNode,
+                'interval' => new IntervalNode(0, '0'),
+                'repetitions' => new RepetitionsNode(0, '   '),
+                'space' => new TextNode(0, ' '),
+                'payer_number' => new PayerNumberNode(0, $payerNr),
+                'amount' => AmountNode::fromAmount($amount),
+                'payee_bankgiro' => $this->payeeBgNode,
+                'reference' => new TextNode(0, str_pad($ref, 16, ' ', STR_PAD_LEFT), '/^.{16}$/'),
+                'end' => new TextNode(0, str_pad('', 11))
+            ]
         );
     }
 }

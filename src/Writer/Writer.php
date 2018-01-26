@@ -196,7 +196,7 @@ class Writer
         \DateTimeInterface $date,
         string $ref = '',
         string $interval = Intervals::INTERVAL_ONCE,
-        int $repetitions = 1
+        int $repetitions = 0
     ): void {
         $this->treeBuilder->addOutgoingPaymentRequest($payerNr, $amount, $date, $ref, $interval, $repetitions);
     }

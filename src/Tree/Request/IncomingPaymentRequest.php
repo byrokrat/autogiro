@@ -23,39 +23,10 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Tree\Request;
 
 use byrokrat\autogiro\Tree\RecordNode;
-use byrokrat\autogiro\Tree\DateNode;
-use byrokrat\autogiro\Tree\IntervalNode;
-use byrokrat\autogiro\Tree\RepetitionsNode;
-use byrokrat\autogiro\Tree\TextNode;
-use byrokrat\autogiro\Tree\PayerNumberNode;
-use byrokrat\autogiro\Tree\AmountNode;
-use byrokrat\autogiro\Tree\BankgiroNode;
 
 /**
  * Node representing a request of an incoming payment
  */
 class IncomingPaymentRequest extends RecordNode
 {
-    public function __construct(
-        int $lineNr,
-        DateNode $date,
-        IntervalNode $ival,
-        RepetitionsNode $reps,
-        TextNode $space,
-        PayerNumberNode $payerNr,
-        AmountNode $amount,
-        BankgiroNode $payeeBg,
-        TextNode $ref,
-        array $void = []
-    ) {
-        $this->setChild('date', $date);
-        $this->setChild('interval', $ival);
-        $this->setChild('repetitions', $reps);
-        $this->setChild('space_1', $space);
-        $this->setChild('payer_number', $payerNr);
-        $this->setChild('amount', $amount);
-        $this->setChild('payee_bankgiro', $payeeBg);
-        $this->setChild('reference', $ref);
-        parent::__construct($lineNr, $void);
-    }
 }
