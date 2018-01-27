@@ -1,0 +1,2 @@
+phpspec desc byrokrat/autogiro/Tree/Response/$1
+phpspec run spec/Tree/Response/$1Spec.php

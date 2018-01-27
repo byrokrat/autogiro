@@ -116,17 +116,27 @@ grammar Grammar
 
     // PAYMENT REQUESTS
 
-    REQ_PAYMENT_SECTION = open:REQ_OPENING_REC records:(REQ_PAYMENT_REC)+ {
+    REQ_PAYMENT_SECTION = open:REQ_OPENING_REC records:(REQ_PAYMENT_INCOMING_REC / REQ_PAYMENT_OUTGOING_REC)+ {
         return new Request\PaymentRequestSection($open, ...$records);
     };
 
-    REQ_PAYMENT_REC = tc:('32' / '82') date:(IMMEDIATE_DATE / DATE) ival:INTERVAL reps:REPS ' ' payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:VAR_TXT EOR {
-        $tc2record = [
-            '32' => Request\OutgoingPaymentRequest::CLASS,
-            '82' => Request\IncomingPaymentRequest::CLASS,
-        ];
+    REQ_PAYMENT_INCOMING_REC = '82' date:(IMMEDIATE_DATE / DATE) ival:INTERVAL reps:REPS ' ' payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:VAR_TXT EOR {
+        return new Request\IncomingPaymentRequest(
+            $this->lineNr,
+            [
+                'date' => $date,
+                'interval' => $ival,
+                'repetitions' => $reps,
+                'payer_number' => $payerNr,
+                'amount' => $amount,
+                'payee_bankgiro' => $bg,
+                'reference' => $ref
+            ]
+        );
+    };
 
-        return new $tc2record[$tc](
+    REQ_PAYMENT_OUTGOING_REC = '32' date:(IMMEDIATE_DATE / DATE) ival:INTERVAL reps:REPS ' ' payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:VAR_TXT EOR {
+        return new Request\OutgoingPaymentRequest(
             $this->lineNr,
             [
                 'date' => $date,
@@ -150,7 +160,9 @@ grammar Grammar
     // PAYMENT RESPONSES
     //
 
-    RESP_PAYMENT_FILE = open:RESP_PAYMENT_OPENING_REC sections:(RESP_PAYMENT_INCOMING_SECTION / RESP_PAYMENT_OUTGOING_SECTION / RESP_PAYMENT_REFUND_SECTION)+ close:RESP_PAYMENT_CLOSING_REC {
+    RESP_PAYMENT_FILE = NEW_RESP_PAYMENT_FILE / OLD_RESP_PAYMENT_FILE;
+
+    NEW_RESP_PAYMENT_FILE = open:RESP_PAYMENT_OPENING_REC sections:(RESP_PAYMENT_INCOMING_SECTION / RESP_PAYMENT_OUTGOING_SECTION / RESP_PAYMENT_REFUND_SECTION)+ close:RESP_PAYMENT_CLOSING_REC {
         $sections[] = $close;
         return new FileNode(Layouts::LAYOUT_PAYMENT_RESPONSE, $open, ...$sections);
     };
@@ -166,32 +178,29 @@ grammar Grammar
         );
     };
 
-    RESP_PAYMENT_CLOSING_REC = '09' date:DATE '9900' nrInLays:INT6 nrInRecs:INT12 nrOutLays:INT6 nrOutRecs:INT12 nrRefLays:INT6 nrRefRecs:INT12 EOR {
-        return new Response\PaymentResponseClosingRecord($this->lineNr, $date, $nrInLays, $nrInRecs, $nrOutLays, $nrOutRecs, $nrRefLays, $nrRefRecs);
+    RESP_PAYMENT_CLOSING_REC = '09' date:DATE '9900' nrInSecs:INT6 nrInRecs:INT12 nrOutSecs:INT6 nrOutRecs:INT12 nrRefSecs:INT6 nrRefRecs:INT12 EOR {
+        return new Response\PaymentResponseClosing(
+            $this->lineNr,
+            [
+                'date' => $date,
+                'nr_of_incoming_sections' => $nrInSecs,
+                'nr_of_incoming_records' => $nrInRecs,
+                'nr_of_outgoing_sections' => $nrOutSecs,
+                'nr_of_outgoing_records' => $nrOutRecs,
+                'nr_of_refund_sections' => $nrRefSecs,
+                'nr_of_refund_records' => $nrRefRecs,
+            ]
+        );
     };
 
-    // TODO det här funkar inte. Def av incoming och outgoing section kan inte vara helt lika...
-    RESP_PAYMENT_INCOMING_SECTION = open:RESP_PAYMENT_SECTION_OPENING records:(RESP_PAYMENT_REC)* {
+    // INCOMING PAYMENTS
+
+    RESP_PAYMENT_INCOMING_SECTION = open:RESP_PAYMENT_INCOMING_OPENING records:(RESP_PAYMENT_INCOMING_REC)* {
         return new Response\IncomingPaymentResponseSection($open, ...$records);
     };
 
-    RESP_PAYMENT_OUTGOING_SECTION = open:RESP_PAYMENT_SECTION_OPENING records:(RESP_PAYMENT_REC)* {
-        return new Response\OutgoingPaymentResponseSection('', $open, ...$records);
-    };
-
-    RESP_PAYMENT_REFUND_SECTION = open:RESP_PAYMENT_SECTION_OPENING records:(RESP_PAYMENT_REFUND_REC)* {
-        return new Response\RefundPaymentResponseSection('', $open, ...$records);
-    };
-
-    // TODO bryt upp och gör en regel per node trots allt???
-    RESP_PAYMENT_SECTION_OPENING = tc:('15' / '16' / '17') account:ACCOUNT35 date:DATE serial:INT5 amount:AMOUNT18 A2 A nrRecs:INT8 EOR {
-        $tc2record = [
-            '15' => Response\IncomingPaymentResponseOpening::CLASS,
-            '16' => Response\OutgoingPaymentResponseOpening::CLASS,
-            '17' => Response\RefundPaymentResponseOpening::CLASS,
-        ];
-
-        return new $tc2record[$tc](
+    RESP_PAYMENT_INCOMING_OPENING = '15' account:ACCOUNT35 date:DATE serial:INT5 amount:AMOUNT18 A2 A nrRecs:INT8 EOR {
+        return new Response\IncomingPaymentResponseOpening(
             $this->lineNr,
             [
                 'account' => $account,
@@ -203,14 +212,9 @@ grammar Grammar
         );
     };
 
-    // TODO bryt upp till två regler...
-    RESP_PAYMENT_REC = tc:('82' / '32') date:DATE ival:INTERVAL reps:REPS A payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:TXT16 A10 status:MSG1 EOR {
-        $tc2record = [
-            '32' => Response\OutgoingPaymentResponse::CLASS,
-            '82' => Response\IncomingPaymentResponse::CLASS,
-        ];
-
-        return new $tc2record[$tc](
+    RESP_PAYMENT_INCOMING_REC = '82' date:DATE ival:INTERVAL reps:REPS A payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:TXT16 A10 status:MSG1 EOR {
+        $status->setAttribute('message_id', "status.payment.{$status->getValue()}");
+        return new Response\IncomingPaymentResponse(
             $this->lineNr,
             [
                 'date' => $date,
@@ -225,9 +229,108 @@ grammar Grammar
         );
     };
 
+    // OUTGOING PAYMENTS
+
+    RESP_PAYMENT_OUTGOING_SECTION = open:RESP_PAYMENT_OUTGOING_OPENING records:(RESP_PAYMENT_OUTGOING_REC)* {
+        return new Response\OutgoingPaymentResponseSection($open, ...$records);
+    };
+
+    RESP_PAYMENT_OUTGOING_OPENING = '16' account:ACCOUNT35 date:DATE serial:INT5 amount:AMOUNT18 A2 A nrRecs:INT8 EOR {
+        return new Response\OutgoingPaymentResponseOpening(
+            $this->lineNr,
+            [
+                'account' => $account,
+                'date' => $date,
+                'serial' => $serial,
+                'amount' => $amount,
+                'record_count' => $nrRecs,
+            ]
+        );
+    };
+
+    RESP_PAYMENT_OUTGOING_REC = '32' date:DATE ival:INTERVAL reps:REPS A payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:TXT16 A10 status:MSG1 EOR {
+        $status->setAttribute('message_id', "status.payment.{$status->getValue()}");
+        return new Response\OutgoingPaymentResponse(
+            $this->lineNr,
+            [
+                'date' => $date,
+                'interval' => $ival,
+                'repetitions' => $reps,
+                'payer_number' => $payerNr,
+                'amount' => $amount,
+                'payee_bankgiro' => $bg,
+                'reference' => $ref,
+                'status' => $status,
+            ]
+        );
+    };
+
+    // REFUND PAYMENTS
+
+    RESP_PAYMENT_REFUND_SECTION = open:RESP_PAYMENT_REFUND_OPENING records:(RESP_PAYMENT_REFUND_REC)* {
+        return new Response\RefundPaymentResponseSection($open, ...$records);
+    };
+
+    RESP_PAYMENT_REFUND_OPENING = '17' account:ACCOUNT35 date:DATE serial:INT5 amount:AMOUNT18 A2 A nrRecs:INT8 EOR {
+        return new Response\RefundPaymentResponseOpening(
+            $this->lineNr,
+            [
+                'account' => $account,
+                'date' => $date,
+                'serial' => $serial,
+                'amount' => $amount,
+                'record_count' => $nrRecs,
+            ]
+        );
+    };
+
     RESP_PAYMENT_REFUND_REC = '77' date:DATE ival:INTERVAL reps:REPS A payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:TXT16 refundDate:DATE status:MSG2 EOR {
-        // TODO här är jag. Varför lyckas jag inte matcha den när raden???
-        return new Response\RefundPaymentResponse($this->lineNr, $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $refundDate, $status);
+        $status->setAttribute('message_id', "status.payment.{$status->getValue()}");
+        return new Response\RefundPaymentResponse(
+            $this->lineNr,
+            [
+                'date' => $date,
+                'interval' => $ival,
+                'repetitions' => $reps,
+                'payer_number' => $payerNr,
+                'amount' => $amount,
+                'payee_bankgiro' => $bg,
+                'reference' => $ref,
+                'refund_date' => $refundDate,
+                'status' => $status,
+            ]
+        );
+    };
+
+    // PAYMENT RESPONSES IN THE OLD FORMAT
+
+    OLD_RESP_PAYMENT_FILE = open:OLD_RESP_PAYMENT_OPENING recs:(RESP_PAYMENT_INCOMING_REC / RESP_PAYMENT_OUTGOING_REC )* close:OLD_RESP_PAYMENT_CLOSING {
+        $recs[] = $close;
+        return new FileNode(Layouts::LAYOUT_PAYMENT_RESPONSE_OLD, $open, ...$recs);
+    };
+
+    OLD_RESP_PAYMENT_OPENING = '01' date:DATE 'AUTOGIRO' '9900' S20 S20 bgcNr:BGC_NR bg:BANKGIRO EOR {
+        return new Response\ResponseOpening(
+            $this->lineNr,
+            [
+                'date' => $date,
+                'payee_bgc_number' => $bgcNr,
+                'payee_bankgiro' => $bg,
+            ]
+        );
+    };
+
+    OLD_RESP_PAYMENT_CLOSING = '09' date:DATE '9900' S10 S4 amountOut:AMOUNT12 nrOut:INT6 nrIn:INT6 '00000' amountIn:AMOUNT12 '00000000000' EOR {
+        return new Response\PaymentResponseClosing(
+            $this->lineNr,
+            [
+                'date' => $date,
+                'total_outgoing_amount' => $amountOut,
+                'nr_of_outgoing_records' => $nrOut,
+                'nr_of_incoming_records' => $nrIn,
+                'total_incoming_amount' => $amountIn,
+            ]
+        );
     };
 
     //
@@ -288,15 +391,13 @@ grammar Grammar
         return new Response\MandateResponse($this->lineNr, $nodes);
     };
 
-    RESP_MANDATE_CLOSING_REC = '09' date:DATE '9900' nrOfPosts:INT7 EOR {
-        return new Response\MandateResponseClosing(
-            $this->lineNr,
-            [
-                'date' => $date,
-                'nr_of_posts' => $nrOfPosts,
-            ]
-        );
+    RESP_MANDATE_CLOSING_REC = '09' date:DATE '9900' nrRecs:INT7 EOR {
+        return new Response\MandateResponseClosing($this->lineNr, ['date' => $date, 'nr_of_records' => $nrRecs]);
     };
+
+    //
+    // TYPE SYSTEN
+    //
 
     // EXTERNAL TYPES
 

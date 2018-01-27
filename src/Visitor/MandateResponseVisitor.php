@@ -69,7 +69,7 @@ class MandateResponseVisitor extends ErrorAwareVisitor
      */
     public function afterMandateResponseClosing(MandateResponseClosing $node): void
     {
-        $this->recordCount = (int)$node->getChild('nr_of_posts')->getValue();
+        $this->recordCount = (int)$node->getChild('nr_of_records')->getValue();
     }
 
     /**

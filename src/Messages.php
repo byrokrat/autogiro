@@ -56,6 +56,15 @@ interface Messages
     const STATUS_MANDATE_BLOCK_REMOVED                              = '73.status.12';
     const STATUS_MANDATE_MAX_AMOUNT_NOT_ALLOWED                     = '73.status.24';
 
+    const STATUS_PAYMENT_APPROVED                                   = 'status.payment.0';
+    const STATUS_PAYMENT_INSUFFICIENT_FUNDS                         = 'status.payment.1';
+    const STATUS_PAYMENT_DISAPPROVED                                = 'status.payment.2';
+    const STATUS_PAYMENT_RENEWED                                    = 'status.payment.9';
+    const STATUS_PAYMENT_MANDATE_MISSING                            = 'status.payment.01';
+    const STATUS_PAYMENT_MANDATE_REVOKED                            = 'status.payment.02';
+    const STATUS_PAYMENT_UNREASONABLE_AMOUNT                        = 'status.payment.03';
+    const STATUS_PAYMENT_APPROVED_OLD_FORMAT                        = 'status.payment. ';
+
     const MESSAGE_MAP = [
         self::INFO_MANDATE_DELETED_BY_RECIPIENT
             => 'Makulering: Initierat av betalningsmottagaren.',
@@ -116,5 +125,23 @@ interface Messages
             => 'Hävning av stopp av Medgivandet.',
         self::STATUS_MANDATE_MAX_AMOUNT_NOT_ALLOWED
             => 'Maxbelopp ej tillåtet',
+
+        self::STATUS_PAYMENT_APPROVED
+            => 'Godkänd betalning, betalningen är genomförd.',
+        self::STATUS_PAYMENT_INSUFFICIENT_FUNDS
+            => 'Täckning saknas, betalningen har inte genomförts.',
+        self::STATUS_PAYMENT_DISAPPROVED
+            => 'Koppling till Autogiro saknas (bankkontot avslutat), Annan orsak. Betalningen har inte genomförts.',
+        self::STATUS_PAYMENT_RENEWED
+            => 'Förnyad täckning, betalningen har inte genomförts men nytt försök ska göras om avtal finns.',
+        self::STATUS_PAYMENT_MANDATE_MISSING
+            => 'Medgivande har inte lämnats till betalningsmottagaren.',
+        self::STATUS_PAYMENT_MANDATE_REVOKED
+            => 'Medgivande har återkallats.',
+        self::STATUS_PAYMENT_UNREASONABLE_AMOUNT
+            => 'Beloppet angavs inte i samband med att Medgivandet tecknades
+            och beloppet överstiger det betalaren rimligen kunde ha förväntat sig.',
+        self::STATUS_PAYMENT_APPROVED_OLD_FORMAT
+            => 'Godkänd betalning, betalningen är genomförd.',
     ];
 }

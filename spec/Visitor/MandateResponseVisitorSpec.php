@@ -59,11 +59,11 @@ class MandateResponseVisitorSpec extends ObjectBehavior
         ResponseOpening $opening,
         RecordNode $record,
         MandateResponseClosing $closing,
-        TextNode $nrOfPosts,
+        TextNode $nrRecs,
         $errorObj
     ) {
-        $nrOfPosts->getValue()->willReturn('2');
-        $closing->getChild('nr_of_posts')->willReturn($nrOfPosts);
+        $nrRecs->getValue()->willReturn('2');
+        $closing->getChild('nr_of_records')->willReturn($nrRecs);
 
         $this->afterMandateResponseClosing($closing);
 

@@ -51,6 +51,11 @@ interface Layouts
     const LAYOUT_PAYMENT_RESPONSE = 'LAYOUT_PAYMENT_RESPONSE';
 
     /**
+     * Layout for receiving responses to previously made payment requests in the old format
+     */
+    const LAYOUT_PAYMENT_RESPONSE_OLD = 'LAYOUT_PAYMENT_RESPONSE_OLD';
+
+    /**
      * Layout for receiving responses to previously made payment requests in BgMax format
      */
     const LAYOUT_PAYMENT_RESPONSE_BGMAX = 'LAYOUT_PAYMENT_RESPONSE_BGMAX';
