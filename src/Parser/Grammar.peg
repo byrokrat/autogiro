@@ -41,7 +41,7 @@ use byrokrat\autogiro\Tree\TextNode;
 
 grammar Grammar
 {
-    start FILE = RESET_LINE_COUNT file:(REQUEST_FILE / RESP_MANDATE_FILE / RESP_PAYMENT_FILE) {
+    start FILE = RESET_LINE_COUNT file:(REQUEST_FILE / MANDATE_FILE / PAYMENT_FILE / PAYMENT_REJECTION_FILE) {
         return $file;
     };
 
@@ -116,12 +116,12 @@ grammar Grammar
 
     // PAYMENT REQUESTS
 
-    REQ_PAYMENT_SECTION = open:REQ_OPENING_REC records:(REQ_PAYMENT_INCOMING_REC / REQ_PAYMENT_OUTGOING_REC)+ {
+    REQ_PAYMENT_SECTION = open:REQ_OPENING_REC records:REQ_PAYMENT_REC+ {
         return new Request\PaymentRequestSection($open, ...$records);
     };
 
-    REQ_PAYMENT_INCOMING_REC = '82' date:(IMMEDIATE_DATE / DATE) ival:INTERVAL reps:REPS ' ' payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:VAR_TXT EOR {
-        return new Request\IncomingPaymentRequest(
+    REQ_PAYMENT_REC = type:(REQ_PAYMENT_INCOMING / REQ_PAYMENT_OUTGOING) date:(IMMEDIATE_DATE / DATE) ival:INTERVAL reps:REPS ' ' payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:VAR_TXT EOR {
+        return new $type(
             $this->lineNr,
             [
                 'date' => $date,
@@ -135,19 +135,12 @@ grammar Grammar
         );
     };
 
-    REQ_PAYMENT_OUTGOING_REC = '32' date:(IMMEDIATE_DATE / DATE) ival:INTERVAL reps:REPS ' ' payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:VAR_TXT EOR {
-        return new Request\OutgoingPaymentRequest(
-            $this->lineNr,
-            [
-                'date' => $date,
-                'interval' => $ival,
-                'repetitions' => $reps,
-                'payer_number' => $payerNr,
-                'amount' => $amount,
-                'payee_bankgiro' => $bg,
-                'reference' => $ref
-            ]
-        );
+    REQ_PAYMENT_INCOMING = '82' {
+        return Request\IncomingPaymentRequest::CLASS;
+    };
+
+    REQ_PAYMENT_OUTGOING = '32' {
+        return Request\OutgoingPaymentRequest::CLASS;
     };
 
     // AMENDMENT REQUESTS
@@ -160,14 +153,14 @@ grammar Grammar
     // PAYMENT RESPONSES
     //
 
-    RESP_PAYMENT_FILE = NEW_RESP_PAYMENT_FILE / OLD_RESP_PAYMENT_FILE;
+    PAYMENT_FILE = NEW_PAYMENT_FILE / OLD_PAYMENT_FILE;
 
-    NEW_RESP_PAYMENT_FILE = open:RESP_PAYMENT_OPENING_REC sections:(RESP_PAYMENT_INCOMING_SECTION / RESP_PAYMENT_OUTGOING_SECTION / RESP_PAYMENT_REFUND_SECTION)+ close:RESP_PAYMENT_CLOSING_REC {
+    NEW_PAYMENT_FILE = open:PAYMENT_OPENING_REC sections:(PAYMENT_INCOMING_SECTION / PAYMENT_OUTGOING_SECTION / PAYMENT_REFUND_SECTION)+ close:PAYMENT_CLOSING_REC {
         $sections[] = $close;
         return new FileNode(Layouts::LAYOUT_PAYMENT_RESPONSE, $open, ...$sections);
     };
 
-    RESP_PAYMENT_OPENING_REC = '01' 'AUTOGIRO' S10 S4 datetime:DATETIME 'BET. SPEC & STOPP TK' ^ bgcNr:BGC_NR bg:BANKGIRO EOR {
+    PAYMENT_OPENING_REC = '01' 'AUTOGIRO' S10 S4 datetime:DATETIME 'BET. SPEC & STOPP TK' ^ bgcNr:BGC_NR bg:BANKGIRO EOR {
         return new Response\ResponseOpening(
             $this->lineNr,
             [
@@ -178,7 +171,7 @@ grammar Grammar
         );
     };
 
-    RESP_PAYMENT_CLOSING_REC = '09' date:DATE '9900' nrInSecs:INT6 nrInRecs:INT12 nrOutSecs:INT6 nrOutRecs:INT12 nrRefSecs:INT6 nrRefRecs:INT12 EOR {
+    PAYMENT_CLOSING_REC = '09' date:DATE '9900' nrInSecs:INT6 nrInRecs:INT12 nrOutSecs:INT6 nrOutRecs:INT12 nrRefSecs:INT6 nrRefRecs:INT12 EOR {
         return new Response\PaymentResponseClosing(
             $this->lineNr,
             [
@@ -195,11 +188,11 @@ grammar Grammar
 
     // INCOMING PAYMENTS
 
-    RESP_PAYMENT_INCOMING_SECTION = open:RESP_PAYMENT_INCOMING_OPENING records:(RESP_PAYMENT_INCOMING_REC)* {
+    PAYMENT_INCOMING_SECTION = open:PAYMENT_INCOMING_OPENING records:(PAYMENT_INCOMING_REC)* {
         return new Response\IncomingPaymentResponseSection($open, ...$records);
     };
 
-    RESP_PAYMENT_INCOMING_OPENING = '15' account:ACCOUNT35 date:DATE serial:INT5 amount:AMOUNT18 A2 A nrRecs:INT8 EOR {
+    PAYMENT_INCOMING_OPENING = '15' account:ACCOUNT35 date:DATE serial:INT5 amount:AMOUNT18 A2 A nrRecs:INT8 EOR {
         return new Response\IncomingPaymentResponseOpening(
             $this->lineNr,
             [
@@ -212,8 +205,8 @@ grammar Grammar
         );
     };
 
-    RESP_PAYMENT_INCOMING_REC = '82' date:DATE ival:INTERVAL reps:REPS A payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:TXT16 A10 status:MSG1 EOR {
-        $status->setAttribute('message_id', "status.payment.{$status->getValue()}");
+    PAYMENT_INCOMING_REC = '82' date:DATE ival:INTERVAL reps:REPS A payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:TXT16 A10 status:MSG1 EOR {
+        $status->setAttribute('message_id', Layouts::LAYOUT_PAYMENT_RESPONSE . '.' . $status->getValue());
         return new Response\IncomingPaymentResponse(
             $this->lineNr,
             [
@@ -231,11 +224,11 @@ grammar Grammar
 
     // OUTGOING PAYMENTS
 
-    RESP_PAYMENT_OUTGOING_SECTION = open:RESP_PAYMENT_OUTGOING_OPENING records:(RESP_PAYMENT_OUTGOING_REC)* {
+    PAYMENT_OUTGOING_SECTION = open:PAYMENT_OUTGOING_OPENING records:(PAYMENT_OUTGOING_REC)* {
         return new Response\OutgoingPaymentResponseSection($open, ...$records);
     };
 
-    RESP_PAYMENT_OUTGOING_OPENING = '16' account:ACCOUNT35 date:DATE serial:INT5 amount:AMOUNT18 A2 A nrRecs:INT8 EOR {
+    PAYMENT_OUTGOING_OPENING = '16' account:ACCOUNT35 date:DATE serial:INT5 amount:AMOUNT18 A2 A nrRecs:INT8 EOR {
         return new Response\OutgoingPaymentResponseOpening(
             $this->lineNr,
             [
@@ -248,8 +241,8 @@ grammar Grammar
         );
     };
 
-    RESP_PAYMENT_OUTGOING_REC = '32' date:DATE ival:INTERVAL reps:REPS A payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:TXT16 A10 status:MSG1 EOR {
-        $status->setAttribute('message_id', "status.payment.{$status->getValue()}");
+    PAYMENT_OUTGOING_REC = '32' date:DATE ival:INTERVAL reps:REPS A payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:TXT16 A10 status:MSG1 EOR {
+        $status->setAttribute('message_id', Layouts::LAYOUT_PAYMENT_RESPONSE . '.' . $status->getValue());
         return new Response\OutgoingPaymentResponse(
             $this->lineNr,
             [
@@ -267,11 +260,11 @@ grammar Grammar
 
     // REFUND PAYMENTS
 
-    RESP_PAYMENT_REFUND_SECTION = open:RESP_PAYMENT_REFUND_OPENING records:(RESP_PAYMENT_REFUND_REC)* {
+    PAYMENT_REFUND_SECTION = open:PAYMENT_REFUND_OPENING records:(PAYMENT_REFUND_REC)* {
         return new Response\RefundPaymentResponseSection($open, ...$records);
     };
 
-    RESP_PAYMENT_REFUND_OPENING = '17' account:ACCOUNT35 date:DATE serial:INT5 amount:AMOUNT18 A2 A nrRecs:INT8 EOR {
+    PAYMENT_REFUND_OPENING = '17' account:ACCOUNT35 date:DATE serial:INT5 amount:AMOUNT18 A2 A nrRecs:INT8 EOR {
         return new Response\RefundPaymentResponseOpening(
             $this->lineNr,
             [
@@ -284,8 +277,8 @@ grammar Grammar
         );
     };
 
-    RESP_PAYMENT_REFUND_REC = '77' date:DATE ival:INTERVAL reps:REPS A payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:TXT16 refundDate:DATE status:MSG2 EOR {
-        $status->setAttribute('message_id', "status.payment.{$status->getValue()}");
+    PAYMENT_REFUND_REC = '77' date:DATE ival:INTERVAL reps:REPS A payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:TXT16 refundDate:DATE status:MSG2 EOR {
+        $status->setAttribute('message_id', Layouts::LAYOUT_PAYMENT_RESPONSE . '.' . $status->getValue());
         return new Response\RefundPaymentResponse(
             $this->lineNr,
             [
@@ -304,12 +297,12 @@ grammar Grammar
 
     // PAYMENT RESPONSES IN THE OLD FORMAT
 
-    OLD_RESP_PAYMENT_FILE = open:OLD_RESP_PAYMENT_OPENING recs:(RESP_PAYMENT_INCOMING_REC / RESP_PAYMENT_OUTGOING_REC )* close:OLD_RESP_PAYMENT_CLOSING {
+    OLD_PAYMENT_FILE = open:OLD_PAYMENT_OPENING recs:(PAYMENT_INCOMING_REC / PAYMENT_OUTGOING_REC )* close:OLD_PAYMENT_CLOSING {
         $recs[] = $close;
         return new FileNode(Layouts::LAYOUT_PAYMENT_RESPONSE_OLD, $open, ...$recs);
     };
 
-    OLD_RESP_PAYMENT_OPENING = '01' date:DATE 'AUTOGIRO' '9900' S20 S20 bgcNr:BGC_NR bg:BANKGIRO EOR {
+    OLD_PAYMENT_OPENING = '01' date:DATE 'AUTOGIRO' '9900' S20 S20 bgcNr:BGC_NR bg:BANKGIRO EOR {
         return new Response\ResponseOpening(
             $this->lineNr,
             [
@@ -320,7 +313,7 @@ grammar Grammar
         );
     };
 
-    OLD_RESP_PAYMENT_CLOSING = '09' date:DATE '9900' S10 S4 amountOut:AMOUNT12 nrOut:INT6 nrIn:INT6 '00000' amountIn:AMOUNT12 '00000000000' EOR {
+    OLD_PAYMENT_CLOSING = '09' date:DATE '9900' S10 S4 amountOut:AMOUNT12 nrOut:INT6 nrIn:INT6 '00000' amountIn:AMOUNT12 '00000000000' EOR {
         return new Response\PaymentResponseClosing(
             $this->lineNr,
             [
@@ -337,12 +330,12 @@ grammar Grammar
     // MANDATE RESPONSES
     //
 
-    RESP_MANDATE_FILE = open:(RESP_MANDATE_OPENING_OLD_REC / RESP_MANDATE_OPENING_REC) mands:RESP_MANDATE_REC* close:RESP_MANDATE_CLOSING_REC {
+    MANDATE_FILE = open:(OLD_MANDATE_OPENING_REC / MANDATE_OPENING_REC) mands:MANDATE_REC* close:MANDATE_CLOSING_REC {
         $mands[] = $close;
         return new FileNode(Layouts::LAYOUT_MANDATE_RESPONSE, $open, ...$mands);
     };
 
-    RESP_MANDATE_OPENING_REC = '01' 'AUTOGIRO' S10 S4 date:DATE S10 S2 'AG-MEDAVI' ^ S10 S bgcNr:BGC_NR bg:BANKGIRO EOR {
+    MANDATE_OPENING_REC = '01' 'AUTOGIRO' S10 S4 date:DATE S10 S2 'AG-MEDAVI' ^ S10 S bgcNr:BGC_NR bg:BANKGIRO EOR {
         return new Response\ResponseOpening(
             $this->lineNr,
             [
@@ -353,7 +346,7 @@ grammar Grammar
         );
     };
 
-    RESP_MANDATE_OPENING_OLD_REC = '01' date:DATE '9900' bg:BANKGIRO 'AG-MEDAVI' ^ EOR {
+    OLD_MANDATE_OPENING_REC = '01' date:DATE '9900' bg:BANKGIRO 'AG-MEDAVI' ^ EOR {
         return new Response\ResponseOpening(
             $this->lineNr,
             [
@@ -364,7 +357,7 @@ grammar Grammar
         );
     };
 
-    RESP_MANDATE_REC = '73' bg:BANKGIRO payerNr:PAYER_NR account:ACCOUNT16 id:ID (S5 / '00000') info:MSG2 status:MSG2 date:DATE validDate:$(A5 A)? EOR {
+    MANDATE_REC = '73' bg:BANKGIRO payerNr:PAYER_NR account:ACCOUNT16 id:ID (S5 / '00000') info:MSG2 status:MSG2 date:DATE validDate:$(A5 A)? EOR {
         // If account is empty a valid bankgiro number may be read from the payer number field
         if (!trim($account->getValue())) {
             $account = new ReferredAccountNode($account->getLineNr(), $payerNr->getValue());
@@ -391,8 +384,75 @@ grammar Grammar
         return new Response\MandateResponse($this->lineNr, $nodes);
     };
 
-    RESP_MANDATE_CLOSING_REC = '09' date:DATE '9900' nrRecs:INT7 EOR {
+    MANDATE_CLOSING_REC = '09' date:DATE '9900' nrRecs:INT7 EOR {
         return new Response\MandateResponseClosing($this->lineNr, ['date' => $date, 'nr_of_records' => $nrRecs]);
+    };
+
+    //
+    // REJECTED PAYMENT_RESPONSE
+    //
+
+    PAYMENT_REJECTION_FILE = open:(PAYMENT_REJECTION_OPENING / OLD_PAYMENT_REJECTION_OPENING) recs:PAYMENT_REJECTION_RECORD* close:PAYMENT_REJECTION_CLOSING {
+        $recs[] = $close;
+        return new FileNode(Layouts::LAYOUT_PAYMENT_REJECTION, $open, ...$recs);
+    };
+
+    PAYMENT_REJECTION_OPENING = '01' 'AUTOGIRO' S10 S4 date:DATE S10 S2 'AVVISADE BET UPPDR' ^ S2 bgcNr:BGC_NR bg:BANKGIRO EOR {
+        return new Response\ResponseOpening(
+            $this->lineNr,
+            [
+                'date' => $date,
+                'payee_bgc_number' => $bgcNr,
+                'payee_bankgiro' => $bg,
+            ]
+        );
+    };
+
+    OLD_PAYMENT_REJECTION_OPENING = '01' date:DATE 'AUTOGIRO' '9900' 'FELLISTA REG.KONTRL' S20 S bgcNr:BGC_NR bg:BANKGIRO EOR {
+        return new Response\ResponseOpening(
+            $this->lineNr,
+            [
+                'date' => $date,
+                'payee_bgc_number' => $bgcNr,
+                'payee_bankgiro' => $bg,
+            ]
+        );
+    };
+
+    PAYMENT_REJECTION_RECORD = type:(PAYMENT_REJECTION_INCOMING / PAYMENT_REJECTION_OUTGOING) date:DATE ival:INTERVAL reps:REPS payerNr:PAYER_NR amount:AMOUNT12 ref:TXT16 comment:MSG2 EOR {
+        return new $type(
+            $this->lineNr,
+            [
+                'date' => $date,
+                'interval' => $ival,
+                'repetitions' => $reps,
+                'payer_number' => $payerNr,
+                'amount' => $amount,
+                'reference' => $ref,
+                'comment' => $comment,
+            ]
+        );
+    };
+
+    PAYMENT_REJECTION_INCOMING = '82' {
+        return Response\IncomingPaymentRejectionResponse::CLASS;
+    };
+
+    PAYMENT_REJECTION_OUTGOING = '32' {
+        return Response\OutgoingPaymentRejectionResponse::CLASS;
+    };
+
+    PAYMENT_REJECTION_CLOSING = '09' date:DATE '9900' nrOut:INT6 amountOut:AMOUNT12 nrIn:INT6 amountIn:AMOUNT12 EOR {
+        return new Response\PaymentRejectionResponseClosing(
+            $this->lineNr,
+            [
+                'date' => $date,
+                'nr_of_outgoing_records' => $nrOut,
+                'total_outgoing_amount' => $amountOut,
+                'nr_of_incoming_records' => $nrIn,
+                'total_incoming_amount' => $amountIn,
+            ]
+        );
     };
 
     //

@@ -56,14 +56,14 @@ interface Messages
     const STATUS_MANDATE_BLOCK_REMOVED                              = '73.status.12';
     const STATUS_MANDATE_MAX_AMOUNT_NOT_ALLOWED                     = '73.status.24';
 
-    const STATUS_PAYMENT_APPROVED                                   = 'status.payment.0';
-    const STATUS_PAYMENT_INSUFFICIENT_FUNDS                         = 'status.payment.1';
-    const STATUS_PAYMENT_DISAPPROVED                                = 'status.payment.2';
-    const STATUS_PAYMENT_RENEWED                                    = 'status.payment.9';
-    const STATUS_PAYMENT_MANDATE_MISSING                            = 'status.payment.01';
-    const STATUS_PAYMENT_MANDATE_REVOKED                            = 'status.payment.02';
-    const STATUS_PAYMENT_UNREASONABLE_AMOUNT                        = 'status.payment.03';
-    const STATUS_PAYMENT_APPROVED_OLD_FORMAT                        = 'status.payment. ';
+    const STATUS_PAYMENT_APPROVED                                   = Layouts::LAYOUT_PAYMENT_RESPONSE . '.0';
+    const STATUS_PAYMENT_INSUFFICIENT_FUNDS                         = Layouts::LAYOUT_PAYMENT_RESPONSE . '.1';
+    const STATUS_PAYMENT_DISAPPROVED                                = Layouts::LAYOUT_PAYMENT_RESPONSE . '.2';
+    const STATUS_PAYMENT_RENEWED                                    = Layouts::LAYOUT_PAYMENT_RESPONSE . '.9';
+    const STATUS_PAYMENT_MANDATE_MISSING                            = Layouts::LAYOUT_PAYMENT_RESPONSE . '.01';
+    const STATUS_PAYMENT_MANDATE_REVOKED                            = Layouts::LAYOUT_PAYMENT_RESPONSE . '.02';
+    const STATUS_PAYMENT_UNREASONABLE_AMOUNT                        = Layouts::LAYOUT_PAYMENT_RESPONSE . '.03';
+    const STATUS_PAYMENT_APPROVED_OLD_FORMAT                        = Layouts::LAYOUT_PAYMENT_RESPONSE . '. ';
 
     const MESSAGE_MAP = [
         self::INFO_MANDATE_DELETED_BY_RECIPIENT
@@ -143,5 +143,21 @@ interface Messages
             och beloppet överstiger det betalaren rimligen kunde ha förväntat sig.',
         self::STATUS_PAYMENT_APPROVED_OLD_FORMAT
             => 'Godkänd betalning, betalningen är genomförd.',
+
+        Layouts::LAYOUT_PAYMENT_REJECTION . '.01' => 'Utgår, Medgivande saknas.',
+        Layouts::LAYOUT_PAYMENT_REJECTION . '.02' => 'Utgår, kontot är inte godkänt eller är avslutat.',
+        Layouts::LAYOUT_PAYMENT_REJECTION . '.06' => 'Felaktig periodkod.',
+        Layouts::LAYOUT_PAYMENT_REJECTION . '.07' => 'Felaktigt antal för Självförnyande uppdrag.',
+        Layouts::LAYOUT_PAYMENT_REJECTION . '.08' => 'Belopp inte numeriskt.',
+        Layouts::LAYOUT_PAYMENT_REJECTION . '.09' => 'Förbud mot utbetalningar.',
+        Layouts::LAYOUT_PAYMENT_REJECTION . '.10' => 'Bankgironumret saknas hos Bankgirot.',
+        Layouts::LAYOUT_PAYMENT_REJECTION . '.12' => 'Felaktigt betalningsdatum.',
+        Layouts::LAYOUT_PAYMENT_REJECTION . '.13' => 'Passerat betalningsdatum.',
+        Layouts::LAYOUT_PAYMENT_REJECTION . '.15'
+            => 'Mottagarbankgironumret i öppningsposten och i transaktionsposten är inte detsamma.',
+        Layouts::LAYOUT_PAYMENT_REJECTION . '.24' => 'Beloppet överstiger maxbeloppet.',
+        Layouts::LAYOUT_PAYMENT_REJECTION . '.03' => 'Utgår, Medgivandet stoppat.',
+        Layouts::LAYOUT_PAYMENT_REJECTION . '.04' => 'Felaktigt betalarbankgironummer.',
+        Layouts::LAYOUT_PAYMENT_REJECTION . '.05' => 'Felaktigt mottagarbankgironummer.',
     ];
 }
