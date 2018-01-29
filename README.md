@@ -1,7 +1,6 @@
 # Autogiro
 
 [![Packagist Version](https://img.shields.io/packagist/v/byrokrat/autogiro.svg?style=flat-square)](https://packagist.org/packages/byrokrat/autogiro)
-[![license](https://img.shields.io/github/license/byrokrat/autogiro.svg?maxAge=2592000&style=flat-square)](LICENSE)
 [![Build Status](https://img.shields.io/travis/byrokrat/autogiro/master.svg?style=flat-square)](https://travis-ci.org/byrokrat/autogiro)
 [![Quality Score](https://img.shields.io/scrutinizer/g/byrokrat/autogiro.svg?style=flat-square)](https://scrutinizer-ci.com/g/byrokrat/autogiro)
 [![Dependency Status](https://img.shields.io/gemnasium/byrokrat/autogiro.svg?style=flat-square)](https://gemnasium.com/byrokrat/autogiro)
@@ -136,3 +135,18 @@ $fileNode->accept($visitor);
 ```
 
 For a list of possible node types see the [Tree](/src/Tree) namespace.
+
+## Generate XML from node trees
+
+Autogiro is able to generate XML from node trees. Using this feature can be very
+helpful to understand how the parser interprets the various layouts.
+
+<!--
+    @extends RawFile
+    @expectOutput "/^<\?xml version=/"
+-->
+```php
+echo (new \byrokrat\autogiro\Xml\XmlWriter)->getXml(
+    $parser->parse($rawFile)
+);
+```
