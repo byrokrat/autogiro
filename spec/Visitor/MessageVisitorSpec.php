@@ -7,8 +7,10 @@ namespace spec\byrokrat\autogiro\Visitor;
 use byrokrat\autogiro\Visitor\MessageVisitor;
 use byrokrat\autogiro\Visitor\ErrorAwareVisitor;
 use byrokrat\autogiro\Visitor\ErrorObject;
+use byrokrat\autogiro\Tree\FileNode;
 use byrokrat\autogiro\Tree\MessageNode;
 use byrokrat\autogiro\Tree\IntervalNode;
+use byrokrat\autogiro\Layouts;
 use byrokrat\autogiro\Messages;
 use byrokrat\autogiro\Intervals;
 use PhpSpec\ObjectBehavior;
@@ -42,14 +44,17 @@ class MessageVisitorSpec extends ObjectBehavior
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 
-    function it_creates_valid_messages(MessageNode $node, $errorObj)
+    function it_creates_messages_from_layout_and_node_value(MessageNode $msgNode, FileNode $fileNode, $errorObj)
     {
-        $node->hasAttribute('message')->willReturn(false);
-        $node->hasAttribute('message_id')->willReturn(false);
-        $node->getValue()->willReturn(key(Messages::MESSAGE_MAP));
-        $node->setAttribute('message', Argument::type('string'))->shouldBeCalled();
+        $msgNode->hasAttribute('message')->willReturn(false);
+        $msgNode->hasAttribute('message_id')->willReturn(false);
+        $msgNode->getValue()->willReturn('0');
+        $msgNode->setAttribute('message', Argument::type('string'))->shouldBeCalled();
 
-        $this->beforeMessageNode($node);
+        $fileNode->getAttribute('layout')->willReturn(Layouts::LAYOUT_PAYMENT_RESPONSE);
+
+        $this->beforeFileNode($fileNode);
+        $this->beforeMessageNode($msgNode);
         $errorObj->addError(Argument::cetera())->shouldNotHaveBeenCalled();
     }
 

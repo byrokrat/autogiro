@@ -22,6 +22,7 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Visitor;
 
+use byrokrat\autogiro\Tree\FileNode;
 use byrokrat\autogiro\Tree\MessageNode;
 use byrokrat\autogiro\Tree\IntervalNode;
 use byrokrat\autogiro\Messages;
@@ -32,25 +33,27 @@ use byrokrat\autogiro\Intervals;
  */
 class MessageVisitor extends ErrorAwareVisitor
 {
+    /**
+     * @var string
+     */
+    private $layout;
+
+    public function beforeFileNode(FileNode $node): void
+    {
+        $this->layout = $node->getAttribute('layout');
+    }
+
     public function beforeMessageNode(MessageNode $node): void
-    {
-        $this->setMessageAttr($node, Messages::MESSAGE_MAP);
-    }
-
-    public function beforeIntervalNode(IntervalNode $node): void
-    {
-        $this->setMessageAttr($node, Intervals::MESSAGE_MAP);
-    }
-
-    private function setMessageAttr(MessageNode $node, array $messageMap): void
     {
         if ($node->hasAttribute('message')) {
             return;
         }
 
-        $messageId = $node->hasAttribute('message_id') ? $node->getAttribute('message_id') : $node->getValue();
+        $messageId = $node->hasAttribute('message_id')
+            ? $node->getAttribute('message_id')
+            : $this->layout . '.' . $node->getValue();
 
-        if (!isset($messageMap[$messageId])) {
+        if (!isset(Messages::MESSAGE_MAP[$messageId])) {
             $this->getErrorObject()->addError(
                 "Invalid message id %s on line %s",
                 $messageId,
@@ -59,9 +62,24 @@ class MessageVisitor extends ErrorAwareVisitor
             return;
         }
 
-        $node->setAttribute(
-            'message',
-            $messageMap[$messageId]
-        );
+        $node->setAttribute('message', Messages::MESSAGE_MAP[$messageId]);
+    }
+
+    public function beforeIntervalNode(IntervalNode $node): void
+    {
+        if ($node->hasAttribute('message')) {
+            return;
+        }
+
+        if (!isset(Intervals::MESSAGE_MAP[$node->getValue()])) {
+            $this->getErrorObject()->addError(
+                "Invalid interval %s on line %s",
+                $node->getValue(),
+                (string)$node->getLineNr()
+            );
+            return;
+        }
+
+        $node->setAttribute('message', Intervals::MESSAGE_MAP[$node->getValue()]);
     }
 }
