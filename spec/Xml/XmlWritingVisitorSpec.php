@@ -5,15 +5,16 @@ declare(strict_types = 1);
 namespace spec\byrokrat\autogiro\Xml;
 
 use byrokrat\autogiro\Xml\XmlWritingVisitor;
+use byrokrat\autogiro\Xml\Stringifier;
 use byrokrat\autogiro\Tree\Node;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
 class XmlWritingVisitorSpec extends ObjectBehavior
 {
-    function let(\XMLWriter $writer)
+    function let(\XMLWriter $writer, Stringifier $stringifier)
     {
-        $this->beConstructedWith($writer);
+        $this->beConstructedWith($writer, $stringifier);
     }
 
     function it_is_initializable()
@@ -21,13 +22,14 @@ class XmlWritingVisitorSpec extends ObjectBehavior
         $this->shouldHaveType(XmlWritingVisitor::CLASS);
     }
 
-    function it_writes_elements_before(Node $node, $writer)
+    function it_writes_elements_before(Node $node, $writer, $stringifier)
     {
         $node->getType()->willReturn('type');
         $writer->startElement('type')->shouldBeCalled();
 
         $node->getAttributes()->willReturn(['name' => 'value']);
-        $writer->writeAttribute('name', 'value')->shouldBeCalled();
+        $stringifier->stringify('value')->willReturn('stringified_value');
+        $writer->writeAttribute('name', 'stringified_value')->shouldBeCalled();
 
         $node->getValue()->willReturn('value');
         $writer->text('value')->shouldBeCalled();

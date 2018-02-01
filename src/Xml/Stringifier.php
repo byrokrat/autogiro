@@ -22,33 +22,38 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Xml;
 
-use byrokrat\autogiro\Tree\Node;
-
 /**
- * Access class to transform node tree into xml
+ * Helper class to cast values to string
  */
-class XmlWriter
+class Stringifier
 {
     /**
-     * @var Stringifier
+     * Arrays cast value
      */
-    private $stringifier;
+    const ARRAY_VALUE = 'ARRAY_VALUE';
 
-    public function __construct(Stringifier $stringifier)
+    /**
+     * Object cast value
+     */
+    const OBJECT_VALUE = 'OBJECT_VALUE';
+
+    /**
+     * Cast value to string
+     */
+    public function stringify($value): string
     {
-        $this->stringifier = $stringifier;
-    }
+        if ($value instanceof \DateTimeInterface) {
+            return $value->format('Y-m-d');
+        }
 
-    public function asXml(Node $node): string
-    {
-        $writer = new \XMLWriter();
-        $writer->openMemory();
-        $writer->setIndent(true);
-        $writer->setIndentString('  ');
-        $writer->startDocument("1.0");
-        $node->accept(new XmlWritingVisitor($writer, $this->stringifier));
-        $writer->endDocument();
+        if (is_array($value)) {
+            return self::ARRAY_VALUE;
+        }
 
-        return $writer->outputMemory();
+        if (is_object($value) && !method_exists($value, '__tostring')) {
+            return self::OBJECT_VALUE;
+        }
+
+        return (string)$value;
     }
 }

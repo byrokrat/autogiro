@@ -146,7 +146,9 @@ helpful to understand how the parser interprets the various layouts.
     @expectOutput "/^<\?xml version=/"
 -->
 ```php
-echo (new \byrokrat\autogiro\Xml\XmlWriter)->getXml(
+$xmlWriter = (new \byrokrat\autogiro\Xml\XmlWriterFactory)->createXmlWriter();
+
+echo $xmlWriter->asXml(
     $parser->parse($rawFile)
 );
 ```

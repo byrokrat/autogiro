@@ -35,9 +35,15 @@ class XmlWritingVisitor implements VisitorInterface
      */
     private $xmlWriter;
 
-    public function __construct(\XMLWriter $xmlWriter)
+    /**
+     * @var Stringifier
+     */
+    private $stringifier;
+
+    public function __construct(\XMLWriter $xmlWriter, Stringifier $stringifier)
     {
         $this->xmlWriter = $xmlWriter;
+        $this->stringifier = $stringifier;
     }
 
     public function visitBefore(Node $node): void
@@ -45,7 +51,7 @@ class XmlWritingVisitor implements VisitorInterface
         $this->xmlWriter->startElement($node->getType());
 
         foreach ($node->getAttributes() as $name => $value) {
-            $this->xmlWriter->writeAttribute($name, $this->castToString($value));
+            $this->xmlWriter->writeAttribute($name, $this->stringifier->stringify($value));
         }
 
         if ($node->getValue()) {
@@ -56,14 +62,5 @@ class XmlWritingVisitor implements VisitorInterface
     public function visitAfter(Node $node): void
     {
         $this->xmlWriter->endElement();
-    }
-
-    private function castToString($value): string
-    {
-        if ($value instanceof \DateTimeInterface) {
-            return $value->format('Y-m-d');
-        }
-
-        return (string)$value;
     }
 }

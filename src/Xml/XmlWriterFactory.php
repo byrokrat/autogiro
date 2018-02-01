@@ -22,33 +22,13 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Xml;
 
-use byrokrat\autogiro\Tree\Node;
-
 /**
- * Access class to transform node tree into xml
+ * Factory to create xml writer
  */
-class XmlWriter
+class XmlWriterFactory
 {
-    /**
-     * @var Stringifier
-     */
-    private $stringifier;
-
-    public function __construct(Stringifier $stringifier)
+    public function createXmlWriter(): XmlWriter
     {
-        $this->stringifier = $stringifier;
-    }
-
-    public function asXml(Node $node): string
-    {
-        $writer = new \XMLWriter();
-        $writer->openMemory();
-        $writer->setIndent(true);
-        $writer->setIndentString('  ');
-        $writer->startDocument("1.0");
-        $node->accept(new XmlWritingVisitor($writer, $this->stringifier));
-        $writer->endDocument();
-
-        return $writer->outputMemory();
+        return new XmlWriter(new Stringifier);
     }
 }
