@@ -34,8 +34,7 @@ class TextVisitorSpec extends ObjectBehavior
     function a_failing_regexp(TextNode $node)
     {
         $node->getValue()->willReturn('foo');
-        $node->hasAttribute('validation_regexp')->willReturn(true);
-        $node->getAttribute('validation_regexp')->willReturn('/bar/');
+        $node->getValidationRegexp()->willReturn('/bar/');
         $node->getLineNr()->willReturn(1);
 
         return $node;
@@ -47,10 +46,10 @@ class TextVisitorSpec extends ObjectBehavior
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 
-    function it_ignores_text_nodes_without_validation_regexp(TextNode $textNode, $errorObj)
+    function it_ignores_text_nodes_without_regexp(TextNode $textNode, $errorObj)
     {
         $textNode->getValue()->willReturn('does-not-match-regexp');
-        $textNode->hasAttribute('validation_regexp')->willReturn(false);
+        $textNode->getValidationRegexp()->willReturn('');
 
         $this->beforeTextNode($textNode);
         $errorObj->addError(Argument::cetera())->shouldNotHaveBeenCalled();
@@ -59,8 +58,7 @@ class TextVisitorSpec extends ObjectBehavior
     function it_ignores_text_nodes_with_valid_content(TextNode $textNode, $errorObj)
     {
         $textNode->getValue()->willReturn('abc');
-        $textNode->hasAttribute('validation_regexp')->willReturn(true);
-        $textNode->getAttribute('validation_regexp')->willReturn('/abc/');
+        $textNode->getValidationRegexp()->willReturn('/abc/');
 
         $this->beforeTextNode($textNode);
         $errorObj->addError(Argument::cetera())->shouldNotHaveBeenCalled();

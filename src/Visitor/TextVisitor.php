@@ -55,15 +55,15 @@ class TextVisitor extends ErrorAwareVisitor
 
     private function validateRegexp(TextNode $node, string $errorMsg): void
     {
-        if (!$node->hasAttribute('validation_regexp') || !$node->getAttribute('validation_regexp')) {
+        if (!$node->getValidationRegexp()) {
             return;
         }
 
-        if (!preg_match($node->getAttribute('validation_regexp'), $node->getValue())) {
+        if (!preg_match($node->getValidationRegexp(), $node->getValue())) {
             $this->getErrorObject()->addError(
                 $errorMsg,
                 $node->getValue(),
-                $node->getAttribute('validation_regexp'),
+                $node->getValidationRegexp(),
                 (string)$node->getLineNr()
             );
         }

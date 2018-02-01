@@ -29,9 +29,19 @@ namespace byrokrat\autogiro\Tree;
  */
 class TextNode extends Node
 {
-    public function __construct(int $lineNr = 0, string $value = '', string $validRegexp = '')
+    /**
+     * @var string
+     */
+    private $validationRegexp;
+
+    public function __construct(int $lineNr = 0, string $value = '', string $validationRegexp = '')
     {
         parent::__construct($lineNr, $value);
-        $this->setAttribute('validation_regexp', $validRegexp);
+        $this->validationRegexp = $validationRegexp;
+    }
+
+    public function getValidationRegexp(): string
+    {
+        return $this->validationRegexp;
     }
 }

@@ -27,6 +27,6 @@ class RepetitionsNodeSpec extends ObjectBehavior
 
     function it_contains_a_regexp()
     {
-        $this->getAttribute('validation_regexp')->shouldEqual('/^([0-9]{3})|( {3})$/');
+        $this->getValidationRegexp()->shouldEqual('/^([0-9]{3})|( {3})$/');
     }
 }
