@@ -30,6 +30,8 @@ use byrokrat\autogiro\Intervals;
 
 /**
  * Visitor of message nodes in tree
+ *
+ * Creates string message as attribute 'message'
  */
 class MessageVisitor extends ErrorAwareVisitor
 {

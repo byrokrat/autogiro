@@ -31,6 +31,8 @@ use byrokrat\banking\Exception as BankingException;
 
 /**
  * Validates the structure of account numbers in tree
+ *
+ * Creates account object as attribute 'account'
  */
 class AccountVisitor extends ErrorAwareVisitor
 {

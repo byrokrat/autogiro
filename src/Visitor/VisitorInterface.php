@@ -18,36 +18,22 @@
  * Copyright 2016-18 Hannes Forsgård
  */
 
-declare(strict_types = 1);
-
 namespace byrokrat\autogiro\Visitor;
 
-use byrokrat\autogiro\Tree\AmountNode;
-use byrokrat\amount\Currency\SEK;
-use byrokrat\amount\Exception as AmountException;
+use byrokrat\autogiro\Tree\Node;
 
 /**
- * Create amount object under attribute 'amount'
+ * Base node visitor interface
  */
-class AmountVisitor extends ErrorAwareVisitor
+interface VisitorInterface
 {
-    public function beforeAmountNode(AmountNode $node): void
-    {
-        if ($node->hasAttribute('amount')) {
-            return;
-        }
+    /**
+     * Generic method for visiting a node before its children
+     */
+    public function visitBefore(Node $node): void;
 
-        try {
-            $node->setAttribute(
-                'amount',
-                SEK::createFromSignalString($node->getValue())
-            );
-        } catch (AmountException $e) {
-            $this->getErrorObject()->addError(
-                "Invalid signaled amount %s on line %s",
-                $node->getValue(),
-                (string)$node->getLineNr()
-            );
-        }
-    }
+    /**
+     * Generic method for visiting a node after its children
+     */
+    public function visitAfter(Node $node): void;
 }

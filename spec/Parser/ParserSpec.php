@@ -6,7 +6,7 @@ namespace spec\byrokrat\autogiro\Parser;
 
 use byrokrat\autogiro\Parser\Parser;
 use byrokrat\autogiro\Parser\Grammar;
-use byrokrat\autogiro\Visitor\Visitor;
+use byrokrat\autogiro\Visitor\VisitorInterface;
 use byrokrat\autogiro\Tree\FileNode;
 use byrokrat\autogiro\Exception\ContentException;
 use PhpSpec\ObjectBehavior;
@@ -14,7 +14,7 @@ use Prophecy\Argument;
 
 class ParserSpec extends ObjectBehavior
 {
-    function let(Grammar $grammar, Visitor $visitor)
+    function let(Grammar $grammar, VisitorInterface $visitor)
     {
         $this->beConstructedWith($grammar, $visitor);
     }

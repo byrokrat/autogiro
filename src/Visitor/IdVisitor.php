@@ -29,6 +29,8 @@ use byrokrat\id\Exception as IdException;
 
 /**
  * Validates the structure of id numbers in tree
+ *
+ * Creates Id object as attribute 'id'
  */
 class IdVisitor extends ErrorAwareVisitor
 {

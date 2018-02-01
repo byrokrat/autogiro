@@ -23,7 +23,7 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Writer;
 
 use byrokrat\autogiro\Intervals;
-use byrokrat\autogiro\Visitor\Visitor;
+use byrokrat\autogiro\Visitor\VisitorInterface;
 use byrokrat\banking\AccountNumber;
 use byrokrat\id\IdInterface;
 use byrokrat\amount\Currency\SEK;
@@ -44,11 +44,11 @@ class Writer
     private $printer;
 
     /**
-     * @var Visitor Helper used to validate and process tree
+     * @var VisitorInterface Helper used to validate and process tree
      */
     private $visitor;
 
-    public function __construct(TreeBuilder $treeBuilder, PrintingVisitor $printer, Visitor $visitor)
+    public function __construct(TreeBuilder $treeBuilder, PrintingVisitor $printer, VisitorInterface $visitor)
     {
         $this->treeBuilder = $treeBuilder;
         $this->printer = $printer;

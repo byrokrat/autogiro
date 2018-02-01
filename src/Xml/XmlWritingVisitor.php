@@ -23,12 +23,12 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Xml;
 
 use byrokrat\autogiro\Tree\Node;
-use byrokrat\autogiro\Visitor\Visitor;
+use byrokrat\autogiro\Visitor\VisitorInterface;
 
 /**
  * Transform node tree into xml
  */
-class XmlWritingVisitor extends Visitor
+class XmlWritingVisitor implements VisitorInterface
 {
     /**
      * @var \XMLWriter

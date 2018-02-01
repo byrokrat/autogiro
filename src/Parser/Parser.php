@@ -22,7 +22,7 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Parser;
 
-use byrokrat\autogiro\Visitor\Visitor;
+use byrokrat\autogiro\Visitor\VisitorInterface;
 use byrokrat\autogiro\Tree\FileNode;
 use byrokrat\autogiro\Exception\ContentException;
 
@@ -37,11 +37,11 @@ class Parser
     private $grammar;
 
     /**
-     * @var Visitor
+     * @var VisitorInterface
      */
     private $visitor;
 
-    public function __construct(Grammar $grammar, Visitor $visitor)
+    public function __construct(Grammar $grammar, VisitorInterface $visitor)
     {
         $this->grammar = $grammar;
         $this->visitor = $visitor;

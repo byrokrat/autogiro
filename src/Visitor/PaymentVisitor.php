@@ -42,7 +42,6 @@ class PaymentVisitor extends ErrorAwareVisitor
     public function beforeOutgoingPaymentRequest(OutgoingPaymentRequest $node): void
     {
         $this->validateImmediateDateWithInterval($node);
-
         $this->validateRepetitionsWithoutInterval($node);
     }
 

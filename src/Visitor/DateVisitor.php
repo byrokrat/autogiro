@@ -27,6 +27,8 @@ use byrokrat\autogiro\Tree\DateTimeNode;
 
 /**
  * Visitor that expands date nodes
+ *
+ * Creates DateTime object as attribute 'date'
  */
 class DateVisitor extends ErrorAwareVisitor
 {

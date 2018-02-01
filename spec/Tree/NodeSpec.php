@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace spec\byrokrat\autogiro\Tree;
 
 use byrokrat\autogiro\Tree\Node;
-use byrokrat\autogiro\Visitor\Visitor;
+use byrokrat\autogiro\Visitor\VisitorInterface;
 use byrokrat\autogiro\Exception\LogicException;
 use PhpSpec\ObjectBehavior;
 
@@ -33,7 +33,7 @@ class NodeSpec extends ObjectBehavior
         $this->getValue()->shouldEqual('foobar');
     }
 
-    function it_accepts_a_visitor(Visitor $visitor, Node $node)
+    function it_accepts_a_visitor(VisitorInterface $visitor, Node $node)
     {
         $this->setChild('node', $node);
 

@@ -25,14 +25,14 @@ namespace byrokrat\autogiro\Visitor;
 use byrokrat\autogiro\Tree\Node;
 
 /**
- * Generic node visitor
+ * Visitor that dynamically calls method based on node type
  *
  * Will read the node type (eg. SomeNode) and dispatch a node specific method
  * if defined in visitor (eg. beforeSomeNode or afterSomeNode). By convention
  * such visitor methods should type hint the specific node type
  * (eg. beforeSomeNode(SomeNode $node)).
  */
-class Visitor
+class Visitor implements VisitorInterface
 {
     /**
      * Generic method for visiting a node before its children

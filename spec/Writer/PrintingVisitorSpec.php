@@ -36,7 +36,7 @@ class PrintingVisitorSpec extends ObjectBehavior
         $this->shouldHaveType(PrintingVisitor::CLASS);
     }
 
-    function it_implements_visitor_interface()
+    function it_is_a_visitor()
     {
         $this->shouldHaveType(Visitor::CLASS);
     }

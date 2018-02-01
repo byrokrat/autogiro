@@ -28,14 +28,14 @@ use byrokrat\autogiro\Exception\ContentException;
 /**
  * Container for multiple visitors
  */
-class ContainingVisitor extends ErrorAwareVisitor
+class VisitorContainer extends ErrorAwareVisitor
 {
     /**
-     * @var Visitor[] Contained visitors
+     * @var VisitorInterface[] Contained visitors
      */
     private $visitors;
 
-    public function __construct(ErrorObject $errorObj, Visitor ...$visitors)
+    public function __construct(ErrorObject $errorObj, VisitorInterface ...$visitors)
     {
         parent::__construct($errorObj);
         $this->visitors = $visitors;
@@ -44,7 +44,7 @@ class ContainingVisitor extends ErrorAwareVisitor
     /**
      * Get contained visitors
      *
-     * @return Visitor[]
+     * @return VisitorInterface[]
      */
     public function getVisitors(): array
     {
@@ -54,7 +54,7 @@ class ContainingVisitor extends ErrorAwareVisitor
     /**
      * Add a visitor to container
      */
-    public function addVisitor(Visitor $visitor): void
+    public function addVisitor(VisitorInterface $visitor): void
     {
         $this->visitors[] = $visitor;
     }

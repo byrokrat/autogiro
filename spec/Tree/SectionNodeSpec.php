@@ -6,7 +6,7 @@ namespace spec\byrokrat\autogiro\Tree;
 
 use byrokrat\autogiro\Tree\SectionNode;
 use byrokrat\autogiro\Tree\Node;
-use byrokrat\autogiro\Visitor\Visitor;
+use byrokrat\autogiro\Visitor\VisitorInterface;
 use byrokrat\autogiro\Exception\LogicException;
 use PhpSpec\ObjectBehavior;
 
@@ -32,7 +32,7 @@ class SectionNodeSpec extends ObjectBehavior
         $this->getType()->shouldEqual('SectionNode');
     }
 
-    function it_accepts_a_visitor($nodeA, $nodeB, Visitor $visitor)
+    function it_accepts_a_visitor($nodeA, $nodeB, VisitorInterface $visitor)
     {
         $visitor->visitBefore($this)->shouldBeCalled();
         $nodeA->accept($visitor)->shouldBeCalled();

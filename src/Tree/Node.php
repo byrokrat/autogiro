@@ -22,7 +22,7 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Tree;
 
-use byrokrat\autogiro\Visitor\Visitor;
+use byrokrat\autogiro\Visitor\VisitorInterface;
 use byrokrat\autogiro\Exception\LogicException;
 
 /**
@@ -59,7 +59,7 @@ class Node
     /**
      * Accept a visitor
      */
-    public function accept(Visitor $visitor): void
+    public function accept(VisitorInterface $visitor): void
     {
         $visitor->visitBefore($this);
 

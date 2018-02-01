@@ -4,18 +4,18 @@ declare(strict_types = 1);
 
 namespace spec\byrokrat\autogiro\Visitor;
 
-use byrokrat\autogiro\Visitor\ContainingVisitor;
+use byrokrat\autogiro\Visitor\VisitorContainer;
 use byrokrat\autogiro\Visitor\ErrorAwareVisitor;
 use byrokrat\autogiro\Visitor\ErrorObject;
-use byrokrat\autogiro\Visitor\Visitor;
+use byrokrat\autogiro\Visitor\VisitorInterface;
 use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Exception\ContentException;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
-class ContainingVisitorSpec extends ObjectBehavior
+class VisitorContainerSpec extends ObjectBehavior
 {
-    function let(ErrorObject $errorObj, Visitor $visitorA, Visitor $visitorB, Node $node)
+    function let(ErrorObject $errorObj, VisitorInterface $visitorA, VisitorInterface $visitorB, Node $node)
     {
         $node->getType()->willReturn('');
         $this->beConstructedWith($errorObj, $visitorA, $visitorB);
@@ -23,7 +23,7 @@ class ContainingVisitorSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(ContainingVisitor::CLASS);
+        $this->shouldHaveType(VisitorContainer::CLASS);
     }
 
     function it_is_an_error_aware_visitor()

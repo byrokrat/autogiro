@@ -59,7 +59,7 @@ class VisitorFactory
     /**
      * Create the standard set of visitors used when processing a parse tree
      */
-    public function createVisitors(int $flags = 0): Visitor
+    public function createVisitors(int $flags = 0): VisitorInterface
     {
         $flag = function (int $needle) use ($flags) {
             return ($needle & $flags) == $needle;
@@ -67,10 +67,9 @@ class VisitorFactory
 
         $errorObj = new ErrorObject;
 
-        $visitors = new ContainingVisitor(
+        $container = new VisitorContainer(
             $errorObj,
             new DateVisitor($errorObj),
-            new MandateResponseVisitor($errorObj),
             new MessageVisitor($errorObj),
             new PayeeVisitor($errorObj),
             new TextVisitor($errorObj),
@@ -84,15 +83,15 @@ class VisitorFactory
             $bankgiroFactory = new AccountFactory;
             $bankgiroFactory->whitelistFormats([BankNames::FORMAT_BANKGIRO]);
 
-            $visitors->addVisitor(new AccountVisitor($errorObj, $accountFactory, $bankgiroFactory));
+            $container->addVisitor(new AccountVisitor($errorObj, $accountFactory, $bankgiroFactory));
         }
 
         if (!$flag(self::VISITOR_IGNORE_AMOUNTS)) {
-            $visitors->addVisitor(new AmountVisitor($errorObj));
+            $container->addVisitor(new AmountVisitor($errorObj));
         }
 
         if (!$flag(self::VISITOR_IGNORE_IDS)) {
-            $visitors->addVisitor(
+            $container->addVisitor(
                 new IdVisitor(
                     $errorObj,
                     new OrganizationIdFactory,
@@ -101,6 +100,6 @@ class VisitorFactory
             );
         }
 
-        return $visitors;
+        return $container;
     }
 }

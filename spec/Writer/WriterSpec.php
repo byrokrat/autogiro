@@ -8,7 +8,7 @@ use byrokrat\autogiro\Writer\Writer;
 use byrokrat\autogiro\Writer\TreeBuilder;
 use byrokrat\autogiro\Writer\PrintingVisitor;
 use byrokrat\autogiro\Writer\Output;
-use byrokrat\autogiro\Visitor\Visitor;
+use byrokrat\autogiro\Visitor\VisitorInterface;
 use byrokrat\autogiro\Tree\FileNode;
 use byrokrat\autogiro\Intervals;
 use byrokrat\banking\AccountNumber;
@@ -19,7 +19,7 @@ use Prophecy\Argument;
 
 class WriterSpec extends ObjectBehavior
 {
-    function let(TreeBuilder $treeBuilder, PrintingVisitor $printer, Visitor $visitor)
+    function let(TreeBuilder $treeBuilder, PrintingVisitor $printer, VisitorInterface $visitor)
     {
         $this->beConstructedWith($treeBuilder, $printer, $visitor);
     }
