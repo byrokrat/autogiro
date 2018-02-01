@@ -4,6 +4,8 @@ packages:
     - "symfony/finder: ^4.0"
 CONFIG;
 
+$stopOnFailure = true;
+
 echo "Simple melody script to test parsing all autogiro files in a directory.\n\n";
 echo "Usage: melody run test_directory.php [DIRNAME]\n\n";
 
@@ -22,20 +24,24 @@ $finder = Symfony\Component\Finder\Finder::create()
 $parser = (new \byrokrat\autogiro\Parser\ParserFactory)->createParser();
 
 $passCount = 0;
+$failCount = 0;
 
 foreach ($finder as $file) {
     try {
         $parser->parse($file->getContents());
-        echo "PASS: {$file->getFilename()}\n";
+        echo "PASS: {$file->getRelativePathname()}\n";
         $passCount++;
     } catch (Exception $e) {
         printf(
-            "\nFAIL: %s \n\n%s\n",
-            $file->getFilename(),
+            "\nFAIL: %s \n\n%s\n\n",
+            $file->getRelativePathname(),
             $e->getMessage()
         );
-        die(1);
+        $failCount++;
+        if ($stopOnFailure) {
+            die(1);
+        }
     }
 }
 
-echo "\nDONE! $passCount files tested.";
+echo "\nDONE! $passCount files passed. $failCount failed.\n";
