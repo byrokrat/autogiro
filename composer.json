@@ -20,7 +20,7 @@
         "php": ">=7.1",
         "ext-mbstring": "*",
         "byrokrat/amount": "^2",
-        "byrokrat/banking": "^1.4",
-        "byrokrat/id": "^1.1"
+        "byrokrat/banking": "^2.1",
+        "byrokrat/id": "^2"
     }
 }

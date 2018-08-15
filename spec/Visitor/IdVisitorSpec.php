@@ -8,8 +8,7 @@ use byrokrat\autogiro\Visitor\IdVisitor;
 use byrokrat\autogiro\Visitor\ErrorAwareVisitor;
 use byrokrat\autogiro\Visitor\ErrorObject;
 use byrokrat\autogiro\Tree\IdNode;
-use byrokrat\id\OrganizationIdFactory;
-use byrokrat\id\PersonalIdFactory;
+use byrokrat\id\IdFactoryInterface;
 use byrokrat\id\IdInterface;
 use byrokrat\id\Exception\RuntimeException as IdException;
 use PhpSpec\ObjectBehavior;
@@ -19,8 +18,8 @@ class IdVisitorSpec extends ObjectBehavior
 {
     function let(
         ErrorObject $errorObj,
-        OrganizationIdFactory $organizationIdFactory,
-        PersonalIdFactory $personalIdFactory,
+        IdFactoryInterface $organizationIdFactory,
+        IdFactoryInterface $personalIdFactory,
         IdInterface $id
     ) {
         $organizationIdFactory->createId('-not-valid')->willThrow(IdException::CLASS);

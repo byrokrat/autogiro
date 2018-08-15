@@ -26,7 +26,7 @@ use byrokrat\autogiro\Tree\AccountNode;
 use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Tree\BankgiroNode;
 use byrokrat\autogiro\Tree\ReferredAccountNode;
-use byrokrat\banking\AccountFactory;
+use byrokrat\banking\AccountFactoryInterface;
 use byrokrat\banking\Exception as BankingException;
 
 /**
@@ -37,17 +37,20 @@ use byrokrat\banking\Exception as BankingException;
 class AccountVisitor extends ErrorAwareVisitor
 {
     /**
-     * @var AccountFactory
+     * @var AccountFactoryInterface
      */
     private $accountFactory;
 
     /**
-     * @var AccountFactory
+     * @var AccountFactoryInterface
      */
     private $bankgiroFactory;
 
-    public function __construct(ErrorObject $errorObj, AccountFactory $accountFactory, AccountFactory $bankgiroFactory)
-    {
+    public function __construct(
+        ErrorObject $errorObj,
+        AccountFactoryInterface $accountFactory,
+        AccountFactoryInterface $bankgiroFactory
+    ) {
         parent::__construct($errorObj);
         $this->accountFactory = $accountFactory;
         $this->bankgiroFactory = $bankgiroFactory;
@@ -72,7 +75,7 @@ class AccountVisitor extends ErrorAwareVisitor
         $this->writeAccountAttr($node->getAttribute('referred_value'), $node, $this->accountFactory);
     }
 
-    private function writeAccountAttr(string $number, Node $node, AccountFactory $factory): void
+    private function writeAccountAttr(string $number, Node $node, AccountFactoryInterface $factory): void
     {
         if ($node->hasAttribute('account')) {
             return;

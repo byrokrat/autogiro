@@ -27,7 +27,8 @@ use byrokrat\id\NullIdFactory;
 use byrokrat\id\OrganizationIdFactory;
 use byrokrat\id\PersonalIdFactory;
 use byrokrat\banking\AccountFactory;
-use byrokrat\banking\BankNames;
+use byrokrat\banking\BankgiroFactory;
+use byrokrat\banking\DelegatingFactory;
 
 /**
  * Creates the set of standard visitors
@@ -77,13 +78,13 @@ class VisitorFactory
         );
 
         if (!$flag(self::VISITOR_IGNORE_ACCOUNTS)) {
-            $accountFactory = new AccountFactory;
-            $accountFactory->blacklistFormats([BankNames::FORMAT_PLUSGIRO]);
-
-            $bankgiroFactory = new AccountFactory;
-            $bankgiroFactory->whitelistFormats([BankNames::FORMAT_BANKGIRO]);
-
-            $container->addVisitor(new AccountVisitor($errorObj, $accountFactory, $bankgiroFactory));
+            $container->addVisitor(
+                new AccountVisitor(
+                    $errorObj,
+                    new DelegatingFactory(new AccountFactory, new BankgiroFactory),
+                    new BankgiroFactory
+                )
+            );
         }
 
         if (!$flag(self::VISITOR_IGNORE_AMOUNTS)) {

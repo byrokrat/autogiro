@@ -23,8 +23,7 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Visitor;
 
 use byrokrat\autogiro\Tree\IdNode;
-use byrokrat\id\OrganizationIdFactory;
-use byrokrat\id\PersonalIdFactory;
+use byrokrat\id\IdFactoryInterface;
 use byrokrat\id\Exception as IdException;
 
 /**
@@ -35,19 +34,19 @@ use byrokrat\id\Exception as IdException;
 class IdVisitor extends ErrorAwareVisitor
 {
     /**
-     * @var OrganizationIdFactory
+     * @var IdFactoryInterface
      */
     private $organizationIdFactory;
 
     /**
-     * @var PersonalIdFactory
+     * @var IdFactoryInterface
      */
     private $personalIdFactory;
 
     public function __construct(
         ErrorObject $errorObj,
-        OrganizationIdFactory $organizationIdFactory,
-        PersonalIdFactory $personalIdFactory
+        IdFactoryInterface $organizationIdFactory,
+        IdFactoryInterface $personalIdFactory
     ) {
         parent::__construct($errorObj);
         $this->organizationIdFactory = $organizationIdFactory;
