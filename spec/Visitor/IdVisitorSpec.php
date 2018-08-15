@@ -81,4 +81,12 @@ class IdVisitorSpec extends ObjectBehavior
         $this->beforeIdNode($idNode);
         $idNode->setAttribute('id', Argument::any())->shouldNotHaveBeenCalled();
     }
+
+    function it_does_not_create_id_if_value_is_zeros(IdNode $idNode)
+    {
+        $idNode->hasAttribute('id')->willReturn(false);
+        $idNode->getValue()->willReturn('00000');
+        $this->beforeIdNode($idNode);
+        $idNode->setAttribute('id', Argument::any())->shouldNotHaveBeenCalled();
+    }
 }

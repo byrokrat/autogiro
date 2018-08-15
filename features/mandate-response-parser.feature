@@ -66,3 +66,13 @@ Feature: Mandate response parser
     """
     Then I find a "LAYOUT_MANDATE_RESPONSE" layout
     And the last "MandateResponse" contains account "5050-1055"
+
+  Scenario: I parse a response where id and account are optional
+    Given a parser
+    When I parse:
+    """
+    012018032299000050501055AG-MEDAVI
+    73005050105500000000000000010000000000000000000000000000     033320180322
+    092018032299000000001
+    """
+    Then I find a "LAYOUT_MANDATE_RESPONSE" layout

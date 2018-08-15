@@ -59,14 +59,16 @@ class IdVisitor extends ErrorAwareVisitor
             return;
         }
 
+        if (!trim($node->getValue(), '0')) {
+            return;
+        }
+
         try {
             if (in_array(substr($node->getValue(), 0, 2), ['00', '99'])) {
                 $this->createOrganizationId($node);
-                return;
+            } else {
+                $this->createPersonalId($node);
             }
-
-            $this->createPersonalId($node);
-            return;
         } catch (IdException $exception) {
             $this->getErrorObject()->addError(
                 "Invalid id number %s (%s) on line %s",
