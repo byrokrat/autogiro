@@ -23,6 +23,7 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Writer;
 
 use byrokrat\autogiro\Visitor\Visitor;
+use byrokrat\autogiro\Exception\RuntimeException;
 use byrokrat\autogiro\Exception\LogicException;
 use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Tree\DateNode;
@@ -117,8 +118,15 @@ class PrintingVisitor extends Visitor
     public function beforeAmountNode(AmountNode $node): void
     {
         $this->assertAttribute($node, 'amount', SEK::CLASS);
+
+        $amount = $node->getAttribute('amount');
+
+        if ($amount->isGreaterThan(new SEK('9999999999.99')) || $amount->isLessThan(new SEK('-9999999999.99'))) {
+            throw new RuntimeException('Amount must be between 9999999999.99 and -9999999999.99');
+        }
+
         $this->output->write(
-            str_pad($node->getAttribute('amount')->getSignalString(), 12, '0', STR_PAD_LEFT)
+            str_pad($amount->getSignalString(), 12, '0', STR_PAD_LEFT)
         );
     }
 

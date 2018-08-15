@@ -6,6 +6,7 @@ namespace spec\byrokrat\autogiro\Writer;
 
 use byrokrat\autogiro\Writer\PrintingVisitor;
 use byrokrat\autogiro\Writer\Output;
+use byrokrat\autogiro\Exception\RuntimeException;
 use byrokrat\autogiro\Exception\LogicException;
 use byrokrat\autogiro\Tree\DateNode;
 use byrokrat\autogiro\Tree\TextNode;
@@ -156,13 +157,26 @@ class PrintingVisitorSpec extends ObjectBehavior
         $output->write('123')->shouldHaveBeenCalled();
     }
 
-    function it_prints_amounts(AmountNode $node, SEK $amount, $output)
+    function it_prints_amounts(AmountNode $node, $output)
     {
-        $amount->getSignalString()->willReturn('1234567890');
         $node->hasAttribute('amount')->willReturn(true);
-        $node->getAttribute('amount')->willReturn($amount);
+        $node->getAttribute('amount')->willReturn(new SEK('12345678.90'));
         $this->beforeAmountNode($node);
         $output->write(Argument::is('001234567890'))->shouldHaveBeenCalled();
+    }
+
+    function it_fails_on_to_large_amounts(AmountNode $node)
+    {
+        $node->hasAttribute('amount')->willReturn(true);
+        $node->getAttribute('amount')->willReturn(new SEK('10000000000.00'));
+        $this->shouldThrow(RuntimeException::CLASS)->duringBeforeAmountNode($node);
+    }
+
+    function it_fails_on_to_small_amounts(AmountNode $node)
+    {
+        $node->hasAttribute('amount')->willReturn(true);
+        $node->getAttribute('amount')->willReturn(new SEK('-10000000000.00'));
+        $this->shouldThrow(RuntimeException::CLASS)->duringBeforeAmountNode($node);
     }
 
     function it_fails_on_missing_amounts(AmountNode $node)
