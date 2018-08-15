@@ -7,11 +7,10 @@ php:
   - 7.1
 
 install:
-  - composer install --no-dev
-  - composer global require phpspec/phpspec:^4 behat/behat:^3.3 hanneskod/readme-tester:^1.0@beta
+  - composer install
+  - composer global require chh/bob:^1@alpha
   - export PATH=$PATH:$HOME/.composer/vendor/bin/
+  - bob install_dev_tools
 
 script:
-  - phpspec run --verbose
-  - behat --verbose
-  - readme-tester test README.md
+  - bob

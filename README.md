@@ -3,7 +3,6 @@
 [![Packagist Version](https://img.shields.io/packagist/v/byrokrat/autogiro.svg?style=flat-square)](https://packagist.org/packages/byrokrat/autogiro)
 [![Build Status](https://img.shields.io/travis/byrokrat/autogiro/master.svg?style=flat-square)](https://travis-ci.org/byrokrat/autogiro)
 [![Quality Score](https://img.shields.io/scrutinizer/g/byrokrat/autogiro.svg?style=flat-square)](https://scrutinizer-ci.com/g/byrokrat/autogiro)
-[![Dependency Status](https://img.shields.io/gemnasium/byrokrat/autogiro.svg?style=flat-square)](https://gemnasium.com/byrokrat/autogiro)
 
 Read and write files for the swedish direct debit system autogirot.
 
@@ -34,7 +33,7 @@ identification numbers using the [Amount](https://github.com/byrokrat/amount),
 [Id](https://github.com/byrokrat/id) and [Banking](https://github.com/byrokrat/banking)
 packages respectively. Opt out of this functionality by using one of the visitor constants:
 
-<!-- @extends ParserFactory -->
+<!-- @include ParserFactory -->
 ```php
 $parser = $factory->createParser(\byrokrat\autogiro\Parser\ParserFactory::VISITOR_IGNORE_EXTERNAL);
 ```
@@ -67,7 +66,7 @@ Create a writer by supplying your bankgiro and BGC customer numbers to `WriterFa
 
 <!--
     @example WriterFactory
-    @extends ParserFactory
+    @include ParserFactory
 -->
 ```php
 $writer = (new \byrokrat\autogiro\Writer\WriterFactory)->createWriter(
@@ -79,8 +78,7 @@ $writer = (new \byrokrat\autogiro\Writer\WriterFactory)->createWriter(
 Perform actions on the writer and generate file.
 
 <!--
-    @example RawFile
-    @extends WriterFactory
+    @include WriterFactory
     @expectOutput /AUTOGIRO/
 -->
 ```php
@@ -96,10 +94,19 @@ Will output something like:
 0300111111190000001234567890                                                    
 ```
 
+<!--
+    @example RawFile
+    @include WriterFactory
+```php
+$writer->deleteMandate('1234567890');
+$rawFile = $writer->getContent();
+```
+-->
+
 ## Grep nodes based on type
 
 <!--
-    @extends RawFile
+    @include RawFile
     @expectOutput "/Delete mandate request found!/"
 -->
 ```php
@@ -117,7 +124,7 @@ $fileNode->accept($visitor);
 This can also be done dynamically.
 
 <!--
-    @extends RawFile
+    @include RawFile
     @expectOutput "/Delete mandate request found!/"
 -->
 ```php
@@ -142,7 +149,7 @@ Autogiro is able to generate XML from node trees. Using this feature can be very
 helpful to understand how the parser interprets the various layouts.
 
 <!--
-    @extends RawFile
+    @include RawFile
     @expectOutput "/^<\?xml version=/"
 -->
 ```php
@@ -151,4 +158,36 @@ $xmlWriter = (new \byrokrat\autogiro\Xml\XmlWriterFactory)->createXmlWriter();
 echo $xmlWriter->asXml(
     $parser->parse($rawFile)
 );
+```
+
+## Hacking
+
+Install dependencies
+
+```shell
+composer install
+```
+
+Install the bob build environment
+
+```shell
+composer global require chh/bob:^1.0@alpha
+```
+
+If needed put the "global" composer bin dir in your path.
+
+```shell
+export PATH=$PATH:$HOME/.composer/vendor/bin/
+```
+
+Install development tools
+
+```shell
+bob install_dev_tools
+```
+
+Build and run tests
+
+```shell
+bob
 ```

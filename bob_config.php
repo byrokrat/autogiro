@@ -21,7 +21,7 @@ task('behat', ['src/Parser/Grammar.php'], function() {
 
 desc('Tests documentation examples');
 task('examples', ['src/Parser/Grammar.php'], function() {
-    sh('readme-tester test README.md', null, ['failOnError' => true]);
+    sh('readme-tester README.md', null, ['failOnError' => true]);
     println('Documentation examples valid');
 });
 
@@ -45,6 +45,17 @@ task('build_parser', ['src/Parser/Grammar.php']);
 $parserFiles = fileList('*.peg')->in([__DIR__ . '/src/Parser']);
 
 fileTask('src/Parser/Grammar.php', $parserFiles, function() {
-    sh('vendor/bin/phpeg generate src/Parser/Grammar.peg', null, ['failOnError' => true]);
+    sh('phpeg generate src/Parser/Grammar.peg', null, ['failOnError' => true]);
     println('Generated parser');
+});
+
+desc('Globally install development tools');
+task('install_dev_tools', function() {
+    sh('composer global require consolidation/cgr', null, ['failOnError' => true]);
+    sh('cgr scato/phpeg:^1.0', null, ['failOnError' => true]);
+    sh('cgr phpspec/phpspec', null, ['failOnError' => true]);
+    sh('cgr behat/behat', null, ['failOnError' => true]);
+    sh('cgr hanneskod/readme-tester:^1.0@beta', null, ['failOnError' => true]);
+    sh('cgr squizlabs/php_codesniffer', null, ['failOnError' => true]);
+    sh('cgr phpstan/phpstan', null, ['failOnError' => true]);
 });
