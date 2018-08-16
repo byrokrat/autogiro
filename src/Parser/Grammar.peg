@@ -41,7 +41,7 @@ use byrokrat\autogiro\Tree\TextNode;
 
 grammar Grammar
 {
-    start FILE = RESET_LINE_COUNT file:(REQUEST_FILE / MANDATE_FILE / PAYMENT_FILE / PAYMENT_REJECTION_FILE) {
+    start FILE = RESET_LINE_COUNT file:(REQUEST_FILE / MANDATE_FILE / PAYMENT_FILE / PAYMENT_REJECTION_FILE / AMENDMENT_FILE) {
         return $file;
     };
 
@@ -335,7 +335,7 @@ grammar Grammar
         return new FileNode(Layouts::LAYOUT_MANDATE_RESPONSE, $open, ...$mands);
     };
 
-    MANDATE_OPENING_REC = '01' 'AUTOGIRO' S10 S4 date:DATE S10 S2 'AG-MEDAVI' ^ S10 S bgcNr:BGC_NR bg:BANKGIRO EOR {
+    MANDATE_OPENING_REC = '01' 'AUTOGIRO' S10 S4 date:DATE S10 '  AG-MEDAVI' ^ S10 S bgcNr:BGC_NR bg:BANKGIRO EOR {
         return new Response\ResponseOpening(
             $this->lineNr,
             [
@@ -397,7 +397,7 @@ grammar Grammar
         return new FileNode(Layouts::LAYOUT_PAYMENT_REJECTION, $open, ...$recs);
     };
 
-    PAYMENT_REJECTION_OPENING = '01' 'AUTOGIRO' S10 S4 date:DATE S10 S2 'AVVISADE BET UPPDR' ^ S2 bgcNr:BGC_NR bg:BANKGIRO EOR {
+    PAYMENT_REJECTION_OPENING = '01' 'AUTOGIRO' S10 S4 date:DATE S10 '  AVVISADE BET UPPDR  ' ^ bgcNr:BGC_NR bg:BANKGIRO EOR {
         return new Response\ResponseOpening(
             $this->lineNr,
             [
@@ -408,7 +408,7 @@ grammar Grammar
         );
     };
 
-    OLD_PAYMENT_REJECTION_OPENING = '01' date:DATE 'AUTOGIRO' '9900' 'FELLISTA REG.KONTRL' S20 S bgcNr:BGC_NR bg:BANKGIRO EOR {
+    OLD_PAYMENT_REJECTION_OPENING = '01' date:DATE 'AUTOGIRO' '9900' 'FELLISTA REG.KONTRL' ^ S20 S bgcNr:BGC_NR bg:BANKGIRO EOR {
         return new Response\ResponseOpening(
             $this->lineNr,
             [
@@ -451,6 +451,76 @@ grammar Grammar
                 'total_outgoing_amount' => $amountOut,
                 'nr_of_incoming_records' => $nrIn,
                 'total_incoming_amount' => $amountIn,
+            ]
+        );
+    };
+
+    //
+    // AMENDMENT RESPONSES
+    //
+
+    // TODO flytta till annat ställe och använd för alla openings om jag får det att funka...
+    OPENING_INTRO = '01AUTOGIRO              ' date:DATE '            ' {
+        return $date;
+    };
+
+    // TODO flytta till annat ställe och använd för alla openings om jag får det att funka...
+    OLD_OPENING_INTRO = '01' date:DATE 'AUTOGIRO9900' {
+        return $date;
+    };
+
+    AMENDMENT_FILE = open:(OLD_AMENDMENT_OPENING / AMENDMENT_OPENING) recs:AMENDMENT_RECORD* close:AMENDMENT_CLOSING {
+        $recs[] = $close;
+        return new FileNode(Layouts::LAYOUT_AMENDMENT_RESPONSE, $open, ...$recs);
+    };
+
+    AMENDMENT_OPENING = date:OPENING_INTRO 'MAKULERING/ÄNDRING  ' ^ bgcNr:BGC_NR bg:BANKGIRO EOR {
+        return new Response\ResponseOpening(
+            $this->lineNr,
+            [
+                'date' => $date,
+                'payee_bgc_number' => $bgcNr,
+                'payee_bankgiro' => $bg,
+            ]
+        );
+    };
+
+    OLD_AMENDMENT_OPENING = date:OLD_OPENING_INTRO 'MAK/ÄNDRINGSLISTA   ' ^ S20 bgcNr:BGC_NR bg:BANKGIRO EOR {
+        return new Response\ResponseOpening(
+            $this->lineNr,
+            [
+                'date' => $date,
+                'payee_bgc_number' => $bgcNr,
+                'payee_bankgiro' => $bg,
+            ]
+        );
+    };
+
+    AMENDMENT_RECORD = !'09' tc:MSG2 date:DATE payerNr:PAYER_NR type:MSG2 amount:AMOUNT12 A8 A8 ref:TXT16 comment:MSG2 EOR {
+        $tc->setAttribute('message_id', Layouts::LAYOUT_AMENDMENT_RESPONSE . '.TC.' . $tc->getValue());
+        return new Response\AmendmentResponse(
+            $this->lineNr,
+            [
+                'code' => $tc,
+                'date' => $date,
+                'payer_number' => $payerNr,
+                'type' => $type,
+                'amount' => $amount,
+                'reference' => $ref,
+                'comment' => $comment,
+            ]
+        );
+    };
+
+    AMENDMENT_CLOSING = '09' date:DATE '9900' S10 S4 amountOut:AMOUNT12 nrOut:INT6 nrIn:INT6 A4 amountIn:AMOUNT12 EOR {
+        return new Response\ResponseClosing(
+            $this->lineNr,
+            [
+                'date' => $date,
+                'nr_of_amended_outgoing_records' => $nrOut,
+                'total_amended_outgoing_amount' => $amountOut,
+                'nr_of_amended_incoming_records' => $nrIn,
+                'total_amended_incoming_amount' => $amountIn,
             ]
         );
     };
@@ -559,11 +629,17 @@ grammar Grammar
 
     // ALPHA-NUM
 
-    A "ALPHA-NUMERIC" = [a-zA-Z0-9 \/&åäöÅÄÖ-];
+    // TODO testar med ett mer tillåtande system..
+    //A "ALPHA-NUMERIC" = [a-zA-Z0-9 \/&åäöÅÄÖ-];
+    A "ALPHA-NUMERIC" = !"\n" .;
 
     A2 = $(A A);
 
+    A4 = $(A2 A2);
+
     A5 = $(A A A A A);
+
+    A8 = $(A5 A2 A);
 
     A10 = $(A5 A5);
 
@@ -571,9 +647,7 @@ grammar Grammar
 
     S "SPACE" = ' ';
 
-    S2 = $(S S);
-
-    S4 = $(S2 S2);
+    S4 = $(S S S S);
 
     S5 = $(S4 S);
 
@@ -583,7 +657,7 @@ grammar Grammar
 
     // ENDINGS
 
-    EOR "END_OF_RECORD" = S* (EOL / EOF);
+    EOR "END_OF_RECORD" = A* (EOL / EOF);
 
     EOL "END_OF_LINE" = "\r"? "\n" {
         $this->lineNr++;

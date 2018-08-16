@@ -159,5 +159,39 @@ interface Messages
         Layouts::LAYOUT_PAYMENT_REJECTION . '.03' => 'Utgår, Medgivandet stoppat.',
         Layouts::LAYOUT_PAYMENT_REJECTION . '.04' => 'Felaktigt betalarbankgironummer.',
         Layouts::LAYOUT_PAYMENT_REJECTION . '.05' => 'Felaktigt mottagarbankgironummer.',
+
+        Layouts::LAYOUT_AMENDMENT_RESPONSE . '.TC.03' => 'Makulerad på grund av borttaget Medgivande.',
+        Layouts::LAYOUT_AMENDMENT_RESPONSE . '.TC.11' => 'Makulerad av betalaren/betalarens bank.',
+        Layouts::LAYOUT_AMENDMENT_RESPONSE . '.TC.21' => 'Makulerad, Betalningsmottagarens avtal avslutat.',
+        Layouts::LAYOUT_AMENDMENT_RESPONSE . '.TC.23' => 'Makulera alla betalningar för ett betalarnummer.',
+        Layouts::LAYOUT_AMENDMENT_RESPONSE . '.TC.24'
+            => 'Makulera alla betalningar för ett betalarnummer inom en angiven betalningsdag.',
+        Layouts::LAYOUT_AMENDMENT_RESPONSE . '.TC.25'
+            => 'Makulera en betalning för ett betalarnummer inom angiven betalningsdag, belopp och eventuell referens.',
+        Layouts::LAYOUT_AMENDMENT_RESPONSE . '.TC.22' => 'Makulera alla betalningar angiven betalningsdag',
+        Layouts::LAYOUT_AMENDMENT_RESPONSE . '.TC.26' => 'Ändra alla betalningar till ny betalningsdag.',
+        Layouts::LAYOUT_AMENDMENT_RESPONSE . '.TC.27'
+            => 'Ändra alla betalningar från angiven betalningsdag till ny betalningsdag.',
+        Layouts::LAYOUT_AMENDMENT_RESPONSE . '.TC.28'
+            => 'Ändra alla betalningar inom ett betalarnummer från angiven betalningsdag till ny betalningsdag.',
+        Layouts::LAYOUT_AMENDMENT_RESPONSE . '.TC.29'
+            => 'Ändra en betalning från angiven betalningsdag till ny betalningsdag.',
+
+        Layouts::LAYOUT_AMENDMENT_RESPONSE . '.00' => '',
+        Layouts::LAYOUT_AMENDMENT_RESPONSE . '.82' => 'Inbetalning',
+        Layouts::LAYOUT_AMENDMENT_RESPONSE . '.32' => 'Utbetalning',
+
+        Layouts::LAYOUT_AMENDMENT_RESPONSE . '.01' => 'Felaktig betalningsdag.',
+        Layouts::LAYOUT_AMENDMENT_RESPONSE . '.02' => 'Felaktigt betalarnummer.',
+        Layouts::LAYOUT_AMENDMENT_RESPONSE . '.04' => 'Felaktig debiteringskod.',
+        Layouts::LAYOUT_AMENDMENT_RESPONSE . '.05' => 'Felaktigt belopp.',
+        Layouts::LAYOUT_AMENDMENT_RESPONSE . '.06' => 'Felaktig ny betalningsdag.',
+        Layouts::LAYOUT_AMENDMENT_RESPONSE . '.10' => 'Felaktigt mottagarbankgironummer (fel checksiffra).',
+        Layouts::LAYOUT_AMENDMENT_RESPONSE . '.11' => 'Mottagarbankgironummer saknas (noll eller blankt).',
+        Layouts::LAYOUT_AMENDMENT_RESPONSE . '.12' => 'Makulerad.',
+        Layouts::LAYOUT_AMENDMENT_RESPONSE . '.13' => 'Betalning saknas, inte åtgärdad.',
+        Layouts::LAYOUT_AMENDMENT_RESPONSE . '.14' => 'Ändrad betalningsdag.',
+        Layouts::LAYOUT_AMENDMENT_RESPONSE . '.15' => 'Inte ändrad, Självförnyande uppdrag.',
+        Layouts::LAYOUT_AMENDMENT_RESPONSE . '.18' => 'Ändrad betalningsdag.',
     ];
 }

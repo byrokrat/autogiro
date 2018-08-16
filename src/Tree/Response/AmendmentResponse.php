@@ -20,17 +20,13 @@
 
 declare(strict_types = 1);
 
-namespace byrokrat\autogiro\Tree;
+namespace byrokrat\autogiro\Tree\Response;
+
+use byrokrat\autogiro\Tree\RecordNode;
 
 /**
- * Node that wrapps a payer number
- *
- * @see \byrokrat\autogiro\Visitor\TextVisitor Validates node content
+ * TODO
  */
-class PayerNumberNode extends TextNode
+class AmendmentResponse extends RecordNode
 {
-    public function __construct(int $lineNr = 0, string $value = '')
-    {
-        parent::__construct($lineNr, $value, '/^[0-9 ]*$/');
-    }
 }

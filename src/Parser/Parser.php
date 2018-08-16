@@ -52,6 +52,7 @@ class Parser
      */
     public function parse(string $content): FileNode
     {
+        #$content = iconv(mb_detect_encoding($content, mb_detect_order(), true), "UTF-8", $content);
         try {
             $tree = $this->grammar->parse($content);
         } catch (\InvalidArgumentException $exception) {
