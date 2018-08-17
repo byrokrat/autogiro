@@ -16,6 +16,9 @@
             "byrokrat\\autogiro\\": ["src/"]
         }
     },
+    "bin": [
+        "bin/autogiro2xml"
+    ],
     "require": {
         "php": ">=7.1",
         "ext-mbstring": "*",
