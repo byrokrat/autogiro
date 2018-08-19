@@ -24,7 +24,14 @@ class VisitorFactorySpec extends ObjectBehavior
     function it_creates_visitors_with_no_external_visitors()
     {
         $this->createVisitors(VisitorFactory::VISITOR_IGNORE_EXTERNAL)->shouldNotBeLike(
-            $this->createVisitors()->shouldHaveType(VisitorInterface::CLASS)
+            $this->createVisitors()
+        );
+    }
+
+    function it_creates_visitors_without_strict_validation()
+    {
+        $this->createVisitors(VisitorFactory::VISITOR_IGNORE_STRICT_VALIDATION)->shouldNotBeLike(
+            $this->createVisitors()
         );
     }
 }

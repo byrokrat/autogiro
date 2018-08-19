@@ -24,9 +24,6 @@ namespace byrokrat\autogiro\Tree\Response;
 
 use byrokrat\autogiro\Tree\RecordNode;
 
-/**
- * TODO
- */
 class AmendmentResponse extends RecordNode
 {
 }

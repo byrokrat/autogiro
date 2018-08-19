@@ -27,7 +27,10 @@ require __DIR__ . '/../vendor/autoload.php';
 
 $source = $argv[1] ?? 'php://stdin';
 
-$parser = (new Parser\ParserFactory)->createParser();
+$parser = (new Parser\ParserFactory)->createParser(
+    Parser\ParserFactory::VISITOR_IGNORE_STRICT_VALIDATION
+);
+
 $xmlWriter = (new Xml\XmlWriterFactory)->createXmlWriter();
 
 try {
@@ -35,6 +38,6 @@ try {
         $parser->parse(file_get_contents($source))
     );
 } catch (Exception $e) {
-    echo $e->getMessage(), "\n";
+    fwrite(STDERR, $e->getMessage()."\n");
     exit(1);
 }

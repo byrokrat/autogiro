@@ -14,8 +14,6 @@ use byrokrat\amount\Currency\SEK;
 
 /**
  * Defines application features from the specific context.
- *
- * @TODO Break up into traits to create a more robust setup..
  */
 class FeatureContext implements Context, SnippetAcceptingContext
 {

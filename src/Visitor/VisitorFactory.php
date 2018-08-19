@@ -58,6 +58,11 @@ class VisitorFactory
         | self::VISITOR_IGNORE_IDS;
 
     /**
+     * Do not include strict validation visitors
+     */
+    const VISITOR_IGNORE_STRICT_VALIDATION = 8;
+
+    /**
      * Create the standard set of visitors used when processing a parse tree
      */
     public function createVisitors(int $flags = 0): VisitorInterface
@@ -72,7 +77,6 @@ class VisitorFactory
             $errorObj,
             new DateVisitor($errorObj),
             new MessageVisitor($errorObj),
-            new PayeeVisitor($errorObj),
             new TextVisitor($errorObj),
             new PaymentVisitor($errorObj)
         );
@@ -99,6 +103,10 @@ class VisitorFactory
                     new PersonalIdFactory(new CoordinationIdFactory(new NullIdFactory))
                 )
             );
+        }
+
+        if (!$flag(self::VISITOR_IGNORE_STRICT_VALIDATION)) {
+            $container->addVisitor(new PayeeVisitor($errorObj));
         }
 
         return $container;

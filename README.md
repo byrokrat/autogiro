@@ -160,6 +160,11 @@ echo $xmlWriter->asXml(
 );
 ```
 
+### autogiro2xml
+
+Package also contains a simple command line tool (`autogiro2xml`) for converting
+autogiro files to a more readable XML format.
+
 ## Hacking
 
 Install dependencies
