@@ -36,4 +36,11 @@ class ParserSpec extends ObjectBehavior
         $grammar->parse('invalid-ag-file')->willThrow('\InvalidArgumentException');
         $this->shouldThrow(ContentException::CLASS)->duringParse('invalid-ag-file');
     }
+
+    function it_converts_to_utf8($grammar, $visitor, FileNode $node)
+    {
+        $grammar->parse('åäö')->shouldBeCalled()->willReturn($node);
+        $node->accept($visitor)->shouldBeCalled();
+        $this->parse(mb_convert_encoding('åäö', 'CP1252', 'UTF-8'));
+    }
 }

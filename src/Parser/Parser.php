@@ -25,6 +25,7 @@ namespace byrokrat\autogiro\Parser;
 use byrokrat\autogiro\Visitor\VisitorInterface;
 use byrokrat\autogiro\Tree\FileNode;
 use byrokrat\autogiro\Exception\ContentException;
+use \ForceUTF8\Encoding;
 
 /**
  * Facade to Grammar with error handling
@@ -52,14 +53,16 @@ class Parser
      */
     public function parse(string $content): FileNode
     {
-        #$content = iconv(mb_detect_encoding($content, mb_detect_order(), true), "UTF-8", $content);
         try {
-            $tree = $this->grammar->parse($content);
+            $tree = $this->grammar->parse(
+                Encoding::toUTF8($content)
+            );
         } catch (\InvalidArgumentException $exception) {
             throw new ContentException(["Parser: {$exception->getMessage()}"]);
         }
 
         $tree->accept($this->visitor);
+
         return $tree;
     }
 }

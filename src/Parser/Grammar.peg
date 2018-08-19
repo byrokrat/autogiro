@@ -39,9 +39,9 @@ use byrokrat\autogiro\Tree\Request;
 use byrokrat\autogiro\Tree\Response;
 use byrokrat\autogiro\Tree\TextNode;
 
-grammar Grammar
+grammar Grammar extends MultibyteHack
 {
-    start FILE = RESET_LINE_COUNT file:(REQUEST_FILE / MANDATE_FILE / PAYMENT_FILE / PAYMENT_REJECTION_FILE / AMENDMENT_FILE) {
+    start FILE = RESET_LINE_COUNT file:(REQUEST_FILE / MANDATE_FILE / PAYMENT_FILE / PAYMENT_REJECTION_FILE / AMENDMENT_FILE) VOID {
         return $file;
     };
 
@@ -205,21 +205,23 @@ grammar Grammar
         );
     };
 
-    PAYMENT_INCOMING_REC = '82' date:DATE ival:INTERVAL reps:REPS A payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:TXT16 A10 status:MSG1 EOR {
-        $status->setAttribute('message_id', Layouts::LAYOUT_PAYMENT_RESPONSE . '.' . $status->getValue());
-        return new Response\IncomingPaymentResponse(
-            $this->lineNr,
-            [
-                'date' => $date,
-                'interval' => $ival,
-                'repetitions' => $reps,
-                'payer_number' => $payerNr,
-                'amount' => $amount,
-                'payee_bankgiro' => $bg,
-                'reference' => $ref,
-                'status' => $status,
-            ]
-        );
+    PAYMENT_INCOMING_REC = '82' date:DATE ival:INTERVAL reps:REPS A payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:TXT16 A10? status:MSG1? EOR {
+        $data = [
+            'date' => $date,
+            'interval' => $ival,
+            'repetitions' => $reps,
+            'payer_number' => $payerNr,
+            'amount' => $amount,
+            'payee_bankgiro' => $bg,
+            'reference' => $ref,
+        ];
+
+        if ($status) {
+            $status->setAttribute('message_id', Layouts::LAYOUT_PAYMENT_RESPONSE . '.' . $status->getValue());
+            $data['status'] = $status;
+        }
+
+        return new Response\IncomingPaymentResponse($this->lineNr, $data);
     };
 
     // OUTGOING PAYMENTS
@@ -241,21 +243,23 @@ grammar Grammar
         );
     };
 
-    PAYMENT_OUTGOING_REC = '32' date:DATE ival:INTERVAL reps:REPS A payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:TXT16 A10 status:MSG1 EOR {
-        $status->setAttribute('message_id', Layouts::LAYOUT_PAYMENT_RESPONSE . '.' . $status->getValue());
-        return new Response\OutgoingPaymentResponse(
-            $this->lineNr,
-            [
-                'date' => $date,
-                'interval' => $ival,
-                'repetitions' => $reps,
-                'payer_number' => $payerNr,
-                'amount' => $amount,
-                'payee_bankgiro' => $bg,
-                'reference' => $ref,
-                'status' => $status,
-            ]
-        );
+    PAYMENT_OUTGOING_REC = '32' date:DATE ival:INTERVAL reps:REPS A payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:TXT16 A10? status:MSG1? EOR {
+        $data = [
+            'date' => $date,
+            'interval' => $ival,
+            'repetitions' => $reps,
+            'payer_number' => $payerNr,
+            'amount' => $amount,
+            'payee_bankgiro' => $bg,
+            'reference' => $ref,
+        ];
+
+        if ($status) {
+            $status->setAttribute('message_id', Layouts::LAYOUT_PAYMENT_RESPONSE . '.' . $status->getValue());
+            $data['status'] = $status;
+        }
+
+        return new Response\OutgoingPaymentResponse($this->lineNr, $data);
     };
 
     // REFUND PAYMENTS
@@ -619,7 +623,7 @@ grammar Grammar
         return new TextNode($this->lineNr + 1, $text);
     };
 
-    TXT16 = text:$(A10 A5 A) {
+    TXT16 = text:$(A? A? A? A? A? A? A? A? A? A? A? A? A? A? A? A?) {
         return new TextNode($this->lineNr + 1, $text);
     };
 
@@ -631,7 +635,7 @@ grammar Grammar
 
     // TODO testar med ett mer tillåtande system..
     //A "ALPHA-NUMERIC" = [a-zA-Z0-9 \/&åäöÅÄÖ-];
-    A "ALPHA-NUMERIC" = !"\n" .;
+    A "ALPHA-NUMERIC" = !EOL .;
 
     A2 = $(A A);
 
@@ -664,4 +668,6 @@ grammar Grammar
     };
 
     EOF "END_OF_FILE" = !.;
+
+    VOID = (S / "\t" / EOL)*;
 }

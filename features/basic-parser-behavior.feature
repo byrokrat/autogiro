@@ -1,7 +1,7 @@
-Feature: Error cathing
+Feature: Basic behavior
   In order to work with the autogiro
   As a user
-  I need to be able to get information on error states
+  I need to be able to do basic parsing
 
   Scenario: I parse a file with invalid content
     Given a parser
@@ -30,3 +30,14 @@ Feature: Error cathing
     04012345678900000000000001013300001212121212191212121212
     """
     Then I get a "Non-matching payee BGC customer numbers (expecting: 111111, found: 222222) on line 3" error
+
+  Scenario: I parse a file with trailing empty lines
+    Given a parser that ignores account and id structures
+    When I parse:
+    """
+    0120080611AUTOGIRO                                            1111110000000001
+    04000000000100000000000001013300001212121212191212121212
+
+
+    """
+    Then I find a "LAYOUT_REQUEST" layout
