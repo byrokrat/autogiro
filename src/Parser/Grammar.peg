@@ -145,8 +145,25 @@ grammar Grammar extends MultibyteHack
 
     // AMENDMENT REQUESTS
 
-    REQ_AMENDMENT_SECTION = open:REQ_OPENING_REC records:('TODO')+ {
+    REQ_AMENDMENT_SECTION = open:REQ_OPENING_REC records:REQ_REVOCATION_REC+ {
         return new Request\AmendmentRequestSection($open, ...$records);
+    };
+
+    REQ_REVOCATION_REC = &('2' [3-9]) tc:MSG2 bg:BANKGIRO payerNr:PAYER_NR date:DATE amount:AMOUNT12 type:MSG2 newDate:DATE ref:TXT16 EOR {
+        $tc->setAttribute('message_id', Layouts::LAYOUT_REQUEST . '.TC.' . $tc->getValue());
+        return new Request\AmendmentRequest(
+            $this->lineNr,
+            [
+                'code' => $tc,
+                'payee_bankgiro' => $bg,
+                'payer_number' => $payerNr,
+                'current_date' => $date,
+                'amount' => $amount,
+                'type' => $type,
+                'new_date' => $newDate,
+                'reference' => $ref,
+            ]
+        );
     };
 
     //

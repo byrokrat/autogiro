@@ -37,6 +37,10 @@ class AmountVisitor extends ErrorAwareVisitor
             return;
         }
 
+        if (trim($node->getValue()) == '') {
+            return;
+        }
+
         try {
             $node->setAttribute(
                 'amount',

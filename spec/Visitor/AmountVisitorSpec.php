@@ -53,4 +53,12 @@ class AmountVisitorSpec extends ObjectBehavior
         $this->beforeAmountNode($amountNode);
         $amountNode->setAttribute('amount', Argument::any())->shouldNotHaveBeenCalled();
     }
+
+    function it_does_not_create_if_amount_is_empty(AmountNode $amountNode)
+    {
+        $amountNode->hasAttribute('amount')->willReturn(false);
+        $amountNode->getValue()->willReturn('    ');
+        $this->beforeAmountNode($amountNode);
+        $amountNode->setAttribute('amount', Argument::any())->shouldNotHaveBeenCalled();
+    }
 }

@@ -193,5 +193,22 @@ interface Messages
         Layouts::LAYOUT_AMENDMENT_RESPONSE . '.14' => 'Ändrad betalningsdag.',
         Layouts::LAYOUT_AMENDMENT_RESPONSE . '.15' => 'Inte ändrad, Självförnyande uppdrag.',
         Layouts::LAYOUT_AMENDMENT_RESPONSE . '.18' => 'Ändrad betalningsdag.',
+
+        Layouts::LAYOUT_REQUEST . '.TC.23' => 'Makulera alla betalningar för ett betalarnummer.',
+        Layouts::LAYOUT_REQUEST . '.TC.24'
+            => 'Makulera alla betalningar för ett betalarnummer på en angiven betalningsdag.',
+        Layouts::LAYOUT_REQUEST . '.TC.25'
+            => 'Makulera en betalning för ett betalarnummer på en angiven betalningsdag och belopp.',
+        Layouts::LAYOUT_REQUEST . '.TC.26' => 'Ändra alla betalningar till ny betalningsdag.',
+        Layouts::LAYOUT_REQUEST . '.TC.27'
+            => 'Ändra alla betalningar från angiven betalningsdag till ny betalningsdag.',
+        Layouts::LAYOUT_REQUEST . '.TC.28'
+            => 'Ändra alla betalningar inom ett betalarnummer från angiven betalningsdag till ny betalningsdag',
+        Layouts::LAYOUT_REQUEST . '.TC.29'
+            => 'Ändra Enstaka betalning från angiven betalningsdag till ny betalningsdag.',
+
+        Layouts::LAYOUT_REQUEST . '.  ' => '',
+        Layouts::LAYOUT_REQUEST . '.82' => 'Inbetalning',
+        Layouts::LAYOUT_REQUEST . '.32' => 'Utbetalning',
     ];
 }
