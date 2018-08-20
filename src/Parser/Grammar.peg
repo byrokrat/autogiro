@@ -20,6 +20,7 @@
 
 namespace byrokrat\autogiro\Parser;
 
+use byrokrat\autogiro\Exception\ContentException;
 use byrokrat\autogiro\Layouts;
 use byrokrat\autogiro\Tree\AccountNode;
 use byrokrat\autogiro\Tree\AmountNode;
@@ -170,7 +171,7 @@ grammar Grammar extends MultibyteHack
     // PAYMENT RESPONSES
     //
 
-    PAYMENT_FILE = NEW_PAYMENT_FILE / OLD_PAYMENT_FILE;
+    PAYMENT_FILE = NEW_PAYMENT_FILE / OLD_PAYMENT_FILE / BGMAX_FILE;
 
     NEW_PAYMENT_FILE = open:PAYMENT_OPENING_REC sections:(PAYMENT_INCOMING_SECTION / PAYMENT_OUTGOING_SECTION / PAYMENT_REFUND_SECTION)+ close:PAYMENT_CLOSING_REC {
         $sections[] = $close;
@@ -345,6 +346,12 @@ grammar Grammar extends MultibyteHack
                 'total_incoming_amount' => $amountIn,
             ]
         );
+    };
+
+    // PAYMENT RESPONSES IN BGMAX FORMAT (NOT SUPPORTED)
+
+    BGMAX_FILE = '01BGMAX' {
+        throw new ContentException(['BGMAX format currently not supported']);
     };
 
     //

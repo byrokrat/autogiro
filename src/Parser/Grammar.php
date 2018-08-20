@@ -2,6 +2,7 @@
 
 namespace byrokrat\autogiro\Parser;
 
+use byrokrat\autogiro\Exception\ContentException;
 use byrokrat\autogiro\Layouts;
 use byrokrat\autogiro\Tree\AccountNode;
 use byrokrat\autogiro\Tree\AmountNode;
@@ -1523,6 +1524,12 @@ class Grammar extends MultibyteHack
             $this->position = $_position40;
 
             $_success = $this->parseOLD_PAYMENT_FILE();
+        }
+
+        if (!$_success && !$this->cut) {
+            $this->position = $_position40;
+
+            $_success = $this->parseBGMAX_FILE();
         }
 
         $this->cut = $_cut41;
@@ -3500,6 +3507,47 @@ class Grammar extends MultibyteHack
 
         if (!$_success) {
             $this->report($_position, 'OLD_PAYMENT_CLOSING');
+        }
+
+        return $_success;
+    }
+
+    protected function parseBGMAX_FILE()
+    {
+        $_position = $this->position;
+
+        if (isset($this->cache['BGMAX_FILE'][$_position])) {
+            $_success = $this->cache['BGMAX_FILE'][$_position]['success'];
+            $this->position = $this->cache['BGMAX_FILE'][$_position]['position'];
+            $this->value = $this->cache['BGMAX_FILE'][$_position]['value'];
+
+            return $_success;
+        }
+
+        if (substr($this->string, $this->position, strlen('01BGMAX')) === '01BGMAX') {
+            $_success = true;
+            $this->value = substr($this->string, $this->position, strlen('01BGMAX'));
+            $this->position += strlen('01BGMAX');
+        } else {
+            $_success = false;
+
+            $this->report($this->position, '\'01BGMAX\'');
+        }
+
+        if ($_success) {
+            $this->value = call_user_func(function () {
+                throw new ContentException(['BGMAX format currently not supported']);
+            });
+        }
+
+        $this->cache['BGMAX_FILE'][$_position] = array(
+            'success' => $_success,
+            'position' => $this->position,
+            'value' => $this->value
+        );
+
+        if (!$_success) {
+            $this->report($_position, 'BGMAX_FILE');
         }
 
         return $_success;
