@@ -25,6 +25,7 @@ namespace byrokrat\autogiro\Tree;
 /**
  * Node representing the nearest possible date
  */
-class ImmediateDateNode extends DateNode
+class ImmediateDateNode extends Node
 {
+    use TypeTrait;
 }

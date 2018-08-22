@@ -21,9 +21,9 @@ class IncomingPaymentResponseSpec extends ObjectBehavior
         $this->shouldHaveType(IncomingPaymentResponse::CLASS);
     }
 
-    function it_contains_a_type()
+    function it_contains_a_name()
     {
-        $this->getType()->shouldEqual('IncomingPaymentResponse');
+        $this->getName()->shouldEqual('IncomingPaymentResponse');
     }
 
     function it_is_a_record()

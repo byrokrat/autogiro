@@ -31,6 +31,8 @@ use byrokrat\id\IdInterface;
  */
 class IdNode extends Node
 {
+    use TypeTrait;
+
     public static function fromId(IdInterface $id): IdNode
     {
         $node = new self(0, (string)$id);

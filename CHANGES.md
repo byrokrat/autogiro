@@ -1,4 +1,19 @@
-# Changes in 1.0-alpha2
+# Notable changes in 1.0-alpha3
+
+## Node
+
+* Added `Node::getName()` behaving as did previously `Node::getType()`.
+* Changed `Node::getType()` to now return classname where defined (eg. in the
+  `Type` class of node).
+* Renamed `Node::setChild()` => `Node::addChild()`.
+* `Node::getValue()` now returns `mixed` instead of `string`.
+* `Node::getChild()` now has a nullable return type.
+
+## Visitor
+
+* Now dispatches on both name and type.
+
+# Notable changes in 1.0-alpha2
 
 ## Node tree
 

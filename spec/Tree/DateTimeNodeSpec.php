@@ -20,8 +20,13 @@ class DateTimeNodeSpec extends ObjectBehavior
         $this->shouldHaveType(DateNode::CLASS);
     }
 
+    function it_contains_a_name()
+    {
+        $this->getName()->shouldEqual('DateTimeNode');
+    }
+
     function it_contains_a_type()
     {
-        $this->getType()->shouldEqual('DateTimeNode');
+        $this->getType()->shouldEqual('DateNode');
     }
 }

@@ -20,9 +20,9 @@ class AcceptDigitalMandateRequestSpec extends ObjectBehavior
         $this->shouldHaveType(AcceptDigitalMandateRequest::CLASS);
     }
 
-    function it_contains_a_type()
+    function it_contains_a_name()
     {
-        $this->getType()->shouldEqual('AcceptDigitalMandateRequest');
+        $this->getName()->shouldEqual('AcceptDigitalMandateRequest');
     }
 
     function it_is_a_record()

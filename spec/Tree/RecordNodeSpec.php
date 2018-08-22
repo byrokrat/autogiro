@@ -20,6 +20,16 @@ class RecordNodeSpec extends ObjectBehavior
         $this->shouldHaveType(RecordNode::CLASS);
     }
 
+    function it_contains_a_name()
+    {
+        $this->getName()->shouldEqual('RecordNode');
+    }
+
+    function it_contains_a_type()
+    {
+        $this->getType()->shouldEqual('RecordNode');
+    }
+
     function it_contains_a_line_number()
     {
         $this->beConstructedWith(123, []);

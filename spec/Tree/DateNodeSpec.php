@@ -20,6 +20,11 @@ class DateNodeSpec extends ObjectBehavior
         $this->shouldHaveType(Node::CLASS);
     }
 
+    function it_contains_a_name()
+    {
+        $this->getName()->shouldEqual('DateNode');
+    }
+
     function it_contains_a_type()
     {
         $this->getType()->shouldEqual('DateNode');

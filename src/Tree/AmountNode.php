@@ -31,6 +31,8 @@ use byrokrat\amount\Currency\SEK;
  */
 class AmountNode extends Node
 {
+    use TypeTrait;
+
     public static function fromAmount(SEK $amount): AmountNode
     {
         $node = new self(0, $amount->getSignalString());

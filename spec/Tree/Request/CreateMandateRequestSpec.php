@@ -20,9 +20,9 @@ class CreateMandateRequestSpec extends ObjectBehavior
         $this->shouldHaveType(CreateMandateRequest::CLASS);
     }
 
-    function it_contains_a_type()
+    function it_contains_a_name()
     {
-        $this->getType()->shouldEqual('CreateMandateRequest');
+        $this->getName()->shouldEqual('CreateMandateRequest');
     }
 
     function it_is_a_record()

@@ -29,6 +29,8 @@ namespace byrokrat\autogiro\Tree;
  */
 class TextNode extends Node
 {
+    use TypeTrait;
+
     /**
      * @var string
      */

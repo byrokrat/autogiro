@@ -3907,6 +3907,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$bg) {
+                // TODO här skapar jag BgcNumberNode för att det ska vara samma som i MANDATE_OPENING_REC, det behöver jag inte göra längre...
                 return new Response\ResponseOpening(
                     $this->lineNr,
                     [

@@ -16,9 +16,9 @@ class AmendmentRequestSectionSpec extends ObjectBehavior
         $this->shouldHaveType(AmendmentRequestSection::CLASS);
     }
 
-    function it_contains_a_type()
+    function it_contains_a_name()
     {
-        $this->getType()->shouldEqual('AmendmentRequestSection');
+        $this->getName()->shouldEqual('AmendmentRequestSection');
     }
 
     function it_is_a_section()

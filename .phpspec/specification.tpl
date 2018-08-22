@@ -21,9 +21,9 @@ class %name% extends ObjectBehavior
         $this->shouldHaveType(%subject_class%::CLASS);
     }
 
-    function it_contains_a_type()
+    function it_contains_a_name()
     {
-        $this->getType()->shouldEqual('%subject_class%');
+        $this->getName()->shouldEqual('%subject_class%');
     }
 
     function it_is_a_record()

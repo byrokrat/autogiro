@@ -30,4 +30,5 @@ namespace byrokrat\autogiro\Tree;
  */
 class MessageNode extends Node
 {
+    use TypeTrait;
 }

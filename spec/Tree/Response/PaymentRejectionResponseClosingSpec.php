@@ -21,9 +21,9 @@ class PaymentRejectionResponseClosingSpec extends ObjectBehavior
         $this->shouldHaveType(PaymentRejectionResponseClosing::CLASS);
     }
 
-    function it_contains_a_type()
+    function it_contains_a_name()
     {
-        $this->getType()->shouldEqual('PaymentRejectionResponseClosing');
+        $this->getName()->shouldEqual('PaymentRejectionResponseClosing');
     }
 
     function it_is_a_record()

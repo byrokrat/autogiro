@@ -27,6 +27,11 @@ class SectionNodeSpec extends ObjectBehavior
         $this->shouldHaveType(Node::CLASS);
     }
 
+    function it_contains_a_name()
+    {
+        $this->getName()->shouldEqual('SectionNode');
+    }
+
     function it_contains_a_type()
     {
         $this->getType()->shouldEqual('SectionNode');
@@ -49,9 +54,9 @@ class SectionNodeSpec extends ObjectBehavior
         $this->getChild('2')->shouldEqual($nodeB);
     }
 
-    function it_throws_exception_if_index_is_out_of_range()
+    function it_returns_nul_if_index_is_out_of_range()
     {
-        $this->shouldThrow(LogicException::CLASS)->duringGetChild('100');
+        $this->getChild('100')->shouldEqual(null);
     }
 
     function it_contains_a_line_number($nodeA)

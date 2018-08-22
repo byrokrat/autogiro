@@ -6,36 +6,63 @@ namespace spec\byrokrat\autogiro\Tree;
 
 use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Visitor\VisitorInterface;
-use byrokrat\autogiro\Exception\LogicException;
 use PhpSpec\ObjectBehavior;
 
 class NodeSpec extends ObjectBehavior
 {
-    function it_is_initializable()
+    function let()
     {
-        $this->shouldHaveType(Node::CLASS);
-    }
-
-    function it_contains_a_type()
-    {
-        $this->getType()->shouldEqual('Node');
+        $this->beConstructedThrough(function () {
+            return new class extends \byrokrat\autogiro\Tree\Node
+            {
+                public function getType(): string
+                {
+                }
+            };
+        });
     }
 
     function it_contains_a_line_number()
     {
-        $this->beConstructedWith(5);
+        $this->beConstructedThrough(function () {
+            return new class extends \byrokrat\autogiro\Tree\Node
+            {
+                function __construct()
+                {
+                    parent::__construct(5);
+                }
+
+                public function getType(): string
+                {
+                }
+            };
+        });
+
         $this->getLineNr()->shouldEqual(5);
     }
 
     function it_contains_a_value()
     {
-        $this->beConstructedWith(1, 'foobar');
+        $this->beConstructedThrough(function () {
+            return new class extends \byrokrat\autogiro\Tree\Node
+            {
+                function __construct()
+                {
+                    parent::__construct(1, 'foobar');
+                }
+
+                public function getType(): string
+                {
+                }
+            };
+        });
+
         $this->getValue()->shouldEqual('foobar');
     }
 
     function it_accepts_a_visitor(VisitorInterface $visitor, Node $node)
     {
-        $this->setChild('node', $node);
+        $this->addChild('node', $node);
 
         $this->accept($visitor);
 
@@ -67,22 +94,18 @@ class NodeSpec extends ObjectBehavior
         ]);
     }
 
-    function it_can_save_children(Node $node)
+    function it_can_have_children(Node $node)
     {
         $this->hasChild('key')->shouldEqual(false);
-        $this->setChild('key', $node);
+        $this->addChild('key', $node);
         $this->hasChild('key')->shouldEqual(true);
         $this->getChild('key')->shouldEqual($node);
-    }
-
-    function it_throws_exception_on_unknown_child()
-    {
-        $this->shouldThrow(LogicException::CLASS)->duringGetChild('does-not-exist');
+        $this->getChild('this-is-not-definied')->shouldEqual(null);
     }
 
     function it_can_iterate_over_child_nodes(Node $node)
     {
-        $this->setChild('node', $node);
+        $this->addChild('node', $node);
         $this->getChildren()->shouldEqual([
             'node' => $node
         ]);

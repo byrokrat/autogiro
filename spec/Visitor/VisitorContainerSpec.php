@@ -17,6 +17,7 @@ class VisitorContainerSpec extends ObjectBehavior
 {
     function let(ErrorObject $errorObj, VisitorInterface $visitorA, VisitorInterface $visitorB, Node $node)
     {
+        $node->getName()->willReturn('');
         $node->getType()->willReturn('');
         $this->beConstructedWith($errorObj, $visitorA, $visitorB);
     }
@@ -58,7 +59,8 @@ class VisitorContainerSpec extends ObjectBehavior
 
     function it_throws_exception_on_errors($errorObj, $node)
     {
-        $node->getType()->willReturn('FileNode');
+        $node->getName()->willReturn('FileNode');
+        $node->getType()->willReturn('');
         $errorObj->hasErrors()->willReturn(true);
         $errorObj->getErrors()->willReturn(['an error']);
         $this->shouldThrow(ContentException::CLASS)->duringVisitAfter($node);
@@ -66,7 +68,8 @@ class VisitorContainerSpec extends ObjectBehavior
 
     function it_resets_errors($errorObj, $node)
     {
-        $node->getType()->willReturn('FileNode');
+        $node->getName()->willReturn('FileNode');
+        $node->getType()->willReturn('');
         $this->visitBefore($node);
         $errorObj->resetErrors()->shouldHaveBeenCalled();
     }

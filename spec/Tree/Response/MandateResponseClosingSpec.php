@@ -20,9 +20,9 @@ class MandateResponseClosingSpec extends ObjectBehavior
         $this->shouldHaveType(MandateResponseClosing::CLASS);
     }
 
-    function it_contains_a_type()
+    function it_contains_a_name()
     {
-        $this->getType()->shouldEqual('MandateResponseClosing');
+        $this->getName()->shouldEqual('MandateResponseClosing');
     }
 
     function it_is_a_record()

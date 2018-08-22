@@ -16,9 +16,9 @@ class PaymentRequestSectionSpec extends ObjectBehavior
         $this->shouldHaveType(PaymentRequestSection::CLASS);
     }
 
-    function it_contains_a_type()
+    function it_contains_a_name()
     {
-        $this->getType()->shouldEqual('PaymentRequestSection');
+        $this->getName()->shouldEqual('PaymentRequestSection');
     }
 
     function it_is_a_section()

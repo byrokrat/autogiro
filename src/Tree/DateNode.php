@@ -29,6 +29,8 @@ namespace byrokrat\autogiro\Tree;
  */
 class DateNode extends Node
 {
+    use TypeTrait;
+
     public static function fromDate(\DateTimeInterface $date): DateNode
     {
         $node = new self(0, $date->format('Ymd'));

@@ -21,9 +21,9 @@ class RefundPaymentResponseOpeningSpec extends ObjectBehavior
         $this->shouldHaveType(RefundPaymentResponseOpening::CLASS);
     }
 
-    function it_contains_a_type()
+    function it_contains_a_name()
     {
-        $this->getType()->shouldEqual('RefundPaymentResponseOpening');
+        $this->getName()->shouldEqual('RefundPaymentResponseOpening');
     }
 
     function it_is_a_record()

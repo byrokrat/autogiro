@@ -25,34 +25,34 @@ namespace byrokrat\autogiro\Visitor;
 use byrokrat\autogiro\Tree\Node;
 
 /**
- * Visitor that dynamically calls method based on node type
+ * Visitor that dynamically calls method based on node name and type
  *
- * Will read the node type (eg. SomeNode) and dispatch a node specific method
- * if defined in visitor (eg. beforeSomeNode or afterSomeNode). By convention
- * such visitor methods should type hint the specific node type
+ * Will read the node name and type (eg. SomeNode) and dispatch a node specific
+ * method if defined in visitor (eg. beforeSomeNode or afterSomeNode). By
+ * convention such visitor methods should type hint the specific node type
  * (eg. beforeSomeNode(SomeNode $node)).
  */
 class Visitor implements VisitorInterface
 {
-    /**
-     * Generic method for visiting a node before its children
-     */
     public function visitBefore(Node $node): void
     {
-        $this->dispatch('before' . $node->getType(), $node);
+        $this->visit('before', $node);
     }
 
-    /**
-     * Generic method for visiting a node after its children
-     */
     public function visitAfter(Node $node): void
     {
-        $this->dispatch('after' . $node->getType(), $node);
+        $this->visit('after', $node);
     }
 
-    /**
-     * Dispatch to method if method exists
-     */
+    private function visit(string $prefix, Node $node): void
+    {
+        $this->dispatch($prefix . $node->getName(), $node);
+
+        if ($node->getType() != $node->getName()) {
+            $this->dispatch($prefix . $node->getType(), $node);
+        }
+    }
+
     private function dispatch(string $method, Node $node): void
     {
         if (method_exists($this, $method)) {

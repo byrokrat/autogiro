@@ -20,9 +20,9 @@ class ResponseOpeningSpec extends ObjectBehavior
         $this->shouldHaveType(ResponseOpening::CLASS);
     }
 
-    function it_contains_a_type()
+    function it_contains_a_name()
     {
-        $this->getType()->shouldEqual('ResponseOpening');
+        $this->getName()->shouldEqual('ResponseOpening');
     }
 
     function it_is_a_record()

@@ -29,6 +29,8 @@ namespace byrokrat\autogiro\Tree;
  */
 class RepetitionsNode extends TextNode
 {
+    use TypeTrait;
+
     public function __construct(int $lineNr = 0, string $value = '')
     {
         parent::__construct($lineNr, $value, '/^([0-9]{3})|( {3})$/');

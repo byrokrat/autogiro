@@ -21,9 +21,9 @@ class ResponseClosingSpec extends ObjectBehavior
         $this->shouldHaveType(ResponseClosing::CLASS);
     }
 
-    function it_contains_a_type()
+    function it_contains_a_name()
     {
-        $this->getType()->shouldEqual('ResponseClosing');
+        $this->getName()->shouldEqual('ResponseClosing');
     }
 
     function it_is_a_record()

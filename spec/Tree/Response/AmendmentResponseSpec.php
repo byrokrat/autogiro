@@ -21,9 +21,9 @@ class AmendmentResponseSpec extends ObjectBehavior
         $this->shouldHaveType(AmendmentResponse::CLASS);
     }
 
-    function it_contains_a_type()
+    function it_contains_a_name()
     {
-        $this->getType()->shouldEqual('AmendmentResponse');
+        $this->getName()->shouldEqual('AmendmentResponse');
     }
 
     function it_is_a_record()

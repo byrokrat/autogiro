@@ -16,9 +16,9 @@ class MandateRequestSectionSpec extends ObjectBehavior
         $this->shouldHaveType(MandateRequestSection::CLASS);
     }
 
-    function it_contains_a_type()
+    function it_contains_a_name()
     {
-        $this->getType()->shouldEqual('MandateRequestSection');
+        $this->getName()->shouldEqual('MandateRequestSection');
     }
 
     function it_is_a_section()

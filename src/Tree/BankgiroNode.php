@@ -31,6 +31,8 @@ use byrokrat\banking\Bankgiro;
  */
 class BankgiroNode extends Node
 {
+    use TypeTrait;
+
     public static function fromBankgiro(Bankgiro $bankgiro): BankgiroNode
     {
         $node = new self(0, $bankgiro->getNumber());

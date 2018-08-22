@@ -20,6 +20,11 @@ class RepetitionsNodeSpec extends ObjectBehavior
         $this->shouldHaveType(TextNode::CLASS);
     }
 
+    function it_contains_a_name()
+    {
+        $this->getName()->shouldEqual('RepetitionsNode');
+    }
+
     function it_contains_a_type()
     {
         $this->getType()->shouldEqual('RepetitionsNode');

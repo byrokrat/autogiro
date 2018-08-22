@@ -21,6 +21,11 @@ class IdNodeSpec extends ObjectBehavior
         $this->shouldHaveType(Node::CLASS);
     }
 
+    function it_contains_a_name()
+    {
+        $this->getName()->shouldEqual('IdNode');
+    }
+
     function it_contains_a_type()
     {
         $this->getType()->shouldEqual('IdNode');

@@ -48,7 +48,7 @@ class XmlWritingVisitor implements VisitorInterface
 
     public function visitBefore(Node $node): void
     {
-        $this->xmlWriter->startElement($node->getType());
+        $this->xmlWriter->startElement($node->getName());
 
         foreach ($node->getAttributes() as $name => $value) {
             $this->xmlWriter->writeAttribute($name, $this->stringifier->stringify($value));

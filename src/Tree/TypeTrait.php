@@ -23,27 +23,12 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Tree;
 
 /**
- * A node containing other nodes
+ * Implementation of the type interface for base type nodes
  */
-class SectionNode extends Node
+trait TypeTrait
 {
-    use TypeTrait;
-
-    public function __construct(Node ...$nodes)
+    public function getType(): string
     {
-        parent::__construct();
-
-        foreach ($nodes as $index => $node) {
-            $this->addChild((string)($index + 1), $node);
-        }
-    }
-
-    public function getLineNr(): int
-    {
-        if ($child = $this->getChild('1')) {
-            return $child->getLineNr();
-        }
-
-        return 0;
+        return basename(str_replace('\\', '/', get_class()));
     }
 }

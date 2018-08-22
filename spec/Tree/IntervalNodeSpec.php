@@ -20,8 +20,13 @@ class IntervalNodeSpec extends ObjectBehavior
         $this->shouldHaveType(MessageNode::CLASS);
     }
 
+    function it_contains_a_name()
+    {
+        $this->getName()->shouldEqual('IntervalNode');
+    }
+
     function it_contains_a_type()
     {
-        $this->getType()->shouldEqual('IntervalNode');
+        $this->getType()->shouldEqual('MessageNode');
     }
 }

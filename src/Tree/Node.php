@@ -23,12 +23,11 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Tree;
 
 use byrokrat\autogiro\Visitor\VisitorInterface;
-use byrokrat\autogiro\Exception\LogicException;
 
 /**
  * Defines a node in the parse tree
  */
-class Node
+abstract class Node
 {
     /**
      * @var array
@@ -46,11 +45,11 @@ class Node
     private $lineNr = 0;
 
     /**
-     * @var string
+     * @var mixed
      */
     private $value = '';
 
-    public function __construct(int $lineNr = 0, string $value = '')
+    public function __construct(int $lineNr = 0, $value = '')
     {
         $this->lineNr = $lineNr;
         $this->value = $value;
@@ -79,17 +78,24 @@ class Node
     }
 
     /**
-     * Get node type identifier
+     * Get node name
      */
-    public function getType(): string
+    public function getName(): string
     {
         return basename(str_replace('\\', '/', get_class($this)));
     }
 
     /**
-     * Get raw value wrapped by node
+     * Get node type identifier
      */
-    public function getValue(): string
+    abstract public function getType(): string;
+
+    /**
+     * Get raw value wrapped by node
+     *
+     * @return mixed Loaded node value
+     */
+    public function getValue()
     {
         return $this->value;
     }
@@ -135,20 +141,18 @@ class Node
     /**
      * Set a child node
      */
-    public function setChild(string $name, Node $child): void
+    public function addChild(string $name, Node $child): void
     {
         $this->children[$name] = $child;
     }
 
     /**
      * Get child node
-     *
-     * @throws LogicException If child does not exist
      */
-    public function getChild(string $name): Node
+    public function getChild(string $name): ?Node
     {
         if (!$this->hasChild($name)) {
-            throw new LogicException("Trying to read unknown child $name");
+            return null;
         }
 
         return $this->children[$name];

@@ -53,7 +53,7 @@ class PrintingVisitorSpec extends ObjectBehavior
     function it_fails_on_missing_date(DateNode $node)
     {
         $node->hasAttribute('date')->willReturn(false);
-        $node->getType()->willReturn('');
+        $node->getName()->willReturn('');
         $this->shouldThrow(LogicException::CLASS)->duringBeforeDateNode($node);
     }
 
@@ -61,7 +61,7 @@ class PrintingVisitorSpec extends ObjectBehavior
     {
         $node->hasAttribute('date')->willReturn(true);
         $node->getAttribute('date')->willReturn('not-an-object');
-        $node->getType()->willReturn('');
+        $node->getName()->willReturn('');
         $this->shouldThrow(LogicException::CLASS)->duringBeforeDateNode($node);
     }
 
@@ -98,7 +98,7 @@ class PrintingVisitorSpec extends ObjectBehavior
     function it_fails_on_missing_payee_bankgiro_numbers(BankgiroNode $node)
     {
         $node->hasAttribute('account')->willReturn(false);
-        $node->getType()->willReturn('');
+        $node->getName()->willReturn('');
         $this->shouldThrow(LogicException::CLASS)->duringBeforeBankgiroNode($node);
     }
 
@@ -106,7 +106,7 @@ class PrintingVisitorSpec extends ObjectBehavior
     {
         $node->hasAttribute('account')->willReturn(true);
         $node->getAttribute('account')->willReturn('not-an-object');
-        $node->getType()->willReturn('');
+        $node->getName()->willReturn('');
         $this->shouldThrow(LogicException::CLASS)->duringBeforeBankgiroNode($node);
     }
 
@@ -131,7 +131,7 @@ class PrintingVisitorSpec extends ObjectBehavior
     function it_fails_on_missing_account_numbers(AccountNode $node)
     {
         $node->hasAttribute('account')->willReturn(false);
-        $node->getType()->willReturn('');
+        $node->getName()->willReturn('');
         $this->shouldThrow(LogicException::CLASS)->duringBeforeAccountNode($node);
     }
 
@@ -139,7 +139,7 @@ class PrintingVisitorSpec extends ObjectBehavior
     {
         $node->hasAttribute('account')->willReturn(true);
         $node->getAttribute('account')->willReturn('not-an-object');
-        $node->getType()->willReturn('');
+        $node->getName()->willReturn('');
         $this->shouldThrow(LogicException::CLASS)->duringBeforeAccountNode($node);
     }
 
@@ -182,7 +182,7 @@ class PrintingVisitorSpec extends ObjectBehavior
     function it_fails_on_missing_amounts(AmountNode $node)
     {
         $node->hasAttribute('amount')->willReturn(false);
-        $node->getType()->willReturn('');
+        $node->getName()->willReturn('');
         $this->shouldThrow(LogicException::CLASS)->duringBeforeAmountNode($node);
     }
 
@@ -190,7 +190,7 @@ class PrintingVisitorSpec extends ObjectBehavior
     {
         $node->hasAttribute('amount')->willReturn(true);
         $node->getAttribute('amount')->willReturn('not-an-object');
-        $node->getType()->willReturn('');
+        $node->getName()->willReturn('');
         $this->shouldThrow(LogicException::CLASS)->duringBeforeAmountNode($node);
     }
 
@@ -215,7 +215,7 @@ class PrintingVisitorSpec extends ObjectBehavior
     function it_fails_on_missing_ids(IdNode $node)
     {
         $node->hasAttribute('id')->willReturn(false);
-        $node->getType()->willReturn('');
+        $node->getName()->willReturn('');
         $this->shouldThrow(LogicException::CLASS)->duringBeforeIdNode($node);
     }
 
@@ -223,7 +223,7 @@ class PrintingVisitorSpec extends ObjectBehavior
     {
         $node->hasAttribute('id')->willReturn(true);
         $node->getAttribute('id')->willReturn('not-an-object');
-        $node->getType()->willReturn('');
+        $node->getName()->willReturn('');
         $this->shouldThrow(LogicException::CLASS)->duringBeforeIdNode($node);
     }
 

@@ -144,7 +144,7 @@ class PrintingVisitor extends Visitor
     private function assertAttribute(Node $node, string $attr, string $classname): void
     {
         if (!$node->hasAttribute($attr) || !$node->getAttribute($attr) instanceof $classname) {
-            throw new LogicException("Failing attribute '$attr' in {$node->getType()}");
+            throw new LogicException("Failing attribute '$attr' in {$node->getName()}");
         }
     }
 

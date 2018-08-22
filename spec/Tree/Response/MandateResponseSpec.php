@@ -20,9 +20,9 @@ class MandateResponseSpec extends ObjectBehavior
         $this->shouldHaveType(MandateResponse::CLASS);
     }
 
-    function it_contains_a_type()
+    function it_contains_a_name()
     {
-        $this->getType()->shouldEqual('MandateResponse');
+        $this->getName()->shouldEqual('MandateResponse');
     }
 
     function it_is_a_record()

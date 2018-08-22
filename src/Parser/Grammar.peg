@@ -375,6 +375,7 @@ grammar Grammar extends MultibyteHack
     };
 
     OLD_MANDATE_OPENING_REC = '01' date:DATE '9900' bg:BANKGIRO 'AG-MEDAVI' ^ EOR {
+        // TODO här skapar jag BgcNumberNode för att det ska vara samma som i MANDATE_OPENING_REC, det behöver jag inte göra längre...
         return new Response\ResponseOpening(
             $this->lineNr,
             [

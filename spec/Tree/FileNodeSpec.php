@@ -26,9 +26,14 @@ class FileNodeSpec extends ObjectBehavior
         $this->shouldHaveType(SectionNode::CLASS);
     }
 
+    function it_contains_a_name()
+    {
+        $this->getName()->shouldEqual('FileNode');
+    }
+
     function it_contains_a_type()
     {
-        $this->getType()->shouldEqual('FileNode');
+        $this->getType()->shouldEqual('SectionNode');
     }
 
     function it_contains_a_layout_name()

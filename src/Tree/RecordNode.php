@@ -30,6 +30,8 @@ namespace byrokrat\autogiro\Tree;
  */
 class RecordNode extends Node
 {
+    use TypeTrait;
+
     /**
      * @param integer $lineNr Line number of record definition
      * @param Node[]  $nodes  The nodes composing record
@@ -39,7 +41,7 @@ class RecordNode extends Node
         parent::__construct($lineNr);
 
         foreach ($nodes as $name => $node) {
-            $this->setChild((string)$name, $node);
+            $this->addChild((string)$name, $node);
         }
     }
 }

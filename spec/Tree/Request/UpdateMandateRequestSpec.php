@@ -20,9 +20,9 @@ class UpdateMandateRequestSpec extends ObjectBehavior
         $this->shouldHaveType(UpdateMandateRequest::CLASS);
     }
 
-    function it_contains_a_type()
+    function it_contains_a_name()
     {
-        $this->getType()->shouldEqual('UpdateMandateRequest');
+        $this->getName()->shouldEqual('UpdateMandateRequest');
     }
 
     function it_is_a_record()

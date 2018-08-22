@@ -20,9 +20,9 @@ class RequestOpeningSpec extends ObjectBehavior
         $this->shouldHaveType(RequestOpening::CLASS);
     }
 
-    function it_contains_a_type()
+    function it_contains_a_name()
     {
-        $this->getType()->shouldEqual('RequestOpening');
+        $this->getName()->shouldEqual('RequestOpening');
     }
 
     function it_is_a_record()

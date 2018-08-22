@@ -20,9 +20,9 @@ class DeleteMandateRequestSpec extends ObjectBehavior
         $this->shouldHaveType(DeleteMandateRequest::CLASS);
     }
 
-    function it_contains_a_type()
+    function it_contains_a_name()
     {
-        $this->getType()->shouldEqual('DeleteMandateRequest');
+        $this->getName()->shouldEqual('DeleteMandateRequest');
     }
 
     function it_is_a_record()

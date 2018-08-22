@@ -24,7 +24,7 @@ class XmlWritingVisitorSpec extends ObjectBehavior
 
     function it_writes_elements_before(Node $node, $writer, $stringifier)
     {
-        $node->getType()->willReturn('type');
+        $node->getName()->willReturn('type');
         $writer->startElement('type')->shouldBeCalled();
 
         $node->getAttributes()->willReturn(['name' => 'value']);
@@ -39,7 +39,7 @@ class XmlWritingVisitorSpec extends ObjectBehavior
 
     function it_ignores_void_values(Node $node, $writer)
     {
-        $node->getType()->willReturn('type');
+        $node->getName()->willReturn('type');
         $writer->startElement('type')->shouldBeCalled();
 
         $node->getAttributes()->willReturn([]);
