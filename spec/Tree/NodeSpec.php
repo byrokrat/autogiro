@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace spec\byrokrat\autogiro\Tree;
 
 use byrokrat\autogiro\Tree\Node;
+use byrokrat\autogiro\Tree\NullNode;
 use byrokrat\autogiro\Visitor\VisitorInterface;
 use PhpSpec\ObjectBehavior;
 
@@ -60,6 +61,11 @@ class NodeSpec extends ObjectBehavior
         $this->getValue()->shouldEqual('foobar');
     }
 
+    function it_is_not_a_null_node()
+    {
+        $this->isNull()->shouldReturn(false);
+    }
+
     function it_accepts_a_visitor(VisitorInterface $visitor, Node $node)
     {
         $this->addChild('node', $node);
@@ -100,14 +106,31 @@ class NodeSpec extends ObjectBehavior
         $this->addChild('key', $node);
         $this->hasChild('key')->shouldEqual(true);
         $this->getChild('key')->shouldEqual($node);
-        $this->getChild('this-is-not-definied')->shouldEqual(null);
     }
 
-    function it_can_iterate_over_child_nodes(Node $node)
+    function it_defaults_undefined_child_to_null_node()
+    {
+        $this->getChild('this-is-not-definied')->shouldHaveType(NullNode::CLASS);
+    }
+
+    function it_identifies_child_nodes_insensitive_to_case(Node $node)
+    {
+        $this->addChild('lower', $node);
+        $this->hasChild('LOWER')->shouldEqual(true);
+        $this->getChild('LOWER')->shouldEqual($node);
+    }
+
+    function it_can_get_all_children(Node $node)
     {
         $this->addChild('node', $node);
-        $this->getChildren()->shouldEqual([
-            'node' => $node
-        ]);
+        $this->getChildren()->shouldIterateAs([$node]);
+    }
+
+    function it_can_get_some_children(Node $a, Node $b, Node $c)
+    {
+        $this->addChild('foo', $a);
+        $this->addChild('FOO', $b);
+        $this->addChild('bar', $c);
+        $this->getChildren('FOO')->shouldIterateAs([$a, $b]);
     }
 }

@@ -23,27 +23,19 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Tree;
 
 /**
- * A node containing other nodes
+ * Null object node implementation
  */
-class SectionNode extends Node
+class NullNode extends Node
 {
     use TypeTrait;
 
-    public function __construct(Node ...$nodes)
+    public function __construct(int $lineNr = 0, $value = null)
     {
-        parent::__construct();
-
-        foreach ($nodes as $index => $node) {
-            $this->addChild((string)($index + 1), $node);
-        }
+        parent::__construct($lineNr, $value);
     }
 
-    public function getLineNr(): int
+    public function isNull(): bool
     {
-        foreach ($this->getChildren() as $node) {
-            return $node->getLineNr();
-        }
-
-        return 0;
+        return true;
     }
 }

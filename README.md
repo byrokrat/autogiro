@@ -18,56 +18,12 @@ This library is developed against the technichal manual (in swedish) of the
 direct debit system (autogirot) revised 2016-12-13. For current versions of this
 document see [Bankgirocentralen](http://bgc.se).
 
-## Parsing autogiro files
-
-Create a parser using a [ParserFactory](/src/Parser/ParserFactory.php).
-
-<!-- @example ParserFactory -->
-```php
-$factory = new \byrokrat\autogiro\Parser\ParserFactory;
-$parser = $factory->createParser();
-```
-
-The created parser can parse and validate monetary amounts, account numbers and
-identification numbers using the [Amount](https://github.com/byrokrat/amount),
-[Id](https://github.com/byrokrat/id) and [Banking](https://github.com/byrokrat/banking)
-packages respectively. Opt out of this functionality by using one of the visitor constants:
-
-<!-- @include ParserFactory -->
-```php
-$parser = $factory->createParser(\byrokrat\autogiro\Parser\ParserFactory::VISITOR_IGNORE_EXTERNAL);
-```
-
-Access the created objects through attributes.
-
-<!-- @ignore -->
-```php
-/** @var \byrokrat\amount\Amount $amount */
-$amount = $amountNode->getAttribute('amount');
-
-/** @var \byrokrat\id\IdInterface $id */
-$id = $idNode->getAttribute('id');
-
-/** @var \byrokrat\banking\AccountNumber $account */
-$account = $accountNode->getAttribute('account');
-```
-
-Parsing an autogiro file creates a `FileNode`.
-
-<!-- @ignore -->
-```php
-/** @var \byrokrat\autogiro\Tree\FileNode $fileNode */
-$fileNode = $parser->parse($rawFile);
-```
-
 ## Generating autogiro request files
 
-Create a writer by supplying your bankgiro and BGC customer numbers to `WriterFactory`.
+Create a writer by supplying your *bankgiro account number* and
+*BGC customer number* to [`WriterFactory`](/src/Parser/WriterFactory.php).
 
-<!--
-    @example WriterFactory
-    @include ParserFactory
--->
+<!-- @example WriterFactory -->
 ```php
 $writer = (new \byrokrat\autogiro\Writer\WriterFactory)->createWriter(
     '123456',
@@ -103,15 +59,107 @@ $rawFile = $writer->getContent();
 ```
 -->
 
+## Parsing autogiro files
+
+Create a parser using the [`ParserFactory`](/src/Parser/ParserFactory.php).
+
+<!-- @example ParserFactory -->
+```php
+$factory = new \byrokrat\autogiro\Parser\ParserFactory;
+$parser = $factory->createParser();
+```
+
+The created parser can parse and validate monetary amounts, account numbers and
+identification numbers using the [Amount](https://github.com/byrokrat/amount),
+[Id](https://github.com/byrokrat/id) and [Banking](https://github.com/byrokrat/banking)
+packages respectively. Opt out of this functionality by using one of the visitor constants:
+
+<!-- @include ParserFactory -->
+```php
+$parser = $factory->createParser(\byrokrat\autogiro\Parser\ParserFactory::VISITOR_IGNORE_EXTERNAL);
+```
+
+Parsing an autogiro file creates a `FileNode`.
+
+<!--
+    @example FileNode
+    @include ParserFactory
+    @include RawFile
+-->
+```php
+/** @var \byrokrat\autogiro\Tree\FileNode $fileNode */
+$fileNode = $parser->parse($rawFile);
+```
+
+### Walking the parse tree
+
+Walk the tree by calling `hasChild()`, `getChild()` and `getChildren()`.
+
+<!--
+    @example GetChild
+    @include FileNode
+-->
+```php
+// @expectOutput "0000001234567890"
+echo $fileNode->getChild('MandateRequestSection')
+    ->getChild('DeleteMandateRequest')
+    ->getChild('PayerNumber')
+    ->getChild('Number')
+    ->getValue();
+```
+
+Or access all `DeleteMandateRequest` nodes.
+
+> NOTE! A simpler way of doing this is by using visitors. See below.
+
+<!--
+    @example GetChildren
+    @include FileNode
+-->
+```php
+foreach ($fileNode->getChild('MandateRequestSection')->getChildren('DeleteMandateRequest') as $node) {
+    // process...
+}
+```
+
+Trying to access a child that does not exist returns a `NullNode`.
+
+<!--
+    @example NullNode
+    @include FileNode
+    @expectOutput "1"
+-->
+```php
+echo $fileNode->getChild('this-does-not-exist')
+    ->getChild('and-neither-does-this')
+    ->isNull();
+```
+
+> NOTE! This package contains a simple command line tool (`autogiro2xml`) for
+> converting autogiro files to a more readable XML format suitable for visualy
+> examining parse trees.
+
+Access created objects through attributes.
+
+<!-- @ignore -->
+```php
+/** @var \byrokrat\amount\Amount $amount */
+$amount = $amountNode->getAttribute('amount');
+
+/** @var \byrokrat\id\IdInterface $id */
+$id = $idNode->getAttribute('id');
+
+/** @var \byrokrat\banking\AccountNumber $account */
+$account = $accountNode->getAttribute('account');
+```
+
 ## Grep nodes based on type
 
 <!--
-    @include RawFile
+    @include FileNode
     @expectOutput "/Delete mandate request found!/"
 -->
 ```php
-$fileNode = $parser->parse($rawFile);
-
 $visitor = new class extends \byrokrat\autogiro\Visitor\Visitor {
     function beforeDeleteMandateRequest($node) {
         echo "Delete mandate request found!";
@@ -124,12 +172,10 @@ $fileNode->accept($visitor);
 This can also be done dynamically.
 
 <!--
-    @include RawFile
+    @include FileNode
     @expectOutput "/Delete mandate request found!/"
 -->
 ```php
-$fileNode = $parser->parse($rawFile);
-
 $visitor = new class extends \byrokrat\autogiro\Visitor\Visitor {};
 
 $dynamicNodeType = "DeleteMandateRequest";
@@ -149,6 +195,7 @@ Autogiro is able to generate XML from node trees. Using this feature can be very
 helpful to understand how the parser interprets the various layouts.
 
 <!--
+    @include ParserFactory
     @include RawFile
     @expectOutput "/^<\?xml version=/"
 -->
@@ -159,11 +206,6 @@ echo $xmlWriter->asXml(
     $parser->parse($rawFile)
 );
 ```
-
-### autogiro2xml
-
-Package also contains a simple command line tool (`autogiro2xml`) for converting
-autogiro files to a more readable XML format.
 
 ## Hacking
 

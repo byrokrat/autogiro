@@ -49,19 +49,20 @@ class SectionNodeSpec extends ObjectBehavior
 
     function it_contains_nodes($nodeA, $nodeB)
     {
-        $this->getChildren()->shouldEqual(['1' => $nodeA, '2' => $nodeB]);
-        $this->getChild('1')->shouldEqual($nodeA);
-        $this->getChild('2')->shouldEqual($nodeB);
-    }
-
-    function it_returns_nul_if_index_is_out_of_range()
-    {
-        $this->getChild('100')->shouldEqual(null);
+        $this->getChildren()->shouldIterateAs([$nodeA, $nodeB]);
+        $this->getChild('1')->shouldReturn($nodeA);
+        $this->getChild('2')->shouldReturn($nodeB);
     }
 
     function it_contains_a_line_number($nodeA)
     {
         $nodeA->getLineNr()->willReturn(15);
         $this->getLineNr()->shouldEqual(15);
+    }
+
+    function it_defaults_to_line_number_zero()
+    {
+        $this->beConstructedWith();
+        $this->getLineNr()->shouldEqual(0);
     }
 }

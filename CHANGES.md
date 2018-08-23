@@ -7,7 +7,8 @@
   `Type` class of node).
 * Renamed `Node::setChild()` => `Node::addChild()`.
 * `Node::getValue()` now returns `mixed` instead of `string`.
-* `Node::getChild()` now has a nullable return type.
+* `Node::getChild()` now returns a `NullNode` if child is missing.
+* Added `Node::isNull()` to check for null object implementation.
 
 ## Visitor
 
