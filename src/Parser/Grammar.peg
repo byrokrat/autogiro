@@ -61,11 +61,9 @@ grammar Grammar extends MultibyteHack
     REQ_OPENING_REC = '01' date:DATE 'AUTOGIRO' S20 S20 S4 bgcNr:BGC_NR bg:BANKGIRO EOR {
         return new Request\RequestOpening(
             $this->lineNr,
-            [
-                'date' => $date,
-                'payee_bgc_number' => $bgcNr,
-                'payee_bankgiro' => $bg
-            ]
+            $date,
+            $bgcNr,
+            $bg
         );
     };
 
@@ -76,42 +74,36 @@ grammar Grammar extends MultibyteHack
     };
 
     REQ_DEL_MANDATE_REC = '03' bg:BANKGIRO payerNr:PAYER_NR EOR {
-        return new Request\DeleteMandateRequest($this->lineNr, ['payee_bankgiro' => $bg, 'payer_number' => $payerNr]);
+        return new Request\DeleteMandateRequest($this->lineNr, $bg, $payerNr);
     };
 
     REQ_REJECT_MANDATE_REC = '04' bg:BANKGIRO payerNr:PAYER_NR TXT48 'AV' EOR {
-        return new Request\RejectDigitalMandateRequest($this->lineNr, ['payee_bankgiro' => $bg, 'payer_number' => $payerNr]);
+        return new Request\RejectDigitalMandateRequest($this->lineNr, $bg, $payerNr);
     };
 
     REQ_CREATE_MANDATE_REC = '04' bg:BANKGIRO payerNr:PAYER_NR account:ACCOUNT16? id:ID? EOR {
         return $id && trim($id->getValue())
             ? new Request\CreateMandateRequest(
                 $this->lineNr,
-                [
-                    'payee_bankgiro' => $bg,
-                    'payer_number' => $payerNr,
-                    'account' => $account,
-                    'id' => $id
-                ]
+                $bg,
+                $payerNr,
+                $account,
+                $id
             )
             : new Request\AcceptDigitalMandateRequest(
                 $this->lineNr,
-                [
-                    'payee_bankgiro' => $bg,
-                    'payer_number' => $payerNr
-                ]
+                $bg,
+                $payerNr
             );
     };
 
     REQ_UPDATE_MANDATE_REC = '05' oldBg:BANKGIRO oldPayerNr:PAYER_NR newBg:BANKGIRO newPayerNr:PAYER_NR EOR {
         return new Request\UpdateMandateRequest(
             $this->lineNr,
-            [
-                'payee_bankgiro' => $oldBg,
-                'payer_number' => $oldPayerNr,
-                'new_payee_bankgiro' => $newBg,
-                'new_payer_number' => $newPayerNr
-            ]
+            $oldBg,
+            $oldPayerNr,
+            $newBg,
+            $newPayerNr
         );
     };
 
@@ -124,15 +116,13 @@ grammar Grammar extends MultibyteHack
     REQ_PAYMENT_REC = type:(REQ_PAYMENT_INCOMING / REQ_PAYMENT_OUTGOING) date:(IMMEDIATE_DATE / DATE) ival:INTERVAL reps:REPS ' ' payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:VAR_TXT EOR {
         return new $type(
             $this->lineNr,
-            [
-                'date' => $date,
-                'interval' => $ival,
-                'repetitions' => $reps,
-                'payer_number' => $payerNr,
-                'amount' => $amount,
-                'payee_bankgiro' => $bg,
-                'reference' => $ref
-            ]
+            $date,
+            $ival,
+            $reps,
+            $payerNr,
+            $amount,
+            $bg,
+            $ref
         );
     };
 
@@ -154,16 +144,14 @@ grammar Grammar extends MultibyteHack
         $tc->setAttribute('message_id', Layouts::LAYOUT_REQUEST . '.TC.' . $tc->getValue());
         return new Request\AmendmentRequest(
             $this->lineNr,
-            [
-                'code' => $tc,
-                'payee_bankgiro' => $bg,
-                'payer_number' => $payerNr,
-                'current_date' => $date,
-                'amount' => $amount,
-                'type' => $type,
-                'new_date' => $newDate,
-                'reference' => $ref,
-            ]
+            $tc,
+            $bg,
+            $payerNr,
+            $date,
+            $amount,
+            $type,
+            $newDate,
+            $ref
         );
     };
 
@@ -181,26 +169,22 @@ grammar Grammar extends MultibyteHack
     PAYMENT_OPENING_REC = '01' 'AUTOGIRO' S10 S4 datetime:DATETIME 'BET. SPEC & STOPP TK' ^ bgcNr:BGC_NR bg:BANKGIRO EOR {
         return new Response\ResponseOpening(
             $this->lineNr,
-            [
-                'date' => $datetime,
-                'payee_bgc_number' => $bgcNr,
-                'payee_bankgiro' => $bg,
-            ]
+            $datetime,
+            $bgcNr,
+            $bg
         );
     };
 
     PAYMENT_CLOSING_REC = '09' date:DATE '9900' nrInSecs:INT6 nrInRecs:INT12 nrOutSecs:INT6 nrOutRecs:INT12 nrRefSecs:INT6 nrRefRecs:INT12 EOR {
         return new Response\PaymentResponseClosing(
             $this->lineNr,
-            [
-                'date' => $date,
-                'nr_of_incoming_sections' => $nrInSecs,
-                'nr_of_incoming_records' => $nrInRecs,
-                'nr_of_outgoing_sections' => $nrOutSecs,
-                'nr_of_outgoing_records' => $nrOutRecs,
-                'nr_of_refund_sections' => $nrRefSecs,
-                'nr_of_refund_records' => $nrRefRecs,
-            ]
+            $date,
+            $nrInSecs,
+            $nrInRecs,
+            $nrOutSecs,
+            $nrOutRecs,
+            $nrRefSecs,
+            $nrRefRecs
         );
     };
 
@@ -213,33 +197,31 @@ grammar Grammar extends MultibyteHack
     PAYMENT_INCOMING_OPENING = '15' account:ACCOUNT35 date:DATE serial:INT5 amount:AMOUNT18 A2 A nrRecs:INT8 EOR {
         return new Response\IncomingPaymentResponseOpening(
             $this->lineNr,
-            [
-                'account' => $account,
-                'date' => $date,
-                'serial' => $serial,
-                'amount' => $amount,
-                'record_count' => $nrRecs,
-            ]
+            $account,
+            $date,
+            $serial,
+            $amount,
+            $nrRecs
         );
     };
 
     PAYMENT_INCOMING_REC = '82' date:DATE ival:INTERVAL reps:REPS A payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:TXT16 A10? status:MSG1? EOR {
         $data = [
-            'date' => $date,
-            'interval' => $ival,
-            'repetitions' => $reps,
-            'payer_number' => $payerNr,
-            'amount' => $amount,
-            'payee_bankgiro' => $bg,
-            'reference' => $ref,
+            $date,
+            $ival,
+            $reps,
+            $payerNr,
+            $amount,
+            $bg,
+            $ref,
         ];
 
         if ($status) {
             $status->setAttribute('message_id', Layouts::LAYOUT_PAYMENT_RESPONSE . '.' . $status->getValue());
-            $data['status'] = $status;
+            $data[] = $status;
         }
 
-        return new Response\IncomingPaymentResponse($this->lineNr, $data);
+        return new Response\IncomingPaymentResponse($this->lineNr, ...$data);
     };
 
     // OUTGOING PAYMENTS
@@ -251,33 +233,31 @@ grammar Grammar extends MultibyteHack
     PAYMENT_OUTGOING_OPENING = '16' account:ACCOUNT35 date:DATE serial:INT5 amount:AMOUNT18 A2 A nrRecs:INT8 EOR {
         return new Response\OutgoingPaymentResponseOpening(
             $this->lineNr,
-            [
-                'account' => $account,
-                'date' => $date,
-                'serial' => $serial,
-                'amount' => $amount,
-                'record_count' => $nrRecs,
-            ]
+            $account,
+            $date,
+            $serial,
+            $amount,
+            $nrRecs
         );
     };
 
     PAYMENT_OUTGOING_REC = '32' date:DATE ival:INTERVAL reps:REPS A payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:TXT16 A10? status:MSG1? EOR {
         $data = [
-            'date' => $date,
-            'interval' => $ival,
-            'repetitions' => $reps,
-            'payer_number' => $payerNr,
-            'amount' => $amount,
-            'payee_bankgiro' => $bg,
-            'reference' => $ref,
+            $date,
+            $ival,
+            $reps,
+            $payerNr,
+            $amount,
+            $bg,
+            $ref,
         ];
 
         if ($status) {
             $status->setAttribute('message_id', Layouts::LAYOUT_PAYMENT_RESPONSE . '.' . $status->getValue());
-            $data['status'] = $status;
+            $data[] = $status;
         }
 
-        return new Response\OutgoingPaymentResponse($this->lineNr, $data);
+        return new Response\OutgoingPaymentResponse($this->lineNr, ...$data);
     };
 
     // REFUND PAYMENTS
@@ -289,13 +269,11 @@ grammar Grammar extends MultibyteHack
     PAYMENT_REFUND_OPENING = '17' account:ACCOUNT35 date:DATE serial:INT5 amount:AMOUNT18 A2 A nrRecs:INT8 EOR {
         return new Response\RefundPaymentResponseOpening(
             $this->lineNr,
-            [
-                'account' => $account,
-                'date' => $date,
-                'serial' => $serial,
-                'amount' => $amount,
-                'record_count' => $nrRecs,
-            ]
+            $account,
+            $date,
+            $serial,
+            $amount,
+            $nrRecs
         );
     };
 
@@ -303,17 +281,15 @@ grammar Grammar extends MultibyteHack
         $status->setAttribute('message_id', Layouts::LAYOUT_PAYMENT_RESPONSE . '.' . $status->getValue());
         return new Response\RefundPaymentResponse(
             $this->lineNr,
-            [
-                'date' => $date,
-                'interval' => $ival,
-                'repetitions' => $reps,
-                'payer_number' => $payerNr,
-                'amount' => $amount,
-                'payee_bankgiro' => $bg,
-                'reference' => $ref,
-                'refund_date' => $refundDate,
-                'status' => $status,
-            ]
+            $date,
+            $ival,
+            $reps,
+            $payerNr,
+            $amount,
+            $bg,
+            $ref,
+            $refundDate,
+            $status
         );
     };
 
@@ -327,24 +303,20 @@ grammar Grammar extends MultibyteHack
     OLD_PAYMENT_OPENING = '01' date:DATE 'AUTOGIRO' '9900' S20 S20 bgcNr:BGC_NR bg:BANKGIRO EOR {
         return new Response\ResponseOpening(
             $this->lineNr,
-            [
-                'date' => $date,
-                'payee_bgc_number' => $bgcNr,
-                'payee_bankgiro' => $bg,
-            ]
+            $date,
+            $bgcNr,
+            $bg
         );
     };
 
     OLD_PAYMENT_CLOSING = '09' date:DATE '9900' S10 S4 amountOut:AMOUNT12 nrOut:INT6 nrIn:INT6 '00000' amountIn:AMOUNT12 '00000000000' EOR {
         return new Response\PaymentResponseClosing(
             $this->lineNr,
-            [
-                'date' => $date,
-                'total_outgoing_amount' => $amountOut,
-                'nr_of_outgoing_records' => $nrOut,
-                'nr_of_incoming_records' => $nrIn,
-                'total_incoming_amount' => $amountIn,
-            ]
+            $date,
+            $amountOut,
+            $nrOut,
+            $nrIn,
+            $amountIn
         );
     };
 
@@ -366,55 +338,49 @@ grammar Grammar extends MultibyteHack
     MANDATE_OPENING_REC = '01' 'AUTOGIRO' S10 S4 date:DATE S10 '  AG-MEDAVI' ^ S10 S bgcNr:BGC_NR bg:BANKGIRO EOR {
         return new Response\ResponseOpening(
             $this->lineNr,
-            [
-                'date' => $date,
-                'payee_bgc_number' => $bgcNr,
-                'payee_bankgiro' => $bg,
-            ]
+            $date,
+            $bgcNr,
+            $bg
         );
     };
 
     OLD_MANDATE_OPENING_REC = '01' date:DATE '9900' bg:BANKGIRO 'AG-MEDAVI' ^ EOR {
-        // TODO här skapar jag PayeeBgcNumber för att det ska vara samma som i MANDATE_OPENING_REC, det behöver jag inte göra längre...
         return new Response\ResponseOpening(
             $this->lineNr,
-            [
-                'date' => $date,
-                'payee_bgc_number' => new PayeeBgcNumber($this->lineNr, ''),
-                'payee_bankgiro' => $bg,
-            ]
+            $date,
+            $bg
         );
     };
 
     MANDATE_REC = '73' bg:BANKGIRO payerNr:PAYER_NR account:ACCOUNT16 id:ID (S5 / '00000') info:MSG2 status:MSG2 date:DATE validDate:$(A5 A)? EOR {
         // If account is empty a valid bankgiro number may be read from the payer number field
         if (!trim($account->getValue())) {
-            $account = new ReferredAccount($account->getLineNr(), $payerNr->getValue());
+            $account = new Account($account->getLineNr(), $payerNr->getValue());
         }
 
         $info->setAttribute('message_id', "73.info.{$info->getValue()}");
         $status->setAttribute('message_id', "73.status.{$status->getValue()}");
 
         $nodes = [
-            'payee_bankgiro' => $bg,
-            'payer_number' => $payerNr,
-            'account' => $account,
-            'id' => $id,
-            'info' => $info,
-            'status' => $status,
-            'date' => $date,
+            $bg,
+            $payerNr,
+            $account,
+            $id,
+            $info,
+            $status,
+            $date,
         ];
 
         // A mandate-valid-from-date is only present in the old layout
         if ($validDate) {
-            $nodes['valid_from_date'] = new Text($this->lineNr, (string)$validDate);
+            $nodes[] = new Text($this->lineNr, (string)$validDate);
         }
 
-        return new Response\MandateResponse($this->lineNr, $nodes);
+        return new Response\MandateResponse($this->lineNr, ...$nodes);
     };
 
     MANDATE_CLOSING_REC = '09' date:DATE '9900' nrRecs:INT7 EOR {
-        return new Response\MandateResponseClosing($this->lineNr, ['date' => $date, 'nr_of_records' => $nrRecs]);
+        return new Response\MandateResponseClosing($this->lineNr, $date, $nrRecs);
     };
 
     //
@@ -429,37 +395,31 @@ grammar Grammar extends MultibyteHack
     PAYMENT_REJECTION_OPENING = '01' 'AUTOGIRO' S10 S4 date:DATE S10 '  AVVISADE BET UPPDR  ' ^ bgcNr:BGC_NR bg:BANKGIRO EOR {
         return new Response\ResponseOpening(
             $this->lineNr,
-            [
-                'date' => $date,
-                'payee_bgc_number' => $bgcNr,
-                'payee_bankgiro' => $bg,
-            ]
+            $date,
+            $bgcNr,
+            $bg
         );
     };
 
     OLD_PAYMENT_REJECTION_OPENING = '01' date:DATE 'AUTOGIRO' '9900' 'FELLISTA REG.KONTRL' ^ S20 S bgcNr:BGC_NR bg:BANKGIRO EOR {
         return new Response\ResponseOpening(
             $this->lineNr,
-            [
-                'date' => $date,
-                'payee_bgc_number' => $bgcNr,
-                'payee_bankgiro' => $bg,
-            ]
+            $date,
+            $bgcNr,
+            $bg
         );
     };
 
     PAYMENT_REJECTION_RECORD = type:(PAYMENT_REJECTION_INCOMING / PAYMENT_REJECTION_OUTGOING) date:DATE ival:INTERVAL reps:REPS payerNr:PAYER_NR amount:AMOUNT12 ref:TXT16 comment:MSG2 EOR {
         return new $type(
             $this->lineNr,
-            [
-                'date' => $date,
-                'interval' => $ival,
-                'repetitions' => $reps,
-                'payer_number' => $payerNr,
-                'amount' => $amount,
-                'reference' => $ref,
-                'comment' => $comment,
-            ]
+            $date,
+            $ival,
+            $reps,
+            $payerNr,
+            $amount,
+            $ref,
+            $comment
         );
     };
 
@@ -474,13 +434,11 @@ grammar Grammar extends MultibyteHack
     PAYMENT_REJECTION_CLOSING = '09' date:DATE '9900' nrOut:INT6 amountOut:AMOUNT12 nrIn:INT6 amountIn:AMOUNT12 EOR {
         return new Response\PaymentRejectionResponseClosing(
             $this->lineNr,
-            [
-                'date' => $date,
-                'nr_of_outgoing_records' => $nrOut,
-                'total_outgoing_amount' => $amountOut,
-                'nr_of_incoming_records' => $nrIn,
-                'total_incoming_amount' => $amountIn,
-            ]
+            $date,
+            $nrOut,
+            $amountOut,
+            $nrIn,
+            $amountIn
         );
     };
 
@@ -506,22 +464,18 @@ grammar Grammar extends MultibyteHack
     AMENDMENT_OPENING = date:OPENING_INTRO 'MAKULERING/ÄNDRING  ' ^ bgcNr:BGC_NR bg:BANKGIRO EOR {
         return new Response\ResponseOpening(
             $this->lineNr,
-            [
-                'date' => $date,
-                'payee_bgc_number' => $bgcNr,
-                'payee_bankgiro' => $bg,
-            ]
+            $date,
+            $bgcNr,
+            $bg
         );
     };
 
     OLD_AMENDMENT_OPENING = date:OLD_OPENING_INTRO 'MAK/ÄNDRINGSLISTA   ' ^ S20 bgcNr:BGC_NR bg:BANKGIRO EOR {
         return new Response\ResponseOpening(
             $this->lineNr,
-            [
-                'date' => $date,
-                'payee_bgc_number' => $bgcNr,
-                'payee_bankgiro' => $bg,
-            ]
+            $date,
+            $bgcNr,
+            $bg
         );
     };
 
@@ -529,28 +483,24 @@ grammar Grammar extends MultibyteHack
         $tc->setAttribute('message_id', Layouts::LAYOUT_AMENDMENT_RESPONSE . '.TC.' . $tc->getValue());
         return new Response\AmendmentResponse(
             $this->lineNr,
-            [
-                'code' => $tc,
-                'date' => $date,
-                'payer_number' => $payerNr,
-                'type' => $type,
-                'amount' => $amount,
-                'reference' => $ref,
-                'comment' => $comment,
-            ]
+            $tc,
+            $date,
+            $payerNr,
+            $type,
+            $amount,
+            $ref,
+            $comment
         );
     };
 
     AMENDMENT_CLOSING = '09' date:DATE '9900' S10 S4 amountOut:AMOUNT12 nrOut:INT6 nrIn:INT6 A4 amountIn:AMOUNT12 EOR {
         return new Response\ResponseClosing(
             $this->lineNr,
-            [
-                'date' => $date,
-                'nr_of_amended_outgoing_records' => $nrOut,
-                'total_amended_outgoing_amount' => $amountOut,
-                'nr_of_amended_incoming_records' => $nrIn,
-                'total_amended_incoming_amount' => $amountIn,
-            ]
+            $date,
+            $nrOut,
+            $amountOut,
+            $nrIn,
+            $amountIn
         );
     };
 

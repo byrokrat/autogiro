@@ -33,8 +33,8 @@ class Section extends Node
     {
         parent::__construct();
 
-        foreach ($nodes as $index => $node) {
-            $this->addChild((string)($index + 1), $node);
+        foreach ($nodes as $node) {
+            $this->addChild($node);
         }
     }
 

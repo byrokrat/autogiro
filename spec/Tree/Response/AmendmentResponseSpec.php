@@ -13,7 +13,7 @@ class AmendmentResponseSpec extends ObjectBehavior
 {
     function let()
     {
-        $this->beConstructedWith(0, []);
+        $this->beConstructedWith(0);
     }
 
     function it_is_initializable()

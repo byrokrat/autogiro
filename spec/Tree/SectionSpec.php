@@ -14,6 +14,8 @@ class SectionSpec extends ObjectBehavior
 {
     function let(Node $nodeA, Node $nodeB)
     {
+        $nodeA->getName()->willReturn('nodeA');
+        $nodeB->getName()->willReturn('nodeB');
         $this->beConstructedWith($nodeA, $nodeB);
     }
 
@@ -50,8 +52,8 @@ class SectionSpec extends ObjectBehavior
     function it_contains_nodes($nodeA, $nodeB)
     {
         $this->getChildren()->shouldIterateAs([$nodeA, $nodeB]);
-        $this->getChild('1')->shouldReturn($nodeA);
-        $this->getChild('2')->shouldReturn($nodeB);
+        $this->getChild('nodeA')->shouldReturn($nodeA);
+        $this->getChild('nodeB')->shouldReturn($nodeB);
     }
 
     function it_contains_a_line_number($nodeA)

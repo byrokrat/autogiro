@@ -84,9 +84,11 @@ class FeatureContext implements Context, SnippetAcceptingContext
      */
     public function theLastNodeContainsAccount(string $nodeType, string $number)
     {
+        $nodes = $this->fileNode->getChildren($nodeType);
+
         Assertions::assertEquals(
             $number,
-            Utils::extractNodeFromTree($nodeType, $this->fileNode)->getChild('account')->getAttribute('account')->getNumber()
+            array_pop($nodes)->getChild('account')->getAttribute('account')->getNumber()
         );
     }
 

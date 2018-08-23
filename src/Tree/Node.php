@@ -35,7 +35,7 @@ class Node
     private $attributes = [];
 
     /**
-     * @var array[]
+     * @var Node[]
      */
     private $children = [];
 
@@ -126,6 +126,60 @@ class Node
     }
 
     /**
+     * Set a child node
+     */
+    public function addChild(Node $node): void
+    {
+        $this->children[] = $node;
+    }
+
+    /**
+     * Get child node
+     */
+    public function getChild(string $name): Node
+    {
+        foreach ($this->children as $node) {
+            if (strcasecmp($node->getName(), $name) == 0) {
+                return $node;
+            }
+        }
+
+        return new NullNode;
+    }
+
+    /**
+     * Check if child exists
+     */
+    public function hasChild(string $name): bool
+    {
+        foreach ($this->children as $node) {
+            if (strcasecmp($node->getName(), $name) == 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Get registered child nodes
+     *
+     * @return Node[]
+     */
+    public function getChildren(string $name = ''): array
+    {
+        $nodes = [];
+
+        foreach ($this->children as $node) {
+            if (!$name || strcasecmp($node->getName(), $name) == 0) {
+                $nodes[] = $node;
+            }
+        }
+
+        return $nodes;
+    }
+
+    /**
      * Set a custom attribute on node
      *
      * @param string $name  Name of attribute
@@ -161,55 +215,5 @@ class Node
     public function getAttributes(): array
     {
         return $this->attributes;
-    }
-
-    /**
-     * Set a child node
-     */
-    public function addChild(string $name, Node $node): void
-    {
-        $this->children[] = [$name, $node];
-    }
-
-    /**
-     * Get child node
-     */
-    public function getChild(string $name): Node
-    {
-        foreach ($this->children as list($nodeName, $node)) {
-            if (strcasecmp($nodeName, $name) == 0) {
-                return $node;
-            }
-        }
-
-        return new NullNode;
-    }
-
-    /**
-     * Check if child exists
-     */
-    public function hasChild(string $name): bool
-    {
-        foreach ($this->children as list($nodeName, $node)) {
-            if (strcasecmp($nodeName, $name) == 0) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Get registered child nodes
-     *
-     * @return iterable & Node[]
-     */
-    public function getChildren(string $name = ''): iterable
-    {
-        foreach ($this->children as list($nodeName, $node)) {
-            if (!$name || strcasecmp($nodeName, $name) == 0) {
-                yield $node;
-            }
-        }
     }
 }

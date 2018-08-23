@@ -12,7 +12,7 @@ class RecordSpec extends ObjectBehavior
 {
     function let()
     {
-        $this->beConstructedWith(0, []);
+        $this->beConstructedWith(0);
     }
 
     function it_is_initializable()
@@ -32,14 +32,16 @@ class RecordSpec extends ObjectBehavior
 
     function it_contains_a_line_number()
     {
-        $this->beConstructedWith(123, []);
+        $this->beConstructedWith(123);
         $this->getLineNr()->shouldEqual(123);
     }
 
     function it_contains_nodes(Node $node1, Node $node2)
     {
-        $this->beConstructedWith(0, ['open' => $node1, 'close' => $node2]);
-        $this->getChild('open')->shouldEqual($node1);
-        $this->getChild('close')->shouldEqual($node2);
+        $node1->getName()->willReturn('node1');
+        $node2->getName()->willReturn('node2');
+        $this->beConstructedWith(0, $node1, $node2);
+        $this->getChild('node1')->shouldEqual($node1);
+        $this->getChild('node2')->shouldEqual($node2);
     }
 }

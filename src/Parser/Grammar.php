@@ -353,11 +353,9 @@ class Grammar extends MultibyteHack
             $this->value = call_user_func(function () use (&$date, &$bgcNr, &$bg) {
                 return new Request\RequestOpening(
                     $this->lineNr,
-                    [
-                        'date' => $date,
-                        'payee_bgc_number' => $bgcNr,
-                        'payee_bankgiro' => $bg
-                    ]
+                    $date,
+                    $bgcNr,
+                    $bg
                 );
             });
         }
@@ -562,7 +560,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$bg, &$payerNr) {
-                return new Request\DeleteMandateRequest($this->lineNr, ['payee_bankgiro' => $bg, 'payer_number' => $payerNr]);
+                return new Request\DeleteMandateRequest($this->lineNr, $bg, $payerNr);
             });
         }
 
@@ -657,7 +655,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$bg, &$payerNr) {
-                return new Request\RejectDigitalMandateRequest($this->lineNr, ['payee_bankgiro' => $bg, 'payer_number' => $payerNr]);
+                return new Request\RejectDigitalMandateRequest($this->lineNr, $bg, $payerNr);
             });
         }
 
@@ -779,19 +777,15 @@ class Grammar extends MultibyteHack
                 return $id && trim($id->getValue())
                     ? new Request\CreateMandateRequest(
                         $this->lineNr,
-                        [
-                            'payee_bankgiro' => $bg,
-                            'payer_number' => $payerNr,
-                            'account' => $account,
-                            'id' => $id
-                        ]
+                        $bg,
+                        $payerNr,
+                        $account,
+                        $id
                     )
                     : new Request\AcceptDigitalMandateRequest(
                         $this->lineNr,
-                        [
-                            'payee_bankgiro' => $bg,
-                            'payer_number' => $payerNr
-                        ]
+                        $bg,
+                        $payerNr
                     );
             });
         }
@@ -889,12 +883,10 @@ class Grammar extends MultibyteHack
             $this->value = call_user_func(function () use (&$oldBg, &$oldPayerNr, &$newBg, &$newPayerNr) {
                 return new Request\UpdateMandateRequest(
                     $this->lineNr,
-                    [
-                        'payee_bankgiro' => $oldBg,
-                        'payer_number' => $oldPayerNr,
-                        'new_payee_bankgiro' => $newBg,
-                        'new_payer_number' => $newPayerNr
-                    ]
+                    $oldBg,
+                    $oldPayerNr,
+                    $newBg,
+                    $newPayerNr
                 );
             });
         }
@@ -1137,15 +1129,13 @@ class Grammar extends MultibyteHack
             $this->value = call_user_func(function () use (&$type, &$date, &$ival, &$reps, &$payerNr, &$amount, &$bg, &$ref) {
                 return new $type(
                     $this->lineNr,
-                    [
-                        'date' => $date,
-                        'interval' => $ival,
-                        'repetitions' => $reps,
-                        'payer_number' => $payerNr,
-                        'amount' => $amount,
-                        'payee_bankgiro' => $bg,
-                        'reference' => $ref
-                    ]
+                    $date,
+                    $ival,
+                    $reps,
+                    $payerNr,
+                    $amount,
+                    $bg,
+                    $ref
                 );
             });
         }
@@ -1475,16 +1465,14 @@ class Grammar extends MultibyteHack
                 $tc->setAttribute('message_id', Layouts::LAYOUT_REQUEST . '.TC.' . $tc->getValue());
                 return new Request\AmendmentRequest(
                     $this->lineNr,
-                    [
-                        'code' => $tc,
-                        'payee_bankgiro' => $bg,
-                        'payer_number' => $payerNr,
-                        'current_date' => $date,
-                        'amount' => $amount,
-                        'type' => $type,
-                        'new_date' => $newDate,
-                        'reference' => $ref,
-                    ]
+                    $tc,
+                    $bg,
+                    $payerNr,
+                    $date,
+                    $amount,
+                    $type,
+                    $newDate,
+                    $ref
                 );
             });
         }
@@ -1794,11 +1782,9 @@ class Grammar extends MultibyteHack
             $this->value = call_user_func(function () use (&$datetime, &$bgcNr, &$bg) {
                 return new Response\ResponseOpening(
                     $this->lineNr,
-                    [
-                        'date' => $datetime,
-                        'payee_bgc_number' => $bgcNr,
-                        'payee_bankgiro' => $bg,
-                    ]
+                    $datetime,
+                    $bgcNr,
+                    $bg
                 );
             });
         }
@@ -1940,15 +1926,13 @@ class Grammar extends MultibyteHack
             $this->value = call_user_func(function () use (&$date, &$nrInSecs, &$nrInRecs, &$nrOutSecs, &$nrOutRecs, &$nrRefSecs, &$nrRefRecs) {
                 return new Response\PaymentResponseClosing(
                     $this->lineNr,
-                    [
-                        'date' => $date,
-                        'nr_of_incoming_sections' => $nrInSecs,
-                        'nr_of_incoming_records' => $nrInRecs,
-                        'nr_of_outgoing_sections' => $nrOutSecs,
-                        'nr_of_outgoing_records' => $nrOutRecs,
-                        'nr_of_refund_sections' => $nrRefSecs,
-                        'nr_of_refund_records' => $nrRefRecs,
-                    ]
+                    $date,
+                    $nrInSecs,
+                    $nrInRecs,
+                    $nrOutSecs,
+                    $nrOutRecs,
+                    $nrRefSecs,
+                    $nrRefRecs
                 );
             });
         }
@@ -2145,13 +2129,11 @@ class Grammar extends MultibyteHack
             $this->value = call_user_func(function () use (&$account, &$date, &$serial, &$amount, &$nrRecs) {
                 return new Response\IncomingPaymentResponseOpening(
                     $this->lineNr,
-                    [
-                        'account' => $account,
-                        'date' => $date,
-                        'serial' => $serial,
-                        'amount' => $amount,
-                        'record_count' => $nrRecs,
-                    ]
+                    $account,
+                    $date,
+                    $serial,
+                    $amount,
+                    $nrRecs
                 );
             });
         }
@@ -2324,21 +2306,21 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$ival, &$reps, &$payerNr, &$amount, &$bg, &$ref, &$status) {
                 $data = [
-                    'date' => $date,
-                    'interval' => $ival,
-                    'repetitions' => $reps,
-                    'payer_number' => $payerNr,
-                    'amount' => $amount,
-                    'payee_bankgiro' => $bg,
-                    'reference' => $ref,
+                    $date,
+                    $ival,
+                    $reps,
+                    $payerNr,
+                    $amount,
+                    $bg,
+                    $ref,
                 ];
 
                 if ($status) {
                     $status->setAttribute('message_id', Layouts::LAYOUT_PAYMENT_RESPONSE . '.' . $status->getValue());
-                    $data['status'] = $status;
+                    $data[] = $status;
                 }
 
-                return new Response\IncomingPaymentResponse($this->lineNr, $data);
+                return new Response\IncomingPaymentResponse($this->lineNr, ...$data);
             });
         }
 
@@ -2534,13 +2516,11 @@ class Grammar extends MultibyteHack
             $this->value = call_user_func(function () use (&$account, &$date, &$serial, &$amount, &$nrRecs) {
                 return new Response\OutgoingPaymentResponseOpening(
                     $this->lineNr,
-                    [
-                        'account' => $account,
-                        'date' => $date,
-                        'serial' => $serial,
-                        'amount' => $amount,
-                        'record_count' => $nrRecs,
-                    ]
+                    $account,
+                    $date,
+                    $serial,
+                    $amount,
+                    $nrRecs
                 );
             });
         }
@@ -2713,21 +2693,21 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$ival, &$reps, &$payerNr, &$amount, &$bg, &$ref, &$status) {
                 $data = [
-                    'date' => $date,
-                    'interval' => $ival,
-                    'repetitions' => $reps,
-                    'payer_number' => $payerNr,
-                    'amount' => $amount,
-                    'payee_bankgiro' => $bg,
-                    'reference' => $ref,
+                    $date,
+                    $ival,
+                    $reps,
+                    $payerNr,
+                    $amount,
+                    $bg,
+                    $ref,
                 ];
 
                 if ($status) {
                     $status->setAttribute('message_id', Layouts::LAYOUT_PAYMENT_RESPONSE . '.' . $status->getValue());
-                    $data['status'] = $status;
+                    $data[] = $status;
                 }
 
-                return new Response\OutgoingPaymentResponse($this->lineNr, $data);
+                return new Response\OutgoingPaymentResponse($this->lineNr, ...$data);
             });
         }
 
@@ -2923,13 +2903,11 @@ class Grammar extends MultibyteHack
             $this->value = call_user_func(function () use (&$account, &$date, &$serial, &$amount, &$nrRecs) {
                 return new Response\RefundPaymentResponseOpening(
                     $this->lineNr,
-                    [
-                        'account' => $account,
-                        'date' => $date,
-                        'serial' => $serial,
-                        'amount' => $amount,
-                        'record_count' => $nrRecs,
-                    ]
+                    $account,
+                    $date,
+                    $serial,
+                    $amount,
+                    $nrRecs
                 );
             });
         }
@@ -3084,17 +3062,15 @@ class Grammar extends MultibyteHack
                 $status->setAttribute('message_id', Layouts::LAYOUT_PAYMENT_RESPONSE . '.' . $status->getValue());
                 return new Response\RefundPaymentResponse(
                     $this->lineNr,
-                    [
-                        'date' => $date,
-                        'interval' => $ival,
-                        'repetitions' => $reps,
-                        'payer_number' => $payerNr,
-                        'amount' => $amount,
-                        'payee_bankgiro' => $bg,
-                        'reference' => $ref,
-                        'refund_date' => $refundDate,
-                        'status' => $status,
-                    ]
+                    $date,
+                    $ival,
+                    $reps,
+                    $payerNr,
+                    $amount,
+                    $bg,
+                    $ref,
+                    $refundDate,
+                    $status
                 );
             });
         }
@@ -3322,11 +3298,9 @@ class Grammar extends MultibyteHack
             $this->value = call_user_func(function () use (&$date, &$bgcNr, &$bg) {
                 return new Response\ResponseOpening(
                     $this->lineNr,
-                    [
-                        'date' => $date,
-                        'payee_bgc_number' => $bgcNr,
-                        'payee_bankgiro' => $bg,
-                    ]
+                    $date,
+                    $bgcNr,
+                    $bg
                 );
             });
         }
@@ -3488,13 +3462,11 @@ class Grammar extends MultibyteHack
             $this->value = call_user_func(function () use (&$date, &$amountOut, &$nrOut, &$nrIn, &$amountIn) {
                 return new Response\PaymentResponseClosing(
                     $this->lineNr,
-                    [
-                        'date' => $date,
-                        'total_outgoing_amount' => $amountOut,
-                        'nr_of_outgoing_records' => $nrOut,
-                        'nr_of_incoming_records' => $nrIn,
-                        'total_incoming_amount' => $amountIn,
-                    ]
+                    $date,
+                    $amountOut,
+                    $nrOut,
+                    $nrIn,
+                    $amountIn
                 );
             });
         }
@@ -3790,11 +3762,9 @@ class Grammar extends MultibyteHack
             $this->value = call_user_func(function () use (&$date, &$bgcNr, &$bg) {
                 return new Response\ResponseOpening(
                     $this->lineNr,
-                    [
-                        'date' => $date,
-                        'payee_bgc_number' => $bgcNr,
-                        'payee_bankgiro' => $bg,
-                    ]
+                    $date,
+                    $bgcNr,
+                    $bg
                 );
             });
         }
@@ -3907,14 +3877,10 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$bg) {
-                // TODO här skapar jag PayeeBgcNumber för att det ska vara samma som i MANDATE_OPENING_REC, det behöver jag inte göra längre...
                 return new Response\ResponseOpening(
                     $this->lineNr,
-                    [
-                        'date' => $date,
-                        'payee_bgc_number' => new PayeeBgcNumber($this->lineNr, ''),
-                        'payee_bankgiro' => $bg,
-                    ]
+                    $date,
+                    $bg
                 );
             });
         }
@@ -4110,28 +4076,28 @@ class Grammar extends MultibyteHack
             $this->value = call_user_func(function () use (&$bg, &$payerNr, &$account, &$id, &$info, &$status, &$date, &$validDate) {
                 // If account is empty a valid bankgiro number may be read from the payer number field
                 if (!trim($account->getValue())) {
-                    $account = new ReferredAccount($account->getLineNr(), $payerNr->getValue());
+                    $account = new Account($account->getLineNr(), $payerNr->getValue());
                 }
 
                 $info->setAttribute('message_id', "73.info.{$info->getValue()}");
                 $status->setAttribute('message_id', "73.status.{$status->getValue()}");
 
                 $nodes = [
-                    'payee_bankgiro' => $bg,
-                    'payer_number' => $payerNr,
-                    'account' => $account,
-                    'id' => $id,
-                    'info' => $info,
-                    'status' => $status,
-                    'date' => $date,
+                    $bg,
+                    $payerNr,
+                    $account,
+                    $id,
+                    $info,
+                    $status,
+                    $date,
                 ];
 
                 // A mandate-valid-from-date is only present in the old layout
                 if ($validDate) {
-                    $nodes['valid_from_date'] = new Text($this->lineNr, (string)$validDate);
+                    $nodes[] = new Text($this->lineNr, (string)$validDate);
                 }
 
-                return new Response\MandateResponse($this->lineNr, $nodes);
+                return new Response\MandateResponse($this->lineNr, ...$nodes);
             });
         }
 
@@ -4220,7 +4186,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$nrRecs) {
-                return new Response\MandateResponseClosing($this->lineNr, ['date' => $date, 'nr_of_records' => $nrRecs]);
+                return new Response\MandateResponseClosing($this->lineNr, $date, $nrRecs);
             });
         }
 
@@ -4462,11 +4428,9 @@ class Grammar extends MultibyteHack
             $this->value = call_user_func(function () use (&$date, &$bgcNr, &$bg) {
                 return new Response\ResponseOpening(
                     $this->lineNr,
-                    [
-                        'date' => $date,
-                        'payee_bgc_number' => $bgcNr,
-                        'payee_bankgiro' => $bg,
-                    ]
+                    $date,
+                    $bgcNr,
+                    $bg
                 );
             });
         }
@@ -4617,11 +4581,9 @@ class Grammar extends MultibyteHack
             $this->value = call_user_func(function () use (&$date, &$bgcNr, &$bg) {
                 return new Response\ResponseOpening(
                     $this->lineNr,
-                    [
-                        'date' => $date,
-                        'payee_bgc_number' => $bgcNr,
-                        'payee_bankgiro' => $bg,
-                    ]
+                    $date,
+                    $bgcNr,
+                    $bg
                 );
             });
         }
@@ -4757,15 +4719,13 @@ class Grammar extends MultibyteHack
             $this->value = call_user_func(function () use (&$type, &$date, &$ival, &$reps, &$payerNr, &$amount, &$ref, &$comment) {
                 return new $type(
                     $this->lineNr,
-                    [
-                        'date' => $date,
-                        'interval' => $ival,
-                        'repetitions' => $reps,
-                        'payer_number' => $payerNr,
-                        'amount' => $amount,
-                        'reference' => $ref,
-                        'comment' => $comment,
-                    ]
+                    $date,
+                    $ival,
+                    $reps,
+                    $payerNr,
+                    $amount,
+                    $ref,
+                    $comment
                 );
             });
         }
@@ -4969,13 +4929,11 @@ class Grammar extends MultibyteHack
             $this->value = call_user_func(function () use (&$date, &$nrOut, &$amountOut, &$nrIn, &$amountIn) {
                 return new Response\PaymentRejectionResponseClosing(
                     $this->lineNr,
-                    [
-                        'date' => $date,
-                        'nr_of_outgoing_records' => $nrOut,
-                        'total_outgoing_amount' => $amountOut,
-                        'nr_of_incoming_records' => $nrIn,
-                        'total_incoming_amount' => $amountIn,
-                    ]
+                    $date,
+                    $nrOut,
+                    $amountOut,
+                    $nrIn,
+                    $amountIn
                 );
             });
         }
@@ -5318,11 +5276,9 @@ class Grammar extends MultibyteHack
             $this->value = call_user_func(function () use (&$date, &$bgcNr, &$bg) {
                 return new Response\ResponseOpening(
                     $this->lineNr,
-                    [
-                        'date' => $date,
-                        'payee_bgc_number' => $bgcNr,
-                        'payee_bankgiro' => $bg,
-                    ]
+                    $date,
+                    $bgcNr,
+                    $bg
                 );
             });
         }
@@ -5425,11 +5381,9 @@ class Grammar extends MultibyteHack
             $this->value = call_user_func(function () use (&$date, &$bgcNr, &$bg) {
                 return new Response\ResponseOpening(
                     $this->lineNr,
-                    [
-                        'date' => $date,
-                        'payee_bgc_number' => $bgcNr,
-                        'payee_bankgiro' => $bg,
-                    ]
+                    $date,
+                    $bgcNr,
+                    $bg
                 );
             });
         }
@@ -5584,15 +5538,13 @@ class Grammar extends MultibyteHack
                 $tc->setAttribute('message_id', Layouts::LAYOUT_AMENDMENT_RESPONSE . '.TC.' . $tc->getValue());
                 return new Response\AmendmentResponse(
                     $this->lineNr,
-                    [
-                        'code' => $tc,
-                        'date' => $date,
-                        'payer_number' => $payerNr,
-                        'type' => $type,
-                        'amount' => $amount,
-                        'reference' => $ref,
-                        'comment' => $comment,
-                    ]
+                    $tc,
+                    $date,
+                    $payerNr,
+                    $type,
+                    $amount,
+                    $ref,
+                    $comment
                 );
             });
         }
@@ -5732,13 +5684,11 @@ class Grammar extends MultibyteHack
             $this->value = call_user_func(function () use (&$date, &$amountOut, &$nrOut, &$nrIn, &$amountIn) {
                 return new Response\ResponseClosing(
                     $this->lineNr,
-                    [
-                        'date' => $date,
-                        'nr_of_amended_outgoing_records' => $nrOut,
-                        'total_amended_outgoing_amount' => $amountOut,
-                        'nr_of_amended_incoming_records' => $nrIn,
-                        'total_amended_incoming_amount' => $amountIn,
-                    ]
+                    $date,
+                    $nrOut,
+                    $amountOut,
+                    $nrIn,
+                    $amountIn
                 );
             });
         }

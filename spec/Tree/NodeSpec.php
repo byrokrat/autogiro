@@ -51,13 +51,54 @@ class NodeSpec extends ObjectBehavior
 
     function it_accepts_a_visitor(VisitorInterface $visitor, Node $node)
     {
-        $this->addChild('node', $node);
+        $this->addChild($node);
 
         $this->accept($visitor);
 
         $visitor->visitBefore($this)->shouldHaveBeenCalled();
         $node->accept($visitor)->shouldHaveBeenCalled();
         $visitor->visitAfter($this)->shouldHaveBeenCalled();
+    }
+
+    function it_can_have_children(Node $node)
+    {
+        $node->getName()->willReturn('key');
+        $this->hasChild('key')->shouldEqual(false);
+        $this->addChild($node);
+        $this->hasChild('key')->shouldEqual(true);
+        $this->getChild('key')->shouldEqual($node);
+    }
+
+    function it_defaults_undefined_child_to_null_node()
+    {
+        $this->getChild('this-is-not-definied')->shouldHaveType(NullNode::CLASS);
+    }
+
+    function it_identifies_child_nodes_insensitive_to_case(Node $node)
+    {
+        $node->getName()->willReturn('lower');
+        $this->addChild($node);
+        $this->hasChild('LOWER')->shouldEqual(true);
+        $this->getChild('LOWER')->shouldEqual($node);
+    }
+
+    function it_can_get_all_children(Node $node)
+    {
+        $this->addChild($node);
+        $this->getChildren()->shouldIterateAs([$node]);
+    }
+
+    function it_can_get_some_children(Node $a, Node $b, Node $c)
+    {
+        $a->getName()->willReturn('foo');
+        $b->getName()->willReturn('FOO');
+        $c->getName()->willReturn('bar');
+
+        $this->addChild($a);
+        $this->addChild($b);
+        $this->addChild($c);
+
+        $this->getChildren('FOO')->shouldIterateAs([$a, $b]);
     }
 
     function it_can_save_attributes()
@@ -81,39 +122,5 @@ class NodeSpec extends ObjectBehavior
             'foo' => 'bar',
             'bar' => 'foo'
         ]);
-    }
-
-    function it_can_have_children(Node $node)
-    {
-        $this->hasChild('key')->shouldEqual(false);
-        $this->addChild('key', $node);
-        $this->hasChild('key')->shouldEqual(true);
-        $this->getChild('key')->shouldEqual($node);
-    }
-
-    function it_defaults_undefined_child_to_null_node()
-    {
-        $this->getChild('this-is-not-definied')->shouldHaveType(NullNode::CLASS);
-    }
-
-    function it_identifies_child_nodes_insensitive_to_case(Node $node)
-    {
-        $this->addChild('lower', $node);
-        $this->hasChild('LOWER')->shouldEqual(true);
-        $this->getChild('LOWER')->shouldEqual($node);
-    }
-
-    function it_can_get_all_children(Node $node)
-    {
-        $this->addChild('node', $node);
-        $this->getChildren()->shouldIterateAs([$node]);
-    }
-
-    function it_can_get_some_children(Node $a, Node $b, Node $c)
-    {
-        $this->addChild('foo', $a);
-        $this->addChild('FOO', $b);
-        $this->addChild('bar', $c);
-        $this->getChildren('FOO')->shouldIterateAs([$a, $b]);
     }
 }

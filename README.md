@@ -98,13 +98,12 @@ Walk the tree by calling `hasChild()`, `getChild()` and `getChildren()`.
 <!--
     @example GetChild
     @include AutogiroFile
+    @expectOutput "0000001234567890"
 -->
 ```php
-// @expectOutput "0000001234567890"
 echo $fileNode->getChild('MandateRequestSection')
     ->getChild('DeleteMandateRequest')
     ->getChild('PayerNumber')
-    ->getChild('Number')
     ->getValue();
 ```
 

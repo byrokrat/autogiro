@@ -24,24 +24,17 @@ namespace byrokrat\autogiro\Tree;
 
 /**
  * A record maps to a line in an autogiro files
- *
- * @see \byrokrat\autogiro\Tree\Request for the set of request records
- * @see \byrokrat\autogiro\Tree\Response for the set of response records
  */
 class Record extends Node
 {
     use TypeTrait;
 
-    /**
-     * @param integer $lineNr Line number of record definition
-     * @param Node[]  $nodes  The nodes composing record
-     */
-    public function __construct(int $lineNr, array $nodes)
+    public function __construct(int $lineNr, Node ...$nodes)
     {
         parent::__construct($lineNr);
 
-        foreach ($nodes as $name => $node) {
-            $this->addChild((string)$name, $node);
+        foreach ($nodes as $node) {
+            $this->addChild($node);
         }
     }
 }
