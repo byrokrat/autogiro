@@ -11,53 +11,36 @@ use PhpSpec\ObjectBehavior;
 
 class NodeSpec extends ObjectBehavior
 {
-    function let()
+    function it_is_initializable()
     {
-        $this->beConstructedThrough(function () {
-            return new class extends \byrokrat\autogiro\Tree\Node
-            {
-                public function getType(): string
-                {
-                }
-            };
-        });
+        $this->shouldHaveType(Node::CLASS);
+    }
+
+    function it_contains_a_name()
+    {
+        $this->getName()->shouldEqual('Node');
+    }
+
+    function it_contains_a_type()
+    {
+        $this->getType()->shouldEqual('Node');
+    }
+
+    function it_can_set_its_name()
+    {
+        $this->setName('custom-name');
+        $this->getName()->shouldReturn('custom-name');
     }
 
     function it_contains_a_line_number()
     {
-        $this->beConstructedThrough(function () {
-            return new class extends \byrokrat\autogiro\Tree\Node
-            {
-                function __construct()
-                {
-                    parent::__construct(5);
-                }
-
-                public function getType(): string
-                {
-                }
-            };
-        });
-
+        $this->beConstructedWith(5);
         $this->getLineNr()->shouldEqual(5);
     }
 
     function it_contains_a_value()
     {
-        $this->beConstructedThrough(function () {
-            return new class extends \byrokrat\autogiro\Tree\Node
-            {
-                function __construct()
-                {
-                    parent::__construct(1, 'foobar');
-                }
-
-                public function getType(): string
-                {
-                }
-            };
-        });
-
+        $this->beConstructedWith(1, 'foobar');
         $this->getValue()->shouldEqual('foobar');
     }
 

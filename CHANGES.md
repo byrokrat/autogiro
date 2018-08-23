@@ -9,6 +9,7 @@
 * `Node::getValue()` now returns `mixed` instead of `string`.
 * `Node::getChild()` now returns a `NullNode` if child is missing.
 * Added `Node::isNull()` to check for null object implementation.
+* Added `Node::setName()` to enable dynamic node naming.
 
 ## Visitor
 

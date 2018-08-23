@@ -27,7 +27,7 @@ use byrokrat\autogiro\Visitor\VisitorInterface;
 /**
  * Defines a node in the parse tree
  */
-abstract class Node
+class Node
 {
     /**
      * @var array
@@ -45,6 +45,11 @@ abstract class Node
     private $lineNr = 0;
 
     /**
+     * @var string
+     */
+    private $name;
+
+    /**
      * @var mixed
      */
     private $value = '';
@@ -53,6 +58,7 @@ abstract class Node
     {
         $this->lineNr = $lineNr;
         $this->value = $value;
+        $this->name = basename(str_replace('\\', '/', get_class($this)));
     }
 
     /**
@@ -82,13 +88,24 @@ abstract class Node
      */
     public function getName(): string
     {
-        return basename(str_replace('\\', '/', get_class($this)));
+        return $this->name;
+    }
+
+    /**
+     * Set a custom node name
+     */
+    public function setName(string $name): void
+    {
+        $this->name = $name;
     }
 
     /**
      * Get node type identifier
      */
-    abstract public function getType(): string;
+    public function getType(): string
+    {
+        return basename(str_replace('\\', '/', get_class()));
+    }
 
     /**
      * Get raw value wrapped by node
