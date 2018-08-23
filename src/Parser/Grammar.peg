@@ -22,23 +22,23 @@ namespace byrokrat\autogiro\Parser;
 
 use byrokrat\autogiro\Exception\ContentException;
 use byrokrat\autogiro\Layouts;
-use byrokrat\autogiro\Tree\AccountNode;
-use byrokrat\autogiro\Tree\AmountNode;
-use byrokrat\autogiro\Tree\BankgiroNode;
-use byrokrat\autogiro\Tree\BgcNumberNode;
-use byrokrat\autogiro\Tree\ImmediateDateNode;
-use byrokrat\autogiro\Tree\DateNode;
-use byrokrat\autogiro\Tree\DateTimeNode;
-use byrokrat\autogiro\Tree\FileNode;
-use byrokrat\autogiro\Tree\IdNode;
-use byrokrat\autogiro\Tree\IntervalNode;
-use byrokrat\autogiro\Tree\MessageNode;
-use byrokrat\autogiro\Tree\PayerNumberNode;
-use byrokrat\autogiro\Tree\ReferredAccountNode;
-use byrokrat\autogiro\Tree\RepetitionsNode;
+use byrokrat\autogiro\Tree\Account;
+use byrokrat\autogiro\Tree\Amount;
+use byrokrat\autogiro\Tree\PayeeBankgiro;
+use byrokrat\autogiro\Tree\PayeeBgcNumber;
+use byrokrat\autogiro\Tree\ImmediateDate;
+use byrokrat\autogiro\Tree\Date;
+use byrokrat\autogiro\Tree\DateTime;
+use byrokrat\autogiro\Tree\AutogiroFile;
+use byrokrat\autogiro\Tree\StateId;
+use byrokrat\autogiro\Tree\Interval;
+use byrokrat\autogiro\Tree\Message;
+use byrokrat\autogiro\Tree\PayerNumber;
+use byrokrat\autogiro\Tree\ReferredAccount;
+use byrokrat\autogiro\Tree\Repetitions;
 use byrokrat\autogiro\Tree\Request;
 use byrokrat\autogiro\Tree\Response;
-use byrokrat\autogiro\Tree\TextNode;
+use byrokrat\autogiro\Tree\Text;
 
 grammar Grammar extends MultibyteHack
 {
@@ -55,7 +55,7 @@ grammar Grammar extends MultibyteHack
     //
 
     REQUEST_FILE = sections:(REQ_MANDATE_SECTION / REQ_PAYMENT_SECTION / REQ_AMENDMENT_SECTION)+ {
-        return new FileNode(Layouts::LAYOUT_REQUEST, ...$sections);
+        return new AutogiroFile(Layouts::LAYOUT_REQUEST, ...$sections);
     };
 
     REQ_OPENING_REC = '01' date:DATE 'AUTOGIRO' S20 S20 S4 bgcNr:BGC_NR bg:BANKGIRO EOR {
@@ -175,7 +175,7 @@ grammar Grammar extends MultibyteHack
 
     NEW_PAYMENT_FILE = open:PAYMENT_OPENING_REC sections:(PAYMENT_INCOMING_SECTION / PAYMENT_OUTGOING_SECTION / PAYMENT_REFUND_SECTION)+ close:PAYMENT_CLOSING_REC {
         $sections[] = $close;
-        return new FileNode(Layouts::LAYOUT_PAYMENT_RESPONSE, $open, ...$sections);
+        return new AutogiroFile(Layouts::LAYOUT_PAYMENT_RESPONSE, $open, ...$sections);
     };
 
     PAYMENT_OPENING_REC = '01' 'AUTOGIRO' S10 S4 datetime:DATETIME 'BET. SPEC & STOPP TK' ^ bgcNr:BGC_NR bg:BANKGIRO EOR {
@@ -321,7 +321,7 @@ grammar Grammar extends MultibyteHack
 
     OLD_PAYMENT_FILE = open:OLD_PAYMENT_OPENING recs:(PAYMENT_INCOMING_REC / PAYMENT_OUTGOING_REC )* close:OLD_PAYMENT_CLOSING {
         $recs[] = $close;
-        return new FileNode(Layouts::LAYOUT_PAYMENT_RESPONSE_OLD, $open, ...$recs);
+        return new AutogiroFile(Layouts::LAYOUT_PAYMENT_RESPONSE_OLD, $open, ...$recs);
     };
 
     OLD_PAYMENT_OPENING = '01' date:DATE 'AUTOGIRO' '9900' S20 S20 bgcNr:BGC_NR bg:BANKGIRO EOR {
@@ -360,7 +360,7 @@ grammar Grammar extends MultibyteHack
 
     MANDATE_FILE = open:(OLD_MANDATE_OPENING_REC / MANDATE_OPENING_REC) mands:MANDATE_REC* close:MANDATE_CLOSING_REC {
         $mands[] = $close;
-        return new FileNode(Layouts::LAYOUT_MANDATE_RESPONSE, $open, ...$mands);
+        return new AutogiroFile(Layouts::LAYOUT_MANDATE_RESPONSE, $open, ...$mands);
     };
 
     MANDATE_OPENING_REC = '01' 'AUTOGIRO' S10 S4 date:DATE S10 '  AG-MEDAVI' ^ S10 S bgcNr:BGC_NR bg:BANKGIRO EOR {
@@ -375,12 +375,12 @@ grammar Grammar extends MultibyteHack
     };
 
     OLD_MANDATE_OPENING_REC = '01' date:DATE '9900' bg:BANKGIRO 'AG-MEDAVI' ^ EOR {
-        // TODO här skapar jag BgcNumberNode för att det ska vara samma som i MANDATE_OPENING_REC, det behöver jag inte göra längre...
+        // TODO här skapar jag PayeeBgcNumber för att det ska vara samma som i MANDATE_OPENING_REC, det behöver jag inte göra längre...
         return new Response\ResponseOpening(
             $this->lineNr,
             [
                 'date' => $date,
-                'payee_bgc_number' => new BgcNumberNode($this->lineNr, ''),
+                'payee_bgc_number' => new PayeeBgcNumber($this->lineNr, ''),
                 'payee_bankgiro' => $bg,
             ]
         );
@@ -389,7 +389,7 @@ grammar Grammar extends MultibyteHack
     MANDATE_REC = '73' bg:BANKGIRO payerNr:PAYER_NR account:ACCOUNT16 id:ID (S5 / '00000') info:MSG2 status:MSG2 date:DATE validDate:$(A5 A)? EOR {
         // If account is empty a valid bankgiro number may be read from the payer number field
         if (!trim($account->getValue())) {
-            $account = new ReferredAccountNode($account->getLineNr(), $payerNr->getValue());
+            $account = new ReferredAccount($account->getLineNr(), $payerNr->getValue());
         }
 
         $info->setAttribute('message_id', "73.info.{$info->getValue()}");
@@ -407,7 +407,7 @@ grammar Grammar extends MultibyteHack
 
         // A mandate-valid-from-date is only present in the old layout
         if ($validDate) {
-            $nodes['valid_from_date'] = new TextNode($this->lineNr, (string)$validDate);
+            $nodes['valid_from_date'] = new Text($this->lineNr, (string)$validDate);
         }
 
         return new Response\MandateResponse($this->lineNr, $nodes);
@@ -423,7 +423,7 @@ grammar Grammar extends MultibyteHack
 
     PAYMENT_REJECTION_FILE = open:(PAYMENT_REJECTION_OPENING / OLD_PAYMENT_REJECTION_OPENING) recs:PAYMENT_REJECTION_RECORD* close:PAYMENT_REJECTION_CLOSING {
         $recs[] = $close;
-        return new FileNode(Layouts::LAYOUT_PAYMENT_REJECTION, $open, ...$recs);
+        return new AutogiroFile(Layouts::LAYOUT_PAYMENT_REJECTION, $open, ...$recs);
     };
 
     PAYMENT_REJECTION_OPENING = '01' 'AUTOGIRO' S10 S4 date:DATE S10 '  AVVISADE BET UPPDR  ' ^ bgcNr:BGC_NR bg:BANKGIRO EOR {
@@ -500,7 +500,7 @@ grammar Grammar extends MultibyteHack
 
     AMENDMENT_FILE = open:(OLD_AMENDMENT_OPENING / AMENDMENT_OPENING) recs:AMENDMENT_RECORD* close:AMENDMENT_CLOSING {
         $recs[] = $close;
-        return new FileNode(Layouts::LAYOUT_AMENDMENT_RESPONSE, $open, ...$recs);
+        return new AutogiroFile(Layouts::LAYOUT_AMENDMENT_RESPONSE, $open, ...$recs);
     };
 
     AMENDMENT_OPENING = date:OPENING_INTRO 'MAKULERING/ÄNDRING  ' ^ bgcNr:BGC_NR bg:BANKGIRO EOR {
@@ -561,99 +561,99 @@ grammar Grammar extends MultibyteHack
     // EXTERNAL TYPES
 
     ACCOUNT16 = number:$(A10 A5 A) {
-        return new AccountNode($this->lineNr + 1, $number);
+        return new Account($this->lineNr + 1, $number);
     };
 
     ACCOUNT35 = number:$(A10 A10 A10 A5) {
-        return new AccountNode($this->lineNr + 1, $number);
+        return new Account($this->lineNr + 1, $number);
     };
 
     AMOUNT12 = amount:$(A10 A2) {
-        return new AmountNode($this->lineNr + 1, $amount);
+        return new Amount($this->lineNr + 1, $amount);
     };
 
     AMOUNT18 = amount:$(A10 A5 A2 A) {
-        return new AmountNode($this->lineNr + 1, $amount);
+        return new Amount($this->lineNr + 1, $amount);
     };
 
     BANKGIRO = number:A10 {
-        return new BankgiroNode($this->lineNr + 1, $number);
+        return new PayeeBankgiro($this->lineNr + 1, $number);
     };
 
     ID = number:$(A10 A2) {
-        return new IdNode($this->lineNr + 1, $number);
+        return new StateId($this->lineNr + 1, $number);
     };
 
     // SIMPLE TYPES
 
     BGC_NR = nr:$(A5 A) {
-        return new BgcNumberNode($this->lineNr + 1, $nr);
+        return new PayeeBgcNumber($this->lineNr + 1, $nr);
     };
 
     DATE = date:$(A5 A2 A) {
-        return new DateNode($this->lineNr + 1, $date);
+        return new Date($this->lineNr + 1, $date);
     };
 
     IMMEDIATE_DATE = 'GENAST  ' {
-        return new ImmediateDateNode($this->lineNr + 1);
+        return new ImmediateDate($this->lineNr + 1);
     };
 
     DATETIME = datetime:$(A10 A10) {
-        return new DateTimeNode($this->lineNr + 1, $datetime);
+        return new DateTime($this->lineNr + 1, $datetime);
     };
 
     INTERVAL = interval:$(A) {
-        return new IntervalNode($this->lineNr + 1, $interval);
+        return new Interval($this->lineNr + 1, $interval);
     };
 
     MSG1 = msg:$(A) {
-        return new MessageNode($this->lineNr + 1, $msg);
+        return new Message($this->lineNr + 1, $msg);
     };
 
     MSG2 = msg:$(A A) {
-        return new MessageNode($this->lineNr + 1, $msg);
+        return new Message($this->lineNr + 1, $msg);
     };
 
     PAYER_NR = nr:$(A10 A5 A) {
-        return new PayerNumberNode($this->lineNr + 1, $nr);
+        return new PayerNumber($this->lineNr + 1, $nr);
     };
 
     REPS = repetitions:$(A2 A) {
-        return new RepetitionsNode($this->lineNr + 1, $repetitions);
+        return new Repetitions($this->lineNr + 1, $repetitions);
     };
 
     // CONVENIENCE TYPES
 
     INT5 = integer:$(A5) {
-        return new TextNode($this->lineNr + 1, $integer, '/^\d{5}$/');
+        return new Text($this->lineNr + 1, $integer, '/^\d{5}$/');
     };
 
     INT6 = integer:$(A5 A) {
-        return new TextNode($this->lineNr + 1, $integer, '/^\d{6}$/');
+        return new Text($this->lineNr + 1, $integer, '/^\d{6}$/');
     };
 
     INT7 = integer:$(A5 A2) {
-        return new TextNode($this->lineNr + 1, $integer, '/^\d{7}$/');
+        return new Text($this->lineNr + 1, $integer, '/^\d{7}$/');
     };
 
     INT8 = integer:$(A5 A2 A) {
-        return new TextNode($this->lineNr + 1, $integer, '/^\d{8}$/');
+        return new Text($this->lineNr + 1, $integer, '/^\d{8}$/');
     };
 
     INT12 = integer:$(A10 A2) {
-        return new TextNode($this->lineNr + 1, $integer, '/^\d{12}$/');
+        return new Text($this->lineNr + 1, $integer, '/^\d{12}$/');
     };
 
     VAR_TXT = text:$(A*) {
-        return new TextNode($this->lineNr + 1, $text);
+        return new Text($this->lineNr + 1, $text);
     };
 
     TXT16 = text:$(A? A? A? A? A? A? A? A? A? A? A? A? A? A? A? A?) {
-        return new TextNode($this->lineNr + 1, $text);
+        return new Text($this->lineNr + 1, $text);
     };
 
     TXT48 = text:$(A10 A10 A10 A10 A5 A2 A) {
-        return new TextNode($this->lineNr + 1, $text);
+        return new Text($this->lineNr + 1, $text);
     };
 
     // ALPHA-NUM

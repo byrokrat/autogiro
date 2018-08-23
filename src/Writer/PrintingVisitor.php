@@ -26,16 +26,16 @@ use byrokrat\autogiro\Visitor\Visitor;
 use byrokrat\autogiro\Exception\RuntimeException;
 use byrokrat\autogiro\Exception\LogicException;
 use byrokrat\autogiro\Tree\Node;
-use byrokrat\autogiro\Tree\DateNode;
-use byrokrat\autogiro\Tree\TextNode;
-use byrokrat\autogiro\Tree\BgcNumberNode;
-use byrokrat\autogiro\Tree\BankgiroNode;
-use byrokrat\autogiro\Tree\PayerNumberNode;
-use byrokrat\autogiro\Tree\AccountNode;
-use byrokrat\autogiro\Tree\AmountNode;
-use byrokrat\autogiro\Tree\IntervalNode;
-use byrokrat\autogiro\Tree\IdNode;
-use byrokrat\autogiro\Tree\RepetitionsNode;
+use byrokrat\autogiro\Tree\Date;
+use byrokrat\autogiro\Tree\Text;
+use byrokrat\autogiro\Tree\PayeeBgcNumber;
+use byrokrat\autogiro\Tree\PayeeBankgiro;
+use byrokrat\autogiro\Tree\PayerNumber;
+use byrokrat\autogiro\Tree\Account;
+use byrokrat\autogiro\Tree\Amount;
+use byrokrat\autogiro\Tree\Interval;
+use byrokrat\autogiro\Tree\StateId;
+use byrokrat\autogiro\Tree\Repetitions;
 use byrokrat\amount\Currency\SEK;
 use byrokrat\banking\AccountNumber;
 use byrokrat\id\IdInterface;
@@ -62,40 +62,40 @@ class PrintingVisitor extends Visitor
         $this->output = $output;
     }
 
-    public function beforeDateNode(DateNode $node): void
+    public function beforeDate(Date $node): void
     {
         $this->assertAttribute($node, 'date', \DateTimeInterface::CLASS);
         $this->output->write($node->getAttribute('date')->format('Ymd'));
     }
 
-    public function beforeImmediateDateNode(): void
+    public function beforeImmediateDate(): void
     {
         $this->output->write('GENAST  ');
     }
 
-    public function beforeTextNode(TextNode $node): void
+    public function beforeText(Text $node): void
     {
         $this->output->write($node->getValue());
     }
 
-    public function beforeBgcNumberNode(BgcNumberNode $node): void
+    public function beforePayeeBgcNumber(PayeeBgcNumber $node): void
     {
         $this->output->write(str_pad($node->getValue(), 6, '0', STR_PAD_LEFT));
     }
 
-    public function beforeBankgiroNode(BankgiroNode $node): void
+    public function beforePayeeBankgiro(PayeeBankgiro $node): void
     {
         $this->assertAttribute($node, 'account', AccountNumber::CLASS);
         $number = $node->getAttribute('account')->getSerialNumber() . $node->getAttribute('account')->getCheckDigit();
         $this->output->write(str_pad($number, 10, '0', STR_PAD_LEFT));
     }
 
-    public function beforePayerNumberNode(PayerNumberNode $node): void
+    public function beforePayerNumber(PayerNumber $node): void
     {
         $this->output->write(str_pad($node->getValue(), 16, '0', STR_PAD_LEFT));
     }
 
-    public function beforeAccountNode(AccountNode $node): void
+    public function beforeAccount(Account $node): void
     {
         $this->assertAttribute($node, 'account', AccountNumber::CLASS);
         $number = $node->getAttribute('account')->getSerialNumber() . $node->getAttribute('account')->getCheckDigit();
@@ -105,17 +105,17 @@ class PrintingVisitor extends Visitor
         );
     }
 
-    public function beforeIntervalNode(IntervalNode $node): void
+    public function beforeInterval(Interval $node): void
     {
         $this->output->write($node->getValue());
     }
 
-    public function beforeRepetitionsNode(RepetitionsNode $node): void
+    public function beforeRepetitions(Repetitions $node): void
     {
         $this->output->write($node->getValue());
     }
 
-    public function beforeAmountNode(AmountNode $node): void
+    public function beforeAmount(Amount $node): void
     {
         $this->assertAttribute($node, 'amount', SEK::CLASS);
 
@@ -130,7 +130,7 @@ class PrintingVisitor extends Visitor
         );
     }
 
-    public function beforeIdNode(IdNode $node): void
+    public function beforeStateId(StateId $node): void
     {
         $this->assertAttribute($node, 'id', IdInterface::CLASS);
         if ($node->getAttribute('id') instanceof PersonalId) {

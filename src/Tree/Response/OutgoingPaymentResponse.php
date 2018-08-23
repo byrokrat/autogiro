@@ -22,11 +22,11 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Tree\Response;
 
-use byrokrat\autogiro\Tree\RecordNode;
+use byrokrat\autogiro\Tree\Record;
 
 /**
  * Outgoing payment response node
  */
-class OutgoingPaymentResponse extends RecordNode
+class OutgoingPaymentResponse extends Record
 {
 }

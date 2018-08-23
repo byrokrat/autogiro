@@ -22,11 +22,11 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Tree\Request;
 
-use byrokrat\autogiro\Tree\RecordNode;
+use byrokrat\autogiro\Tree\Record;
 
 /**
  * Node representing a request that a mandate received from the internet bank be accepted
  */
-class AcceptDigitalMandateRequest extends RecordNode
+class AcceptDigitalMandateRequest extends Record
 {
 }

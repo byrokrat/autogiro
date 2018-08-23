@@ -22,38 +22,38 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Visitor;
 
-use byrokrat\autogiro\Tree\IntervalNode;
-use byrokrat\autogiro\Tree\BgcNumberNode;
-use byrokrat\autogiro\Tree\PayerNumberNode;
-use byrokrat\autogiro\Tree\RepetitionsNode;
-use byrokrat\autogiro\Tree\TextNode;
+use byrokrat\autogiro\Tree\Interval;
+use byrokrat\autogiro\Tree\PayeeBgcNumber;
+use byrokrat\autogiro\Tree\PayerNumber;
+use byrokrat\autogiro\Tree\Repetitions;
+use byrokrat\autogiro\Tree\Text;
 
 /**
  * Validate the content of text nodes
  */
 class TextVisitor extends ErrorAwareVisitor
 {
-    public function beforeTextNode(TextNode $node): void
+    public function beforeText(Text $node): void
     {
         $this->validateRegexp($node, "Text value '%s' does not match expected %s on line %s");
     }
 
-    public function beforeRepetitionsNode(RepetitionsNode $node): void
+    public function beforeRepetitions(Repetitions $node): void
     {
         $this->validateRegexp($node, "Repeats '%s' does not match expected %s on line %s");
     }
 
-    public function beforeBgcNumberNode(BgcNumberNode $node): void
+    public function beforePayeeBgcNumber(PayeeBgcNumber $node): void
     {
         $this->validateRegexp($node, "BGC customer number '%s' does not match expected %s on line %s");
     }
 
-    public function beforePayerNumberNode(PayerNumberNode $node): void
+    public function beforePayerNumber(PayerNumber $node): void
     {
         $this->validateRegexp($node, "Payer number '%s' does not match expected %s on line %s");
     }
 
-    private function validateRegexp(TextNode $node, string $errorMsg): void
+    private function validateRegexp(Text $node, string $errorMsg): void
     {
         if (!$node->getValidationRegexp()) {
             return;

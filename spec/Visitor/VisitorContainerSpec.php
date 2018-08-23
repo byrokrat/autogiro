@@ -59,7 +59,7 @@ class VisitorContainerSpec extends ObjectBehavior
 
     function it_throws_exception_on_errors($errorObj, $node)
     {
-        $node->getName()->willReturn('FileNode');
+        $node->getName()->willReturn('AutogiroFile');
         $node->getType()->willReturn('');
         $errorObj->hasErrors()->willReturn(true);
         $errorObj->getErrors()->willReturn(['an error']);
@@ -68,7 +68,7 @@ class VisitorContainerSpec extends ObjectBehavior
 
     function it_resets_errors($errorObj, $node)
     {
-        $node->getName()->willReturn('FileNode');
+        $node->getName()->willReturn('AutogiroFile');
         $node->getType()->willReturn('');
         $this->visitBefore($node);
         $errorObj->resetErrors()->shouldHaveBeenCalled();

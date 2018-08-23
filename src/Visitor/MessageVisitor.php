@@ -22,9 +22,9 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Visitor;
 
-use byrokrat\autogiro\Tree\FileNode;
-use byrokrat\autogiro\Tree\MessageNode;
-use byrokrat\autogiro\Tree\IntervalNode;
+use byrokrat\autogiro\Tree\AutogiroFile;
+use byrokrat\autogiro\Tree\Message;
+use byrokrat\autogiro\Tree\Interval;
 use byrokrat\autogiro\Messages;
 use byrokrat\autogiro\Intervals;
 
@@ -40,12 +40,12 @@ class MessageVisitor extends ErrorAwareVisitor
      */
     private $layout;
 
-    public function beforeFileNode(FileNode $node): void
+    public function beforeAutogiroFile(AutogiroFile $node): void
     {
         $this->layout = $node->getAttribute('layout');
     }
 
-    public function beforeMessageNode(MessageNode $node): void
+    public function beforeMessage(Message $node): void
     {
         if ($node->hasAttribute('message')) {
             return;
@@ -67,7 +67,7 @@ class MessageVisitor extends ErrorAwareVisitor
         $node->setAttribute('message', Messages::MESSAGE_MAP[$messageId]);
     }
 
-    public function beforeIntervalNode(IntervalNode $node): void
+    public function beforeInterval(Interval $node): void
     {
         if ($node->hasAttribute('message')) {
             return;

@@ -23,7 +23,7 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Parser;
 
 use byrokrat\autogiro\Visitor\VisitorInterface;
-use byrokrat\autogiro\Tree\FileNode;
+use byrokrat\autogiro\Tree\AutogiroFile;
 use byrokrat\autogiro\Exception\ContentException;
 use \ForceUTF8\Encoding;
 
@@ -51,7 +51,7 @@ class Parser
     /**
      * @throws ContentException If grammar fails
      */
-    public function parse(string $content): FileNode
+    public function parse(string $content): AutogiroFile
     {
         try {
             $tree = $this->grammar->parse(

@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace spec\byrokrat\autogiro\Tree\Request;
 
 use byrokrat\autogiro\Tree\Request\MandateRequestSection;
-use byrokrat\autogiro\Tree\SectionNode;
+use byrokrat\autogiro\Tree\Section;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -23,6 +23,6 @@ class MandateRequestSectionSpec extends ObjectBehavior
 
     function it_is_a_section()
     {
-        $this->shouldHaveType(SectionNode::CLASS);
+        $this->shouldHaveType(Section::CLASS);
     }
 }

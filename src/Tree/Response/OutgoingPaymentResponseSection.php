@@ -22,11 +22,11 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Tree\Response;
 
-use byrokrat\autogiro\Tree\SectionNode;
+use byrokrat\autogiro\Tree\Section;
 
 /**
  * Outgoing payment response wrapper
  */
-class OutgoingPaymentResponseSection extends SectionNode
+class OutgoingPaymentResponseSection extends Section
 {
 }

@@ -22,11 +22,11 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Tree\Response;
 
-use byrokrat\autogiro\Tree\RecordNode;
+use byrokrat\autogiro\Tree\Record;
 
 /**
  * Feedback on the request to add, delete or update a mandate
  */
-class MandateResponse extends RecordNode
+class MandateResponse extends Record
 {
 }

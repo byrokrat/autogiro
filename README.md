@@ -21,7 +21,7 @@ document see [Bankgirocentralen](http://bgc.se).
 ## Generating autogiro request files
 
 Create a writer by supplying your *bankgiro account number* and
-*BGC customer number* to [`WriterFactory`](/src/Parser/WriterFactory.php).
+*BGC customer number* to [`WriterFactory`](/src/Writer/WriterFactory.php).
 
 <!-- @example WriterFactory -->
 ```php
@@ -79,15 +79,15 @@ packages respectively. Opt out of this functionality by using one of the visitor
 $parser = $factory->createParser(\byrokrat\autogiro\Parser\ParserFactory::VISITOR_IGNORE_EXTERNAL);
 ```
 
-Parsing an autogiro file creates a `FileNode`.
+Parsing an autogiro file creates a `AutogiroFile`.
 
 <!--
-    @example FileNode
+    @example AutogiroFile
     @include ParserFactory
     @include RawFile
 -->
 ```php
-/** @var \byrokrat\autogiro\Tree\FileNode $fileNode */
+/** @var \byrokrat\autogiro\Tree\AutogiroFile $fileNode */
 $fileNode = $parser->parse($rawFile);
 ```
 
@@ -97,7 +97,7 @@ Walk the tree by calling `hasChild()`, `getChild()` and `getChildren()`.
 
 <!--
     @example GetChild
-    @include FileNode
+    @include AutogiroFile
 -->
 ```php
 // @expectOutput "0000001234567890"
@@ -114,7 +114,7 @@ Or access all `DeleteMandateRequest` nodes.
 
 <!--
     @example GetChildren
-    @include FileNode
+    @include AutogiroFile
 -->
 ```php
 foreach ($fileNode->getChild('MandateRequestSection')->getChildren('DeleteMandateRequest') as $node) {
@@ -126,7 +126,7 @@ Trying to access a child that does not exist returns a `NullNode`.
 
 <!--
     @example NullNode
-    @include FileNode
+    @include AutogiroFile
     @expectOutput "1"
 -->
 ```php
@@ -139,7 +139,7 @@ echo $fileNode->getChild('this-does-not-exist')
 > converting autogiro files to a more readable XML format suitable for visualy
 > examining parse trees.
 
-Access created objects through attributes.
+### Accessing special objects
 
 <!-- @ignore -->
 ```php
@@ -153,10 +153,10 @@ $id = $idNode->getAttribute('id');
 $account = $accountNode->getAttribute('account');
 ```
 
-## Grep nodes based on type
+## Grep nodes based on name
 
 <!--
-    @include FileNode
+    @include AutogiroFile
     @expectOutput "/Delete mandate request found!/"
 -->
 ```php
@@ -172,22 +172,20 @@ $fileNode->accept($visitor);
 This can also be done dynamically.
 
 <!--
-    @include FileNode
+    @include AutogiroFile
     @expectOutput "/Delete mandate request found!/"
 -->
 ```php
 $visitor = new class extends \byrokrat\autogiro\Visitor\Visitor {};
 
-$dynamicNodeType = "DeleteMandateRequest";
+$dynamicNodeName = "DeleteMandateRequest";
 
-$visitor->{"before$dynamicNodeType"} = function ($node) {
+$visitor->{"before$dynamicNodeName"} = function ($node) {
     echo "Delete mandate request found!";
 };
 
 $fileNode->accept($visitor);
 ```
-
-For a list of possible node types see the [Tree](/src/Tree) namespace.
 
 ## Generate XML from node trees
 

@@ -20,11 +20,11 @@
 
 declare(strict_types = 1);%namespace_block%
 
-use byrokrat\autogiro\Tree\RecordNode;
+use byrokrat\autogiro\Tree\Record;
 
 /**
  * TODO
  */
-class %name% extends RecordNode
+class %name% extends Record
 {
 }

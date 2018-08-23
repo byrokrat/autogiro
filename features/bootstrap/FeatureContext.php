@@ -20,7 +20,7 @@ class FeatureContext implements Context, SnippetAcceptingContext
     use ParserTrait;
 
     /**
-     * @var \byrokrat\autogiro\Tree\FileNode Created at parse time
+     * @var \byrokrat\autogiro\Tree\AutogiroFile Created at parse time
      */
     private $fileNode;
 

@@ -7,10 +7,10 @@ namespace spec\byrokrat\autogiro\Visitor;
 use byrokrat\autogiro\Visitor\TextVisitor;
 use byrokrat\autogiro\Visitor\ErrorAwareVisitor;
 use byrokrat\autogiro\Visitor\ErrorObject;
-use byrokrat\autogiro\Tree\BgcNumberNode;
-use byrokrat\autogiro\Tree\PayerNumberNode;
-use byrokrat\autogiro\Tree\RepetitionsNode;
-use byrokrat\autogiro\Tree\TextNode;
+use byrokrat\autogiro\Tree\PayeeBgcNumber;
+use byrokrat\autogiro\Tree\PayerNumber;
+use byrokrat\autogiro\Tree\Repetitions;
+use byrokrat\autogiro\Tree\Text;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -31,7 +31,7 @@ class TextVisitorSpec extends ObjectBehavior
         $this->shouldHaveType(ErrorAwareVisitor::CLASS);
     }
 
-    function a_failing_regexp(TextNode $node)
+    function a_failing_regexp(Text $node)
     {
         $node->getValue()->willReturn('foo');
         $node->getValidationRegexp()->willReturn('/bar/');
@@ -40,45 +40,45 @@ class TextVisitorSpec extends ObjectBehavior
         return $node;
     }
 
-    function it_captures_invalid_text_nodes(TextNode $textNode, $errorObj)
+    function it_captures_invalid_text_nodes(Text $textNode, $errorObj)
     {
-        $this->beforeTextNode($this->a_failing_regexp($textNode));
+        $this->beforeText($this->a_failing_regexp($textNode));
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 
-    function it_ignores_text_nodes_without_regexp(TextNode $textNode, $errorObj)
+    function it_ignores_text_nodes_without_regexp(Text $textNode, $errorObj)
     {
         $textNode->getValue()->willReturn('does-not-match-regexp');
         $textNode->getValidationRegexp()->willReturn('');
 
-        $this->beforeTextNode($textNode);
+        $this->beforeText($textNode);
         $errorObj->addError(Argument::cetera())->shouldNotHaveBeenCalled();
     }
 
-    function it_ignores_text_nodes_with_valid_content(TextNode $textNode, $errorObj)
+    function it_ignores_text_nodes_with_valid_content(Text $textNode, $errorObj)
     {
         $textNode->getValue()->willReturn('abc');
         $textNode->getValidationRegexp()->willReturn('/abc/');
 
-        $this->beforeTextNode($textNode);
+        $this->beforeText($textNode);
         $errorObj->addError(Argument::cetera())->shouldNotHaveBeenCalled();
     }
 
-    function it_captures_invalid_repetitions(RepetitionsNode $node, $errorObj)
+    function it_captures_invalid_repetitions(Repetitions $node, $errorObj)
     {
-        $this->beforeRepetitionsNode($this->a_failing_regexp($node));
+        $this->beforeRepetitions($this->a_failing_regexp($node));
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 
-    function it_captures_invalid_bgc_customer_numbers(BgcNumberNode $node, $errorObj)
+    function it_captures_invalid_bgc_customer_numbers(PayeeBgcNumber $node, $errorObj)
     {
-        $this->beforeBgcNumberNode($this->a_failing_regexp($node));
+        $this->beforePayeeBgcNumber($this->a_failing_regexp($node));
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 
-    function it_captures_invalid_payer_numbers(PayerNumberNode $node, $errorObj)
+    function it_captures_invalid_payer_numbers(PayerNumber $node, $errorObj)
     {
-        $this->beforePayerNumberNode($this->a_failing_regexp($node));
+        $this->beforePayerNumber($this->a_failing_regexp($node));
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 }

@@ -22,11 +22,11 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Tree\Request;
 
-use byrokrat\autogiro\Tree\RecordNode;
+use byrokrat\autogiro\Tree\Record;
 
 /**
  * Opening record node for request layouts
  */
-class RequestOpening extends RecordNode
+class RequestOpening extends Record
 {
 }

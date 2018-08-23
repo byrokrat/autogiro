@@ -9,7 +9,7 @@ use byrokrat\autogiro\Writer\TreeBuilder;
 use byrokrat\autogiro\Writer\PrintingVisitor;
 use byrokrat\autogiro\Writer\Output;
 use byrokrat\autogiro\Visitor\VisitorInterface;
-use byrokrat\autogiro\Tree\FileNode;
+use byrokrat\autogiro\Tree\AutogiroFile;
 use byrokrat\autogiro\Intervals;
 use byrokrat\banking\AccountNumber;
 use byrokrat\id\IdInterface;
@@ -29,7 +29,7 @@ class WriterSpec extends ObjectBehavior
         $this->shouldHaveType(Writer::CLASS);
     }
 
-    function it_can_create_content($treeBuilder, $printer, $visitor, FileNode $tree)
+    function it_can_create_content($treeBuilder, $printer, $visitor, AutogiroFile $tree)
     {
         $treeBuilder->buildTree()->willReturn($tree)->shouldBeCalled();
         $tree->accept($visitor)->shouldBeCalled();

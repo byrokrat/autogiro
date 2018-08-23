@@ -7,7 +7,7 @@ namespace spec\byrokrat\autogiro\Parser;
 use byrokrat\autogiro\Parser\Parser;
 use byrokrat\autogiro\Parser\Grammar;
 use byrokrat\autogiro\Visitor\VisitorInterface;
-use byrokrat\autogiro\Tree\FileNode;
+use byrokrat\autogiro\Tree\AutogiroFile;
 use byrokrat\autogiro\Exception\ContentException;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -24,7 +24,7 @@ class ParserSpec extends ObjectBehavior
         $this->shouldHaveType(Parser::CLASS);
     }
 
-    function it_creates_trees($grammar, $visitor, FileNode $node)
+    function it_creates_trees($grammar, $visitor, AutogiroFile $node)
     {
         $grammar->parse('foobar')->willReturn($node);
         $node->accept($visitor)->shouldBeCalled();
@@ -37,7 +37,7 @@ class ParserSpec extends ObjectBehavior
         $this->shouldThrow(ContentException::CLASS)->duringParse('invalid-ag-file');
     }
 
-    function it_converts_to_utf8($grammar, $visitor, FileNode $node)
+    function it_converts_to_utf8($grammar, $visitor, AutogiroFile $node)
     {
         $grammar->parse('åäö')->shouldBeCalled()->willReturn($node);
         $node->accept($visitor)->shouldBeCalled();

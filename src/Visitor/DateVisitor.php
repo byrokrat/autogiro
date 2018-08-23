@@ -22,8 +22,8 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Visitor;
 
-use byrokrat\autogiro\Tree\DateNode;
-use byrokrat\autogiro\Tree\DateTimeNode;
+use byrokrat\autogiro\Tree\Date;
+use byrokrat\autogiro\Tree\DateTime;
 
 /**
  * Visitor that expands date nodes
@@ -32,17 +32,17 @@ use byrokrat\autogiro\Tree\DateTimeNode;
  */
 class DateVisitor extends ErrorAwareVisitor
 {
-    public function beforeDateNode(DateNode $node): void
+    public function beforeDate(Date $node): void
     {
         $this->setDateAttribute($node, $node->getValue());
     }
 
-    public function beforeDateTimeNode(DateTimeNode $node): void
+    public function beforeDateTime(DateTime $node): void
     {
         $this->setDateAttribute($node, substr($node->getValue(), 0, -6));
     }
 
-    private function setDateAttribute(DateNode $node, string $value): void
+    private function setDateAttribute(Date $node, string $value): void
     {
         if ($node->hasAttribute('date')) {
             return;

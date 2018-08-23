@@ -22,8 +22,8 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Tree\Request;
 
-use byrokrat\autogiro\Tree\SectionNode;
+use byrokrat\autogiro\Tree\Section;
 
-class MandateRequestSection extends SectionNode
+class MandateRequestSection extends Section
 {
 }

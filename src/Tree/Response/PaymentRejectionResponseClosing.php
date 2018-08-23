@@ -22,11 +22,11 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Tree\Response;
 
-use byrokrat\autogiro\Tree\RecordNode;
+use byrokrat\autogiro\Tree\Record;
 
 /**
  * Closing record of the payment rejection layout
  */
-class PaymentRejectionResponseClosing extends RecordNode
+class PaymentRejectionResponseClosing extends Record
 {
 }

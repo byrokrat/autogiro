@@ -22,11 +22,11 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Tree\Request;
 
-use byrokrat\autogiro\Tree\RecordNode;
+use byrokrat\autogiro\Tree\Record;
 
 /**
  * Node representing a request that a mandate be updated
  */
-class UpdateMandateRequest extends RecordNode
+class UpdateMandateRequest extends Record
 {
 }

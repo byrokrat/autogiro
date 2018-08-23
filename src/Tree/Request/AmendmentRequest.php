@@ -22,8 +22,8 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Tree\Request;
 
-use byrokrat\autogiro\Tree\RecordNode;
+use byrokrat\autogiro\Tree\Record;
 
-class AmendmentRequest extends RecordNode
+class AmendmentRequest extends Record
 {
 }

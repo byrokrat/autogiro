@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace spec\byrokrat\autogiro\Tree\Response;
 
 use byrokrat\autogiro\Tree\Response\RefundPaymentResponseSection;
-use byrokrat\autogiro\Tree\SectionNode;
+use byrokrat\autogiro\Tree\Section;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -23,6 +23,6 @@ class RefundPaymentResponseSectionSpec extends ObjectBehavior
 
     function it_is_a_section()
     {
-        $this->shouldHaveType(SectionNode::CLASS);
+        $this->shouldHaveType(Section::CLASS);
     }
 }

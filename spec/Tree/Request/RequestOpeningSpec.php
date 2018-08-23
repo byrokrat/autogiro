@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace spec\byrokrat\autogiro\Tree\Request;
 
 use byrokrat\autogiro\Tree\Request\RequestOpening;
-use byrokrat\autogiro\Tree\RecordNode;
+use byrokrat\autogiro\Tree\Record;
 use PhpSpec\ObjectBehavior;
 
 class RequestOpeningSpec extends ObjectBehavior
@@ -27,6 +27,6 @@ class RequestOpeningSpec extends ObjectBehavior
 
     function it_is_a_record()
     {
-        $this->shouldHaveType(RecordNode::CLASS);
+        $this->shouldHaveType(Record::CLASS);
     }
 }

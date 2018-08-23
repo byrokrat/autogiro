@@ -22,11 +22,11 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Tree\Response;
 
-use byrokrat\autogiro\Tree\SectionNode;
+use byrokrat\autogiro\Tree\Section;
 
 /**
  * Payment response refund section wrapper
  */
-class RefundPaymentResponseSection extends SectionNode
+class RefundPaymentResponseSection extends Section
 {
 }

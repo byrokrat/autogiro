@@ -14,6 +14,14 @@
 
 * Now dispatches on both name and type.
 
+## Node tree
+
+* Removed the `Node` suffix from all node classes (except `NullNode`).
+* Renamed `BankgiroNode` => `PayeeBankgiro`.
+* Renamed `BgcNumberNode` => `PayeeBgcNumber`.
+* Renamed `FileNode` => `AutogiroFile`.
+* Renamed `IdNode` => `StateId`.
+
 # Notable changes in 1.0-alpha2
 
 ## Node tree

@@ -26,7 +26,7 @@ use byrokrat\autogiro\Intervals;
 use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Tree\Request\IncomingPaymentRequest;
 use byrokrat\autogiro\Tree\Request\OutgoingPaymentRequest;
-use byrokrat\autogiro\Tree\ImmediateDateNode;
+use byrokrat\autogiro\Tree\ImmediateDate;
 
 /**
  * Validate intervals, repetitions and dates of payment requests
@@ -47,7 +47,7 @@ class PaymentVisitor extends ErrorAwareVisitor
 
     private function validateImmediateDateWithInterval(Node $node): void
     {
-        if ($node->getChild('date') instanceof ImmediateDateNode
+        if ($node->getChild('date') instanceof ImmediateDate
             && $node->getChild('interval')->getValue() != Intervals::INTERVAL_ONCE
         ) {
             $this->getErrorObject()->addError(

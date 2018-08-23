@@ -86,7 +86,7 @@ class VisitorContainer extends ErrorAwareVisitor
     /**
      * Reset the error container before a file node
      */
-    public function beforeFileNode(): void
+    public function beforeAutogiroFile(): void
     {
         $this->getErrorObject()->resetErrors();
     }
@@ -94,7 +94,7 @@ class VisitorContainer extends ErrorAwareVisitor
     /**
      * Throw exception if there are errors after iteration
      */
-    public function afterFileNode(): void
+    public function afterAutogiroFile(): void
     {
         if ($this->getErrorObject()->hasErrors()) {
             throw new ContentException($this->getErrorObject()->getErrors());

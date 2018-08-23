@@ -22,7 +22,7 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Visitor;
 
-use byrokrat\autogiro\Tree\AmountNode;
+use byrokrat\autogiro\Tree\Amount;
 use byrokrat\amount\Currency\SEK;
 use byrokrat\amount\Exception as AmountException;
 
@@ -31,7 +31,7 @@ use byrokrat\amount\Exception as AmountException;
  */
 class AmountVisitor extends ErrorAwareVisitor
 {
-    public function beforeAmountNode(AmountNode $node): void
+    public function beforeAmount(Amount $node): void
     {
         if ($node->hasAttribute('amount')) {
             return;

@@ -22,7 +22,7 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Visitor;
 
-use byrokrat\autogiro\Tree\IdNode;
+use byrokrat\autogiro\Tree\StateId;
 use byrokrat\id\IdFactoryInterface;
 use byrokrat\id\Exception as IdException;
 
@@ -53,7 +53,7 @@ class IdVisitor extends ErrorAwareVisitor
         $this->personalIdFactory = $personalIdFactory;
     }
 
-    public function beforeIdNode(IdNode $node): void
+    public function beforeStateId(StateId $node): void
     {
         if ($node->hasAttribute('id')) {
             return;
@@ -79,7 +79,7 @@ class IdVisitor extends ErrorAwareVisitor
         }
     }
 
-    private function createOrganizationId(IdNode $node): void
+    private function createOrganizationId(StateId $node): void
     {
         $node->setAttribute(
             'id',
@@ -87,7 +87,7 @@ class IdVisitor extends ErrorAwareVisitor
         );
     }
 
-    private function createPersonalId(IdNode $node): void
+    private function createPersonalId(StateId $node): void
     {
         $node->setAttribute(
             'id',

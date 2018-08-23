@@ -22,11 +22,11 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Tree\Response;
 
-use byrokrat\autogiro\Tree\RecordNode;
+use byrokrat\autogiro\Tree\Record;
 
 /**
  * Header wrapping a set of refund payment response records
  */
-class RefundPaymentResponseOpening extends RecordNode
+class RefundPaymentResponseOpening extends Record
 {
 }

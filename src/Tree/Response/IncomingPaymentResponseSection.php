@@ -22,8 +22,8 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Tree\Response;
 
-use byrokrat\autogiro\Tree\SectionNode;
+use byrokrat\autogiro\Tree\Section;
 
-class IncomingPaymentResponseSection extends SectionNode
+class IncomingPaymentResponseSection extends Section
 {
 }

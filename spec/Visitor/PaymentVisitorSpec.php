@@ -9,9 +9,9 @@ use byrokrat\autogiro\Visitor\ErrorAwareVisitor;
 use byrokrat\autogiro\Visitor\ErrorObject;
 use byrokrat\autogiro\Tree\Request\IncomingPaymentRequest;
 use byrokrat\autogiro\Tree\Request\OutgoingPaymentRequest;
-use byrokrat\autogiro\Tree\ImmediateDateNode;
-use byrokrat\autogiro\Tree\IntervalNode;
-use byrokrat\autogiro\Tree\RepetitionsNode;
+use byrokrat\autogiro\Tree\ImmediateDate;
+use byrokrat\autogiro\Tree\Interval;
+use byrokrat\autogiro\Tree\Repetitions;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -34,9 +34,9 @@ class PaymentVisitorSpec extends ObjectBehavior
 
     function it_fails_if_interval_is_used_with_immediate_date_in_incoming_payment(
         IncomingPaymentRequest $request,
-        ImmediateDateNode $date,
-        IntervalNode $ival,
-        RepetitionsNode $reps,
+        ImmediateDate $date,
+        Interval $ival,
+        Repetitions $reps,
         $errorObj
     ) {
         $ival->getValue()->willReturn('1');
@@ -51,9 +51,9 @@ class PaymentVisitorSpec extends ObjectBehavior
 
     function it_fails_if_interval_is_used_with_immediate_date_in_outgoing_payment(
         OutgoingPaymentRequest $request,
-        ImmediateDateNode $date,
-        IntervalNode $ival,
-        RepetitionsNode $reps,
+        ImmediateDate $date,
+        Interval $ival,
+        Repetitions $reps,
         $errorObj
     ) {
         $ival->getValue()->willReturn('1');
@@ -68,9 +68,9 @@ class PaymentVisitorSpec extends ObjectBehavior
 
     function it_fails_if_no_interval_but_repetitions_are_used_in_incoming_payment(
         IncomingPaymentRequest $request,
-        ImmediateDateNode $date,
-        IntervalNode $ival,
-        RepetitionsNode $reps,
+        ImmediateDate $date,
+        Interval $ival,
+        Repetitions $reps,
         $errorObj
     ) {
         $ival->getValue()->willReturn('0');
@@ -85,9 +85,9 @@ class PaymentVisitorSpec extends ObjectBehavior
 
     function it_fails_if_no_interval_but_repetitions_are_used_in_outgoing_payment(
         OutgoingPaymentRequest $request,
-        ImmediateDateNode $date,
-        IntervalNode $ival,
-        RepetitionsNode $reps,
+        ImmediateDate $date,
+        Interval $ival,
+        Repetitions $reps,
         $errorObj
     ) {
         $ival->getValue()->willReturn('0');
