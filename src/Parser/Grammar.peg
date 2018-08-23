@@ -34,10 +34,10 @@ use byrokrat\autogiro\Tree\StateId;
 use byrokrat\autogiro\Tree\Interval;
 use byrokrat\autogiro\Tree\Message;
 use byrokrat\autogiro\Tree\PayerNumber;
-use byrokrat\autogiro\Tree\ReferredAccount;
 use byrokrat\autogiro\Tree\Repetitions;
 use byrokrat\autogiro\Tree\Request;
 use byrokrat\autogiro\Tree\Response;
+use byrokrat\autogiro\Tree\Section;
 use byrokrat\autogiro\Tree\Text;
 
 grammar Grammar extends MultibyteHack
@@ -70,7 +70,7 @@ grammar Grammar extends MultibyteHack
     // MANDATE REQUESTS
 
     REQ_MANDATE_SECTION = open:REQ_OPENING_REC records:(REQ_DEL_MANDATE_REC / REQ_REJECT_MANDATE_REC / REQ_CREATE_MANDATE_REC / REQ_UPDATE_MANDATE_REC)+ {
-        return new Request\MandateRequestSection($open, ...$records);
+        return new Section('MandateRequestSection', $open, ...$records);
     };
 
     REQ_DEL_MANDATE_REC = '03' bg:BANKGIRO payerNr:PAYER_NR EOR {
@@ -110,7 +110,7 @@ grammar Grammar extends MultibyteHack
     // PAYMENT REQUESTS
 
     REQ_PAYMENT_SECTION = open:REQ_OPENING_REC records:REQ_PAYMENT_REC+ {
-        return new Request\PaymentRequestSection($open, ...$records);
+        return new Section('PaymentRequestSection', $open, ...$records);
     };
 
     REQ_PAYMENT_REC = type:(REQ_PAYMENT_INCOMING / REQ_PAYMENT_OUTGOING) date:(IMMEDIATE_DATE / DATE) ival:INTERVAL reps:REPS ' ' payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:VAR_TXT EOR {
@@ -137,7 +137,7 @@ grammar Grammar extends MultibyteHack
     // AMENDMENT REQUESTS
 
     REQ_AMENDMENT_SECTION = open:REQ_OPENING_REC records:REQ_REVOCATION_REC+ {
-        return new Request\AmendmentRequestSection($open, ...$records);
+        return new Section('AmendmentRequestSection', $open, ...$records);
     };
 
     REQ_REVOCATION_REC = &('2' [3-9]) tc:MSG2 bg:BANKGIRO payerNr:PAYER_NR date:DATE amount:AMOUNT12 type:MSG2 newDate:DATE ref:TXT16 EOR {
@@ -191,7 +191,7 @@ grammar Grammar extends MultibyteHack
     // INCOMING PAYMENTS
 
     PAYMENT_INCOMING_SECTION = open:PAYMENT_INCOMING_OPENING records:(PAYMENT_INCOMING_REC)* {
-        return new Response\IncomingPaymentResponseSection($open, ...$records);
+        return new Section('IncomingPaymentResponseSection', $open, ...$records);
     };
 
     PAYMENT_INCOMING_OPENING = '15' account:ACCOUNT35 date:DATE serial:INT5 amount:AMOUNT18 A2 A nrRecs:INT8 EOR {
@@ -227,7 +227,7 @@ grammar Grammar extends MultibyteHack
     // OUTGOING PAYMENTS
 
     PAYMENT_OUTGOING_SECTION = open:PAYMENT_OUTGOING_OPENING records:(PAYMENT_OUTGOING_REC)* {
-        return new Response\OutgoingPaymentResponseSection($open, ...$records);
+        return new Section('OutgoingPaymentResponseSection', $open, ...$records);
     };
 
     PAYMENT_OUTGOING_OPENING = '16' account:ACCOUNT35 date:DATE serial:INT5 amount:AMOUNT18 A2 A nrRecs:INT8 EOR {
@@ -263,7 +263,7 @@ grammar Grammar extends MultibyteHack
     // REFUND PAYMENTS
 
     PAYMENT_REFUND_SECTION = open:PAYMENT_REFUND_OPENING records:(PAYMENT_REFUND_REC)* {
-        return new Response\RefundPaymentResponseSection($open, ...$records);
+        return new Section('RefundPaymentResponseSection', $open, ...$records);
     };
 
     PAYMENT_REFUND_OPENING = '17' account:ACCOUNT35 date:DATE serial:INT5 amount:AMOUNT18 A2 A nrRecs:INT8 EOR {

@@ -16,7 +16,7 @@ class SectionSpec extends ObjectBehavior
     {
         $nodeA->getName()->willReturn('nodeA');
         $nodeB->getName()->willReturn('nodeB');
-        $this->beConstructedWith($nodeA, $nodeB);
+        $this->beConstructedWith('', $nodeA, $nodeB);
     }
 
     function it_is_initializable()
@@ -31,7 +31,8 @@ class SectionSpec extends ObjectBehavior
 
     function it_contains_a_name()
     {
-        $this->getName()->shouldEqual('Section');
+        $this->beConstructedWith('custom-name');
+        $this->getName()->shouldEqual('custom-name');
     }
 
     function it_contains_a_type()
@@ -64,7 +65,7 @@ class SectionSpec extends ObjectBehavior
 
     function it_defaults_to_line_number_zero()
     {
-        $this->beConstructedWith();
+        $this->beConstructedWith('');
         $this->getLineNr()->shouldEqual(0);
     }
 }

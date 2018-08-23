@@ -16,10 +16,10 @@ use byrokrat\autogiro\Tree\StateId;
 use byrokrat\autogiro\Tree\Interval;
 use byrokrat\autogiro\Tree\Message;
 use byrokrat\autogiro\Tree\PayerNumber;
-use byrokrat\autogiro\Tree\ReferredAccount;
 use byrokrat\autogiro\Tree\Repetitions;
 use byrokrat\autogiro\Tree\Request;
 use byrokrat\autogiro\Tree\Response;
+use byrokrat\autogiro\Tree\Section;
 use byrokrat\autogiro\Tree\Text;
 
 class Grammar extends MultibyteHack
@@ -485,7 +485,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$open, &$records) {
-                return new Request\MandateRequestSection($open, ...$records);
+                return new Section('MandateRequestSection', $open, ...$records);
             });
         }
 
@@ -968,7 +968,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$open, &$records) {
-                return new Request\PaymentRequestSection($open, ...$records);
+                return new Section('PaymentRequestSection', $open, ...$records);
             });
         }
 
@@ -1299,7 +1299,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$open, &$records) {
-                return new Request\AmendmentRequestSection($open, ...$records);
+                return new Section('AmendmentRequestSection', $open, ...$records);
             });
         }
 
@@ -2010,7 +2010,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$open, &$records) {
-                return new Response\IncomingPaymentResponseSection($open, ...$records);
+                return new Section('IncomingPaymentResponseSection', $open, ...$records);
             });
         }
 
@@ -2397,7 +2397,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$open, &$records) {
-                return new Response\OutgoingPaymentResponseSection($open, ...$records);
+                return new Section('OutgoingPaymentResponseSection', $open, ...$records);
             });
         }
 
@@ -2784,7 +2784,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$open, &$records) {
-                return new Response\RefundPaymentResponseSection($open, ...$records);
+                return new Section('RefundPaymentResponseSection', $open, ...$records);
             });
         }
 

@@ -32,21 +32,19 @@ use byrokrat\autogiro\Tree\Request\RejectDigitalMandateRequest;
 use byrokrat\autogiro\Tree\Request\UpdateMandateRequest;
 use byrokrat\autogiro\Tree\Request\IncomingPaymentRequest;
 use byrokrat\autogiro\Tree\Request\OutgoingPaymentRequest;
-use byrokrat\autogiro\Tree\Request\MandateRequestSection;
-use byrokrat\autogiro\Tree\Request\PaymentRequestSection;
-use byrokrat\autogiro\Tree\Request\AmendmentRequestSection;
+use byrokrat\autogiro\Tree\Account;
+use byrokrat\autogiro\Tree\Amount;
 use byrokrat\autogiro\Tree\AutogiroFile;
 use byrokrat\autogiro\Tree\Date;
 use byrokrat\autogiro\Tree\ImmediateDate;
-use byrokrat\autogiro\Tree\Text;
+use byrokrat\autogiro\Tree\Interval;
 use byrokrat\autogiro\Tree\PayeeBgcNumber;
 use byrokrat\autogiro\Tree\PayeeBankgiro;
 use byrokrat\autogiro\Tree\PayerNumber;
-use byrokrat\autogiro\Tree\Account;
-use byrokrat\autogiro\Tree\StateId;
-use byrokrat\autogiro\Tree\Interval;
 use byrokrat\autogiro\Tree\Repetitions;
-use byrokrat\autogiro\Tree\Amount;
+use byrokrat\autogiro\Tree\Section;
+use byrokrat\autogiro\Tree\StateId;
+use byrokrat\autogiro\Tree\Text;
 use byrokrat\banking\AccountNumber;
 use byrokrat\banking\Bankgiro;
 use byrokrat\id\IdInterface;
@@ -61,9 +59,9 @@ class TreeBuilder
      * Map section classes to record store array names
      */
     private const SECTION_TO_RECORD_STORE_MAP = [
-        MandateRequestSection::CLASS => 'mandates',
-        PaymentRequestSection::CLASS => 'payments',
-        AmendmentRequestSection::CLASS => 'amendments'
+        'MandateRequestSection' => 'mandates',
+        'PaymentRequestSection' => 'payments',
+        'AmendmentRequestSection' => 'amendments'
     ];
 
     /**
@@ -290,9 +288,9 @@ class TreeBuilder
     {
         $sections = [];
 
-        foreach (self::SECTION_TO_RECORD_STORE_MAP as $sectionClass => $recordStore) {
+        foreach (self::SECTION_TO_RECORD_STORE_MAP as $sectionName => $recordStore) {
             if (!empty($this->$recordStore)) {
-                $sections[] = new $sectionClass($this->opening, ...$this->$recordStore);
+                $sections[] = new Section($sectionName, $this->opening, ...$this->$recordStore);
             }
         }
 

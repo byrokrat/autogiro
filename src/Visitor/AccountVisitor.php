@@ -25,7 +25,6 @@ namespace byrokrat\autogiro\Visitor;
 use byrokrat\autogiro\Tree\Account;
 use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Tree\PayeeBankgiro;
-use byrokrat\autogiro\Tree\ReferredAccount;
 use byrokrat\banking\AccountFactoryInterface;
 use byrokrat\banking\Exception as BankingException;
 
@@ -64,15 +63,6 @@ class AccountVisitor extends ErrorAwareVisitor
     public function beforePayeeBankgiro(PayeeBankgiro $node): void
     {
         $this->writeAccountAttr($node->getValue(), $node, $this->bankgiroFactory);
-    }
-
-    public function beforeReferredAccount(ReferredAccount $node): void
-    {
-        if (!$node->hasAttribute('referred_value')) {
-            return;
-        }
-
-        $this->writeAccountAttr($node->getAttribute('referred_value'), $node, $this->accountFactory);
     }
 
     private function writeAccountAttr(string $number, Node $node, AccountFactoryInterface $factory): void

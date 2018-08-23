@@ -23,15 +23,17 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Tree;
 
 /**
- * A node containing other nodes
+ * A section is a collection of other nodes nodes
  */
 class Section extends Node
 {
     use TypeTrait;
 
-    public function __construct(Node ...$nodes)
+    public function __construct(string $name, Node ...$nodes)
     {
         parent::__construct();
+
+        $this->setName($name);
 
         foreach ($nodes as $node) {
             $this->addChild($node);

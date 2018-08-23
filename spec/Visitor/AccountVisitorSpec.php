@@ -8,7 +8,6 @@ use byrokrat\autogiro\Visitor\AccountVisitor;
 use byrokrat\autogiro\Visitor\ErrorAwareVisitor;
 use byrokrat\autogiro\Visitor\ErrorObject;
 use byrokrat\autogiro\Tree\Account;
-use byrokrat\autogiro\Tree\ReferredAccount;
 use byrokrat\autogiro\Tree\PayeeBankgiro;
 use byrokrat\banking\AccountFactory;
 use byrokrat\banking\AccountNumber;
@@ -64,24 +63,6 @@ class AccountVisitorSpec extends ObjectBehavior
         $accountNode->hasAttribute('account')->willReturn(true);
         $accountNode->getValue()->willReturn('');
         $this->beforeAccount($accountNode);
-        $accountNode->setAttribute('account', Argument::any())->shouldNotHaveBeenCalled();
-    }
-
-    function it_creates_valid_referred_account_numbers(ReferredAccount $accountNode, $accountNumber, $errorObj)
-    {
-        $accountNode->hasAttribute('account')->willReturn(false);
-        $accountNode->getValue()->willReturn('');
-        $accountNode->hasAttribute('referred_value')->willReturn(true);
-        $accountNode->getAttribute('referred_value')->willReturn('valid');
-        $accountNode->setAttribute('account', $accountNumber)->shouldBeCalled();
-        $this->beforeReferredAccount($accountNode);
-        $errorObj->addError(Argument::cetera())->shouldNotHaveBeenCalled();
-    }
-
-    function it_does_not_create_referred_account_if_attr_is_not_set(ReferredAccount $accountNode)
-    {
-        $accountNode->hasAttribute('referred_value')->willReturn(false);
-        $this->beforeReferredAccount($accountNode);
         $accountNode->setAttribute('account', Argument::any())->shouldNotHaveBeenCalled();
     }
 

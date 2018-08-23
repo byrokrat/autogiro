@@ -16,9 +16,6 @@ use byrokrat\autogiro\Tree\Request\RejectDigitalMandateRequest;
 use byrokrat\autogiro\Tree\Request\UpdateMandateRequest;
 use byrokrat\autogiro\Tree\Request\IncomingPaymentRequest;
 use byrokrat\autogiro\Tree\Request\OutgoingPaymentRequest;
-use byrokrat\autogiro\Tree\Request\MandateRequestSection;
-use byrokrat\autogiro\Tree\Request\PaymentRequestSection;
-use byrokrat\autogiro\Tree\Request\AmendmentRequestSection;
 use byrokrat\autogiro\Tree\AutogiroFile;
 use byrokrat\autogiro\Tree\Date;
 use byrokrat\autogiro\Tree\ImmediateDate;
@@ -31,6 +28,7 @@ use byrokrat\autogiro\Tree\StateId;
 use byrokrat\autogiro\Tree\Interval;
 use byrokrat\autogiro\Tree\Repetitions;
 use byrokrat\autogiro\Tree\Amount;
+use byrokrat\autogiro\Tree\Section;
 use byrokrat\banking\AccountNumber;
 use byrokrat\banking\Bankgiro;
 use byrokrat\id\IdInterface;
@@ -67,11 +65,12 @@ class TreeBuilderSpec extends ObjectBehavior
         $this->buildTree()->shouldBeLike(new AutogiroFile(Layouts::LAYOUT_REQUEST));
     }
 
-    function a_tree(string $sectionClass, $bankgiro, $date, ...$nodes)
+    function a_tree(string $sectionName, $bankgiro, $date, ...$nodes)
     {
         return new AutogiroFile(
             Layouts::LAYOUT_REQUEST,
-            new $sectionClass(
+            new Section(
+                $sectionName,
                 $this->an_opening_record_node($bankgiro, $date),
                 ...$nodes
             )
@@ -100,7 +99,7 @@ class TreeBuilderSpec extends ObjectBehavior
 
         $this->buildTree()->shouldBeLike(
             $this->a_tree(
-                MandateRequestSection::CLASS,
+                'MandateRequestSection',
                 $bankgiro,
                 $date,
                 new CreateMandateRequest(
@@ -121,7 +120,7 @@ class TreeBuilderSpec extends ObjectBehavior
 
         $this->buildTree()->shouldBeLike(
             $this->a_tree(
-                MandateRequestSection::CLASS,
+                'MandateRequestSection',
                 $bankgiro,
                 $date,
                 new DeleteMandateRequest(
@@ -140,7 +139,7 @@ class TreeBuilderSpec extends ObjectBehavior
 
         $this->buildTree()->shouldBeLike(
             $this->a_tree(
-                MandateRequestSection::CLASS,
+                'MandateRequestSection',
                 $bankgiro,
                 $date,
                 new AcceptDigitalMandateRequest(
@@ -159,7 +158,7 @@ class TreeBuilderSpec extends ObjectBehavior
 
         $this->buildTree()->shouldBeLike(
             $this->a_tree(
-                MandateRequestSection::CLASS,
+                'MandateRequestSection',
                 $bankgiro,
                 $date,
                 new RejectDigitalMandateRequest(
@@ -182,7 +181,7 @@ class TreeBuilderSpec extends ObjectBehavior
 
         $this->buildTree()->shouldBeLike(
             $this->a_tree(
-                MandateRequestSection::CLASS,
+                'MandateRequestSection',
                 $bankgiro,
                 $date,
                 new UpdateMandateRequest(
@@ -207,7 +206,7 @@ class TreeBuilderSpec extends ObjectBehavior
 
         $this->buildTree()->shouldBeLike(
             $this->a_tree(
-                PaymentRequestSection::CLASS,
+                'PaymentRequestSection',
                 $bankgiro,
                 $date,
                 new IncomingPaymentRequest(
@@ -236,7 +235,7 @@ class TreeBuilderSpec extends ObjectBehavior
 
         $this->buildTree()->shouldBeLike(
             $this->a_tree(
-                PaymentRequestSection::CLASS,
+                'PaymentRequestSection',
                 $bankgiro,
                 $date,
                 new OutgoingPaymentRequest(
@@ -263,7 +262,7 @@ class TreeBuilderSpec extends ObjectBehavior
 
         $this->buildTree()->shouldBeLike(
             $this->a_tree(
-                PaymentRequestSection::CLASS,
+                'PaymentRequestSection',
                 $bankgiro,
                 $date,
                 new IncomingPaymentRequest(
@@ -290,7 +289,7 @@ class TreeBuilderSpec extends ObjectBehavior
 
         $this->buildTree()->shouldBeLike(
             $this->a_tree(
-                PaymentRequestSection::CLASS,
+                'PaymentRequestSection',
                 $bankgiro,
                 $date,
                 new OutgoingPaymentRequest(

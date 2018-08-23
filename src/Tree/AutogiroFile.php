@@ -27,12 +27,11 @@ namespace byrokrat\autogiro\Tree;
  */
 class AutogiroFile extends Section
 {
+    use TypeTrait;
+
     public function __construct(string $layout, Node ...$nodes)
     {
-        parent::__construct(...$nodes);
-
-        if ($layout) {
-            $this->setAttribute('layout', $layout);
-        }
+        parent::__construct('AutogiroFile', ...$nodes);
+        $this->setAttribute('layout', $layout);
     }
 }

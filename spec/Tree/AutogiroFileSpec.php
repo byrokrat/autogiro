@@ -33,7 +33,7 @@ class AutogiroFileSpec extends ObjectBehavior
 
     function it_contains_a_type()
     {
-        $this->getType()->shouldEqual('Section');
+        $this->getType()->shouldEqual('AutogiroFile');
     }
 
     function it_contains_a_layout_name()
