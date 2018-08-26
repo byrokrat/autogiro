@@ -7,7 +7,6 @@ use byrokrat\autogiro\Layouts;
 use byrokrat\autogiro\Tree\Account;
 use byrokrat\autogiro\Tree\Amount;
 use byrokrat\autogiro\Tree\PayeeBankgiro;
-use byrokrat\autogiro\Tree\PayeeBgcNumber;
 use byrokrat\autogiro\Tree\ImmediateDate;
 use byrokrat\autogiro\Tree\Date;
 use byrokrat\autogiro\Tree\DateTime;
@@ -15,9 +14,8 @@ use byrokrat\autogiro\Tree\AutogiroFile;
 use byrokrat\autogiro\Tree\StateId;
 use byrokrat\autogiro\Tree\Interval;
 use byrokrat\autogiro\Tree\Message;
-use byrokrat\autogiro\Tree\PayerNumber;
+use byrokrat\autogiro\Tree\Number;
 use byrokrat\autogiro\Tree\Record;
-use byrokrat\autogiro\Tree\Repetitions;
 use byrokrat\autogiro\Tree\Section;
 use byrokrat\autogiro\Tree\Text;
 
@@ -3901,7 +3899,7 @@ class Grammar extends MultibyteHack
 
                 // A mandate-valid-from-date is only present in the old layout
                 if ($validDate) {
-                    $record->addChild(new Text($this->lineNr - 1, (string)$validDate));
+                    $record->addChild(new Text($this->lineNr - 1, (string)$validDate, 'ValidFromDate'));
                 }
 
                 return $record;
@@ -5792,7 +5790,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$nr) {
-                return new PayeeBgcNumber($this->lineNr, $nr);
+                return new Number($this->lineNr, $nr, 'PayeeBgcNumber');
             });
         }
 
@@ -6159,7 +6157,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$nr) {
-                return new PayerNumber($this->lineNr, $nr);
+                return new Number($this->lineNr, trim($nr), 'PayerNumber');
             });
         }
 
@@ -6216,7 +6214,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$repetitions) {
-                return new Repetitions($this->lineNr, $repetitions);
+                return new Number($this->lineNr, trim($repetitions), 'Repetitions');
             });
         }
 
@@ -6259,7 +6257,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$integer) {
-                return new Text($this->lineNr, $integer, '/^\d{5}$/');
+                return new Number($this->lineNr, $integer);
             });
         }
 
@@ -6316,7 +6314,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$integer) {
-                return new Text($this->lineNr, $integer, '/^\d{6}$/');
+                return new Number($this->lineNr, $integer);
             });
         }
 
@@ -6373,7 +6371,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$integer) {
-                return new Text($this->lineNr, $integer, '/^\d{7}$/');
+                return new Number($this->lineNr, $integer);
             });
         }
 
@@ -6436,7 +6434,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$integer) {
-                return new Text($this->lineNr, $integer, '/^\d{8}$/');
+                return new Number($this->lineNr, $integer);
             });
         }
 
@@ -6493,7 +6491,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$integer) {
-                return new Text($this->lineNr, $integer, '/^\d{12}$/');
+                return new Number($this->lineNr, $integer);
             });
         }
 

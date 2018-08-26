@@ -23,16 +23,20 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Tree;
 
 /**
- * Node that wrapps a BGC customer number
+ * Node representing a simple number
  *
- * @see \byrokrat\autogiro\Visitor\TextVisitor Validates node content
+ * @see \byrokrat\autogiro\Visitor\NumberVisitor Validates node content
  */
-class PayeeBgcNumber extends Text
+class Number extends Node
 {
     use TypeTrait;
 
-    public function __construct(int $lineNr = 0, string $value = '')
+    public function __construct(int $lineNr = 0, string $value = '', string $name = '')
     {
-        parent::__construct($lineNr, $value, '/^[0-9]*$/');
+        parent::__construct($lineNr, $value);
+
+        if ($name) {
+            $this->setName($name);
+        }
     }
 }

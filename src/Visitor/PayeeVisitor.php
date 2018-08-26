@@ -22,8 +22,7 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Visitor;
 
-use byrokrat\autogiro\Tree\PayeeBankgiro;
-use byrokrat\autogiro\Tree\PayeeBgcNumber;
+use byrokrat\autogiro\Tree\Node;
 
 /**
  * Validate that payee bankgiro and BGC customer number are constant within tree
@@ -52,17 +51,17 @@ class PayeeVisitor extends ErrorAwareVisitor
     /**
      * Validate payee bankgiro number
      */
-    public function beforePayeeBankgiro(PayeeBankgiro $node): void
+    public function beforePayeeBankgiro(Node $node): void
     {
         if (!$this->payeeBg) {
-            $this->payeeBg = $node->getValue();
+            $this->payeeBg = (string)$node->getValue();
         }
 
         if ($node->getValue() != $this->payeeBg) {
             $this->getErrorObject()->addError(
                 "Non-matching payee bankgiro numbers (expecting: %s, found: %s) on line %s",
                 $this->payeeBg,
-                $node->getValue(),
+                (string)$node->getValue(),
                 (string)$node->getLineNr()
             );
         }
@@ -71,7 +70,7 @@ class PayeeVisitor extends ErrorAwareVisitor
     /**
      * Validate payee BGC customer number
      */
-    public function beforePayeeBgcNumber(PayeeBgcNumber $node): void
+    public function beforePayeeBgcNumber(Node $node): void
     {
         if (!$this->payeeBgcNr) {
             $this->payeeBgcNr = $node->getValue();
@@ -81,7 +80,7 @@ class PayeeVisitor extends ErrorAwareVisitor
             $this->getErrorObject()->addError(
                 "Non-matching payee BGC customer numbers (expecting: %s, found: %s) on line %s",
                 $this->payeeBgcNr,
-                $node->getValue(),
+                (string)$node->getValue(),
                 (string)$node->getLineNr()
             );
         }

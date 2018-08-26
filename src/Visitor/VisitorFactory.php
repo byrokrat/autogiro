@@ -77,6 +77,7 @@ class VisitorFactory
             $errorObj,
             new DateVisitor($errorObj),
             new MessageVisitor($errorObj),
+            new NumberVisitor($errorObj),
             new TextVisitor($errorObj),
             new PaymentVisitor($errorObj)
         );

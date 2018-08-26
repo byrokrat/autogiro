@@ -8,7 +8,7 @@ use byrokrat\autogiro\Visitor\PayeeVisitor;
 use byrokrat\autogiro\Visitor\ErrorAwareVisitor;
 use byrokrat\autogiro\Visitor\ErrorObject;
 use byrokrat\autogiro\Tree\PayeeBankgiro;
-use byrokrat\autogiro\Tree\PayeeBgcNumber;
+use byrokrat\autogiro\Tree\Number;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -28,8 +28,8 @@ class PayeeVisitorSpec extends ObjectBehavior
         ErrorObject $errorObj,
         PayeeBankgiro $bgA,
         PayeeBankgiro $bgB,
-        PayeeBgcNumber $custA,
-        PayeeBgcNumber $custB
+        Number $custA,
+        Number $custB
     ) {
         $this->beConstructedWith($errorObj);
         $bgA->getValue()->willReturn('A');

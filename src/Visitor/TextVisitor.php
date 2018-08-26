@@ -22,10 +22,6 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Visitor;
 
-use byrokrat\autogiro\Tree\Interval;
-use byrokrat\autogiro\Tree\PayeeBgcNumber;
-use byrokrat\autogiro\Tree\PayerNumber;
-use byrokrat\autogiro\Tree\Repetitions;
 use byrokrat\autogiro\Tree\Text;
 
 /**
@@ -35,34 +31,15 @@ class TextVisitor extends ErrorAwareVisitor
 {
     public function beforeText(Text $node): void
     {
-        $this->validateRegexp($node, "Text value '%s' does not match expected %s on line %s");
-    }
-
-    public function beforeRepetitions(Repetitions $node): void
-    {
-        $this->validateRegexp($node, "Repeats '%s' does not match expected %s on line %s");
-    }
-
-    public function beforePayeeBgcNumber(PayeeBgcNumber $node): void
-    {
-        $this->validateRegexp($node, "BGC customer number '%s' does not match expected %s on line %s");
-    }
-
-    public function beforePayerNumber(PayerNumber $node): void
-    {
-        $this->validateRegexp($node, "Payer number '%s' does not match expected %s on line %s");
-    }
-
-    private function validateRegexp(Text $node, string $errorMsg): void
-    {
         if (!$node->getValidationRegexp()) {
             return;
         }
 
-        if (!preg_match($node->getValidationRegexp(), $node->getValue())) {
+        if (!preg_match($node->getValidationRegexp(), (string)$node->getValue())) {
             $this->getErrorObject()->addError(
-                $errorMsg,
-                $node->getValue(),
+                "%s node value '%s' does not match expected %s on line %s",
+                $node->getName(),
+                (string)$node->getValue(),
                 $node->getValidationRegexp(),
                 (string)$node->getLineNr()
             );

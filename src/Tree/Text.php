@@ -36,10 +36,14 @@ class Text extends Node
      */
     private $validationRegexp;
 
-    public function __construct(int $lineNr = 0, string $value = '', string $validationRegexp = '')
+    public function __construct(int $lineNr = 0, string $value = '', string $name = '', string $validationRegexp = '')
     {
         parent::__construct($lineNr, $value);
         $this->validationRegexp = $validationRegexp;
+
+        if ($name) {
+            $this->setName($name);
+        }
     }
 
     public function getValidationRegexp(): string

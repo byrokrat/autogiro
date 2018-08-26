@@ -29,11 +29,9 @@ use byrokrat\autogiro\Tree\AutogiroFile;
 use byrokrat\autogiro\Tree\Date;
 use byrokrat\autogiro\Tree\ImmediateDate;
 use byrokrat\autogiro\Tree\Interval;
-use byrokrat\autogiro\Tree\PayeeBgcNumber;
+use byrokrat\autogiro\Tree\Number;
 use byrokrat\autogiro\Tree\PayeeBankgiro;
-use byrokrat\autogiro\Tree\PayerNumber;
 use byrokrat\autogiro\Tree\Record;
-use byrokrat\autogiro\Tree\Repetitions;
 use byrokrat\autogiro\Tree\Section;
 use byrokrat\autogiro\Tree\StateId;
 use byrokrat\autogiro\Tree\Text;
@@ -133,7 +131,7 @@ class TreeBuilder
             Date::fromDate($this->date),
             new Text(0, 'AUTOGIRO'),
             new Text(0, str_pad('', 44)),
-            new PayeeBgcNumber(0, $this->bgcNr),
+            new Number(0, $this->bgcNr, 'PayeeBgcNumber'),
             $this->payeeBgNode,
             new Text(0, '  ')
         );
@@ -150,7 +148,7 @@ class TreeBuilder
         $this->mandates[] = new Record(
             'CreateMandateRequest',
             $this->payeeBgNode,
-            new PayerNumber(0, $payerNr),
+            new Number(0, $payerNr, 'PayerNumber'),
             Account::fromAccount($account),
             StateId::fromId($id),
             new Text(0, str_pad('', 24))
@@ -165,7 +163,7 @@ class TreeBuilder
         $this->mandates[] = new Record(
             'DeleteMandateRequest',
             $this->payeeBgNode,
-            new PayerNumber(0, $payerNr),
+            new Number(0, $payerNr, 'PayerNumber'),
             new Text(0, str_pad('', 52))
         );
     }
@@ -178,7 +176,7 @@ class TreeBuilder
         $this->mandates[] = new Record(
             'AcceptDigitalMandateRequest',
             $this->payeeBgNode,
-            new PayerNumber(0, $payerNr),
+            new Number(0, $payerNr, 'PayerNumber'),
             new Text(0, str_pad('', 52))
         );
     }
@@ -191,7 +189,7 @@ class TreeBuilder
         $this->mandates[] = new Record(
             'RejectDigitalMandateRequest',
             $this->payeeBgNode,
-            new PayerNumber(0, $payerNr),
+            new Number(0, $payerNr, 'PayerNumber'),
             new Text(0, str_pad('', 48)),
             new Text(0, 'AV'),
             new Text(0, '  ')
@@ -206,9 +204,9 @@ class TreeBuilder
         $this->mandates[] = new Record(
             'UpdateMandateRequest',
             $this->payeeBgNode,
-            new PayerNumber(0, $payerNr),
+            new Number(0, $payerNr, 'PayerNumber'),
             $this->payeeBgNode,
-            new PayerNumber(0, $newPayerNr),
+            new Number(0, $newPayerNr, 'PayerNumber'),
             new Text(0, str_pad('', 26))
         );
     }
@@ -302,12 +300,12 @@ class TreeBuilder
             $nodename,
             Date::fromDate($date),
             new Interval(0, $this->intervalFormatter->format($interval)),
-            new Repetitions(0, $this->repititionsFormatter->format($repetitions)),
+            new Text(0, $this->repititionsFormatter->format($repetitions), 'Repetitions'),
             new Text(0, ' '),
-            new PayerNumber(0, $payerNr),
+            new Number(0, $payerNr, 'PayerNumber'),
             Amount::fromAmount($amount),
             $this->payeeBgNode,
-            new Text(0, str_pad($ref, 16, ' ', STR_PAD_LEFT), '/^.{16}$/'),
+            new Text(0, str_pad($ref, 16, ' ', STR_PAD_LEFT)),
             new Text(0, str_pad('', 11))
         );
     }
@@ -318,12 +316,12 @@ class TreeBuilder
             $nodename,
             new ImmediateDate,
             new Interval(0, '0'),
-            new Repetitions(0, '   '),
+            new Text(0, '   ', 'Repetitions'),
             new Text(0, ' '),
-            new PayerNumber(0, $payerNr),
+            new Number(0, $payerNr, 'PayerNumber'),
             Amount::fromAmount($amount),
             $this->payeeBgNode,
-            new Text(0, str_pad($ref, 16, ' ', STR_PAD_LEFT), '/^.{16}$/'),
+            new Text(0, str_pad($ref, 16, ' ', STR_PAD_LEFT)),
             new Text(0, str_pad('', 11))
         );
     }

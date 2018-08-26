@@ -10,7 +10,6 @@ use byrokrat\autogiro\Visitor\ErrorObject;
 use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Tree\ImmediateDate;
 use byrokrat\autogiro\Tree\Interval;
-use byrokrat\autogiro\Tree\Repetitions;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -35,7 +34,7 @@ class PaymentVisitorSpec extends ObjectBehavior
         Node $request,
         ImmediateDate $date,
         Interval $ival,
-        Repetitions $reps,
+        Node $reps,
         $errorObj
     ) {
         $ival->getValue()->willReturn('1');
@@ -52,7 +51,7 @@ class PaymentVisitorSpec extends ObjectBehavior
         Node $request,
         ImmediateDate $date,
         Interval $ival,
-        Repetitions $reps,
+        Node $reps,
         $errorObj
     ) {
         $ival->getValue()->willReturn('1');
@@ -69,7 +68,7 @@ class PaymentVisitorSpec extends ObjectBehavior
         Node $request,
         ImmediateDate $date,
         Interval $ival,
-        Repetitions $reps,
+        Node $reps,
         $errorObj
     ) {
         $ival->getValue()->willReturn('0');
@@ -86,7 +85,7 @@ class PaymentVisitorSpec extends ObjectBehavior
         Node $request,
         ImmediateDate $date,
         Interval $ival,
-        Repetitions $reps,
+        Node $reps,
         $errorObj
     ) {
         $ival->getValue()->willReturn('0');

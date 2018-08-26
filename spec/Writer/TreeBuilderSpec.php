@@ -12,13 +12,11 @@ use byrokrat\autogiro\Tree\AutogiroFile;
 use byrokrat\autogiro\Tree\Date;
 use byrokrat\autogiro\Tree\ImmediateDate;
 use byrokrat\autogiro\Tree\Text;
-use byrokrat\autogiro\Tree\PayeeBgcNumber;
 use byrokrat\autogiro\Tree\PayeeBankgiro;
-use byrokrat\autogiro\Tree\PayerNumber;
 use byrokrat\autogiro\Tree\Account;
 use byrokrat\autogiro\Tree\StateId;
 use byrokrat\autogiro\Tree\Interval;
-use byrokrat\autogiro\Tree\Repetitions;
+use byrokrat\autogiro\Tree\Number;
 use byrokrat\autogiro\Tree\Amount;
 use byrokrat\autogiro\Tree\Record;
 use byrokrat\autogiro\Tree\Section;
@@ -77,7 +75,7 @@ class TreeBuilderSpec extends ObjectBehavior
             Date::fromDate($date->getWrappedObject()),
             new Text(0, 'AUTOGIRO'),
             new Text(0, str_pad('', 44)),
-            new PayeeBgcNumber(0, self::BCG_NR),
+            new Number(0, self::BCG_NR, 'PayeeBgcNumber'),
             PayeeBankgiro::fromBankgiro($bankgiro->getWrappedObject()),
             new Text(0, '  ')
         );
@@ -98,7 +96,7 @@ class TreeBuilderSpec extends ObjectBehavior
                 new Record(
                     'CreateMandateRequest',
                     PayeeBankgiro::fromBankgiro($bankgiro->getWrappedObject()),
-                    new PayerNumber(0, 'payerNr'),
+                    new Number(0, 'payerNr', 'PayerNumber'),
                     Account::fromAccount($account->getWrappedObject()),
                     StateId::fromId($id->getWrappedObject()),
                     new Text(0, str_pad('', 24))
@@ -119,7 +117,7 @@ class TreeBuilderSpec extends ObjectBehavior
                 new Record(
                     'DeleteMandateRequest',
                     PayeeBankgiro::fromBankgiro($bankgiro->getWrappedObject()),
-                    new PayerNumber(0, 'payerNr'),
+                    new Number(0, 'payerNr', 'PayerNumber'),
                     new Text(0, str_pad('', 52))
                 )
             )
@@ -138,7 +136,7 @@ class TreeBuilderSpec extends ObjectBehavior
                 new Record(
                     'AcceptDigitalMandateRequest',
                     PayeeBankgiro::fromBankgiro($bankgiro->getWrappedObject()),
-                    new PayerNumber(0, 'payerNr'),
+                    new Number(0, 'payerNr', 'PayerNumber'),
                     new Text(0, str_pad('', 52))
                 )
             )
@@ -157,7 +155,7 @@ class TreeBuilderSpec extends ObjectBehavior
                 new Record(
                     'RejectDigitalMandateRequest',
                     PayeeBankgiro::fromBankgiro($bankgiro->getWrappedObject()),
-                    new PayerNumber(0, 'payerNr'),
+                    new Number(0, 'payerNr', 'PayerNumber'),
                     new Text(0, str_pad('', 48)),
                     new Text(0, 'AV'),
                     new Text(0, '  ')
@@ -180,9 +178,9 @@ class TreeBuilderSpec extends ObjectBehavior
                 new Record(
                     'UpdateMandateRequest',
                     $payeeBgNode,
-                    new PayerNumber(0, 'foo'),
+                    new Number(0, 'foo', 'PayerNumber'),
                     $payeeBgNode,
-                    new PayerNumber(0, 'bar'),
+                    new Number(0, 'bar', 'PayerNumber'),
                     new Text(0, str_pad('', 26))
                 )
             )
@@ -206,12 +204,12 @@ class TreeBuilderSpec extends ObjectBehavior
                     'IncomingPaymentRequest',
                     Date::fromDate($date->getWrappedObject()),
                     new Interval(0, 'formatted_interval'),
-                    new Repetitions(0, 'formatted_repititions'),
+                    new Text(0, 'formatted_repititions', 'Repetitions'),
                     new Text(0, ' '),
-                    new PayerNumber(0, 'foobar'),
+                    new Number(0, 'foobar', 'PayerNumber'),
                     Amount::fromAmount($amount->getWrappedObject()),
                     PayeeBankgiro::fromBankgiro($bankgiro->getWrappedObject()),
-                    new Text(0, '             ref', '/^.{16}$/'),
+                    new Text(0, '             ref'),
                     new Text(0, str_pad('', 11))
                 )
             )
@@ -235,12 +233,12 @@ class TreeBuilderSpec extends ObjectBehavior
                     'OutgoingPaymentRequest',
                     Date::fromDate($date->getWrappedObject()),
                     new Interval(0, 'formatted_interval'),
-                    new Repetitions(0, 'formatted_repititions'),
+                    new Text(0, 'formatted_repititions', 'Repetitions'),
                     new Text(0, ' '),
-                    new PayerNumber(0, 'foobar'),
+                    new Number(0, 'foobar', 'PayerNumber'),
                     Amount::fromAmount($amount->getWrappedObject()),
                     PayeeBankgiro::fromBankgiro($bankgiro->getWrappedObject()),
-                    new Text(0, '             ref', '/^.{16}$/'),
+                    new Text(0, '             ref'),
                     new Text(0, str_pad('', 11))
                 )
             )
@@ -262,12 +260,12 @@ class TreeBuilderSpec extends ObjectBehavior
                     'IncomingPaymentRequest',
                     new ImmediateDate,
                     new Interval(0, '0'),
-                    new Repetitions(0, '   '),
+                    new Text(0, '   ', 'Repetitions'),
                     new Text(0, ' '),
-                    new PayerNumber(0, 'foobar'),
+                    new Number(0, 'foobar', 'PayerNumber'),
                     Amount::fromAmount($amount->getWrappedObject()),
                     PayeeBankgiro::fromBankgiro($bankgiro->getWrappedObject()),
-                    new Text(0, '             ref', '/^.{16}$/'),
+                    new Text(0, '             ref'),
                     new Text(0, str_pad('', 11))
                 )
             )
@@ -289,12 +287,12 @@ class TreeBuilderSpec extends ObjectBehavior
                     'OutgoingPaymentRequest',
                     new ImmediateDate,
                     new Interval(0, '0'),
-                    new Repetitions(0, '   '),
+                    new Text(0, '   ', 'Repetitions'),
                     new Text(0, ' '),
-                    new PayerNumber(0, 'foobar'),
+                    new Number(0, 'foobar', 'PayerNumber'),
                     Amount::fromAmount($amount->getWrappedObject()),
                     PayeeBankgiro::fromBankgiro($bankgiro->getWrappedObject()),
-                    new Text(0, '             ref', '/^.{16}$/'),
+                    new Text(0, '             ref'),
                     new Text(0, str_pad('', 11))
                 )
             )

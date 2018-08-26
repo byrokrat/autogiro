@@ -7,9 +7,6 @@ namespace spec\byrokrat\autogiro\Visitor;
 use byrokrat\autogiro\Visitor\TextVisitor;
 use byrokrat\autogiro\Visitor\ErrorAwareVisitor;
 use byrokrat\autogiro\Visitor\ErrorObject;
-use byrokrat\autogiro\Tree\PayeeBgcNumber;
-use byrokrat\autogiro\Tree\PayerNumber;
-use byrokrat\autogiro\Tree\Repetitions;
 use byrokrat\autogiro\Tree\Text;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -31,18 +28,14 @@ class TextVisitorSpec extends ObjectBehavior
         $this->shouldHaveType(ErrorAwareVisitor::CLASS);
     }
 
-    function a_failing_regexp(Text $node)
-    {
-        $node->getValue()->willReturn('foo');
-        $node->getValidationRegexp()->willReturn('/bar/');
-        $node->getLineNr()->willReturn(1);
-
-        return $node;
-    }
-
     function it_captures_invalid_text_nodes(Text $textNode, $errorObj)
     {
-        $this->beforeText($this->a_failing_regexp($textNode));
+        $textNode->getValue()->willReturn('foo');
+        $textNode->getValidationRegexp()->willReturn('/bar/');
+        $textNode->getLineNr()->willReturn(1);
+        $textNode->getName()->willReturn('');
+
+        $this->beforeText($textNode);
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 
@@ -62,23 +55,5 @@ class TextVisitorSpec extends ObjectBehavior
 
         $this->beforeText($textNode);
         $errorObj->addError(Argument::cetera())->shouldNotHaveBeenCalled();
-    }
-
-    function it_captures_invalid_repetitions(Repetitions $node, $errorObj)
-    {
-        $this->beforeRepetitions($this->a_failing_regexp($node));
-        $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
-    }
-
-    function it_captures_invalid_bgc_customer_numbers(PayeeBgcNumber $node, $errorObj)
-    {
-        $this->beforePayeeBgcNumber($this->a_failing_regexp($node));
-        $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
-    }
-
-    function it_captures_invalid_payer_numbers(PayerNumber $node, $errorObj)
-    {
-        $this->beforePayerNumber($this->a_failing_regexp($node));
-        $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 }

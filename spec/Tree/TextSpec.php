@@ -20,9 +20,15 @@ class TextSpec extends ObjectBehavior
         $this->shouldHaveType(Node::CLASS);
     }
 
-    function it_contains_a_name()
+    function it_contains_a_default_name()
     {
         $this->getName()->shouldEqual('Text');
+    }
+
+    function it_can_set_name()
+    {
+        $this->beConstructedWith(0, '', 'foobar');
+        $this->getName()->shouldEqual('foobar');
     }
 
     function it_contains_a_type()
@@ -32,7 +38,7 @@ class TextSpec extends ObjectBehavior
 
     function it_contains_a_regexp()
     {
-        $this->beConstructedWith(0, '', '/regexp/');
+        $this->beConstructedWith(0, '', '', '/regexp/');
         $this->getValidationRegexp()->shouldEqual('/regexp/');
     }
 }

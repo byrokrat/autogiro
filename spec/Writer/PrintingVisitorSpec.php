@@ -10,14 +10,12 @@ use byrokrat\autogiro\Exception\RuntimeException;
 use byrokrat\autogiro\Exception\LogicException;
 use byrokrat\autogiro\Tree\Date;
 use byrokrat\autogiro\Tree\Text;
-use byrokrat\autogiro\Tree\PayeeBgcNumber;
+use byrokrat\autogiro\Tree\Number;
 use byrokrat\autogiro\Tree\PayeeBankgiro;
-use byrokrat\autogiro\Tree\PayerNumber;
 use byrokrat\autogiro\Tree\Account;
 use byrokrat\autogiro\Tree\Amount;
 use byrokrat\autogiro\Tree\Interval;
 use byrokrat\autogiro\Tree\StateId;
-use byrokrat\autogiro\Tree\Repetitions;
 use byrokrat\autogiro\Visitor\Visitor;
 use byrokrat\amount\Currency\SEK;
 use byrokrat\banking\AccountNumber;
@@ -78,7 +76,7 @@ class PrintingVisitorSpec extends ObjectBehavior
         $output->write('foobar')->shouldHaveBeenCalled();
     }
 
-    function it_prints_payee_bgc_numbers(PayeeBgcNumber $node, $output)
+    function it_prints_payee_bgc_numbers(Number $node, $output)
     {
         $node->getValue()->willReturn('111');
         $this->beforePayeeBgcNumber($node);
@@ -110,7 +108,7 @@ class PrintingVisitorSpec extends ObjectBehavior
         $this->shouldThrow(LogicException::CLASS)->duringBeforePayeeBankgiro($node);
     }
 
-    function it_prints_payer_numbers(PayerNumber $node, $output)
+    function it_prints_payer_numbers(Number $node, $output)
     {
         $node->getValue()->willReturn('1234567890');
         $this->beforePayerNumber($node);
@@ -148,13 +146,6 @@ class PrintingVisitorSpec extends ObjectBehavior
         $node->getValue()->willReturn('9');
         $this->beforeInterval($node);
         $output->write('9')->shouldHaveBeenCalled();
-    }
-
-    function it_prints_repetitions(Repetitions $node, $output)
-    {
-        $node->getValue()->willReturn('123');
-        $this->beforeRepetitions($node);
-        $output->write('123')->shouldHaveBeenCalled();
     }
 
     function it_prints_amounts(Amount $node, $output)

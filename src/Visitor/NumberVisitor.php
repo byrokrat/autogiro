@@ -20,19 +20,24 @@
 
 declare(strict_types = 1);
 
-namespace byrokrat\autogiro\Tree;
+namespace byrokrat\autogiro\Visitor;
+
+use byrokrat\autogiro\Tree\Number;
 
 /**
- * Node that wrapps a payer number
- *
- * @see \byrokrat\autogiro\Visitor\TextVisitor Validates node content
+ * Validate the content of number nodes
  */
-class PayerNumber extends Text
+class NumberVisitor extends ErrorAwareVisitor
 {
-    use TypeTrait;
-
-    public function __construct(int $lineNr = 0, string $value = '')
+    public function beforeNumber(Number $node): void
     {
-        parent::__construct($lineNr, $value, '/^[0-9 ]*$/');
+        if ($node->getValue() && !ctype_digit($node->getValue())) {
+            $this->getErrorObject()->addError(
+                "%s node value '%s' is not numerical on line %s",
+                $node->getName(),
+                (string)$node->getValue(),
+                (string)$node->getLineNr()
+            );
+        }
     }
 }

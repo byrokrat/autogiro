@@ -28,14 +28,12 @@ use byrokrat\autogiro\Exception\LogicException;
 use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Tree\Date;
 use byrokrat\autogiro\Tree\Text;
-use byrokrat\autogiro\Tree\PayeeBgcNumber;
+use byrokrat\autogiro\Tree\Number;
 use byrokrat\autogiro\Tree\PayeeBankgiro;
-use byrokrat\autogiro\Tree\PayerNumber;
 use byrokrat\autogiro\Tree\Account;
 use byrokrat\autogiro\Tree\Amount;
 use byrokrat\autogiro\Tree\Interval;
 use byrokrat\autogiro\Tree\StateId;
-use byrokrat\autogiro\Tree\Repetitions;
 use byrokrat\amount\Currency\SEK;
 use byrokrat\banking\AccountNumber;
 use byrokrat\id\IdInterface;
@@ -78,7 +76,7 @@ class PrintingVisitor extends Visitor
         $this->output->write($node->getValue());
     }
 
-    public function beforePayeeBgcNumber(PayeeBgcNumber $node): void
+    public function beforePayeeBgcNumber(Number $node): void
     {
         $this->output->write(str_pad($node->getValue(), 6, '0', STR_PAD_LEFT));
     }
@@ -90,7 +88,7 @@ class PrintingVisitor extends Visitor
         $this->output->write(str_pad($number, 10, '0', STR_PAD_LEFT));
     }
 
-    public function beforePayerNumber(PayerNumber $node): void
+    public function beforePayerNumber(Number $node): void
     {
         $this->output->write(str_pad($node->getValue(), 16, '0', STR_PAD_LEFT));
     }
@@ -106,11 +104,6 @@ class PrintingVisitor extends Visitor
     }
 
     public function beforeInterval(Interval $node): void
-    {
-        $this->output->write($node->getValue());
-    }
-
-    public function beforeRepetitions(Repetitions $node): void
     {
         $this->output->write($node->getValue());
     }
