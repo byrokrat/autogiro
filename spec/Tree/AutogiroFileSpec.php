@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace spec\byrokrat\autogiro\Tree;
 
 use byrokrat\autogiro\Tree\AutogiroFile;
-use byrokrat\autogiro\Tree\Section;
+use byrokrat\autogiro\Tree\Container;
 use byrokrat\autogiro\Exception\LogicException;
 use PhpSpec\ObjectBehavior;
 
@@ -21,9 +21,9 @@ class AutogiroFileSpec extends ObjectBehavior
         $this->shouldHaveType(AutogiroFile::CLASS);
     }
 
-    function it_is_a_section_node()
+    function it_is_a_container_node()
     {
-        $this->shouldHaveType(Section::CLASS);
+        $this->shouldHaveType(Container::CLASS);
     }
 
     function it_contains_a_name()

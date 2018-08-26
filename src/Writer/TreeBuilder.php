@@ -129,7 +129,6 @@ class TreeBuilder
     public function reset(): void
     {
         $this->opening = new Record(
-            0,
             'Opening',
             Date::fromDate($this->date),
             new Text(0, 'AUTOGIRO'),
@@ -149,7 +148,6 @@ class TreeBuilder
     public function addCreateMandateRequest(string $payerNr, AccountNumber $account, IdInterface $id): void
     {
         $this->mandates[] = new Record(
-            0,
             'CreateMandateRequest',
             $this->payeeBgNode,
             new PayerNumber(0, $payerNr),
@@ -165,7 +163,6 @@ class TreeBuilder
     public function addDeleteMandateRequest(string $payerNr): void
     {
         $this->mandates[] = new Record(
-            0,
             'DeleteMandateRequest',
             $this->payeeBgNode,
             new PayerNumber(0, $payerNr),
@@ -179,7 +176,6 @@ class TreeBuilder
     public function addAcceptDigitalMandateRequest(string $payerNr): void
     {
         $this->mandates[] = new Record(
-            0,
             'AcceptDigitalMandateRequest',
             $this->payeeBgNode,
             new PayerNumber(0, $payerNr),
@@ -193,7 +189,6 @@ class TreeBuilder
     public function addRejectDigitalMandateRequest(string $payerNr): void
     {
         $this->mandates[] = new Record(
-            0,
             'RejectDigitalMandateRequest',
             $this->payeeBgNode,
             new PayerNumber(0, $payerNr),
@@ -209,7 +204,6 @@ class TreeBuilder
     public function addUpdateMandateRequest(string $payerNr, string $newPayerNr): void
     {
         $this->mandates[] = new Record(
-            0,
             'UpdateMandateRequest',
             $this->payeeBgNode,
             new PayerNumber(0, $payerNr),
@@ -305,7 +299,6 @@ class TreeBuilder
         int $repetitions
     ): void {
         $this->payments[] = new Record(
-            0,
             $nodename,
             Date::fromDate($date),
             new Interval(0, $this->intervalFormatter->format($interval)),
@@ -322,7 +315,6 @@ class TreeBuilder
     private function addImmediatePaymentRequest(string $nodename, string $payerNr, SEK $amount, string $ref): void
     {
         $this->payments[] = new Record(
-            0,
             $nodename,
             new ImmediateDate,
             new Interval(0, '0'),

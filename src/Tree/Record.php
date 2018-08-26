@@ -23,20 +23,9 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Tree;
 
 /**
- * A record maps to a line in an autogiro files
+ * A record maps to a line in an autogiro file
  */
-class Record extends Node
+class Record extends Container
 {
     use TypeTrait;
-
-    public function __construct(int $lineNr, string $name, Node ...$nodes)
-    {
-        parent::__construct($lineNr);
-
-        $this->setName($name);
-
-        foreach ($nodes as $node) {
-            $this->addChild($node);
-        }
-    }
 }

@@ -134,7 +134,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () {
-                $this->lineNr = 0;
+                $this->lineNr = 1;
             });
         }
 
@@ -350,7 +350,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$bgcNr, &$bg) {
-                return new Record($this->lineNr, 'Opening', $date, $bgcNr, $bg);
+                return new Record('Opening', $date, $bgcNr, $bg);
             });
         }
 
@@ -554,7 +554,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$bg, &$payerNr) {
-                return new Record($this->lineNr, 'DeleteMandateRequest', $bg, $payerNr);
+                return new Record('DeleteMandateRequest', $bg, $payerNr);
             });
         }
 
@@ -649,7 +649,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$bg, &$payerNr) {
-                return new Record($this->lineNr, 'RejectDigitalMandateRequest', $bg, $payerNr);
+                return new Record('RejectDigitalMandateRequest', $bg, $payerNr);
             });
         }
 
@@ -769,8 +769,8 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $this->value = call_user_func(function () use (&$bg, &$payerNr, &$account, &$id) {
                 return $id && trim($id->getValue())
-                    ? new Record($this->lineNr, 'CreateMandateRequest', $bg, $payerNr, $account, $id)
-                    : new Record($this->lineNr, 'AcceptDigitalMandateRequest', $bg, $payerNr);
+                    ? new Record('CreateMandateRequest', $bg, $payerNr, $account, $id)
+                    : new Record('AcceptDigitalMandateRequest', $bg, $payerNr);
             });
         }
 
@@ -865,7 +865,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$oldBg, &$oldPayerNr, &$newBg, &$newPayerNr) {
-                return new Record($this->lineNr, 'UpdateMandateRequest', $oldBg, $oldPayerNr, $newBg, $newPayerNr);
+                return new Record('UpdateMandateRequest', $oldBg, $oldPayerNr, $newBg, $newPayerNr);
             });
         }
 
@@ -1126,7 +1126,7 @@ class Grammar extends MultibyteHack
                     '32' => 'OutgoingPaymentRequest',
                 ];
 
-                return new Record($this->lineNr, $types[$tc], $date, $ival, $reps, $payerNr, $amount, $bg, $ref);
+                return new Record($types[$tc], $date, $ival, $reps, $payerNr, $amount, $bg, $ref);
             });
         }
 
@@ -1371,7 +1371,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $this->value = call_user_func(function () use (&$tc, &$bg, &$payerNr, &$date, &$amount, &$type, &$newDate, &$ref) {
                 $tc->setAttribute('message_id', Layouts::LAYOUT_REQUEST . '.TC.' . $tc->getValue());
-                return new Record($this->lineNr, 'AmendmentRequest', $tc, $bg, $payerNr, $date, $amount, $type, $newDate, $ref);
+                return new Record('AmendmentRequest', $tc, $bg, $payerNr, $date, $amount, $type, $newDate, $ref);
             });
         }
 
@@ -1678,7 +1678,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$datetime, &$bgcNr, &$bg) {
-                return new Record($this->lineNr, 'Opening', $datetime, $bgcNr, $bg);
+                return new Record('Opening', $datetime, $bgcNr, $bg);
             });
         }
 
@@ -1817,7 +1817,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$nrInSecs, &$nrInRecs, &$nrOutSecs, &$nrOutRecs, &$nrRefSecs, &$nrRefRecs) {
-                return new Record($this->lineNr, 'Closing', $date, $nrInSecs, $nrInRecs, $nrOutSecs, $nrOutRecs, $nrRefSecs, $nrRefRecs);
+                return new Record('Closing', $date, $nrInSecs, $nrInRecs, $nrOutSecs, $nrOutRecs, $nrRefSecs, $nrRefRecs);
             });
         }
 
@@ -2011,7 +2011,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$account, &$date, &$serial, &$amount, &$nrRecs) {
-                return new Record($this->lineNr, 'IncomingPaymentResponseSectionOpening', $account, $date, $serial, $amount, $nrRecs);
+                return new Record('IncomingPaymentResponseSectionOpening', $account, $date, $serial, $amount, $nrRecs);
             });
         }
 
@@ -2182,7 +2182,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$ival, &$reps, &$payerNr, &$amount, &$bg, &$ref, &$status) {
-                $record = new Record($this->lineNr, 'IncomingPaymentResponse', $date, $ival, $reps, $payerNr, $amount, $bg, $ref);
+                $record = new Record('IncomingPaymentResponse', $date, $ival, $reps, $payerNr, $amount, $bg, $ref);
 
                 if ($status) {
                     $status->setAttribute('message_id', Layouts::LAYOUT_PAYMENT_RESPONSE . '.' . $status->getValue());
@@ -2383,7 +2383,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$account, &$date, &$serial, &$amount, &$nrRecs) {
-                return new Record($this->lineNr, 'OutgoingPaymentResponseSectionOpening', $account, $date, $serial, $amount, $nrRecs);
+                return new Record('OutgoingPaymentResponseSectionOpening', $account, $date, $serial, $amount, $nrRecs);
             });
         }
 
@@ -2554,7 +2554,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$ival, &$reps, &$payerNr, &$amount, &$bg, &$ref, &$status) {
-                $record = new Record($this->lineNr, 'OutgoingPaymentResponse', $date, $ival, $reps, $payerNr, $amount, $bg, $ref);
+                $record = new Record('OutgoingPaymentResponse', $date, $ival, $reps, $payerNr, $amount, $bg, $ref);
 
                 if ($status) {
                     $status->setAttribute('message_id', Layouts::LAYOUT_PAYMENT_RESPONSE . '.' . $status->getValue());
@@ -2755,7 +2755,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$account, &$date, &$serial, &$amount, &$nrRecs) {
-                return new Record($this->lineNr, 'RefundPaymentResponseSectionOpening', $account, $date, $serial, $amount, $nrRecs);
+                return new Record('RefundPaymentResponseSectionOpening', $account, $date, $serial, $amount, $nrRecs);
             });
         }
 
@@ -2907,7 +2907,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$ival, &$reps, &$payerNr, &$amount, &$bg, &$ref, &$refundDate, &$status) {
                 $status->setAttribute('message_id', Layouts::LAYOUT_PAYMENT_RESPONSE . '.' . $status->getValue());
-                return new Record($this->lineNr, 'RefundPaymentResponse', $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $refundDate, $status);
+                return new Record('RefundPaymentResponse', $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $refundDate, $status);
             });
         }
 
@@ -3132,7 +3132,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$bgcNr, &$bg) {
-                return new Record($this->lineNr, 'Opening', $date, $bgcNr, $bg);
+                return new Record('Opening', $date, $bgcNr, $bg);
             });
         }
 
@@ -3291,7 +3291,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$amountOut, &$nrOut, &$nrIn, &$amountIn) {
-                return new Record($this->lineNr, 'Closing', $date, $amountOut, $nrOut, $nrIn, $amountIn);
+                return new Record('Closing', $date, $amountOut, $nrOut, $nrIn, $amountIn);
             });
         }
 
@@ -3584,7 +3584,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$bgcNr, &$bg) {
-                return new Record($this->lineNr, 'Opening', $date, $bgcNr, $bg);
+                return new Record('Opening', $date, $bgcNr, $bg);
             });
         }
 
@@ -3696,7 +3696,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$bg) {
-                return new Record($this->lineNr, 'Opening', $date, $bg);
+                return new Record('Opening', $date, $bg);
             });
         }
 
@@ -3897,11 +3897,11 @@ class Grammar extends MultibyteHack
                 $info->setAttribute('message_id', "73.info.{$info->getValue()}");
                 $status->setAttribute('message_id', "73.status.{$status->getValue()}");
 
-                $record = new Record($this->lineNr, 'MandateResponse', $bg, $payerNr, $account, $id, $info, $status, $date);
+                $record = new Record('MandateResponse', $bg, $payerNr, $account, $id, $info, $status, $date);
 
                 // A mandate-valid-from-date is only present in the old layout
                 if ($validDate) {
-                    $record->addChild(new Text($this->lineNr, (string)$validDate));
+                    $record->addChild(new Text($this->lineNr - 1, (string)$validDate));
                 }
 
                 return $record;
@@ -3993,7 +3993,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$nrRecs) {
-                return new Record($this->lineNr, 'Closing', $date, $nrRecs);
+                return new Record('Closing', $date, $nrRecs);
             });
         }
 
@@ -4233,7 +4233,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$bgcNr, &$bg) {
-                return new Record($this->lineNr, 'Opening', $date, $bgcNr, $bg);
+                return new Record('Opening', $date, $bgcNr, $bg);
             });
         }
 
@@ -4381,7 +4381,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$bgcNr, &$bg) {
-                return new Record($this->lineNr, 'Opening', $date, $bgcNr, $bg);
+                return new Record('Opening', $date, $bgcNr, $bg);
             });
         }
 
@@ -4535,7 +4535,7 @@ class Grammar extends MultibyteHack
                     '32' => 'OutgoingPaymentRejectionResponse',
                 ];
 
-                return new Record($this->lineNr, $types[$tc], $date, $ival, $reps, $payerNr, $amount, $ref, $comment);
+                return new Record($types[$tc], $date, $ival, $reps, $payerNr, $amount, $ref, $comment);
             });
         }
 
@@ -4654,7 +4654,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$nrOut, &$amountOut, &$nrIn, &$amountIn) {
-                return new Record($this->lineNr, 'Closing', $date, $nrOut, $amountOut, $nrIn, $amountIn);
+                return new Record('Closing', $date, $nrOut, $amountOut, $nrIn, $amountIn);
             });
         }
 
@@ -4994,7 +4994,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$bgcNr, &$bg) {
-                return new Record($this->lineNr, 'Opening', $date, $bgcNr, $bg);
+                return new Record('Opening', $date, $bgcNr, $bg);
             });
         }
 
@@ -5094,7 +5094,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$bgcNr, &$bg) {
-                return new Record($this->lineNr, 'Opening', $date, $bgcNr, $bg);
+                return new Record('Opening', $date, $bgcNr, $bg);
             });
         }
 
@@ -5246,7 +5246,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $this->value = call_user_func(function () use (&$tc, &$date, &$payerNr, &$type, &$amount, &$ref, &$comment) {
                 $tc->setAttribute('message_id', Layouts::LAYOUT_AMENDMENT_RESPONSE . '.TC.' . $tc->getValue());
-                return new Record($this->lineNr, 'AmendmentResponse', $tc, $date, $payerNr, $type, $amount, $ref, $comment);
+                return new Record('AmendmentResponse', $tc, $date, $payerNr, $type, $amount, $ref, $comment);
             });
         }
 
@@ -5383,7 +5383,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$amountOut, &$nrOut, &$nrIn, &$amountIn) {
-                return new Record($this->lineNr, 'Closing', $date, $nrOut, $amountOut, $nrIn, $amountIn);
+                return new Record('Closing', $date, $nrOut, $amountOut, $nrIn, $amountIn);
             });
         }
 
@@ -5446,7 +5446,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$number) {
-                return new Account($this->lineNr + 1, $number);
+                return new Account($this->lineNr, $number);
             });
         }
 
@@ -5515,7 +5515,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$number) {
-                return new Account($this->lineNr + 1, $number);
+                return new Account($this->lineNr, $number);
             });
         }
 
@@ -5572,7 +5572,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$amount) {
-                return new Amount($this->lineNr + 1, $amount);
+                return new Amount($this->lineNr, $amount);
             });
         }
 
@@ -5641,7 +5641,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$amount) {
-                return new Amount($this->lineNr + 1, $amount);
+                return new Amount($this->lineNr, $amount);
             });
         }
 
@@ -5678,7 +5678,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$number) {
-                return new PayeeBankgiro($this->lineNr + 1, $number);
+                return new PayeeBankgiro($this->lineNr, $number);
             });
         }
 
@@ -5735,7 +5735,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$number) {
-                return new StateId($this->lineNr + 1, $number);
+                return new StateId($this->lineNr, $number);
             });
         }
 
@@ -5792,7 +5792,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$nr) {
-                return new PayeeBgcNumber($this->lineNr + 1, $nr);
+                return new PayeeBgcNumber($this->lineNr, $nr);
             });
         }
 
@@ -5855,7 +5855,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date) {
-                return new Date($this->lineNr + 1, $date);
+                return new Date($this->lineNr, $date);
             });
         }
 
@@ -5896,7 +5896,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () {
-                return new ImmediateDate($this->lineNr + 1);
+                return new ImmediateDate($this->lineNr);
             });
         }
 
@@ -5953,7 +5953,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$datetime) {
-                return new DateTime($this->lineNr + 1, $datetime);
+                return new DateTime($this->lineNr, $datetime);
             });
         }
 
@@ -5996,7 +5996,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$interval) {
-                return new Interval($this->lineNr + 1, $interval);
+                return new Interval($this->lineNr, $interval);
             });
         }
 
@@ -6039,7 +6039,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$msg) {
-                return new Message($this->lineNr + 1, $msg);
+                return new Message($this->lineNr, $msg);
             });
         }
 
@@ -6096,7 +6096,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$msg) {
-                return new Message($this->lineNr + 1, $msg);
+                return new Message($this->lineNr, $msg);
             });
         }
 
@@ -6159,7 +6159,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$nr) {
-                return new PayerNumber($this->lineNr + 1, $nr);
+                return new PayerNumber($this->lineNr, $nr);
             });
         }
 
@@ -6216,7 +6216,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$repetitions) {
-                return new Repetitions($this->lineNr + 1, $repetitions);
+                return new Repetitions($this->lineNr, $repetitions);
             });
         }
 
@@ -6259,7 +6259,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$integer) {
-                return new Text($this->lineNr + 1, $integer, '/^\d{5}$/');
+                return new Text($this->lineNr, $integer, '/^\d{5}$/');
             });
         }
 
@@ -6316,7 +6316,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$integer) {
-                return new Text($this->lineNr + 1, $integer, '/^\d{6}$/');
+                return new Text($this->lineNr, $integer, '/^\d{6}$/');
             });
         }
 
@@ -6373,7 +6373,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$integer) {
-                return new Text($this->lineNr + 1, $integer, '/^\d{7}$/');
+                return new Text($this->lineNr, $integer, '/^\d{7}$/');
             });
         }
 
@@ -6436,7 +6436,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$integer) {
-                return new Text($this->lineNr + 1, $integer, '/^\d{8}$/');
+                return new Text($this->lineNr, $integer, '/^\d{8}$/');
             });
         }
 
@@ -6493,7 +6493,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$integer) {
-                return new Text($this->lineNr + 1, $integer, '/^\d{12}$/');
+                return new Text($this->lineNr, $integer, '/^\d{12}$/');
             });
         }
 
@@ -6558,7 +6558,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$text) {
-                return new Text($this->lineNr + 1, $text);
+                return new Text($this->lineNr, $text);
             });
         }
 
@@ -6891,7 +6891,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$text) {
-                return new Text($this->lineNr + 1, $text);
+                return new Text($this->lineNr, $text);
             });
         }
 
@@ -6978,7 +6978,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$text) {
-                return new Text($this->lineNr + 1, $text);
+                return new Text($this->lineNr, $text);
             });
         }
 

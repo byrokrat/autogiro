@@ -22,15 +22,27 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Tree;
 
-/**
- * A section is a collection of records
- */
-class Section extends Container
+class Container extends Node
 {
     use TypeTrait;
 
-    public function __construct(string $name, Record ...$nodes)
+    public function __construct(string $name, Node ...$nodes)
     {
-        parent::__construct($name, ...$nodes);
+        parent::__construct();
+
+        $this->setName($name);
+
+        foreach ($nodes as $node) {
+            $this->addChild($node);
+        }
+    }
+
+    public function getLineNr(): int
+    {
+        foreach ($this->getChildren() as $node) {
+            return $node->getLineNr();
+        }
+
+        return 0;
     }
 }

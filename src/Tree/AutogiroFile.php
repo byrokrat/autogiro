@@ -25,7 +25,7 @@ namespace byrokrat\autogiro\Tree;
 /**
  * Node representing a file to or from autogirot
  */
-class AutogiroFile extends Section
+class AutogiroFile extends Container
 {
     use TypeTrait;
 

@@ -4,16 +4,15 @@ declare(strict_types = 1);
 
 namespace spec\byrokrat\autogiro\Tree;
 
-use byrokrat\autogiro\Tree\Section;
 use byrokrat\autogiro\Tree\Container;
-use byrokrat\autogiro\Tree\Record;
+use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Visitor\VisitorInterface;
 use byrokrat\autogiro\Exception\LogicException;
 use PhpSpec\ObjectBehavior;
 
-class SectionSpec extends ObjectBehavior
+class ContainerSpec extends ObjectBehavior
 {
-    function let(Record $nodeA, Record $nodeB)
+    function let(Node $nodeA, Node $nodeB)
     {
         $nodeA->getName()->willReturn('nodeA');
         $nodeB->getName()->willReturn('nodeB');
@@ -22,12 +21,12 @@ class SectionSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(Section::CLASS);
+        $this->shouldHaveType(Container::CLASS);
     }
 
-    function it_is_a_container()
+    function it_implements_node_interface()
     {
-        $this->shouldHaveType(Container::CLASS);
+        $this->shouldHaveType(Node::CLASS);
     }
 
     function it_contains_a_name()
@@ -38,7 +37,7 @@ class SectionSpec extends ObjectBehavior
 
     function it_contains_a_type()
     {
-        $this->getType()->shouldEqual('Section');
+        $this->getType()->shouldEqual('Container');
     }
 
     function it_accepts_a_visitor($nodeA, $nodeB, VisitorInterface $visitor)

@@ -73,7 +73,6 @@ class TreeBuilderSpec extends ObjectBehavior
     function an_opening_record_node($bankgiro, $date)
     {
         return new Record(
-            0,
             'Opening',
             Date::fromDate($date->getWrappedObject()),
             new Text(0, 'AUTOGIRO'),
@@ -97,7 +96,6 @@ class TreeBuilderSpec extends ObjectBehavior
                 $bankgiro,
                 $date,
                 new Record(
-                    0,
                     'CreateMandateRequest',
                     PayeeBankgiro::fromBankgiro($bankgiro->getWrappedObject()),
                     new PayerNumber(0, 'payerNr'),
@@ -119,7 +117,6 @@ class TreeBuilderSpec extends ObjectBehavior
                 $bankgiro,
                 $date,
                 new Record(
-                    0,
                     'DeleteMandateRequest',
                     PayeeBankgiro::fromBankgiro($bankgiro->getWrappedObject()),
                     new PayerNumber(0, 'payerNr'),
@@ -139,7 +136,6 @@ class TreeBuilderSpec extends ObjectBehavior
                 $bankgiro,
                 $date,
                 new Record(
-                    0,
                     'AcceptDigitalMandateRequest',
                     PayeeBankgiro::fromBankgiro($bankgiro->getWrappedObject()),
                     new PayerNumber(0, 'payerNr'),
@@ -159,7 +155,6 @@ class TreeBuilderSpec extends ObjectBehavior
                 $bankgiro,
                 $date,
                 new Record(
-                    0,
                     'RejectDigitalMandateRequest',
                     PayeeBankgiro::fromBankgiro($bankgiro->getWrappedObject()),
                     new PayerNumber(0, 'payerNr'),
@@ -183,7 +178,6 @@ class TreeBuilderSpec extends ObjectBehavior
                 $bankgiro,
                 $date,
                 new Record(
-                    0,
                     'UpdateMandateRequest',
                     $payeeBgNode,
                     new PayerNumber(0, 'foo'),
@@ -209,7 +203,6 @@ class TreeBuilderSpec extends ObjectBehavior
                 $bankgiro,
                 $date,
                 new Record(
-                    0,
                     'IncomingPaymentRequest',
                     Date::fromDate($date->getWrappedObject()),
                     new Interval(0, 'formatted_interval'),
@@ -239,7 +232,6 @@ class TreeBuilderSpec extends ObjectBehavior
                 $bankgiro,
                 $date,
                 new Record(
-                    0,
                     'OutgoingPaymentRequest',
                     Date::fromDate($date->getWrappedObject()),
                     new Interval(0, 'formatted_interval'),
@@ -267,7 +259,6 @@ class TreeBuilderSpec extends ObjectBehavior
                 $bankgiro,
                 $date,
                 new Record(
-                    0,
                     'IncomingPaymentRequest',
                     new ImmediateDate,
                     new Interval(0, '0'),
@@ -295,7 +286,6 @@ class TreeBuilderSpec extends ObjectBehavior
                 $bankgiro,
                 $date,
                 new Record(
-                    0,
                     'OutgoingPaymentRequest',
                     new ImmediateDate,
                     new Interval(0, '0'),
