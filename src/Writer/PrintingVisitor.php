@@ -148,12 +148,12 @@ class PrintingVisitor extends Visitor
         }
     }
 
-    public function beforeRequestOpening(): void
+    public function beforeOpening(): void
     {
         $this->output->write('01');
     }
 
-    public function afterRequestOpening(): void
+    public function afterOpening(): void
     {
         $this->output->write(self::EOL);
     }

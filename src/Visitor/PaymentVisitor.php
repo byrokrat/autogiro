@@ -24,8 +24,6 @@ namespace byrokrat\autogiro\Visitor;
 
 use byrokrat\autogiro\Intervals;
 use byrokrat\autogiro\Tree\Node;
-use byrokrat\autogiro\Tree\Request\IncomingPaymentRequest;
-use byrokrat\autogiro\Tree\Request\OutgoingPaymentRequest;
 use byrokrat\autogiro\Tree\ImmediateDate;
 
 /**
@@ -33,13 +31,13 @@ use byrokrat\autogiro\Tree\ImmediateDate;
  */
 class PaymentVisitor extends ErrorAwareVisitor
 {
-    public function beforeIncomingPaymentRequest(IncomingPaymentRequest $node): void
+    public function beforeIncomingPaymentRequest(Node $node): void
     {
         $this->validateImmediateDateWithInterval($node);
         $this->validateRepetitionsWithoutInterval($node);
     }
 
-    public function beforeOutgoingPaymentRequest(OutgoingPaymentRequest $node): void
+    public function beforeOutgoingPaymentRequest(Node $node): void
     {
         $this->validateImmediateDateWithInterval($node);
         $this->validateRepetitionsWithoutInterval($node);

@@ -229,13 +229,13 @@ class PrintingVisitorSpec extends ObjectBehavior
 
     function it_prints_transaction_code_before_opening($output)
     {
-        $this->beforeRequestOpening();
+        $this->beforeOpening();
         $output->write('01')->shouldHaveBeenCalled();
     }
 
     function it_prints_new_line_after_opening($output)
     {
-        $this->afterRequestOpening();
+        $this->afterOpening();
         $output->write(PrintingVisitor::EOL)->shouldHaveBeenCalled();
     }
 

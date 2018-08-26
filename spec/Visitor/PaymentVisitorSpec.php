@@ -7,8 +7,7 @@ namespace spec\byrokrat\autogiro\Visitor;
 use byrokrat\autogiro\Visitor\PaymentVisitor;
 use byrokrat\autogiro\Visitor\ErrorAwareVisitor;
 use byrokrat\autogiro\Visitor\ErrorObject;
-use byrokrat\autogiro\Tree\Request\IncomingPaymentRequest;
-use byrokrat\autogiro\Tree\Request\OutgoingPaymentRequest;
+use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Tree\ImmediateDate;
 use byrokrat\autogiro\Tree\Interval;
 use byrokrat\autogiro\Tree\Repetitions;
@@ -33,7 +32,7 @@ class PaymentVisitorSpec extends ObjectBehavior
     }
 
     function it_fails_if_interval_is_used_with_immediate_date_in_incoming_payment(
-        IncomingPaymentRequest $request,
+        Node $request,
         ImmediateDate $date,
         Interval $ival,
         Repetitions $reps,
@@ -50,7 +49,7 @@ class PaymentVisitorSpec extends ObjectBehavior
     }
 
     function it_fails_if_interval_is_used_with_immediate_date_in_outgoing_payment(
-        OutgoingPaymentRequest $request,
+        Node $request,
         ImmediateDate $date,
         Interval $ival,
         Repetitions $reps,
@@ -67,7 +66,7 @@ class PaymentVisitorSpec extends ObjectBehavior
     }
 
     function it_fails_if_no_interval_but_repetitions_are_used_in_incoming_payment(
-        IncomingPaymentRequest $request,
+        Node $request,
         ImmediateDate $date,
         Interval $ival,
         Repetitions $reps,
@@ -84,7 +83,7 @@ class PaymentVisitorSpec extends ObjectBehavior
     }
 
     function it_fails_if_no_interval_but_repetitions_are_used_in_outgoing_payment(
-        OutgoingPaymentRequest $request,
+        Node $request,
         ImmediateDate $date,
         Interval $ival,
         Repetitions $reps,

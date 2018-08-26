@@ -23,15 +23,6 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Writer;
 
 use byrokrat\autogiro\Layouts;
-use byrokrat\autogiro\Tree\Record;
-use byrokrat\autogiro\Tree\Request\RequestOpening;
-use byrokrat\autogiro\Tree\Request\AcceptDigitalMandateRequest;
-use byrokrat\autogiro\Tree\Request\CreateMandateRequest;
-use byrokrat\autogiro\Tree\Request\DeleteMandateRequest;
-use byrokrat\autogiro\Tree\Request\RejectDigitalMandateRequest;
-use byrokrat\autogiro\Tree\Request\UpdateMandateRequest;
-use byrokrat\autogiro\Tree\Request\IncomingPaymentRequest;
-use byrokrat\autogiro\Tree\Request\OutgoingPaymentRequest;
 use byrokrat\autogiro\Tree\Account;
 use byrokrat\autogiro\Tree\Amount;
 use byrokrat\autogiro\Tree\AutogiroFile;
@@ -41,6 +32,7 @@ use byrokrat\autogiro\Tree\Interval;
 use byrokrat\autogiro\Tree\PayeeBgcNumber;
 use byrokrat\autogiro\Tree\PayeeBankgiro;
 use byrokrat\autogiro\Tree\PayerNumber;
+use byrokrat\autogiro\Tree\Record;
 use byrokrat\autogiro\Tree\Repetitions;
 use byrokrat\autogiro\Tree\Section;
 use byrokrat\autogiro\Tree\StateId;
@@ -65,7 +57,7 @@ class TreeBuilder
     ];
 
     /**
-     * @var RequestOpening Opening record used for each section
+     * @var Record Opening record used for each section
      */
     private $opening;
 
@@ -136,8 +128,9 @@ class TreeBuilder
      */
     public function reset(): void
     {
-        $this->opening = new RequestOpening(
+        $this->opening = new Record(
             0,
+            'Opening',
             Date::fromDate($this->date),
             new Text(0, 'AUTOGIRO'),
             new Text(0, str_pad('', 44)),
@@ -155,8 +148,9 @@ class TreeBuilder
      */
     public function addCreateMandateRequest(string $payerNr, AccountNumber $account, IdInterface $id): void
     {
-        $this->mandates[] = new CreateMandateRequest(
+        $this->mandates[] = new Record(
             0,
+            'CreateMandateRequest',
             $this->payeeBgNode,
             new PayerNumber(0, $payerNr),
             Account::fromAccount($account),
@@ -170,8 +164,9 @@ class TreeBuilder
      */
     public function addDeleteMandateRequest(string $payerNr): void
     {
-        $this->mandates[] = new DeleteMandateRequest(
+        $this->mandates[] = new Record(
             0,
+            'DeleteMandateRequest',
             $this->payeeBgNode,
             new PayerNumber(0, $payerNr),
             new Text(0, str_pad('', 52))
@@ -183,8 +178,9 @@ class TreeBuilder
      */
     public function addAcceptDigitalMandateRequest(string $payerNr): void
     {
-        $this->mandates[] = new AcceptDigitalMandateRequest(
+        $this->mandates[] = new Record(
             0,
+            'AcceptDigitalMandateRequest',
             $this->payeeBgNode,
             new PayerNumber(0, $payerNr),
             new Text(0, str_pad('', 52))
@@ -196,8 +192,9 @@ class TreeBuilder
      */
     public function addRejectDigitalMandateRequest(string $payerNr): void
     {
-        $this->mandates[] = new RejectDigitalMandateRequest(
+        $this->mandates[] = new Record(
             0,
+            'RejectDigitalMandateRequest',
             $this->payeeBgNode,
             new PayerNumber(0, $payerNr),
             new Text(0, str_pad('', 48)),
@@ -211,8 +208,9 @@ class TreeBuilder
      */
     public function addUpdateMandateRequest(string $payerNr, string $newPayerNr): void
     {
-        $this->mandates[] = new UpdateMandateRequest(
+        $this->mandates[] = new Record(
             0,
+            'UpdateMandateRequest',
             $this->payeeBgNode,
             new PayerNumber(0, $payerNr),
             $this->payeeBgNode,
@@ -233,7 +231,7 @@ class TreeBuilder
         int $repetitions
     ): void {
         $this->addPaymentRequest(
-            IncomingPaymentRequest::CLASS,
+            'IncomingPaymentRequest',
             $payerNr,
             $amount,
             $date,
@@ -255,7 +253,7 @@ class TreeBuilder
         int $repetitions
     ): void {
         $this->addPaymentRequest(
-            OutgoingPaymentRequest::CLASS,
+            'OutgoingPaymentRequest',
             $payerNr,
             $amount,
             $date,
@@ -270,7 +268,7 @@ class TreeBuilder
      */
     public function addImmediateIncomingPaymentRequest(string $payerNr, SEK $amount, string $ref): void
     {
-        $this->addImmediatePaymentRequest(IncomingPaymentRequest::CLASS, $payerNr, $amount, $ref);
+        $this->addImmediatePaymentRequest('IncomingPaymentRequest', $payerNr, $amount, $ref);
     }
 
     /**
@@ -278,7 +276,7 @@ class TreeBuilder
      */
     public function addImmediateOutgoingPaymentRequest(string $payerNr, SEK $amount, string $ref): void
     {
-        $this->addImmediatePaymentRequest(OutgoingPaymentRequest::CLASS, $payerNr, $amount, $ref);
+        $this->addImmediatePaymentRequest('OutgoingPaymentRequest', $payerNr, $amount, $ref);
     }
 
     /**
@@ -298,7 +296,7 @@ class TreeBuilder
     }
 
     private function addPaymentRequest(
-        string $classname,
+        string $nodename,
         string $payerNr,
         SEK $amount,
         \DateTimeInterface $date,
@@ -306,8 +304,9 @@ class TreeBuilder
         string $interval,
         int $repetitions
     ): void {
-        $this->payments[] = new $classname(
+        $this->payments[] = new Record(
             0,
+            $nodename,
             Date::fromDate($date),
             new Interval(0, $this->intervalFormatter->format($interval)),
             new Repetitions(0, $this->repititionsFormatter->format($repetitions)),
@@ -320,10 +319,11 @@ class TreeBuilder
         );
     }
 
-    private function addImmediatePaymentRequest(string $classname, string $payerNr, SEK $amount, string $ref): void
+    private function addImmediatePaymentRequest(string $nodename, string $payerNr, SEK $amount, string $ref): void
     {
-        $this->payments[] = new $classname(
+        $this->payments[] = new Record(
             0,
+            $nodename,
             new ImmediateDate,
             new Interval(0, '0'),
             new Repetitions(0, '   '),

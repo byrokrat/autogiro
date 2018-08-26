@@ -8,14 +8,6 @@ use byrokrat\autogiro\Writer\TreeBuilder;
 use byrokrat\autogiro\Writer\IntervalFormatter;
 use byrokrat\autogiro\Writer\RepititionsFormatter;
 use byrokrat\autogiro\Layouts;
-use byrokrat\autogiro\Tree\Request\RequestOpening;
-use byrokrat\autogiro\Tree\Request\AcceptDigitalMandateRequest;
-use byrokrat\autogiro\Tree\Request\CreateMandateRequest;
-use byrokrat\autogiro\Tree\Request\DeleteMandateRequest;
-use byrokrat\autogiro\Tree\Request\RejectDigitalMandateRequest;
-use byrokrat\autogiro\Tree\Request\UpdateMandateRequest;
-use byrokrat\autogiro\Tree\Request\IncomingPaymentRequest;
-use byrokrat\autogiro\Tree\Request\OutgoingPaymentRequest;
 use byrokrat\autogiro\Tree\AutogiroFile;
 use byrokrat\autogiro\Tree\Date;
 use byrokrat\autogiro\Tree\ImmediateDate;
@@ -28,6 +20,7 @@ use byrokrat\autogiro\Tree\StateId;
 use byrokrat\autogiro\Tree\Interval;
 use byrokrat\autogiro\Tree\Repetitions;
 use byrokrat\autogiro\Tree\Amount;
+use byrokrat\autogiro\Tree\Record;
 use byrokrat\autogiro\Tree\Section;
 use byrokrat\banking\AccountNumber;
 use byrokrat\banking\Bankgiro;
@@ -79,8 +72,9 @@ class TreeBuilderSpec extends ObjectBehavior
 
     function an_opening_record_node($bankgiro, $date)
     {
-        return new RequestOpening(
+        return new Record(
             0,
+            'Opening',
             Date::fromDate($date->getWrappedObject()),
             new Text(0, 'AUTOGIRO'),
             new Text(0, str_pad('', 44)),
@@ -102,8 +96,9 @@ class TreeBuilderSpec extends ObjectBehavior
                 'MandateRequestSection',
                 $bankgiro,
                 $date,
-                new CreateMandateRequest(
+                new Record(
                     0,
+                    'CreateMandateRequest',
                     PayeeBankgiro::fromBankgiro($bankgiro->getWrappedObject()),
                     new PayerNumber(0, 'payerNr'),
                     Account::fromAccount($account->getWrappedObject()),
@@ -123,8 +118,9 @@ class TreeBuilderSpec extends ObjectBehavior
                 'MandateRequestSection',
                 $bankgiro,
                 $date,
-                new DeleteMandateRequest(
+                new Record(
                     0,
+                    'DeleteMandateRequest',
                     PayeeBankgiro::fromBankgiro($bankgiro->getWrappedObject()),
                     new PayerNumber(0, 'payerNr'),
                     new Text(0, str_pad('', 52))
@@ -142,8 +138,9 @@ class TreeBuilderSpec extends ObjectBehavior
                 'MandateRequestSection',
                 $bankgiro,
                 $date,
-                new AcceptDigitalMandateRequest(
+                new Record(
                     0,
+                    'AcceptDigitalMandateRequest',
                     PayeeBankgiro::fromBankgiro($bankgiro->getWrappedObject()),
                     new PayerNumber(0, 'payerNr'),
                     new Text(0, str_pad('', 52))
@@ -161,8 +158,9 @@ class TreeBuilderSpec extends ObjectBehavior
                 'MandateRequestSection',
                 $bankgiro,
                 $date,
-                new RejectDigitalMandateRequest(
+                new Record(
                     0,
+                    'RejectDigitalMandateRequest',
                     PayeeBankgiro::fromBankgiro($bankgiro->getWrappedObject()),
                     new PayerNumber(0, 'payerNr'),
                     new Text(0, str_pad('', 48)),
@@ -184,8 +182,9 @@ class TreeBuilderSpec extends ObjectBehavior
                 'MandateRequestSection',
                 $bankgiro,
                 $date,
-                new UpdateMandateRequest(
+                new Record(
                     0,
+                    'UpdateMandateRequest',
                     $payeeBgNode,
                     new PayerNumber(0, 'foo'),
                     $payeeBgNode,
@@ -209,8 +208,9 @@ class TreeBuilderSpec extends ObjectBehavior
                 'PaymentRequestSection',
                 $bankgiro,
                 $date,
-                new IncomingPaymentRequest(
+                new Record(
                     0,
+                    'IncomingPaymentRequest',
                     Date::fromDate($date->getWrappedObject()),
                     new Interval(0, 'formatted_interval'),
                     new Repetitions(0, 'formatted_repititions'),
@@ -238,8 +238,9 @@ class TreeBuilderSpec extends ObjectBehavior
                 'PaymentRequestSection',
                 $bankgiro,
                 $date,
-                new OutgoingPaymentRequest(
+                new Record(
                     0,
+                    'OutgoingPaymentRequest',
                     Date::fromDate($date->getWrappedObject()),
                     new Interval(0, 'formatted_interval'),
                     new Repetitions(0, 'formatted_repititions'),
@@ -265,8 +266,9 @@ class TreeBuilderSpec extends ObjectBehavior
                 'PaymentRequestSection',
                 $bankgiro,
                 $date,
-                new IncomingPaymentRequest(
+                new Record(
                     0,
+                    'IncomingPaymentRequest',
                     new ImmediateDate,
                     new Interval(0, '0'),
                     new Repetitions(0, '   '),
@@ -292,8 +294,9 @@ class TreeBuilderSpec extends ObjectBehavior
                 'PaymentRequestSection',
                 $bankgiro,
                 $date,
-                new OutgoingPaymentRequest(
+                new Record(
                     0,
+                    'OutgoingPaymentRequest',
                     new ImmediateDate,
                     new Interval(0, '0'),
                     new Repetitions(0, '   '),

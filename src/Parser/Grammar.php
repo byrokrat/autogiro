@@ -16,9 +16,8 @@ use byrokrat\autogiro\Tree\StateId;
 use byrokrat\autogiro\Tree\Interval;
 use byrokrat\autogiro\Tree\Message;
 use byrokrat\autogiro\Tree\PayerNumber;
+use byrokrat\autogiro\Tree\Record;
 use byrokrat\autogiro\Tree\Repetitions;
-use byrokrat\autogiro\Tree\Request;
-use byrokrat\autogiro\Tree\Response;
 use byrokrat\autogiro\Tree\Section;
 use byrokrat\autogiro\Tree\Text;
 
@@ -351,12 +350,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$bgcNr, &$bg) {
-                return new Request\RequestOpening(
-                    $this->lineNr,
-                    $date,
-                    $bgcNr,
-                    $bg
-                );
+                return new Record($this->lineNr, 'Opening', $date, $bgcNr, $bg);
             });
         }
 
@@ -560,7 +554,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$bg, &$payerNr) {
-                return new Request\DeleteMandateRequest($this->lineNr, $bg, $payerNr);
+                return new Record($this->lineNr, 'DeleteMandateRequest', $bg, $payerNr);
             });
         }
 
@@ -655,7 +649,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$bg, &$payerNr) {
-                return new Request\RejectDigitalMandateRequest($this->lineNr, $bg, $payerNr);
+                return new Record($this->lineNr, 'RejectDigitalMandateRequest', $bg, $payerNr);
             });
         }
 
@@ -775,18 +769,8 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $this->value = call_user_func(function () use (&$bg, &$payerNr, &$account, &$id) {
                 return $id && trim($id->getValue())
-                    ? new Request\CreateMandateRequest(
-                        $this->lineNr,
-                        $bg,
-                        $payerNr,
-                        $account,
-                        $id
-                    )
-                    : new Request\AcceptDigitalMandateRequest(
-                        $this->lineNr,
-                        $bg,
-                        $payerNr
-                    );
+                    ? new Record($this->lineNr, 'CreateMandateRequest', $bg, $payerNr, $account, $id)
+                    : new Record($this->lineNr, 'AcceptDigitalMandateRequest', $bg, $payerNr);
             });
         }
 
@@ -881,13 +865,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$oldBg, &$oldPayerNr, &$newBg, &$newPayerNr) {
-                return new Request\UpdateMandateRequest(
-                    $this->lineNr,
-                    $oldBg,
-                    $oldPayerNr,
-                    $newBg,
-                    $newPayerNr
-                );
+                return new Record($this->lineNr, 'UpdateMandateRequest', $oldBg, $oldPayerNr, $newBg, $newPayerNr);
             });
         }
 
@@ -1003,18 +981,34 @@ class Grammar extends MultibyteHack
         $_cut29 = $this->cut;
 
         $this->cut = false;
-        $_success = $this->parseREQ_PAYMENT_INCOMING();
+        if (substr($this->string, $this->position, strlen('82')) === '82') {
+            $_success = true;
+            $this->value = substr($this->string, $this->position, strlen('82'));
+            $this->position += strlen('82');
+        } else {
+            $_success = false;
+
+            $this->report($this->position, '\'82\'');
+        }
 
         if (!$_success && !$this->cut) {
             $this->position = $_position28;
 
-            $_success = $this->parseREQ_PAYMENT_OUTGOING();
+            if (substr($this->string, $this->position, strlen('32')) === '32') {
+                $_success = true;
+                $this->value = substr($this->string, $this->position, strlen('32'));
+                $this->position += strlen('32');
+            } else {
+                $_success = false;
+
+                $this->report($this->position, '\'32\'');
+            }
         }
 
         $this->cut = $_cut29;
 
         if ($_success) {
-            $type = $this->value;
+            $tc = $this->value;
         }
 
         if ($_success) {
@@ -1126,17 +1120,13 @@ class Grammar extends MultibyteHack
         }
 
         if ($_success) {
-            $this->value = call_user_func(function () use (&$type, &$date, &$ival, &$reps, &$payerNr, &$amount, &$bg, &$ref) {
-                return new $type(
-                    $this->lineNr,
-                    $date,
-                    $ival,
-                    $reps,
-                    $payerNr,
-                    $amount,
-                    $bg,
-                    $ref
-                );
+            $this->value = call_user_func(function () use (&$tc, &$date, &$ival, &$reps, &$payerNr, &$amount, &$bg, &$ref) {
+                $types = [
+                    '82' => 'IncomingPaymentRequest',
+                    '32' => 'OutgoingPaymentRequest',
+                ];
+
+                return new Record($this->lineNr, $types[$tc], $date, $ival, $reps, $payerNr, $amount, $bg, $ref);
             });
         }
 
@@ -1148,88 +1138,6 @@ class Grammar extends MultibyteHack
 
         if (!$_success) {
             $this->report($_position, 'REQ_PAYMENT_REC');
-        }
-
-        return $_success;
-    }
-
-    protected function parseREQ_PAYMENT_INCOMING()
-    {
-        $_position = $this->position;
-
-        if (isset($this->cache['REQ_PAYMENT_INCOMING'][$_position])) {
-            $_success = $this->cache['REQ_PAYMENT_INCOMING'][$_position]['success'];
-            $this->position = $this->cache['REQ_PAYMENT_INCOMING'][$_position]['position'];
-            $this->value = $this->cache['REQ_PAYMENT_INCOMING'][$_position]['value'];
-
-            return $_success;
-        }
-
-        if (substr($this->string, $this->position, strlen('82')) === '82') {
-            $_success = true;
-            $this->value = substr($this->string, $this->position, strlen('82'));
-            $this->position += strlen('82');
-        } else {
-            $_success = false;
-
-            $this->report($this->position, '\'82\'');
-        }
-
-        if ($_success) {
-            $this->value = call_user_func(function () {
-                return Request\IncomingPaymentRequest::CLASS;
-            });
-        }
-
-        $this->cache['REQ_PAYMENT_INCOMING'][$_position] = array(
-            'success' => $_success,
-            'position' => $this->position,
-            'value' => $this->value
-        );
-
-        if (!$_success) {
-            $this->report($_position, 'REQ_PAYMENT_INCOMING');
-        }
-
-        return $_success;
-    }
-
-    protected function parseREQ_PAYMENT_OUTGOING()
-    {
-        $_position = $this->position;
-
-        if (isset($this->cache['REQ_PAYMENT_OUTGOING'][$_position])) {
-            $_success = $this->cache['REQ_PAYMENT_OUTGOING'][$_position]['success'];
-            $this->position = $this->cache['REQ_PAYMENT_OUTGOING'][$_position]['position'];
-            $this->value = $this->cache['REQ_PAYMENT_OUTGOING'][$_position]['value'];
-
-            return $_success;
-        }
-
-        if (substr($this->string, $this->position, strlen('32')) === '32') {
-            $_success = true;
-            $this->value = substr($this->string, $this->position, strlen('32'));
-            $this->position += strlen('32');
-        } else {
-            $_success = false;
-
-            $this->report($this->position, '\'32\'');
-        }
-
-        if ($_success) {
-            $this->value = call_user_func(function () {
-                return Request\OutgoingPaymentRequest::CLASS;
-            });
-        }
-
-        $this->cache['REQ_PAYMENT_OUTGOING'][$_position] = array(
-            'success' => $_success,
-            'position' => $this->position,
-            'value' => $this->value
-        );
-
-        if (!$_success) {
-            $this->report($_position, 'REQ_PAYMENT_OUTGOING');
         }
 
         return $_success;
@@ -1463,17 +1371,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $this->value = call_user_func(function () use (&$tc, &$bg, &$payerNr, &$date, &$amount, &$type, &$newDate, &$ref) {
                 $tc->setAttribute('message_id', Layouts::LAYOUT_REQUEST . '.TC.' . $tc->getValue());
-                return new Request\AmendmentRequest(
-                    $this->lineNr,
-                    $tc,
-                    $bg,
-                    $payerNr,
-                    $date,
-                    $amount,
-                    $type,
-                    $newDate,
-                    $ref
-                );
+                return new Record($this->lineNr, 'AmendmentRequest', $tc, $bg, $payerNr, $date, $amount, $type, $newDate, $ref);
             });
         }
 
@@ -1630,7 +1528,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $_value47[] = $this->value;
 
-            $_success = $this->parsePAYMENT_CLOSING_REC();
+            $_success = $this->parsePAYMENT_CLOSING();
 
             if ($_success) {
                 $close = $this->value;
@@ -1780,12 +1678,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$datetime, &$bgcNr, &$bg) {
-                return new Response\ResponseOpening(
-                    $this->lineNr,
-                    $datetime,
-                    $bgcNr,
-                    $bg
-                );
+                return new Record($this->lineNr, 'Opening', $datetime, $bgcNr, $bg);
             });
         }
 
@@ -1802,14 +1695,14 @@ class Grammar extends MultibyteHack
         return $_success;
     }
 
-    protected function parsePAYMENT_CLOSING_REC()
+    protected function parsePAYMENT_CLOSING()
     {
         $_position = $this->position;
 
-        if (isset($this->cache['PAYMENT_CLOSING_REC'][$_position])) {
-            $_success = $this->cache['PAYMENT_CLOSING_REC'][$_position]['success'];
-            $this->position = $this->cache['PAYMENT_CLOSING_REC'][$_position]['position'];
-            $this->value = $this->cache['PAYMENT_CLOSING_REC'][$_position]['value'];
+        if (isset($this->cache['PAYMENT_CLOSING'][$_position])) {
+            $_success = $this->cache['PAYMENT_CLOSING'][$_position]['success'];
+            $this->position = $this->cache['PAYMENT_CLOSING'][$_position]['position'];
+            $this->value = $this->cache['PAYMENT_CLOSING'][$_position]['value'];
 
             return $_success;
         }
@@ -1924,27 +1817,18 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$nrInSecs, &$nrInRecs, &$nrOutSecs, &$nrOutRecs, &$nrRefSecs, &$nrRefRecs) {
-                return new Response\PaymentResponseClosing(
-                    $this->lineNr,
-                    $date,
-                    $nrInSecs,
-                    $nrInRecs,
-                    $nrOutSecs,
-                    $nrOutRecs,
-                    $nrRefSecs,
-                    $nrRefRecs
-                );
+                return new Record($this->lineNr, 'Closing', $date, $nrInSecs, $nrInRecs, $nrOutSecs, $nrOutRecs, $nrRefSecs, $nrRefRecs);
             });
         }
 
-        $this->cache['PAYMENT_CLOSING_REC'][$_position] = array(
+        $this->cache['PAYMENT_CLOSING'][$_position] = array(
             'success' => $_success,
             'position' => $this->position,
             'value' => $this->value
         );
 
         if (!$_success) {
-            $this->report($_position, 'PAYMENT_CLOSING_REC');
+            $this->report($_position, 'PAYMENT_CLOSING');
         }
 
         return $_success;
@@ -2127,14 +2011,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$account, &$date, &$serial, &$amount, &$nrRecs) {
-                return new Response\IncomingPaymentResponseOpening(
-                    $this->lineNr,
-                    $account,
-                    $date,
-                    $serial,
-                    $amount,
-                    $nrRecs
-                );
+                return new Record($this->lineNr, 'IncomingPaymentResponseSectionOpening', $account, $date, $serial, $amount, $nrRecs);
             });
         }
 
@@ -2305,22 +2182,14 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$ival, &$reps, &$payerNr, &$amount, &$bg, &$ref, &$status) {
-                $data = [
-                    $date,
-                    $ival,
-                    $reps,
-                    $payerNr,
-                    $amount,
-                    $bg,
-                    $ref,
-                ];
+                $record = new Record($this->lineNr, 'IncomingPaymentResponse', $date, $ival, $reps, $payerNr, $amount, $bg, $ref);
 
                 if ($status) {
                     $status->setAttribute('message_id', Layouts::LAYOUT_PAYMENT_RESPONSE . '.' . $status->getValue());
-                    $data[] = $status;
+                    $record->addChild($status);
                 }
 
-                return new Response\IncomingPaymentResponse($this->lineNr, ...$data);
+                return $record;
             });
         }
 
@@ -2514,14 +2383,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$account, &$date, &$serial, &$amount, &$nrRecs) {
-                return new Response\OutgoingPaymentResponseOpening(
-                    $this->lineNr,
-                    $account,
-                    $date,
-                    $serial,
-                    $amount,
-                    $nrRecs
-                );
+                return new Record($this->lineNr, 'OutgoingPaymentResponseSectionOpening', $account, $date, $serial, $amount, $nrRecs);
             });
         }
 
@@ -2692,22 +2554,14 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$ival, &$reps, &$payerNr, &$amount, &$bg, &$ref, &$status) {
-                $data = [
-                    $date,
-                    $ival,
-                    $reps,
-                    $payerNr,
-                    $amount,
-                    $bg,
-                    $ref,
-                ];
+                $record = new Record($this->lineNr, 'OutgoingPaymentResponse', $date, $ival, $reps, $payerNr, $amount, $bg, $ref);
 
                 if ($status) {
                     $status->setAttribute('message_id', Layouts::LAYOUT_PAYMENT_RESPONSE . '.' . $status->getValue());
-                    $data[] = $status;
+                    $record->addChild($status);
                 }
 
-                return new Response\OutgoingPaymentResponse($this->lineNr, ...$data);
+                return $record;
             });
         }
 
@@ -2901,14 +2755,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$account, &$date, &$serial, &$amount, &$nrRecs) {
-                return new Response\RefundPaymentResponseOpening(
-                    $this->lineNr,
-                    $account,
-                    $date,
-                    $serial,
-                    $amount,
-                    $nrRecs
-                );
+                return new Record($this->lineNr, 'RefundPaymentResponseSectionOpening', $account, $date, $serial, $amount, $nrRecs);
             });
         }
 
@@ -3060,18 +2907,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$ival, &$reps, &$payerNr, &$amount, &$bg, &$ref, &$refundDate, &$status) {
                 $status->setAttribute('message_id', Layouts::LAYOUT_PAYMENT_RESPONSE . '.' . $status->getValue());
-                return new Response\RefundPaymentResponse(
-                    $this->lineNr,
-                    $date,
-                    $ival,
-                    $reps,
-                    $payerNr,
-                    $amount,
-                    $bg,
-                    $ref,
-                    $refundDate,
-                    $status
-                );
+                return new Record($this->lineNr, 'RefundPaymentResponse', $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $refundDate, $status);
             });
         }
 
@@ -3296,12 +3132,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$bgcNr, &$bg) {
-                return new Response\ResponseOpening(
-                    $this->lineNr,
-                    $date,
-                    $bgcNr,
-                    $bg
-                );
+                return new Record($this->lineNr, 'Opening', $date, $bgcNr, $bg);
             });
         }
 
@@ -3460,14 +3291,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$amountOut, &$nrOut, &$nrIn, &$amountIn) {
-                return new Response\PaymentResponseClosing(
-                    $this->lineNr,
-                    $date,
-                    $amountOut,
-                    $nrOut,
-                    $nrIn,
-                    $amountIn
-                );
+                return new Record($this->lineNr, 'Closing', $date, $amountOut, $nrOut, $nrIn, $amountIn);
             });
         }
 
@@ -3592,7 +3416,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $_value89[] = $this->value;
 
-            $_success = $this->parseMANDATE_CLOSING_REC();
+            $_success = $this->parseMANDATE_CLOSING();
 
             if ($_success) {
                 $close = $this->value;
@@ -3760,12 +3584,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$bgcNr, &$bg) {
-                return new Response\ResponseOpening(
-                    $this->lineNr,
-                    $date,
-                    $bgcNr,
-                    $bg
-                );
+                return new Record($this->lineNr, 'Opening', $date, $bgcNr, $bg);
             });
         }
 
@@ -3877,11 +3696,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$bg) {
-                return new Response\ResponseOpening(
-                    $this->lineNr,
-                    $date,
-                    $bg
-                );
+                return new Record($this->lineNr, 'Opening', $date, $bg);
             });
         }
 
@@ -4082,22 +3897,14 @@ class Grammar extends MultibyteHack
                 $info->setAttribute('message_id', "73.info.{$info->getValue()}");
                 $status->setAttribute('message_id', "73.status.{$status->getValue()}");
 
-                $nodes = [
-                    $bg,
-                    $payerNr,
-                    $account,
-                    $id,
-                    $info,
-                    $status,
-                    $date,
-                ];
+                $record = new Record($this->lineNr, 'MandateResponse', $bg, $payerNr, $account, $id, $info, $status, $date);
 
                 // A mandate-valid-from-date is only present in the old layout
                 if ($validDate) {
-                    $nodes[] = new Text($this->lineNr, (string)$validDate);
+                    $record->addChild(new Text($this->lineNr, (string)$validDate));
                 }
 
-                return new Response\MandateResponse($this->lineNr, ...$nodes);
+                return $record;
             });
         }
 
@@ -4114,14 +3921,14 @@ class Grammar extends MultibyteHack
         return $_success;
     }
 
-    protected function parseMANDATE_CLOSING_REC()
+    protected function parseMANDATE_CLOSING()
     {
         $_position = $this->position;
 
-        if (isset($this->cache['MANDATE_CLOSING_REC'][$_position])) {
-            $_success = $this->cache['MANDATE_CLOSING_REC'][$_position]['success'];
-            $this->position = $this->cache['MANDATE_CLOSING_REC'][$_position]['position'];
-            $this->value = $this->cache['MANDATE_CLOSING_REC'][$_position]['value'];
+        if (isset($this->cache['MANDATE_CLOSING'][$_position])) {
+            $_success = $this->cache['MANDATE_CLOSING'][$_position]['success'];
+            $this->position = $this->cache['MANDATE_CLOSING'][$_position]['position'];
+            $this->value = $this->cache['MANDATE_CLOSING'][$_position]['value'];
 
             return $_success;
         }
@@ -4186,18 +3993,18 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$nrRecs) {
-                return new Response\MandateResponseClosing($this->lineNr, $date, $nrRecs);
+                return new Record($this->lineNr, 'Closing', $date, $nrRecs);
             });
         }
 
-        $this->cache['MANDATE_CLOSING_REC'][$_position] = array(
+        $this->cache['MANDATE_CLOSING'][$_position] = array(
             'success' => $_success,
             'position' => $this->position,
             'value' => $this->value
         );
 
         if (!$_success) {
-            $this->report($_position, 'MANDATE_CLOSING_REC');
+            $this->report($_position, 'MANDATE_CLOSING');
         }
 
         return $_success;
@@ -4426,12 +4233,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$bgcNr, &$bg) {
-                return new Response\ResponseOpening(
-                    $this->lineNr,
-                    $date,
-                    $bgcNr,
-                    $bg
-                );
+                return new Record($this->lineNr, 'Opening', $date, $bgcNr, $bg);
             });
         }
 
@@ -4579,12 +4381,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$bgcNr, &$bg) {
-                return new Response\ResponseOpening(
-                    $this->lineNr,
-                    $date,
-                    $bgcNr,
-                    $bg
-                );
+                return new Record($this->lineNr, 'Opening', $date, $bgcNr, $bg);
             });
         }
 
@@ -4619,18 +4416,34 @@ class Grammar extends MultibyteHack
         $_cut109 = $this->cut;
 
         $this->cut = false;
-        $_success = $this->parsePAYMENT_REJECTION_INCOMING();
+        if (substr($this->string, $this->position, strlen('82')) === '82') {
+            $_success = true;
+            $this->value = substr($this->string, $this->position, strlen('82'));
+            $this->position += strlen('82');
+        } else {
+            $_success = false;
+
+            $this->report($this->position, '\'82\'');
+        }
 
         if (!$_success && !$this->cut) {
             $this->position = $_position108;
 
-            $_success = $this->parsePAYMENT_REJECTION_OUTGOING();
+            if (substr($this->string, $this->position, strlen('32')) === '32') {
+                $_success = true;
+                $this->value = substr($this->string, $this->position, strlen('32'));
+                $this->position += strlen('32');
+            } else {
+                $_success = false;
+
+                $this->report($this->position, '\'32\'');
+            }
         }
 
         $this->cut = $_cut109;
 
         if ($_success) {
-            $type = $this->value;
+            $tc = $this->value;
         }
 
         if ($_success) {
@@ -4716,17 +4529,13 @@ class Grammar extends MultibyteHack
         }
 
         if ($_success) {
-            $this->value = call_user_func(function () use (&$type, &$date, &$ival, &$reps, &$payerNr, &$amount, &$ref, &$comment) {
-                return new $type(
-                    $this->lineNr,
-                    $date,
-                    $ival,
-                    $reps,
-                    $payerNr,
-                    $amount,
-                    $ref,
-                    $comment
-                );
+            $this->value = call_user_func(function () use (&$tc, &$date, &$ival, &$reps, &$payerNr, &$amount, &$ref, &$comment) {
+                $types = [
+                    '82' => 'IncomingPaymentRejectionResponse',
+                    '32' => 'OutgoingPaymentRejectionResponse',
+                ];
+
+                return new Record($this->lineNr, $types[$tc], $date, $ival, $reps, $payerNr, $amount, $ref, $comment);
             });
         }
 
@@ -4738,88 +4547,6 @@ class Grammar extends MultibyteHack
 
         if (!$_success) {
             $this->report($_position, 'PAYMENT_REJECTION_RECORD');
-        }
-
-        return $_success;
-    }
-
-    protected function parsePAYMENT_REJECTION_INCOMING()
-    {
-        $_position = $this->position;
-
-        if (isset($this->cache['PAYMENT_REJECTION_INCOMING'][$_position])) {
-            $_success = $this->cache['PAYMENT_REJECTION_INCOMING'][$_position]['success'];
-            $this->position = $this->cache['PAYMENT_REJECTION_INCOMING'][$_position]['position'];
-            $this->value = $this->cache['PAYMENT_REJECTION_INCOMING'][$_position]['value'];
-
-            return $_success;
-        }
-
-        if (substr($this->string, $this->position, strlen('82')) === '82') {
-            $_success = true;
-            $this->value = substr($this->string, $this->position, strlen('82'));
-            $this->position += strlen('82');
-        } else {
-            $_success = false;
-
-            $this->report($this->position, '\'82\'');
-        }
-
-        if ($_success) {
-            $this->value = call_user_func(function () {
-                return Response\IncomingPaymentRejectionResponse::CLASS;
-            });
-        }
-
-        $this->cache['PAYMENT_REJECTION_INCOMING'][$_position] = array(
-            'success' => $_success,
-            'position' => $this->position,
-            'value' => $this->value
-        );
-
-        if (!$_success) {
-            $this->report($_position, 'PAYMENT_REJECTION_INCOMING');
-        }
-
-        return $_success;
-    }
-
-    protected function parsePAYMENT_REJECTION_OUTGOING()
-    {
-        $_position = $this->position;
-
-        if (isset($this->cache['PAYMENT_REJECTION_OUTGOING'][$_position])) {
-            $_success = $this->cache['PAYMENT_REJECTION_OUTGOING'][$_position]['success'];
-            $this->position = $this->cache['PAYMENT_REJECTION_OUTGOING'][$_position]['position'];
-            $this->value = $this->cache['PAYMENT_REJECTION_OUTGOING'][$_position]['value'];
-
-            return $_success;
-        }
-
-        if (substr($this->string, $this->position, strlen('32')) === '32') {
-            $_success = true;
-            $this->value = substr($this->string, $this->position, strlen('32'));
-            $this->position += strlen('32');
-        } else {
-            $_success = false;
-
-            $this->report($this->position, '\'32\'');
-        }
-
-        if ($_success) {
-            $this->value = call_user_func(function () {
-                return Response\OutgoingPaymentRejectionResponse::CLASS;
-            });
-        }
-
-        $this->cache['PAYMENT_REJECTION_OUTGOING'][$_position] = array(
-            'success' => $_success,
-            'position' => $this->position,
-            'value' => $this->value
-        );
-
-        if (!$_success) {
-            $this->report($_position, 'PAYMENT_REJECTION_OUTGOING');
         }
 
         return $_success;
@@ -4927,14 +4654,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$nrOut, &$amountOut, &$nrIn, &$amountIn) {
-                return new Response\PaymentRejectionResponseClosing(
-                    $this->lineNr,
-                    $date,
-                    $nrOut,
-                    $amountOut,
-                    $nrIn,
-                    $amountIn
-                );
+                return new Record($this->lineNr, 'Closing', $date, $nrOut, $amountOut, $nrIn, $amountIn);
             });
         }
 
@@ -5274,12 +4994,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$bgcNr, &$bg) {
-                return new Response\ResponseOpening(
-                    $this->lineNr,
-                    $date,
-                    $bgcNr,
-                    $bg
-                );
+                return new Record($this->lineNr, 'Opening', $date, $bgcNr, $bg);
             });
         }
 
@@ -5379,12 +5094,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$bgcNr, &$bg) {
-                return new Response\ResponseOpening(
-                    $this->lineNr,
-                    $date,
-                    $bgcNr,
-                    $bg
-                );
+                return new Record($this->lineNr, 'Opening', $date, $bgcNr, $bg);
             });
         }
 
@@ -5536,16 +5246,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $this->value = call_user_func(function () use (&$tc, &$date, &$payerNr, &$type, &$amount, &$ref, &$comment) {
                 $tc->setAttribute('message_id', Layouts::LAYOUT_AMENDMENT_RESPONSE . '.TC.' . $tc->getValue());
-                return new Response\AmendmentResponse(
-                    $this->lineNr,
-                    $tc,
-                    $date,
-                    $payerNr,
-                    $type,
-                    $amount,
-                    $ref,
-                    $comment
-                );
+                return new Record($this->lineNr, 'AmendmentResponse', $tc, $date, $payerNr, $type, $amount, $ref, $comment);
             });
         }
 
@@ -5682,14 +5383,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$amountOut, &$nrOut, &$nrIn, &$amountIn) {
-                return new Response\ResponseClosing(
-                    $this->lineNr,
-                    $date,
-                    $nrOut,
-                    $amountOut,
-                    $nrIn,
-                    $amountIn
-                );
+                return new Record($this->lineNr, 'Closing', $date, $nrOut, $amountOut, $nrIn, $amountIn);
             });
         }
 

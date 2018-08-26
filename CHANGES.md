@@ -13,15 +13,19 @@
 
 ## Visitor
 
-* Now dispatches on both name and type.
+* Dispatches on both node name and type.
 
 ## Node tree
 
 * Removed the `Node` suffix from all node classes (except `NullNode`).
+* Using generic `Closing` and `Opening` records.
 * Renamed `BankgiroNode` => `PayeeBankgiro`.
 * Renamed `BgcNumberNode` => `PayeeBgcNumber`.
 * Renamed `FileNode` => `AutogiroFile`.
 * Renamed `IdNode` => `StateId`.
+* Renamed `IncomingPaymentResponseOpening` => `IncomingPaymentResponseSectionOpening`
+* Renamed `OutgoingPaymentResponseOpening` => `OutgoingPaymentResponseSectionOpening`
+* Renamed `RefundPaymentResponseOpening` => `RefundPaymentResponseSectionOpening`
 
 # Notable changes in 1.0-alpha2
 

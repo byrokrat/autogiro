@@ -29,9 +29,11 @@ class Record extends Node
 {
     use TypeTrait;
 
-    public function __construct(int $lineNr, Node ...$nodes)
+    public function __construct(int $lineNr, string $name, Node ...$nodes)
     {
         parent::__construct($lineNr);
+
+        $this->setName($name);
 
         foreach ($nodes as $node) {
             $this->addChild($node);
