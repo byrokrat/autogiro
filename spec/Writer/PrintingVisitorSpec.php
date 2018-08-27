@@ -11,11 +11,11 @@ use byrokrat\autogiro\Exception\LogicException;
 use byrokrat\autogiro\Tree\Date;
 use byrokrat\autogiro\Tree\Text;
 use byrokrat\autogiro\Tree\Number;
+use byrokrat\autogiro\Tree\Obj;
 use byrokrat\autogiro\Tree\PayeeBankgiro;
 use byrokrat\autogiro\Tree\Account;
 use byrokrat\autogiro\Tree\Amount;
 use byrokrat\autogiro\Tree\Interval;
-use byrokrat\autogiro\Tree\StateId;
 use byrokrat\autogiro\Visitor\Visitor;
 use byrokrat\amount\Currency\SEK;
 use byrokrat\banking\AccountNumber;
@@ -185,37 +185,27 @@ class PrintingVisitorSpec extends ObjectBehavior
         $this->shouldThrow(LogicException::CLASS)->duringBeforeAmount($node);
     }
 
-    function it_prints_personal_ids(StateId $node, PersonalId $id, $output)
+    function it_prints_personal_ids(Obj $node, PersonalId $id, $output)
     {
         $id->format('Ymdsk')->willReturn('201701101111');
-        $node->hasAttribute('id')->willReturn(true);
-        $node->getAttribute('id')->willReturn($id);
+        $node->getValue()->willReturn($id);
         $this->beforeStateId($node);
         $output->write('201701101111')->shouldHaveBeenCalled();
     }
 
-    function it_prints_organization_ids(StateId $node, OrganizationId $id, $output)
+    function it_prints_organization_ids(Obj $node, OrganizationId $id, $output)
     {
         $id->format('00Ssk')->willReturn('001234561111');
-        $node->hasAttribute('id')->willReturn(true);
-        $node->getAttribute('id')->willReturn($id);
+        $node->getValue()->willReturn($id);
         $this->beforeStateId($node);
         $output->write(Argument::is('001234561111'))->shouldHaveBeenCalled();
     }
 
-    function it_fails_on_missing_ids(StateId $node)
+    function it_ignores_invalid_ids(Obj $node, $output)
     {
-        $node->hasAttribute('id')->willReturn(false);
-        $node->getName()->willReturn('');
-        $this->shouldThrow(LogicException::CLASS)->duringBeforeStateId($node);
-    }
-
-    function it_fails_on_invalid_ids(StateId $node)
-    {
-        $node->hasAttribute('id')->willReturn(true);
-        $node->getAttribute('id')->willReturn('not-an-object');
-        $node->getName()->willReturn('');
-        $this->shouldThrow(LogicException::CLASS)->duringBeforeStateId($node);
+        $node->getValue()->willReturn(null);
+        $this->beforeStateId($node);
+        $output->write(Argument::any())->shouldNotHaveBeenCalled();
     }
 
     function it_prints_transaction_code_before_opening($output)

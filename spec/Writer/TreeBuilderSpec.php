@@ -13,9 +13,9 @@ use byrokrat\autogiro\Tree\ImmediateDate;
 use byrokrat\autogiro\Tree\Text;
 use byrokrat\autogiro\Tree\PayeeBankgiro;
 use byrokrat\autogiro\Tree\Account;
-use byrokrat\autogiro\Tree\StateId;
 use byrokrat\autogiro\Tree\Interval;
 use byrokrat\autogiro\Tree\Number;
+use byrokrat\autogiro\Tree\Obj;
 use byrokrat\autogiro\Tree\Amount;
 use byrokrat\autogiro\Tree\Record;
 use byrokrat\autogiro\Tree\Section;
@@ -97,7 +97,7 @@ class TreeBuilderSpec extends ObjectBehavior
                     PayeeBankgiro::fromBankgiro($bankgiro->getWrappedObject()),
                     new Number(0, 'payerNr', 'PayerNumber'),
                     Account::fromAccount($account->getWrappedObject()),
-                    StateId::fromId($id->getWrappedObject()),
+                    new Obj(0, $id->getWrappedObject(), 'StateId'),
                     new Text(0, str_pad('', 24))
                 )
             )

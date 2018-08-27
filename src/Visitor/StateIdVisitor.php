@@ -22,16 +22,17 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Visitor;
 
-use byrokrat\autogiro\Tree\StateId;
+use byrokrat\autogiro\Tree\Node;
+use byrokrat\autogiro\Tree\Obj;
 use byrokrat\id\IdFactoryInterface;
 use byrokrat\id\Exception as IdException;
 
 /**
  * Validates the structure of id numbers in tree
  *
- * Creates Id object as attribute 'id'
+ * Creates Id object as child 'Object'
  */
-class IdVisitor extends ErrorAwareVisitor
+class StateIdVisitor extends ErrorAwareVisitor
 {
     /**
      * @var IdFactoryInterface
@@ -53,45 +54,31 @@ class IdVisitor extends ErrorAwareVisitor
         $this->personalIdFactory = $personalIdFactory;
     }
 
-    public function beforeStateId(StateId $node): void
+    public function beforeStateId(Node $node): void
     {
-        if ($node->hasAttribute('id')) {
+        if ($node->hasChild('Object')) {
             return;
         }
 
-        if (!trim($node->getValue(), '0')) {
+        $number = (string)$node->getChild('Number')->getValue();
+
+        if (!trim($number, '0')) {
             return;
         }
 
         try {
-            if (in_array(substr($node->getValue(), 0, 2), ['00', '99'])) {
-                $this->createOrganizationId($node);
-            } else {
-                $this->createPersonalId($node);
-            }
+            $id = in_array(substr($number, 0, 2), ['00', '99'])
+                ? $this->organizationIdFactory->createId(substr($number, 2))
+                : $this->personalIdFactory->createId($number);
+
+            $node->addChild(new Obj($node->getLineNr(), $id));
         } catch (IdException $exception) {
             $this->getErrorObject()->addError(
                 "Invalid id number %s (%s) on line %s",
-                $node->getValue(),
+                $number,
                 $exception->getMessage(),
                 (string)$node->getLineNr()
             );
         }
-    }
-
-    private function createOrganizationId(StateId $node): void
-    {
-        $node->setAttribute(
-            'id',
-            $this->organizationIdFactory->createId(substr($node->getValue(), 2))
-        );
-    }
-
-    private function createPersonalId(StateId $node): void
-    {
-        $node->setAttribute(
-            'id',
-            $this->personalIdFactory->createId($node->getValue())
-        );
     }
 }

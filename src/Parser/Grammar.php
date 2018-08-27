@@ -5,15 +5,16 @@ namespace byrokrat\autogiro\Parser;
 use byrokrat\autogiro\Exception\ContentException;
 use byrokrat\autogiro\Tree\Account;
 use byrokrat\autogiro\Tree\Amount;
+use byrokrat\autogiro\Tree\Container;
 use byrokrat\autogiro\Tree\PayeeBankgiro;
 use byrokrat\autogiro\Tree\ImmediateDate;
 use byrokrat\autogiro\Tree\Date;
 use byrokrat\autogiro\Tree\DateTime;
 use byrokrat\autogiro\Tree\AutogiroFile;
-use byrokrat\autogiro\Tree\StateId;
 use byrokrat\autogiro\Tree\Interval;
 use byrokrat\autogiro\Tree\Message;
 use byrokrat\autogiro\Tree\Number;
+use byrokrat\autogiro\Tree\Obj;
 use byrokrat\autogiro\Tree\Record;
 use byrokrat\autogiro\Tree\Section;
 use byrokrat\autogiro\Tree\Text;
@@ -765,7 +766,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$bg, &$payerNr, &$account, &$id) {
-                return $id && trim($id->getValue())
+                return $id && trim($id->getChild('Number')->getValue())
                     ? new Record('CreateMandateRequest', $bg, $payerNr, $account, $id)
                     : new Record('AcceptDigitalMandateRequest', $bg, $payerNr);
             });
@@ -5734,7 +5735,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$number) {
-                return new StateId($this->lineNr, $number);
+                return new Container('StateId', new Number($this->lineNr, trim($number)));
             });
         }
 

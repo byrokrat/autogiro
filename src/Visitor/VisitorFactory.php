@@ -98,7 +98,7 @@ class VisitorFactory
 
         if (!$flag(self::VISITOR_IGNORE_IDS)) {
             $container->addVisitor(
-                new IdVisitor(
+                new StateIdVisitor(
                     $errorObj,
                     new OrganizationIdFactory,
                     new PersonalIdFactory(new CoordinationIdFactory(new NullIdFactory))

@@ -29,10 +29,10 @@ use byrokrat\autogiro\Tree\Date;
 use byrokrat\autogiro\Tree\ImmediateDate;
 use byrokrat\autogiro\Tree\Interval;
 use byrokrat\autogiro\Tree\Number;
+use byrokrat\autogiro\Tree\Obj;
 use byrokrat\autogiro\Tree\PayeeBankgiro;
 use byrokrat\autogiro\Tree\Record;
 use byrokrat\autogiro\Tree\Section;
-use byrokrat\autogiro\Tree\StateId;
 use byrokrat\autogiro\Tree\Text;
 use byrokrat\banking\AccountNumber;
 use byrokrat\banking\Bankgiro;
@@ -149,7 +149,7 @@ class TreeBuilder
             $this->payeeBgNode,
             new Number(0, $payerNr, 'PayerNumber'),
             Account::fromAccount($account),
-            StateId::fromId($id),
+            new Obj(0, $id, 'StateId'),
             new Text(0, str_pad('', 24))
         );
     }

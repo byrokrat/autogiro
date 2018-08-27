@@ -29,11 +29,11 @@ use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Tree\Date;
 use byrokrat\autogiro\Tree\Text;
 use byrokrat\autogiro\Tree\Number;
+use byrokrat\autogiro\Tree\Obj;
 use byrokrat\autogiro\Tree\PayeeBankgiro;
 use byrokrat\autogiro\Tree\Account;
 use byrokrat\autogiro\Tree\Amount;
 use byrokrat\autogiro\Tree\Interval;
-use byrokrat\autogiro\Tree\StateId;
 use byrokrat\amount\Currency\SEK;
 use byrokrat\banking\AccountNumber;
 use byrokrat\id\IdInterface;
@@ -123,14 +123,13 @@ class PrintingVisitor extends Visitor
         );
     }
 
-    public function beforeStateId(StateId $node): void
+    public function beforeStateId(Obj $node): void
     {
-        $this->assertAttribute($node, 'id', IdInterface::CLASS);
-        if ($node->getAttribute('id') instanceof PersonalId) {
-            $this->output->write($node->getAttribute('id')->format('Ymdsk'));
+        if ($node->getValue() instanceof PersonalId) {
+            $this->output->write($node->getValue()->format('Ymdsk'));
         }
-        if ($node->getAttribute('id') instanceof OrganizationId) {
-            $this->output->write($node->getAttribute('id')->format('00Ssk'));
+        if ($node->getValue() instanceof OrganizationId) {
+            $this->output->write($node->getValue()->format('00Ssk'));
         }
     }
 

@@ -22,21 +22,19 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Tree;
 
-use byrokrat\id\IdInterface;
-
 /**
- * Node representing an organizational or personal id
- *
- * @see \byrokrat\autogiro\Visitor\IdVisitor Creates attribute 'id'
+ * Node wrapping an object
  */
-class StateId extends Node
+class Obj extends Node
 {
-    use TypeTrait;
-
-    public static function fromId(IdInterface $id): StateId
+    public function __construct(int $lineNr = 0, object $value = null, string $name = 'Object')
     {
-        $node = new self(0, (string)$id);
-        $node->setAttribute('id', $id);
-        return $node;
+        parent::__construct($lineNr, $value);
+        $this->setName($name);
+    }
+
+    public function getType(): string
+    {
+        return 'Object';
     }
 }
