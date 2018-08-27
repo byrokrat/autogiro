@@ -22,7 +22,7 @@ Feature: Mandate request parser
     050009912346000000000000011200099123460000000000000122
     050009912346000000000555524200099123460000000003330202
     """
-    Then I find a "LAYOUT_REQUEST" layout
+    Then I find a "AutogiroRequestFile" layout
     And I find 3 "CreateMandateRequest" nodes
     And I find 3 "AcceptDigitalMandateRequest" nodes
     And I find 2 "RejectDigitalMandateRequest" nodes
@@ -39,7 +39,7 @@ Feature: Mandate request parser
     0400099123460000000004440104
     0300099123460000000005555242
     """
-    Then I find a "LAYOUT_REQUEST" layout
+    Then I find a "AutogiroRequestFile" layout
     And I find 3 "AcceptDigitalMandateRequest" nodes
     And I find 1 "DeleteMandateRequest" nodes
 
@@ -55,7 +55,7 @@ Feature: Mandate request parser
     04000991234600000000000001029918000002010114193701270000                    AV
     0300099123460000000000000242
     """
-    Then I find a "LAYOUT_REQUEST" layout
+    Then I find a "AutogiroRequestFile" layout
     And I find 4 "CreateMandateRequest" nodes
     And I find 1 "RejectDigitalMandateRequest" nodes
     And I find 1 "DeleteMandateRequest" nodes

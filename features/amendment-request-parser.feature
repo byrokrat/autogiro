@@ -26,7 +26,7 @@ Feature: Amendment request parser
     2900099123460000000000000109200806240000000555003220080619
     2900099123460000000000000110200806130000000400003220080624UTBETALN3
     """
-    Then I find a "LAYOUT_REQUEST" layout
+    Then I find a "AutogiroRequestFile" layout
     And I find 17 "AmendmentRequest" nodes
 
   Scenario: I parse the BGC testfile autogiro-gl_makulerings-andringsunderlag_till-bankgirot_exempelfil_sv.txt
@@ -38,7 +38,7 @@ Feature: Amendment request parser
     25000991234600000000044450622004101900000002350082
     2900099123460000000003334451200411030000000150008220041102
     """
-    Then I find a "LAYOUT_REQUEST" layout
+    Then I find a "AutogiroRequestFile" layout
     And I find 3 "AmendmentRequest" nodes
 
   Scenario: I parse the BGC testfile autogiro_gl_makulering-datumandring_till-bankgirot-medgivanden-kontonummer_exempelfil_sv.txt
@@ -50,5 +50,5 @@ Feature: Amendment request parser
     25000991234600000000000001032004101900000002350082
     2900099123460000000000000104200411030000000150008220041102
     """
-    Then I find a "LAYOUT_REQUEST" layout
+    Then I find a "AutogiroRequestFile" layout
     And I find 3 "AmendmentRequest" nodes

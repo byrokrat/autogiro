@@ -10,7 +10,6 @@ use byrokrat\autogiro\Visitor\ErrorObject;
 use byrokrat\autogiro\Tree\AutogiroFile;
 use byrokrat\autogiro\Tree\Message;
 use byrokrat\autogiro\Tree\Interval;
-use byrokrat\autogiro\Layouts;
 use byrokrat\autogiro\Messages;
 use byrokrat\autogiro\Intervals;
 use PhpSpec\ObjectBehavior;
@@ -51,7 +50,7 @@ class MessageVisitorSpec extends ObjectBehavior
         $msgNode->getValue()->willReturn('0');
         $msgNode->setAttribute('message', Argument::type('string'))->shouldBeCalled();
 
-        $fileNode->getAttribute('layout')->willReturn(Layouts::LAYOUT_PAYMENT_RESPONSE);
+        $fileNode->getName()->willReturn('AutogiroPaymentResponseFile');
 
         $this->beforeAutogiroFile($fileNode);
         $this->beforeMessage($msgNode);

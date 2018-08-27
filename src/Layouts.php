@@ -28,50 +28,50 @@ interface Layouts
     /**
      * Layout for sending requests
      */
-    const LAYOUT_REQUEST = 'LAYOUT_REQUEST';
+    const LAYOUT_REQUEST = 'AutogiroRequestFile';
 
     /**
      * Layout for receiving responses the previously made mandate requests
      */
-    const LAYOUT_MANDATE_RESPONSE = 'LAYOUT_MANDATE_RESPONSE';
+    const LAYOUT_MANDATE_RESPONSE = 'AutogiroMandateResponseFile';
 
     /**
      * Layout for receiving new digital mandates
      */
-    const LAYOUT_DIGITAL_MANDATE = 'LAYOUT_DIGITAL_MANDATE';
+    const LAYOUT_DIGITAL_MANDATE = 'AutogiroDigitalMandateFile';
 
     /**
      * Layout for receiving the current list of mandates
      */
-    const LAYOUT_MANDATE_REPORT = 'LAYOUT_MANDATE_REPORT';
+    const LAYOUT_MANDATE_REPORT = 'AutogiroMandateReportFile';
 
     /**
      * Layout for receiving responses to previously made payment requests
      */
-    const LAYOUT_PAYMENT_RESPONSE = 'LAYOUT_PAYMENT_RESPONSE';
+    const LAYOUT_PAYMENT_RESPONSE = 'AutogiroPaymentResponseFile';
 
     /**
      * Layout for receiving responses to previously made payment requests in the old format
      */
-    const LAYOUT_PAYMENT_RESPONSE_OLD = 'LAYOUT_PAYMENT_RESPONSE_OLD';
+    const LAYOUT_PAYMENT_RESPONSE_OLD = 'AutogiroPaymentResponseOldFile';
 
     /**
      * Layout for receiving responses to previously made payment requests in BgMax format
      */
-    const LAYOUT_PAYMENT_RESPONSE_BGMAX = 'LAYOUT_PAYMENT_RESPONSE_BGMAX';
+    const LAYOUT_PAYMENT_RESPONSE_BGMAX = 'AutogiroPaymentResponseBgmaxFile';
 
     /**
      * Layout for receiving responses to previously made payment amendments and revocations
      */
-    const LAYOUT_AMENDMENT_RESPONSE = 'LAYOUT_AMENDMENT_RESPONSE';
+    const LAYOUT_AMENDMENT_RESPONSE = 'AutogiroAmendmentResponseFile';
 
     /**
      * Layout for receiving rejected payments
      */
-    const LAYOUT_PAYMENT_REJECTION = 'LAYOUT_PAYMENT_REJECTION';
+    const LAYOUT_PAYMENT_REJECTION = 'AutogiroPaymentRejectionFile';
 
     /**
      * Layout for receiving the current list of comming payments
      */
-    const LAYOUT_PAYMENT_REPORT = 'LAYOUT_PAYMENT_REPORT';
+    const LAYOUT_PAYMENT_REPORT = 'AutogiroPaymentReportFile';
 }

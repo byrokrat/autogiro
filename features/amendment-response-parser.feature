@@ -28,7 +28,7 @@ Feature: Amendment response parser
     29200806160000000000000110320000000050000000000020080610000000000000000006
     09200806119900              0000005775000000020000040000000000111000000000000000
     """
-    Then I find a "LAYOUT_AMENDMENT_RESPONSE" layout
+    Then I find a "AutogiroAmendmentResponseFile" layout
     And I find 18 "AmendmentResponse" nodes
 
   Scenario: I parse the BGC testfile autogiro_gl_exempelfil_makulering-andring_fran-bankgirot-medgivanden-kontonummer_exempelfil_sv.txt
@@ -42,5 +42,5 @@ Feature: Amendment response parser
     29200410270000000000002104820000000500000000000020041102000000000000000014
     09200410229900              0000000000000000000000040000000000095000000000000000
     """
-    Then I find a "LAYOUT_AMENDMENT_RESPONSE" layout
+    Then I find a "AutogiroAmendmentResponseFile" layout
     And I find 4 "AmendmentResponse" nodes

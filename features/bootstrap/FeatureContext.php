@@ -48,17 +48,17 @@ class FeatureContext implements Context, SnippetAcceptingContext
     }
 
     /**
-     * @Then I find a :layoutType layout
+     * @Then I find a :expectedFileType layout
      */
-    public function iFindALayout($layoutType)
+    public function iFindALayout($expectedFileType)
     {
         if ($this->exception) {
             throw $this->exception;
         }
 
         Assertions::assertEquals(
-            constant("byrokrat\autogiro\Layouts::$layoutType"),
-            $this->fileNode->getAttribute('layout')
+            $expectedFileType,
+            $this->fileNode->getName()
         );
     }
 

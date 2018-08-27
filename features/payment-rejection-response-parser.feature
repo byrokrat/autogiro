@@ -18,7 +18,7 @@ Feature: Payment rejection response parser
     32200806110   0000000000007575000000080200RIDLEKTION ATERB01
     09200806119900000005000000128200000003000000087551
     """
-    Then I find a "LAYOUT_PAYMENT_REJECTION" layout
+    Then I find a "AutogiroPaymentRejectionFile" layout
 
   Scenario: I parse 'old' testfile 'autogiro_gl_avvisadebetaln_fran-bankgirot-medgivanden-bankgironummer_exempelfil_sv.txt'
     Given a parser that ignores account and id structures
@@ -31,7 +31,7 @@ Feature: Payment rejection response parser
     82200410230   0000000005555104000000015000                07
     09200410229900000000000000000000000004000000095000
     """
-    Then I find a "LAYOUT_PAYMENT_REJECTION" layout
+    Then I find a "AutogiroPaymentRejectionFile" layout
 
   Scenario: I parse 'old' testfile 'autogiro_gl_exempelfil_avvisadebetalningar_fran-bankgirot-medgivanden-kontonummer_exemeplfil_sv.txt'
     Given a parser that ignores account and id structures
@@ -44,4 +44,4 @@ Feature: Payment rejection response parser
     82200410230   0000000000000104000000015000                07
     09200410229900000000000000000000000004000000095000
     """
-    Then I find a "LAYOUT_PAYMENT_REJECTION" layout
+    Then I find a "AutogiroPaymentRejectionFile" layout

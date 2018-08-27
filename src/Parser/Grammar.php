@@ -3,7 +3,6 @@
 namespace byrokrat\autogiro\Parser;
 
 use byrokrat\autogiro\Exception\ContentException;
-use byrokrat\autogiro\Layouts;
 use byrokrat\autogiro\Tree\Account;
 use byrokrat\autogiro\Tree\Amount;
 use byrokrat\autogiro\Tree\PayeeBankgiro;
@@ -231,7 +230,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$sections) {
-                return new AutogiroFile(Layouts::LAYOUT_REQUEST, ...$sections);
+                return new AutogiroFile('AutogiroRequestFile', ...$sections);
             });
         }
 
@@ -248,14 +247,14 @@ class Grammar extends MultibyteHack
         return $_success;
     }
 
-    protected function parseREQ_OPENING_REC()
+    protected function parseREQ_OPENING()
     {
         $_position = $this->position;
 
-        if (isset($this->cache['REQ_OPENING_REC'][$_position])) {
-            $_success = $this->cache['REQ_OPENING_REC'][$_position]['success'];
-            $this->position = $this->cache['REQ_OPENING_REC'][$_position]['position'];
-            $this->value = $this->cache['REQ_OPENING_REC'][$_position]['value'];
+        if (isset($this->cache['REQ_OPENING'][$_position])) {
+            $_success = $this->cache['REQ_OPENING'][$_position]['success'];
+            $this->position = $this->cache['REQ_OPENING'][$_position]['position'];
+            $this->value = $this->cache['REQ_OPENING'][$_position]['value'];
 
             return $_success;
         }
@@ -352,14 +351,14 @@ class Grammar extends MultibyteHack
             });
         }
 
-        $this->cache['REQ_OPENING_REC'][$_position] = array(
+        $this->cache['REQ_OPENING'][$_position] = array(
             'success' => $_success,
             'position' => $this->position,
             'value' => $this->value
         );
 
         if (!$_success) {
-            $this->report($_position, 'REQ_OPENING_REC');
+            $this->report($_position, 'REQ_OPENING');
         }
 
         return $_success;
@@ -379,7 +378,7 @@ class Grammar extends MultibyteHack
 
         $_value15 = array();
 
-        $_success = $this->parseREQ_OPENING_REC();
+        $_success = $this->parseREQ_OPENING();
 
         if ($_success) {
             $open = $this->value;
@@ -392,24 +391,24 @@ class Grammar extends MultibyteHack
             $_cut11 = $this->cut;
 
             $this->cut = false;
-            $_success = $this->parseREQ_DEL_MANDATE_REC();
+            $_success = $this->parseREQ_DEL_MANDATE();
 
             if (!$_success && !$this->cut) {
                 $this->position = $_position10;
 
-                $_success = $this->parseREQ_REJECT_MANDATE_REC();
+                $_success = $this->parseREQ_REJECT_MANDATE();
             }
 
             if (!$_success && !$this->cut) {
                 $this->position = $_position10;
 
-                $_success = $this->parseREQ_CREATE_MANDATE_REC();
+                $_success = $this->parseREQ_CREATE_MANDATE();
             }
 
             if (!$_success && !$this->cut) {
                 $this->position = $_position10;
 
-                $_success = $this->parseREQ_UPDATE_MANDATE_REC();
+                $_success = $this->parseREQ_UPDATE_MANDATE();
             }
 
             $this->cut = $_cut11;
@@ -426,24 +425,24 @@ class Grammar extends MultibyteHack
                     $_cut11 = $this->cut;
 
                     $this->cut = false;
-                    $_success = $this->parseREQ_DEL_MANDATE_REC();
+                    $_success = $this->parseREQ_DEL_MANDATE();
 
                     if (!$_success && !$this->cut) {
                         $this->position = $_position10;
 
-                        $_success = $this->parseREQ_REJECT_MANDATE_REC();
+                        $_success = $this->parseREQ_REJECT_MANDATE();
                     }
 
                     if (!$_success && !$this->cut) {
                         $this->position = $_position10;
 
-                        $_success = $this->parseREQ_CREATE_MANDATE_REC();
+                        $_success = $this->parseREQ_CREATE_MANDATE();
                     }
 
                     if (!$_success && !$this->cut) {
                         $this->position = $_position10;
 
-                        $_success = $this->parseREQ_UPDATE_MANDATE_REC();
+                        $_success = $this->parseREQ_UPDATE_MANDATE();
                     }
 
                     $this->cut = $_cut11;
@@ -494,14 +493,14 @@ class Grammar extends MultibyteHack
         return $_success;
     }
 
-    protected function parseREQ_DEL_MANDATE_REC()
+    protected function parseREQ_DEL_MANDATE()
     {
         $_position = $this->position;
 
-        if (isset($this->cache['REQ_DEL_MANDATE_REC'][$_position])) {
-            $_success = $this->cache['REQ_DEL_MANDATE_REC'][$_position]['success'];
-            $this->position = $this->cache['REQ_DEL_MANDATE_REC'][$_position]['position'];
-            $this->value = $this->cache['REQ_DEL_MANDATE_REC'][$_position]['value'];
+        if (isset($this->cache['REQ_DEL_MANDATE'][$_position])) {
+            $_success = $this->cache['REQ_DEL_MANDATE'][$_position]['success'];
+            $this->position = $this->cache['REQ_DEL_MANDATE'][$_position]['position'];
+            $this->value = $this->cache['REQ_DEL_MANDATE'][$_position]['value'];
 
             return $_success;
         }
@@ -556,27 +555,27 @@ class Grammar extends MultibyteHack
             });
         }
 
-        $this->cache['REQ_DEL_MANDATE_REC'][$_position] = array(
+        $this->cache['REQ_DEL_MANDATE'][$_position] = array(
             'success' => $_success,
             'position' => $this->position,
             'value' => $this->value
         );
 
         if (!$_success) {
-            $this->report($_position, 'REQ_DEL_MANDATE_REC');
+            $this->report($_position, 'REQ_DEL_MANDATE');
         }
 
         return $_success;
     }
 
-    protected function parseREQ_REJECT_MANDATE_REC()
+    protected function parseREQ_REJECT_MANDATE()
     {
         $_position = $this->position;
 
-        if (isset($this->cache['REQ_REJECT_MANDATE_REC'][$_position])) {
-            $_success = $this->cache['REQ_REJECT_MANDATE_REC'][$_position]['success'];
-            $this->position = $this->cache['REQ_REJECT_MANDATE_REC'][$_position]['position'];
-            $this->value = $this->cache['REQ_REJECT_MANDATE_REC'][$_position]['value'];
+        if (isset($this->cache['REQ_REJECT_MANDATE'][$_position])) {
+            $_success = $this->cache['REQ_REJECT_MANDATE'][$_position]['success'];
+            $this->position = $this->cache['REQ_REJECT_MANDATE'][$_position]['position'];
+            $this->value = $this->cache['REQ_REJECT_MANDATE'][$_position]['value'];
 
             return $_success;
         }
@@ -651,27 +650,27 @@ class Grammar extends MultibyteHack
             });
         }
 
-        $this->cache['REQ_REJECT_MANDATE_REC'][$_position] = array(
+        $this->cache['REQ_REJECT_MANDATE'][$_position] = array(
             'success' => $_success,
             'position' => $this->position,
             'value' => $this->value
         );
 
         if (!$_success) {
-            $this->report($_position, 'REQ_REJECT_MANDATE_REC');
+            $this->report($_position, 'REQ_REJECT_MANDATE');
         }
 
         return $_success;
     }
 
-    protected function parseREQ_CREATE_MANDATE_REC()
+    protected function parseREQ_CREATE_MANDATE()
     {
         $_position = $this->position;
 
-        if (isset($this->cache['REQ_CREATE_MANDATE_REC'][$_position])) {
-            $_success = $this->cache['REQ_CREATE_MANDATE_REC'][$_position]['success'];
-            $this->position = $this->cache['REQ_CREATE_MANDATE_REC'][$_position]['position'];
-            $this->value = $this->cache['REQ_CREATE_MANDATE_REC'][$_position]['value'];
+        if (isset($this->cache['REQ_CREATE_MANDATE'][$_position])) {
+            $_success = $this->cache['REQ_CREATE_MANDATE'][$_position]['success'];
+            $this->position = $this->cache['REQ_CREATE_MANDATE'][$_position]['position'];
+            $this->value = $this->cache['REQ_CREATE_MANDATE'][$_position]['value'];
 
             return $_success;
         }
@@ -772,27 +771,27 @@ class Grammar extends MultibyteHack
             });
         }
 
-        $this->cache['REQ_CREATE_MANDATE_REC'][$_position] = array(
+        $this->cache['REQ_CREATE_MANDATE'][$_position] = array(
             'success' => $_success,
             'position' => $this->position,
             'value' => $this->value
         );
 
         if (!$_success) {
-            $this->report($_position, 'REQ_CREATE_MANDATE_REC');
+            $this->report($_position, 'REQ_CREATE_MANDATE');
         }
 
         return $_success;
     }
 
-    protected function parseREQ_UPDATE_MANDATE_REC()
+    protected function parseREQ_UPDATE_MANDATE()
     {
         $_position = $this->position;
 
-        if (isset($this->cache['REQ_UPDATE_MANDATE_REC'][$_position])) {
-            $_success = $this->cache['REQ_UPDATE_MANDATE_REC'][$_position]['success'];
-            $this->position = $this->cache['REQ_UPDATE_MANDATE_REC'][$_position]['position'];
-            $this->value = $this->cache['REQ_UPDATE_MANDATE_REC'][$_position]['value'];
+        if (isset($this->cache['REQ_UPDATE_MANDATE'][$_position])) {
+            $_success = $this->cache['REQ_UPDATE_MANDATE'][$_position]['success'];
+            $this->position = $this->cache['REQ_UPDATE_MANDATE'][$_position]['position'];
+            $this->value = $this->cache['REQ_UPDATE_MANDATE'][$_position]['value'];
 
             return $_success;
         }
@@ -867,14 +866,14 @@ class Grammar extends MultibyteHack
             });
         }
 
-        $this->cache['REQ_UPDATE_MANDATE_REC'][$_position] = array(
+        $this->cache['REQ_UPDATE_MANDATE'][$_position] = array(
             'success' => $_success,
             'position' => $this->position,
             'value' => $this->value
         );
 
         if (!$_success) {
-            $this->report($_position, 'REQ_UPDATE_MANDATE_REC');
+            $this->report($_position, 'REQ_UPDATE_MANDATE');
         }
 
         return $_success;
@@ -894,7 +893,7 @@ class Grammar extends MultibyteHack
 
         $_value27 = array();
 
-        $_success = $this->parseREQ_OPENING_REC();
+        $_success = $this->parseREQ_OPENING();
 
         if ($_success) {
             $open = $this->value;
@@ -903,7 +902,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $_value27[] = $this->value;
 
-            $_success = $this->parseREQ_PAYMENT_REC();
+            $_success = $this->parseREQ_PAYMENT();
 
             if ($_success) {
                 $_value25 = array($this->value);
@@ -913,7 +912,7 @@ class Grammar extends MultibyteHack
                     $_position24 = $this->position;
 
                     $this->cut = false;
-                    $_success = $this->parseREQ_PAYMENT_REC();
+                    $_success = $this->parseREQ_PAYMENT();
 
                     if (!$_success) {
                         break;
@@ -961,14 +960,14 @@ class Grammar extends MultibyteHack
         return $_success;
     }
 
-    protected function parseREQ_PAYMENT_REC()
+    protected function parseREQ_PAYMENT()
     {
         $_position = $this->position;
 
-        if (isset($this->cache['REQ_PAYMENT_REC'][$_position])) {
-            $_success = $this->cache['REQ_PAYMENT_REC'][$_position]['success'];
-            $this->position = $this->cache['REQ_PAYMENT_REC'][$_position]['position'];
-            $this->value = $this->cache['REQ_PAYMENT_REC'][$_position]['value'];
+        if (isset($this->cache['REQ_PAYMENT'][$_position])) {
+            $_success = $this->cache['REQ_PAYMENT'][$_position]['success'];
+            $this->position = $this->cache['REQ_PAYMENT'][$_position]['position'];
+            $this->value = $this->cache['REQ_PAYMENT'][$_position]['value'];
 
             return $_success;
         }
@@ -1128,14 +1127,14 @@ class Grammar extends MultibyteHack
             });
         }
 
-        $this->cache['REQ_PAYMENT_REC'][$_position] = array(
+        $this->cache['REQ_PAYMENT'][$_position] = array(
             'success' => $_success,
             'position' => $this->position,
             'value' => $this->value
         );
 
         if (!$_success) {
-            $this->report($_position, 'REQ_PAYMENT_REC');
+            $this->report($_position, 'REQ_PAYMENT');
         }
 
         return $_success;
@@ -1155,7 +1154,7 @@ class Grammar extends MultibyteHack
 
         $_value36 = array();
 
-        $_success = $this->parseREQ_OPENING_REC();
+        $_success = $this->parseREQ_OPENING();
 
         if ($_success) {
             $open = $this->value;
@@ -1164,7 +1163,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $_value36[] = $this->value;
 
-            $_success = $this->parseREQ_REVOCATION_REC();
+            $_success = $this->parseREQ_REVOCATION();
 
             if ($_success) {
                 $_value34 = array($this->value);
@@ -1174,7 +1173,7 @@ class Grammar extends MultibyteHack
                     $_position33 = $this->position;
 
                     $this->cut = false;
-                    $_success = $this->parseREQ_REVOCATION_REC();
+                    $_success = $this->parseREQ_REVOCATION();
 
                     if (!$_success) {
                         break;
@@ -1222,14 +1221,14 @@ class Grammar extends MultibyteHack
         return $_success;
     }
 
-    protected function parseREQ_REVOCATION_REC()
+    protected function parseREQ_REVOCATION()
     {
         $_position = $this->position;
 
-        if (isset($this->cache['REQ_REVOCATION_REC'][$_position])) {
-            $_success = $this->cache['REQ_REVOCATION_REC'][$_position]['success'];
-            $this->position = $this->cache['REQ_REVOCATION_REC'][$_position]['position'];
-            $this->value = $this->cache['REQ_REVOCATION_REC'][$_position]['value'];
+        if (isset($this->cache['REQ_REVOCATION'][$_position])) {
+            $_success = $this->cache['REQ_REVOCATION'][$_position]['success'];
+            $this->position = $this->cache['REQ_REVOCATION'][$_position]['position'];
+            $this->value = $this->cache['REQ_REVOCATION'][$_position]['value'];
 
             return $_success;
         }
@@ -1368,19 +1367,19 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$tc, &$bg, &$payerNr, &$date, &$amount, &$type, &$newDate, &$ref) {
-                $tc->setAttribute('message_id', Layouts::LAYOUT_REQUEST . '.TC.' . $tc->getValue());
+                $tc->setAttribute('message_id', 'AutogiroRequestFile.TC.' . $tc->getValue());
                 return new Record('AmendmentRequest', $tc, $bg, $payerNr, $date, $amount, $type, $newDate, $ref);
             });
         }
 
-        $this->cache['REQ_REVOCATION_REC'][$_position] = array(
+        $this->cache['REQ_REVOCATION'][$_position] = array(
             'success' => $_success,
             'position' => $this->position,
             'value' => $this->value
         );
 
         if (!$_success) {
-            $this->report($_position, 'REQ_REVOCATION_REC');
+            $this->report($_position, 'REQ_REVOCATION');
         }
 
         return $_success;
@@ -1445,7 +1444,7 @@ class Grammar extends MultibyteHack
 
         $_value47 = array();
 
-        $_success = $this->parsePAYMENT_OPENING_REC();
+        $_success = $this->parsePAYMENT_OPENING();
 
         if ($_success) {
             $open = $this->value;
@@ -1542,7 +1541,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $this->value = call_user_func(function () use (&$open, &$sections, &$close) {
                 $sections[] = $close;
-                return new AutogiroFile(Layouts::LAYOUT_PAYMENT_RESPONSE, $open, ...$sections);
+                return new AutogiroFile('AutogiroPaymentResponseFile', $open, ...$sections);
             });
         }
 
@@ -1559,14 +1558,14 @@ class Grammar extends MultibyteHack
         return $_success;
     }
 
-    protected function parsePAYMENT_OPENING_REC()
+    protected function parsePAYMENT_OPENING()
     {
         $_position = $this->position;
 
-        if (isset($this->cache['PAYMENT_OPENING_REC'][$_position])) {
-            $_success = $this->cache['PAYMENT_OPENING_REC'][$_position]['success'];
-            $this->position = $this->cache['PAYMENT_OPENING_REC'][$_position]['position'];
-            $this->value = $this->cache['PAYMENT_OPENING_REC'][$_position]['value'];
+        if (isset($this->cache['PAYMENT_OPENING'][$_position])) {
+            $_success = $this->cache['PAYMENT_OPENING'][$_position]['success'];
+            $this->position = $this->cache['PAYMENT_OPENING'][$_position]['position'];
+            $this->value = $this->cache['PAYMENT_OPENING'][$_position]['value'];
 
             return $_success;
         }
@@ -1680,14 +1679,14 @@ class Grammar extends MultibyteHack
             });
         }
 
-        $this->cache['PAYMENT_OPENING_REC'][$_position] = array(
+        $this->cache['PAYMENT_OPENING'][$_position] = array(
             'success' => $_success,
             'position' => $this->position,
             'value' => $this->value
         );
 
         if (!$_success) {
-            $this->report($_position, 'PAYMENT_OPENING_REC');
+            $this->report($_position, 'PAYMENT_OPENING');
         }
 
         return $_success;
@@ -1862,7 +1861,7 @@ class Grammar extends MultibyteHack
                 $_position50 = $this->position;
 
                 $this->cut = false;
-                $_success = $this->parsePAYMENT_INCOMING_REC();
+                $_success = $this->parsePAYMENT_INCOMING();
 
                 if (!$_success) {
                     break;
@@ -2026,14 +2025,14 @@ class Grammar extends MultibyteHack
         return $_success;
     }
 
-    protected function parsePAYMENT_INCOMING_REC()
+    protected function parsePAYMENT_INCOMING()
     {
         $_position = $this->position;
 
-        if (isset($this->cache['PAYMENT_INCOMING_REC'][$_position])) {
-            $_success = $this->cache['PAYMENT_INCOMING_REC'][$_position]['success'];
-            $this->position = $this->cache['PAYMENT_INCOMING_REC'][$_position]['position'];
-            $this->value = $this->cache['PAYMENT_INCOMING_REC'][$_position]['value'];
+        if (isset($this->cache['PAYMENT_INCOMING'][$_position])) {
+            $_success = $this->cache['PAYMENT_INCOMING'][$_position]['success'];
+            $this->position = $this->cache['PAYMENT_INCOMING'][$_position]['position'];
+            $this->value = $this->cache['PAYMENT_INCOMING'][$_position]['value'];
 
             return $_success;
         }
@@ -2183,7 +2182,7 @@ class Grammar extends MultibyteHack
                 $record = new Record('IncomingPaymentResponse', $date, $ival, $reps, $payerNr, $amount, $bg, $ref);
 
                 if ($status) {
-                    $status->setAttribute('message_id', Layouts::LAYOUT_PAYMENT_RESPONSE . '.' . $status->getValue());
+                    $status->setAttribute('message_id', 'AutogiroPaymentResponseFile.' . $status->getValue());
                     $record->addChild($status);
                 }
 
@@ -2191,14 +2190,14 @@ class Grammar extends MultibyteHack
             });
         }
 
-        $this->cache['PAYMENT_INCOMING_REC'][$_position] = array(
+        $this->cache['PAYMENT_INCOMING'][$_position] = array(
             'success' => $_success,
             'position' => $this->position,
             'value' => $this->value
         );
 
         if (!$_success) {
-            $this->report($_position, 'PAYMENT_INCOMING_REC');
+            $this->report($_position, 'PAYMENT_INCOMING');
         }
 
         return $_success;
@@ -2234,7 +2233,7 @@ class Grammar extends MultibyteHack
                 $_position60 = $this->position;
 
                 $this->cut = false;
-                $_success = $this->parsePAYMENT_OUTGOING_REC();
+                $_success = $this->parsePAYMENT_OUTGOING();
 
                 if (!$_success) {
                     break;
@@ -2398,14 +2397,14 @@ class Grammar extends MultibyteHack
         return $_success;
     }
 
-    protected function parsePAYMENT_OUTGOING_REC()
+    protected function parsePAYMENT_OUTGOING()
     {
         $_position = $this->position;
 
-        if (isset($this->cache['PAYMENT_OUTGOING_REC'][$_position])) {
-            $_success = $this->cache['PAYMENT_OUTGOING_REC'][$_position]['success'];
-            $this->position = $this->cache['PAYMENT_OUTGOING_REC'][$_position]['position'];
-            $this->value = $this->cache['PAYMENT_OUTGOING_REC'][$_position]['value'];
+        if (isset($this->cache['PAYMENT_OUTGOING'][$_position])) {
+            $_success = $this->cache['PAYMENT_OUTGOING'][$_position]['success'];
+            $this->position = $this->cache['PAYMENT_OUTGOING'][$_position]['position'];
+            $this->value = $this->cache['PAYMENT_OUTGOING'][$_position]['value'];
 
             return $_success;
         }
@@ -2555,7 +2554,7 @@ class Grammar extends MultibyteHack
                 $record = new Record('OutgoingPaymentResponse', $date, $ival, $reps, $payerNr, $amount, $bg, $ref);
 
                 if ($status) {
-                    $status->setAttribute('message_id', Layouts::LAYOUT_PAYMENT_RESPONSE . '.' . $status->getValue());
+                    $status->setAttribute('message_id', 'AutogiroPaymentResponseFile.' . $status->getValue());
                     $record->addChild($status);
                 }
 
@@ -2563,14 +2562,14 @@ class Grammar extends MultibyteHack
             });
         }
 
-        $this->cache['PAYMENT_OUTGOING_REC'][$_position] = array(
+        $this->cache['PAYMENT_OUTGOING'][$_position] = array(
             'success' => $_success,
             'position' => $this->position,
             'value' => $this->value
         );
 
         if (!$_success) {
-            $this->report($_position, 'PAYMENT_OUTGOING_REC');
+            $this->report($_position, 'PAYMENT_OUTGOING');
         }
 
         return $_success;
@@ -2606,7 +2605,7 @@ class Grammar extends MultibyteHack
                 $_position70 = $this->position;
 
                 $this->cut = false;
-                $_success = $this->parsePAYMENT_REFUND_REC();
+                $_success = $this->parsePAYMENT_REFUND();
 
                 if (!$_success) {
                     break;
@@ -2770,14 +2769,14 @@ class Grammar extends MultibyteHack
         return $_success;
     }
 
-    protected function parsePAYMENT_REFUND_REC()
+    protected function parsePAYMENT_REFUND()
     {
         $_position = $this->position;
 
-        if (isset($this->cache['PAYMENT_REFUND_REC'][$_position])) {
-            $_success = $this->cache['PAYMENT_REFUND_REC'][$_position]['success'];
-            $this->position = $this->cache['PAYMENT_REFUND_REC'][$_position]['position'];
-            $this->value = $this->cache['PAYMENT_REFUND_REC'][$_position]['value'];
+        if (isset($this->cache['PAYMENT_REFUND'][$_position])) {
+            $_success = $this->cache['PAYMENT_REFUND'][$_position]['success'];
+            $this->position = $this->cache['PAYMENT_REFUND'][$_position]['position'];
+            $this->value = $this->cache['PAYMENT_REFUND'][$_position]['value'];
 
             return $_success;
         }
@@ -2904,19 +2903,19 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$ival, &$reps, &$payerNr, &$amount, &$bg, &$ref, &$refundDate, &$status) {
-                $status->setAttribute('message_id', Layouts::LAYOUT_PAYMENT_RESPONSE . '.' . $status->getValue());
+                $status->setAttribute('message_id', 'AutogiroPaymentResponseFile.' . $status->getValue());
                 return new Record('RefundPaymentResponse', $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $refundDate, $status);
             });
         }
 
-        $this->cache['PAYMENT_REFUND_REC'][$_position] = array(
+        $this->cache['PAYMENT_REFUND'][$_position] = array(
             'success' => $_success,
             'position' => $this->position,
             'value' => $this->value
         );
 
         if (!$_success) {
-            $this->report($_position, 'PAYMENT_REFUND_REC');
+            $this->report($_position, 'PAYMENT_REFUND');
         }
 
         return $_success;
@@ -2956,12 +2955,12 @@ class Grammar extends MultibyteHack
                 $_cut77 = $this->cut;
 
                 $this->cut = false;
-                $_success = $this->parsePAYMENT_INCOMING_REC();
+                $_success = $this->parsePAYMENT_INCOMING();
 
                 if (!$_success && !$this->cut) {
                     $this->position = $_position76;
 
-                    $_success = $this->parsePAYMENT_OUTGOING_REC();
+                    $_success = $this->parsePAYMENT_OUTGOING();
                 }
 
                 $this->cut = $_cut77;
@@ -3005,7 +3004,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $this->value = call_user_func(function () use (&$open, &$recs, &$close) {
                 $recs[] = $close;
-                return new AutogiroFile(Layouts::LAYOUT_PAYMENT_RESPONSE_OLD, $open, ...$recs);
+                return new AutogiroFile('AutogiroPaymentResponseOldFile', $open, ...$recs);
             });
         }
 
@@ -3365,12 +3364,12 @@ class Grammar extends MultibyteHack
         $_cut85 = $this->cut;
 
         $this->cut = false;
-        $_success = $this->parseOLD_MANDATE_OPENING_REC();
+        $_success = $this->parseOLD_MANDATE_OPENING();
 
         if (!$_success && !$this->cut) {
             $this->position = $_position84;
 
-            $_success = $this->parseMANDATE_OPENING_REC();
+            $_success = $this->parseMANDATE_OPENING();
         }
 
         $this->cut = $_cut85;
@@ -3389,7 +3388,7 @@ class Grammar extends MultibyteHack
                 $_position86 = $this->position;
 
                 $this->cut = false;
-                $_success = $this->parseMANDATE_REC();
+                $_success = $this->parseMANDATE();
 
                 if (!$_success) {
                     break;
@@ -3430,7 +3429,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $this->value = call_user_func(function () use (&$open, &$mands, &$close) {
                 $mands[] = $close;
-                return new AutogiroFile(Layouts::LAYOUT_MANDATE_RESPONSE, $open, ...$mands);
+                return new AutogiroFile('AutogiroMandateResponseFile', $open, ...$mands);
             });
         }
 
@@ -3447,14 +3446,14 @@ class Grammar extends MultibyteHack
         return $_success;
     }
 
-    protected function parseMANDATE_OPENING_REC()
+    protected function parseMANDATE_OPENING()
     {
         $_position = $this->position;
 
-        if (isset($this->cache['MANDATE_OPENING_REC'][$_position])) {
-            $_success = $this->cache['MANDATE_OPENING_REC'][$_position]['success'];
-            $this->position = $this->cache['MANDATE_OPENING_REC'][$_position]['position'];
-            $this->value = $this->cache['MANDATE_OPENING_REC'][$_position]['value'];
+        if (isset($this->cache['MANDATE_OPENING'][$_position])) {
+            $_success = $this->cache['MANDATE_OPENING'][$_position]['success'];
+            $this->position = $this->cache['MANDATE_OPENING'][$_position]['position'];
+            $this->value = $this->cache['MANDATE_OPENING'][$_position]['value'];
 
             return $_success;
         }
@@ -3586,27 +3585,27 @@ class Grammar extends MultibyteHack
             });
         }
 
-        $this->cache['MANDATE_OPENING_REC'][$_position] = array(
+        $this->cache['MANDATE_OPENING'][$_position] = array(
             'success' => $_success,
             'position' => $this->position,
             'value' => $this->value
         );
 
         if (!$_success) {
-            $this->report($_position, 'MANDATE_OPENING_REC');
+            $this->report($_position, 'MANDATE_OPENING');
         }
 
         return $_success;
     }
 
-    protected function parseOLD_MANDATE_OPENING_REC()
+    protected function parseOLD_MANDATE_OPENING()
     {
         $_position = $this->position;
 
-        if (isset($this->cache['OLD_MANDATE_OPENING_REC'][$_position])) {
-            $_success = $this->cache['OLD_MANDATE_OPENING_REC'][$_position]['success'];
-            $this->position = $this->cache['OLD_MANDATE_OPENING_REC'][$_position]['position'];
-            $this->value = $this->cache['OLD_MANDATE_OPENING_REC'][$_position]['value'];
+        if (isset($this->cache['OLD_MANDATE_OPENING'][$_position])) {
+            $_success = $this->cache['OLD_MANDATE_OPENING'][$_position]['success'];
+            $this->position = $this->cache['OLD_MANDATE_OPENING'][$_position]['position'];
+            $this->value = $this->cache['OLD_MANDATE_OPENING'][$_position]['value'];
 
             return $_success;
         }
@@ -3698,27 +3697,27 @@ class Grammar extends MultibyteHack
             });
         }
 
-        $this->cache['OLD_MANDATE_OPENING_REC'][$_position] = array(
+        $this->cache['OLD_MANDATE_OPENING'][$_position] = array(
             'success' => $_success,
             'position' => $this->position,
             'value' => $this->value
         );
 
         if (!$_success) {
-            $this->report($_position, 'OLD_MANDATE_OPENING_REC');
+            $this->report($_position, 'OLD_MANDATE_OPENING');
         }
 
         return $_success;
     }
 
-    protected function parseMANDATE_REC()
+    protected function parseMANDATE()
     {
         $_position = $this->position;
 
-        if (isset($this->cache['MANDATE_REC'][$_position])) {
-            $_success = $this->cache['MANDATE_REC'][$_position]['success'];
-            $this->position = $this->cache['MANDATE_REC'][$_position]['position'];
-            $this->value = $this->cache['MANDATE_REC'][$_position]['value'];
+        if (isset($this->cache['MANDATE'][$_position])) {
+            $_success = $this->cache['MANDATE'][$_position]['success'];
+            $this->position = $this->cache['MANDATE'][$_position]['position'];
+            $this->value = $this->cache['MANDATE'][$_position]['value'];
 
             return $_success;
         }
@@ -3899,6 +3898,8 @@ class Grammar extends MultibyteHack
 
                 // A mandate-valid-from-date is only present in the old layout
                 if ($validDate) {
+                    // TODO error här om date är mellanslag.. Gör detta optional på något ballare sätt...
+                    // se bin/autogiro2xml PG_8502000149_BGM_2018-08-15_001.txt
                     $record->addChild(new Text($this->lineNr - 1, (string)$validDate, 'ValidFromDate'));
                 }
 
@@ -3906,14 +3907,14 @@ class Grammar extends MultibyteHack
             });
         }
 
-        $this->cache['MANDATE_REC'][$_position] = array(
+        $this->cache['MANDATE'][$_position] = array(
             'success' => $_success,
             'position' => $this->position,
             'value' => $this->value
         );
 
         if (!$_success) {
-            $this->report($_position, 'MANDATE_REC');
+            $this->report($_position, 'MANDATE');
         }
 
         return $_success;
@@ -4050,7 +4051,7 @@ class Grammar extends MultibyteHack
                 $_position102 = $this->position;
 
                 $this->cut = false;
-                $_success = $this->parsePAYMENT_REJECTION_RECORD();
+                $_success = $this->parsePAYMENT_REJECTION();
 
                 if (!$_success) {
                     break;
@@ -4091,7 +4092,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $this->value = call_user_func(function () use (&$open, &$recs, &$close) {
                 $recs[] = $close;
-                return new AutogiroFile(Layouts::LAYOUT_PAYMENT_REJECTION, $open, ...$recs);
+                return new AutogiroFile('AutogiroPaymentRejectionFile', $open, ...$recs);
             });
         }
 
@@ -4396,14 +4397,14 @@ class Grammar extends MultibyteHack
         return $_success;
     }
 
-    protected function parsePAYMENT_REJECTION_RECORD()
+    protected function parsePAYMENT_REJECTION()
     {
         $_position = $this->position;
 
-        if (isset($this->cache['PAYMENT_REJECTION_RECORD'][$_position])) {
-            $_success = $this->cache['PAYMENT_REJECTION_RECORD'][$_position]['success'];
-            $this->position = $this->cache['PAYMENT_REJECTION_RECORD'][$_position]['position'];
-            $this->value = $this->cache['PAYMENT_REJECTION_RECORD'][$_position]['value'];
+        if (isset($this->cache['PAYMENT_REJECTION'][$_position])) {
+            $_success = $this->cache['PAYMENT_REJECTION'][$_position]['success'];
+            $this->position = $this->cache['PAYMENT_REJECTION'][$_position]['position'];
+            $this->value = $this->cache['PAYMENT_REJECTION'][$_position]['value'];
 
             return $_success;
         }
@@ -4537,14 +4538,14 @@ class Grammar extends MultibyteHack
             });
         }
 
-        $this->cache['PAYMENT_REJECTION_RECORD'][$_position] = array(
+        $this->cache['PAYMENT_REJECTION'][$_position] = array(
             'success' => $_success,
             'position' => $this->position,
             'value' => $this->value
         );
 
         if (!$_success) {
-            $this->report($_position, 'PAYMENT_REJECTION_RECORD');
+            $this->report($_position, 'PAYMENT_REJECTION');
         }
 
         return $_success;
@@ -4857,7 +4858,7 @@ class Grammar extends MultibyteHack
                 $_position116 = $this->position;
 
                 $this->cut = false;
-                $_success = $this->parseAMENDMENT_RECORD();
+                $_success = $this->parseAMENDMENT();
 
                 if (!$_success) {
                     break;
@@ -4898,7 +4899,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $this->value = call_user_func(function () use (&$open, &$recs, &$close) {
                 $recs[] = $close;
-                return new AutogiroFile(Layouts::LAYOUT_AMENDMENT_RESPONSE, $open, ...$recs);
+                return new AutogiroFile('AutogiroAmendmentResponseFile', $open, ...$recs);
             });
         }
 
@@ -5109,14 +5110,14 @@ class Grammar extends MultibyteHack
         return $_success;
     }
 
-    protected function parseAMENDMENT_RECORD()
+    protected function parseAMENDMENT()
     {
         $_position = $this->position;
 
-        if (isset($this->cache['AMENDMENT_RECORD'][$_position])) {
-            $_success = $this->cache['AMENDMENT_RECORD'][$_position]['success'];
-            $this->position = $this->cache['AMENDMENT_RECORD'][$_position]['position'];
-            $this->value = $this->cache['AMENDMENT_RECORD'][$_position]['value'];
+        if (isset($this->cache['AMENDMENT'][$_position])) {
+            $_success = $this->cache['AMENDMENT'][$_position]['success'];
+            $this->position = $this->cache['AMENDMENT'][$_position]['position'];
+            $this->value = $this->cache['AMENDMENT'][$_position]['value'];
 
             return $_success;
         }
@@ -5243,19 +5244,19 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$tc, &$date, &$payerNr, &$type, &$amount, &$ref, &$comment) {
-                $tc->setAttribute('message_id', Layouts::LAYOUT_AMENDMENT_RESPONSE . '.TC.' . $tc->getValue());
+                $tc->setAttribute('message_id', 'AutogiroAmendmentResponseFile.TC.' . $tc->getValue());
                 return new Record('AmendmentResponse', $tc, $date, $payerNr, $type, $amount, $ref, $comment);
             });
         }
 
-        $this->cache['AMENDMENT_RECORD'][$_position] = array(
+        $this->cache['AMENDMENT'][$_position] = array(
             'success' => $_success,
             'position' => $this->position,
             'value' => $this->value
         );
 
         if (!$_success) {
-            $this->report($_position, 'AMENDMENT_RECORD');
+            $this->report($_position, 'AMENDMENT');
         }
 
         return $_success;

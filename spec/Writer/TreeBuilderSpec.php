@@ -7,7 +7,6 @@ namespace spec\byrokrat\autogiro\Writer;
 use byrokrat\autogiro\Writer\TreeBuilder;
 use byrokrat\autogiro\Writer\IntervalFormatter;
 use byrokrat\autogiro\Writer\RepititionsFormatter;
-use byrokrat\autogiro\Layouts;
 use byrokrat\autogiro\Tree\AutogiroFile;
 use byrokrat\autogiro\Tree\Date;
 use byrokrat\autogiro\Tree\ImmediateDate;
@@ -53,13 +52,13 @@ class TreeBuilderSpec extends ObjectBehavior
     {
         $this->addDeleteMandateRequest('payerNr');
         $this->reset();
-        $this->buildTree()->shouldBeLike(new AutogiroFile(Layouts::LAYOUT_REQUEST));
+        $this->buildTree()->shouldBeLike(new AutogiroFile('AutogiroRequestFile'));
     }
 
     function a_tree(string $sectionName, $bankgiro, $date, ...$nodes)
     {
         return new AutogiroFile(
-            Layouts::LAYOUT_REQUEST,
+            'AutogiroRequestFile',
             new Section(
                 $sectionName,
                 $this->an_opening_record_node($bankgiro, $date),

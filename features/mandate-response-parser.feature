@@ -20,7 +20,7 @@ Feature: Mandate response parser
     73000991234600000000000001058901003232323232005556000521     053320080611
     092008061199000000010
     """
-    Then I find a "LAYOUT_MANDATE_RESPONSE" layout
+    Then I find a "AutogiroMandateResponseFile" layout
     And I find 10 "MandateResponse" nodes
 
   Scenario: I parse the BGC testfile autogiro_gl_exempelfil_medgivandeavisering_fran-bankgirot-medgivanden-kontonummer_exemeplfil_sv.txt
@@ -37,7 +37,7 @@ Feature: Mandate response parser
     7300099123460000195809010000                                 033320041018000000
     092004011899000000007
     """
-    Then I find a "LAYOUT_MANDATE_RESPONSE" layout
+    Then I find a "AutogiroMandateResponseFile" layout
     And I find 7 "MandateResponse" nodes
 
   Scenario: I parse the BGC testfile autogiro_gl_medgivandeavisering_fran-bankgirot-medgivanden-bankgironummer_exempelfil_sv.txt
@@ -53,7 +53,7 @@ Feature: Mandate response parser
     7300099123460000000005551004000000000000000099616161191100000043220041108041116
     092004110899000000006
     """
-    Then I find a "LAYOUT_MANDATE_RESPONSE" layout
+    Then I find a "AutogiroMandateResponseFile" layout
     And I find 6 "MandateResponse" nodes
 
   Scenario: I extract a bankgiro account number
@@ -64,7 +64,7 @@ Feature: Mandate response parser
     7300099123460000000050501055                                 033320080611
     092008061199000000001
     """
-    Then I find a "LAYOUT_MANDATE_RESPONSE" layout
+    Then I find a "AutogiroMandateResponseFile" layout
     And the last "MandateResponse" contains account "5050-1055"
 
   Scenario: I parse a response where id and account are optional
@@ -75,4 +75,4 @@ Feature: Mandate response parser
     73005050105500000000000000010000000000000000000000000000     033320180322
     092018032299000000001
     """
-    Then I find a "LAYOUT_MANDATE_RESPONSE" layout
+    Then I find a "AutogiroMandateResponseFile" layout

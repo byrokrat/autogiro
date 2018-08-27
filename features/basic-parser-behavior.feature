@@ -40,4 +40,4 @@ Feature: Basic behavior
 
 
     """
-    Then I find a "LAYOUT_REQUEST" layout
+    Then I find a "AutogiroRequestFile" layout

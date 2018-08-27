@@ -28,10 +28,4 @@ namespace byrokrat\autogiro\Tree;
 class AutogiroFile extends Container
 {
     use TypeTrait;
-
-    public function __construct(string $layout, Node ...$nodes)
-    {
-        parent::__construct('AutogiroFile', ...$nodes);
-        $this->setAttribute('layout', $layout);
-    }
 }

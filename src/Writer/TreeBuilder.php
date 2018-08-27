@@ -22,7 +22,6 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Writer;
 
-use byrokrat\autogiro\Layouts;
 use byrokrat\autogiro\Tree\Account;
 use byrokrat\autogiro\Tree\Amount;
 use byrokrat\autogiro\Tree\AutogiroFile;
@@ -284,7 +283,7 @@ class TreeBuilder
             }
         }
 
-        return new AutogiroFile(Layouts::LAYOUT_REQUEST, ...$sections);
+        return new AutogiroFile('AutogiroRequestFile', ...$sections);
     }
 
     private function addPaymentRequest(

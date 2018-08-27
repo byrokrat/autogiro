@@ -21,7 +21,6 @@
 namespace byrokrat\autogiro\Parser;
 
 use byrokrat\autogiro\Exception\ContentException;
-use byrokrat\autogiro\Layouts;
 use byrokrat\autogiro\Tree\Account;
 use byrokrat\autogiro\Tree\Amount;
 use byrokrat\autogiro\Tree\PayeeBankgiro;
@@ -52,44 +51,44 @@ grammar Grammar extends MultibyteHack
     //
 
     REQUEST_FILE = sections:(REQ_MANDATE_SECTION / REQ_PAYMENT_SECTION / REQ_AMENDMENT_SECTION)+ {
-        return new AutogiroFile(Layouts::LAYOUT_REQUEST, ...$sections);
+        return new AutogiroFile('AutogiroRequestFile', ...$sections);
     };
 
-    REQ_OPENING_REC = '01' date:DATE 'AUTOGIRO' S20 S20 S4 bgcNr:BGC_NR bg:BANKGIRO EOR {
+    REQ_OPENING = '01' date:DATE 'AUTOGIRO' S20 S20 S4 bgcNr:BGC_NR bg:BANKGIRO EOR {
         return new Record('Opening', $date, $bgcNr, $bg);
     };
 
     // MANDATE REQUESTS
 
-    REQ_MANDATE_SECTION = open:REQ_OPENING_REC records:(REQ_DEL_MANDATE_REC / REQ_REJECT_MANDATE_REC / REQ_CREATE_MANDATE_REC / REQ_UPDATE_MANDATE_REC)+ {
+    REQ_MANDATE_SECTION = open:REQ_OPENING records:(REQ_DEL_MANDATE / REQ_REJECT_MANDATE / REQ_CREATE_MANDATE / REQ_UPDATE_MANDATE)+ {
         return new Section('MandateRequestSection', $open, ...$records);
     };
 
-    REQ_DEL_MANDATE_REC = '03' bg:BANKGIRO payerNr:PAYER_NR EOR {
+    REQ_DEL_MANDATE = '03' bg:BANKGIRO payerNr:PAYER_NR EOR {
         return new Record('DeleteMandateRequest', $bg, $payerNr);
     };
 
-    REQ_REJECT_MANDATE_REC = '04' bg:BANKGIRO payerNr:PAYER_NR TXT48 'AV' EOR {
+    REQ_REJECT_MANDATE = '04' bg:BANKGIRO payerNr:PAYER_NR TXT48 'AV' EOR {
         return new Record('RejectDigitalMandateRequest', $bg, $payerNr);
     };
 
-    REQ_CREATE_MANDATE_REC = '04' bg:BANKGIRO payerNr:PAYER_NR account:ACCOUNT16? id:ID? EOR {
+    REQ_CREATE_MANDATE = '04' bg:BANKGIRO payerNr:PAYER_NR account:ACCOUNT16? id:ID? EOR {
         return $id && trim($id->getValue())
             ? new Record('CreateMandateRequest', $bg, $payerNr, $account, $id)
             : new Record('AcceptDigitalMandateRequest', $bg, $payerNr);
     };
 
-    REQ_UPDATE_MANDATE_REC = '05' oldBg:BANKGIRO oldPayerNr:PAYER_NR newBg:BANKGIRO newPayerNr:PAYER_NR EOR {
+    REQ_UPDATE_MANDATE = '05' oldBg:BANKGIRO oldPayerNr:PAYER_NR newBg:BANKGIRO newPayerNr:PAYER_NR EOR {
         return new Record('UpdateMandateRequest', $oldBg, $oldPayerNr, $newBg, $newPayerNr);
     };
 
     // PAYMENT REQUESTS
 
-    REQ_PAYMENT_SECTION = open:REQ_OPENING_REC records:REQ_PAYMENT_REC+ {
+    REQ_PAYMENT_SECTION = open:REQ_OPENING records:REQ_PAYMENT+ {
         return new Section('PaymentRequestSection', $open, ...$records);
     };
 
-    REQ_PAYMENT_REC = tc:('82' / '32') date:(IMMEDIATE_DATE / DATE) ival:INTERVAL reps:REPS ' ' payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:VAR_TXT EOR {
+    REQ_PAYMENT = tc:('82' / '32') date:(IMMEDIATE_DATE / DATE) ival:INTERVAL reps:REPS ' ' payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:VAR_TXT EOR {
         $types = [
             '82' => 'IncomingPaymentRequest',
             '32' => 'OutgoingPaymentRequest',
@@ -100,12 +99,12 @@ grammar Grammar extends MultibyteHack
 
     // AMENDMENT REQUESTS
 
-    REQ_AMENDMENT_SECTION = open:REQ_OPENING_REC records:REQ_REVOCATION_REC+ {
+    REQ_AMENDMENT_SECTION = open:REQ_OPENING records:REQ_REVOCATION+ {
         return new Section('AmendmentRequestSection', $open, ...$records);
     };
 
-    REQ_REVOCATION_REC = &('2' [3-9]) tc:MSG2 bg:BANKGIRO payerNr:PAYER_NR date:DATE amount:AMOUNT12 type:MSG2 newDate:DATE ref:TXT16 EOR {
-        $tc->setAttribute('message_id', Layouts::LAYOUT_REQUEST . '.TC.' . $tc->getValue());
+    REQ_REVOCATION = &('2' [3-9]) tc:MSG2 bg:BANKGIRO payerNr:PAYER_NR date:DATE amount:AMOUNT12 type:MSG2 newDate:DATE ref:TXT16 EOR {
+        $tc->setAttribute('message_id', 'AutogiroRequestFile.TC.' . $tc->getValue());
         return new Record('AmendmentRequest', $tc, $bg, $payerNr, $date, $amount, $type, $newDate, $ref);
     };
 
@@ -115,12 +114,12 @@ grammar Grammar extends MultibyteHack
 
     PAYMENT_FILE = NEW_PAYMENT_FILE / OLD_PAYMENT_FILE / BGMAX_FILE;
 
-    NEW_PAYMENT_FILE = open:PAYMENT_OPENING_REC sections:(PAYMENT_INCOMING_SECTION / PAYMENT_OUTGOING_SECTION / PAYMENT_REFUND_SECTION)+ close:PAYMENT_CLOSING {
+    NEW_PAYMENT_FILE = open:PAYMENT_OPENING sections:(PAYMENT_INCOMING_SECTION / PAYMENT_OUTGOING_SECTION / PAYMENT_REFUND_SECTION)+ close:PAYMENT_CLOSING {
         $sections[] = $close;
-        return new AutogiroFile(Layouts::LAYOUT_PAYMENT_RESPONSE, $open, ...$sections);
+        return new AutogiroFile('AutogiroPaymentResponseFile', $open, ...$sections);
     };
 
-    PAYMENT_OPENING_REC = '01' 'AUTOGIRO' S10 S4 datetime:DATETIME 'BET. SPEC & STOPP TK' ^ bgcNr:BGC_NR bg:BANKGIRO EOR {
+    PAYMENT_OPENING = '01' 'AUTOGIRO' S10 S4 datetime:DATETIME 'BET. SPEC & STOPP TK' ^ bgcNr:BGC_NR bg:BANKGIRO EOR {
         return new Record('Opening', $datetime, $bgcNr, $bg);
     };
 
@@ -130,7 +129,7 @@ grammar Grammar extends MultibyteHack
 
     // INCOMING PAYMENTS
 
-    PAYMENT_INCOMING_SECTION = open:PAYMENT_INCOMING_OPENING records:(PAYMENT_INCOMING_REC)* {
+    PAYMENT_INCOMING_SECTION = open:PAYMENT_INCOMING_OPENING records:(PAYMENT_INCOMING)* {
         return new Section('IncomingPaymentResponseSection', $open, ...$records);
     };
 
@@ -138,11 +137,11 @@ grammar Grammar extends MultibyteHack
         return new Record('IncomingPaymentResponseSectionOpening', $account, $date, $serial, $amount, $nrRecs);
     };
 
-    PAYMENT_INCOMING_REC = '82' date:DATE ival:INTERVAL reps:REPS A payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:TXT16 A10? status:MSG1? EOR {
+    PAYMENT_INCOMING = '82' date:DATE ival:INTERVAL reps:REPS A payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:TXT16 A10? status:MSG1? EOR {
         $record = new Record('IncomingPaymentResponse', $date, $ival, $reps, $payerNr, $amount, $bg, $ref);
 
         if ($status) {
-            $status->setAttribute('message_id', Layouts::LAYOUT_PAYMENT_RESPONSE . '.' . $status->getValue());
+            $status->setAttribute('message_id', 'AutogiroPaymentResponseFile.' . $status->getValue());
             $record->addChild($status);
         }
 
@@ -151,7 +150,7 @@ grammar Grammar extends MultibyteHack
 
     // OUTGOING PAYMENTS
 
-    PAYMENT_OUTGOING_SECTION = open:PAYMENT_OUTGOING_OPENING records:(PAYMENT_OUTGOING_REC)* {
+    PAYMENT_OUTGOING_SECTION = open:PAYMENT_OUTGOING_OPENING records:(PAYMENT_OUTGOING)* {
         return new Section('OutgoingPaymentResponseSection', $open, ...$records);
     };
 
@@ -159,11 +158,11 @@ grammar Grammar extends MultibyteHack
         return new Record('OutgoingPaymentResponseSectionOpening', $account, $date, $serial, $amount, $nrRecs);
     };
 
-    PAYMENT_OUTGOING_REC = '32' date:DATE ival:INTERVAL reps:REPS A payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:TXT16 A10? status:MSG1? EOR {
+    PAYMENT_OUTGOING = '32' date:DATE ival:INTERVAL reps:REPS A payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:TXT16 A10? status:MSG1? EOR {
         $record = new Record('OutgoingPaymentResponse', $date, $ival, $reps, $payerNr, $amount, $bg, $ref);
 
         if ($status) {
-            $status->setAttribute('message_id', Layouts::LAYOUT_PAYMENT_RESPONSE . '.' . $status->getValue());
+            $status->setAttribute('message_id', 'AutogiroPaymentResponseFile.' . $status->getValue());
             $record->addChild($status);
         }
 
@@ -172,7 +171,7 @@ grammar Grammar extends MultibyteHack
 
     // REFUND PAYMENTS
 
-    PAYMENT_REFUND_SECTION = open:PAYMENT_REFUND_OPENING records:(PAYMENT_REFUND_REC)* {
+    PAYMENT_REFUND_SECTION = open:PAYMENT_REFUND_OPENING records:(PAYMENT_REFUND)* {
         return new Section('RefundPaymentResponseSection', $open, ...$records);
     };
 
@@ -180,16 +179,16 @@ grammar Grammar extends MultibyteHack
         return new Record('RefundPaymentResponseSectionOpening', $account, $date, $serial, $amount, $nrRecs);
     };
 
-    PAYMENT_REFUND_REC = '77' date:DATE ival:INTERVAL reps:REPS A payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:TXT16 refundDate:DATE status:MSG2 EOR {
-        $status->setAttribute('message_id', Layouts::LAYOUT_PAYMENT_RESPONSE . '.' . $status->getValue());
+    PAYMENT_REFUND = '77' date:DATE ival:INTERVAL reps:REPS A payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:TXT16 refundDate:DATE status:MSG2 EOR {
+        $status->setAttribute('message_id', 'AutogiroPaymentResponseFile.' . $status->getValue());
         return new Record('RefundPaymentResponse', $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $refundDate, $status);
     };
 
     // PAYMENT RESPONSES IN THE OLD FORMAT
 
-    OLD_PAYMENT_FILE = open:OLD_PAYMENT_OPENING recs:(PAYMENT_INCOMING_REC / PAYMENT_OUTGOING_REC )* close:OLD_PAYMENT_CLOSING {
+    OLD_PAYMENT_FILE = open:OLD_PAYMENT_OPENING recs:(PAYMENT_INCOMING / PAYMENT_OUTGOING )* close:OLD_PAYMENT_CLOSING {
         $recs[] = $close;
-        return new AutogiroFile(Layouts::LAYOUT_PAYMENT_RESPONSE_OLD, $open, ...$recs);
+        return new AutogiroFile('AutogiroPaymentResponseOldFile', $open, ...$recs);
     };
 
     OLD_PAYMENT_OPENING = '01' date:DATE 'AUTOGIRO' '9900' S20 S20 bgcNr:BGC_NR bg:BANKGIRO EOR {
@@ -210,20 +209,20 @@ grammar Grammar extends MultibyteHack
     // MANDATE RESPONSES
     //
 
-    MANDATE_FILE = open:(OLD_MANDATE_OPENING_REC / MANDATE_OPENING_REC) mands:MANDATE_REC* close:MANDATE_CLOSING {
+    MANDATE_FILE = open:(OLD_MANDATE_OPENING / MANDATE_OPENING) mands:MANDATE* close:MANDATE_CLOSING {
         $mands[] = $close;
-        return new AutogiroFile(Layouts::LAYOUT_MANDATE_RESPONSE, $open, ...$mands);
+        return new AutogiroFile('AutogiroMandateResponseFile', $open, ...$mands);
     };
 
-    MANDATE_OPENING_REC = '01' 'AUTOGIRO' S10 S4 date:DATE S10 '  AG-MEDAVI' ^ S10 S bgcNr:BGC_NR bg:BANKGIRO EOR {
+    MANDATE_OPENING = '01' 'AUTOGIRO' S10 S4 date:DATE S10 '  AG-MEDAVI' ^ S10 S bgcNr:BGC_NR bg:BANKGIRO EOR {
         return new Record('Opening', $date, $bgcNr, $bg);
     };
 
-    OLD_MANDATE_OPENING_REC = '01' date:DATE '9900' bg:BANKGIRO 'AG-MEDAVI' ^ EOR {
+    OLD_MANDATE_OPENING = '01' date:DATE '9900' bg:BANKGIRO 'AG-MEDAVI' ^ EOR {
         return new Record('Opening', $date, $bg);
     };
 
-    MANDATE_REC = '73' bg:BANKGIRO payerNr:PAYER_NR account:ACCOUNT16 id:ID (S5 / '00000') info:MSG2 status:MSG2 date:DATE validDate:$(A5 A)? EOR {
+    MANDATE = '73' bg:BANKGIRO payerNr:PAYER_NR account:ACCOUNT16 id:ID (S5 / '00000') info:MSG2 status:MSG2 date:DATE validDate:$(A5 A)? EOR {
         // If account is empty a valid bankgiro number may be read from the payer number field
         if (!trim($account->getValue())) {
             $account = new Account($account->getLineNr(), $payerNr->getValue());
@@ -236,6 +235,8 @@ grammar Grammar extends MultibyteHack
 
         // A mandate-valid-from-date is only present in the old layout
         if ($validDate) {
+            // TODO error här om date är mellanslag.. Gör detta optional på något ballare sätt...
+            // se bin/autogiro2xml PG_8502000149_BGM_2018-08-15_001.txt
             $record->addChild(new Text($this->lineNr - 1, (string)$validDate, 'ValidFromDate'));
         }
 
@@ -250,9 +251,9 @@ grammar Grammar extends MultibyteHack
     // REJECTED PAYMENT_RESPONSE
     //
 
-    PAYMENT_REJECTION_FILE = open:(PAYMENT_REJECTION_OPENING / OLD_PAYMENT_REJECTION_OPENING) recs:PAYMENT_REJECTION_RECORD* close:PAYMENT_REJECTION_CLOSING {
+    PAYMENT_REJECTION_FILE = open:(PAYMENT_REJECTION_OPENING / OLD_PAYMENT_REJECTION_OPENING) recs:PAYMENT_REJECTION* close:PAYMENT_REJECTION_CLOSING {
         $recs[] = $close;
-        return new AutogiroFile(Layouts::LAYOUT_PAYMENT_REJECTION, $open, ...$recs);
+        return new AutogiroFile('AutogiroPaymentRejectionFile', $open, ...$recs);
     };
 
     PAYMENT_REJECTION_OPENING = '01' 'AUTOGIRO' S10 S4 date:DATE S10 '  AVVISADE BET UPPDR  ' ^ bgcNr:BGC_NR bg:BANKGIRO EOR {
@@ -263,7 +264,7 @@ grammar Grammar extends MultibyteHack
         return new Record('Opening', $date, $bgcNr, $bg);
     };
 
-    PAYMENT_REJECTION_RECORD = tc:('82' / '32') date:DATE ival:INTERVAL reps:REPS payerNr:PAYER_NR amount:AMOUNT12 ref:TXT16 comment:MSG2 EOR {
+    PAYMENT_REJECTION = tc:('82' / '32') date:DATE ival:INTERVAL reps:REPS payerNr:PAYER_NR amount:AMOUNT12 ref:TXT16 comment:MSG2 EOR {
         $types = [
             '82' => 'IncomingPaymentRejectionResponse',
             '32' => 'OutgoingPaymentRejectionResponse',
@@ -290,9 +291,9 @@ grammar Grammar extends MultibyteHack
         return $date;
     };
 
-    AMENDMENT_FILE = open:(OLD_AMENDMENT_OPENING / AMENDMENT_OPENING) recs:AMENDMENT_RECORD* close:AMENDMENT_CLOSING {
+    AMENDMENT_FILE = open:(OLD_AMENDMENT_OPENING / AMENDMENT_OPENING) recs:AMENDMENT* close:AMENDMENT_CLOSING {
         $recs[] = $close;
-        return new AutogiroFile(Layouts::LAYOUT_AMENDMENT_RESPONSE, $open, ...$recs);
+        return new AutogiroFile('AutogiroAmendmentResponseFile', $open, ...$recs);
     };
 
     AMENDMENT_OPENING = date:OPENING_INTRO 'MAKULERING/ÄNDRING  ' ^ bgcNr:BGC_NR bg:BANKGIRO EOR {
@@ -303,8 +304,8 @@ grammar Grammar extends MultibyteHack
         return new Record('Opening', $date, $bgcNr, $bg);
     };
 
-    AMENDMENT_RECORD = !'09' tc:MSG2 date:DATE payerNr:PAYER_NR type:MSG2 amount:AMOUNT12 A8 A8 ref:TXT16 comment:MSG2 EOR {
-        $tc->setAttribute('message_id', Layouts::LAYOUT_AMENDMENT_RESPONSE . '.TC.' . $tc->getValue());
+    AMENDMENT = !'09' tc:MSG2 date:DATE payerNr:PAYER_NR type:MSG2 amount:AMOUNT12 A8 A8 ref:TXT16 comment:MSG2 EOR {
+        $tc->setAttribute('message_id', 'AutogiroAmendmentResponseFile.TC.' . $tc->getValue());
         return new Record('AmendmentResponse', $tc, $date, $payerNr, $type, $amount, $ref, $comment);
     };
 

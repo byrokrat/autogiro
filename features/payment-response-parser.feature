@@ -28,7 +28,7 @@ Feature: Payment response parser
     77200911050    000000000000011500000005000000099123460000000FAKTNR1492009111001
     09200911109900000001000000000005000001000000000003000002000000000002
     """
-    Then I find a "LAYOUT_PAYMENT_RESPONSE" layout
+    Then I find a "AutogiroPaymentResponseFile" layout
 
   Scenario: I parse 'old' testfile 'autogiro_gl_betalningsspec-stoppadebetalningar-tackningskontroll_fran-bankgirot-medgivanden-bankgironummer_exempelfil_sv.txt'
     Given a parser that ignores account and id structures
@@ -52,4 +52,4 @@ Feature: Payment response parser
     82200410280    000000000000101500000004890000099123460809015                   9
     09200410279900              0000016874000000010000140000000000547500000000000000
     """
-    Then I find a "LAYOUT_PAYMENT_RESPONSE_OLD" layout
+    Then I find a "AutogiroPaymentResponseOldFile" layout

@@ -6,6 +6,7 @@ namespace spec\byrokrat\autogiro\Tree;
 
 use byrokrat\autogiro\Tree\AutogiroFile;
 use byrokrat\autogiro\Tree\Container;
+use byrokrat\autogiro\Tree\Text;
 use byrokrat\autogiro\Exception\LogicException;
 use PhpSpec\ObjectBehavior;
 
@@ -28,17 +29,12 @@ class AutogiroFileSpec extends ObjectBehavior
 
     function it_contains_a_name()
     {
-        $this->getName()->shouldEqual('AutogiroFile');
+        $this->beConstructedWith('custom-name');
+        $this->getName()->shouldEqual('custom-name');
     }
 
     function it_contains_a_type()
     {
         $this->getType()->shouldEqual('AutogiroFile');
-    }
-
-    function it_contains_a_layout_name()
-    {
-        $this->beConstructedWith('some-name');
-        $this->getAttribute('layout')->shouldEqual('some-name');
     }
 }

@@ -42,7 +42,7 @@ class MessageVisitor extends ErrorAwareVisitor
 
     public function beforeAutogiroFile(AutogiroFile $node): void
     {
-        $this->layout = $node->getAttribute('layout');
+        $this->layout = $node->getName();
     }
 
     public function beforeMessage(Message $node): void
