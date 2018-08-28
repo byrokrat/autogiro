@@ -24,28 +24,49 @@ class XmlWritingVisitorSpec extends ObjectBehavior
 
     function it_writes_elements_before(Node $node, $writer, $stringifier)
     {
-        $node->getName()->willReturn('type');
-        $writer->startElement('type')->shouldBeCalled();
+        $node->getName()->willReturn('name');
+        $writer->startElement('name')->shouldBeCalled();
+
+        $node->getValue()->willReturn('raw_value');
+        $stringifier->stringify('raw_value')->willReturn('stringified_value');
+        $writer->text('stringified_value')->shouldBeCalled();
+
+        $node->getType()->willReturn('type_name');
+        $writer->writeAttribute('type', 'type_name')->shouldBeCalled();
 
         $node->getAttributes()->willReturn(['name' => 'value']);
         $stringifier->stringify('value')->willReturn('stringified_value');
         $writer->writeAttribute('name', 'stringified_value')->shouldBeCalled();
 
-        $node->getValue()->willReturn('value');
-        $writer->text('value')->shouldBeCalled();
+        $this->visitBefore($node);
+    }
+
+    function it_ignores_type_if_same_as_name(Node $node, $writer)
+    {
+        $node->getName()->willReturn('foo');
+        $writer->startElement('foo')->shouldBeCalled();
+
+        $node->getType()->willReturn('foo');
+        $writer->writeAttribute('type', 'foo')->shouldNotBeCalled();
+
+        $node->getAttributes()->willReturn([]);
+        $node->getValue()->willReturn('');
 
         $this->visitBefore($node);
     }
 
     function it_ignores_void_values(Node $node, $writer)
     {
-        $node->getName()->willReturn('type');
-        $writer->startElement('type')->shouldBeCalled();
+        $node->getName()->willReturn('name');
+        $writer->startElement('name')->shouldBeCalled();
+
+        $node->getType()->willReturn('type_name');
+        $writer->writeAttribute('type', 'type_name')->shouldBeCalled();
 
         $node->getAttributes()->willReturn([]);
 
         $node->getValue()->willReturn('');
-        $writer->text('value')->shouldNotBeCalled();
+        $writer->text(Argument::any())->shouldNotBeCalled();
 
         $this->visitBefore($node);
     }
