@@ -30,8 +30,6 @@ use byrokrat\autogiro\Tree\Date;
 use byrokrat\autogiro\Tree\Text;
 use byrokrat\autogiro\Tree\Number;
 use byrokrat\autogiro\Tree\Obj;
-use byrokrat\autogiro\Tree\PayeeBankgiro;
-use byrokrat\autogiro\Tree\Account;
 use byrokrat\autogiro\Tree\Interval;
 use byrokrat\amount\Currency\SEK;
 use byrokrat\banking\AccountNumber;
@@ -75,31 +73,35 @@ class PrintingVisitor extends Visitor
         $this->output->write($node->getValue());
     }
 
-    public function beforePayeeBgcNumber(Number $node): void
-    {
-        $this->output->write(str_pad($node->getValue(), 6, '0', STR_PAD_LEFT));
-    }
-
-    public function beforePayeeBankgiro(PayeeBankgiro $node): void
-    {
-        $this->assertAttribute($node, 'account', AccountNumber::CLASS);
-        $number = $node->getAttribute('account')->getSerialNumber() . $node->getAttribute('account')->getCheckDigit();
-        $this->output->write(str_pad($number, 10, '0', STR_PAD_LEFT));
-    }
-
     public function beforePayerNumber(Number $node): void
     {
         $this->output->write(str_pad($node->getValue(), 16, '0', STR_PAD_LEFT));
     }
 
-    public function beforeAccount(Account $node): void
+    public function beforePayeeBgcNumber(Number $node): void
     {
-        $this->assertAttribute($node, 'account', AccountNumber::CLASS);
-        $number = $node->getAttribute('account')->getSerialNumber() . $node->getAttribute('account')->getCheckDigit();
-        $this->output->write(
-            $node->getAttribute('account')->getClearingNumber()
-            . str_pad($number, 12, '0', STR_PAD_LEFT)
-        );
+        $this->output->write(str_pad($node->getValue(), 6, '0', STR_PAD_LEFT));
+    }
+
+    public function beforePayeeBankgiro(Obj $node): void
+    {
+        if ($node->getValue() instanceof AccountNumber) {
+            $account = $node->getValue();
+            $this->output->write(
+                str_pad($account->getSerialNumber() . $account->getCheckDigit(), 10, '0', STR_PAD_LEFT)
+            );
+        }
+    }
+
+    public function beforeAccount(Obj $node): void
+    {
+        if ($node->getValue() instanceof AccountNumber) {
+            $account = $node->getValue();
+            $this->output->write(
+                $account->getClearingNumber()
+                . str_pad($account->getSerialNumber() . $account->getCheckDigit(), 12, '0', STR_PAD_LEFT)
+            );
+        }
     }
 
     public function beforeInterval(Interval $node): void

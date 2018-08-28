@@ -12,8 +12,6 @@ use byrokrat\autogiro\Tree\Date;
 use byrokrat\autogiro\Tree\Text;
 use byrokrat\autogiro\Tree\Number;
 use byrokrat\autogiro\Tree\Obj;
-use byrokrat\autogiro\Tree\PayeeBankgiro;
-use byrokrat\autogiro\Tree\Account;
 use byrokrat\autogiro\Tree\Interval;
 use byrokrat\autogiro\Visitor\Visitor;
 use byrokrat\amount\Currency\SEK;
@@ -75,38 +73,6 @@ class PrintingVisitorSpec extends ObjectBehavior
         $output->write('foobar')->shouldHaveBeenCalled();
     }
 
-    function it_prints_payee_bgc_numbers(Number $node, $output)
-    {
-        $node->getValue()->willReturn('111');
-        $this->beforePayeeBgcNumber($node);
-        $output->write(Argument::is('000111'))->shouldHaveBeenCalled();
-    }
-
-    function it_prints_payee_bankgiro_numbers(PayeeBankgiro $node, AccountNumber $account, $output)
-    {
-        $account->getSerialNumber()->willReturn('1234567');
-        $account->getCheckDigit()->willReturn('8');
-        $node->hasAttribute('account')->willReturn(true);
-        $node->getAttribute('account')->willReturn($account);
-        $this->beforePayeeBankgiro($node);
-        $output->write(Argument::is('0012345678'))->shouldHaveBeenCalled();
-    }
-
-    function it_fails_on_missing_payee_bankgiro_numbers(PayeeBankgiro $node)
-    {
-        $node->hasAttribute('account')->willReturn(false);
-        $node->getName()->willReturn('');
-        $this->shouldThrow(LogicException::CLASS)->duringBeforePayeeBankgiro($node);
-    }
-
-    function it_fails_on_unvalid_payee_bankgiro_numbers(PayeeBankgiro $node)
-    {
-        $node->hasAttribute('account')->willReturn(true);
-        $node->getAttribute('account')->willReturn('not-an-object');
-        $node->getName()->willReturn('');
-        $this->shouldThrow(LogicException::CLASS)->duringBeforePayeeBankgiro($node);
-    }
-
     function it_prints_payer_numbers(Number $node, $output)
     {
         $node->getValue()->willReturn('1234567890');
@@ -114,30 +80,44 @@ class PrintingVisitorSpec extends ObjectBehavior
         $output->write(Argument::is('0000001234567890'))->shouldHaveBeenCalled();
     }
 
-    function it_prints_account_numbers(Account $node, AccountNumber $account, $output)
+    function it_prints_payee_bgc_numbers(Number $node, $output)
+    {
+        $node->getValue()->willReturn('111');
+        $this->beforePayeeBgcNumber($node);
+        $output->write(Argument::is('000111'))->shouldHaveBeenCalled();
+    }
+
+    function it_prints_payee_bankgiro_numbers(Obj $node, AccountNumber $account, $output)
+    {
+        $account->getSerialNumber()->willReturn('1234567');
+        $account->getCheckDigit()->willReturn('8');
+        $node->getValue()->willReturn($account);
+        $this->beforePayeeBankgiro($node);
+        $output->write(Argument::is('0012345678'))->shouldHaveBeenCalled();
+    }
+
+    function it_fails_on_unvalid_payee_bankgiro_numbers(Obj $node, $output)
+    {
+        $node->getValue()->willReturn('not-an-object');
+        $this->beforePayeeBankgiro($node);
+        $output->write(Argument::any())->shouldNotHaveBeenCalled();
+    }
+
+    function it_prints_account_numbers(Obj $node, AccountNumber $account, $output)
     {
         $account->getClearingNumber()->willReturn('1111');
         $account->getSerialNumber()->willReturn('1234567');
         $account->getCheckDigit()->willReturn('8');
-        $node->hasAttribute('account')->willReturn(true);
-        $node->getAttribute('account')->willReturn($account);
+        $node->getValue()->willReturn($account);
         $this->beforeAccount($node);
         $output->write('1111000012345678')->shouldHaveBeenCalled();
     }
 
-    function it_fails_on_missing_account_numbers(Account $node)
+    function it_fails_on_invalid_account_numbers(Obj $node, $output)
     {
-        $node->hasAttribute('account')->willReturn(false);
-        $node->getName()->willReturn('');
-        $this->shouldThrow(LogicException::CLASS)->duringBeforeAccount($node);
-    }
-
-    function it_fails_on_invalid_account_numbers(Account $node)
-    {
-        $node->hasAttribute('account')->willReturn(true);
-        $node->getAttribute('account')->willReturn('not-an-object');
-        $node->getName()->willReturn('');
-        $this->shouldThrow(LogicException::CLASS)->duringBeforeAccount($node);
+        $node->getValue()->willReturn('not-an-object');
+        $output->write(Argument::any())->shouldNotBeCalled();
+        $this->beforeAccount($node);
     }
 
     function it_prints_intervals(Interval $node, $output)

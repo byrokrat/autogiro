@@ -22,16 +22,15 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Visitor;
 
-use byrokrat\autogiro\Tree\Account;
 use byrokrat\autogiro\Tree\Node;
-use byrokrat\autogiro\Tree\PayeeBankgiro;
+use byrokrat\autogiro\Tree\Obj;
 use byrokrat\banking\AccountFactoryInterface;
 use byrokrat\banking\Exception as BankingException;
 
 /**
  * Validates the structure of account numbers in tree
  *
- * Creates account object as attribute 'account'
+ * Creates account object as child 'Object'
  */
 class AccountVisitor extends ErrorAwareVisitor
 {
@@ -55,31 +54,35 @@ class AccountVisitor extends ErrorAwareVisitor
         $this->bankgiroFactory = $bankgiroFactory;
     }
 
-    public function beforeAccount(Account $node): void
+    public function beforeAccount(Node $node): void
     {
-        $this->writeAccountAttr($node->getValue(), $node, $this->accountFactory);
+        $this->writeAccount($node, $this->accountFactory);
     }
 
-    public function beforePayeeBankgiro(PayeeBankgiro $node): void
+    public function beforePayeeBankgiro(Node $node): void
     {
-        $this->writeAccountAttr($node->getValue(), $node, $this->bankgiroFactory);
+        $this->writeAccount($node, $this->bankgiroFactory);
     }
 
-    private function writeAccountAttr(string $number, Node $node, AccountFactoryInterface $factory): void
+    private function writeAccount(Node $node, AccountFactoryInterface $factory): void
     {
-        if ($node->hasAttribute('account')) {
+        if ($node->hasChild('Object')) {
+            return;
+        }
+
+        $number = (string)$node->getChild('Number')->getValue();
+
+        if (trim($number, '0') == '') {
             return;
         }
 
         try {
-            $node->setAttribute(
-                'account',
-                $factory->createAccount($number)
-            );
+            $node->addChild(new Obj($node->getLineNr(), $factory->createAccount($number)));
         } catch (BankingException $e) {
             $this->getErrorObject()->addError(
-                "Invalid account number %s on line %s",
+                "Invalid account number %s (%s) on line %s",
                 $number,
+                $e->getMessage(),
                 (string)$node->getLineNr()
             );
         }

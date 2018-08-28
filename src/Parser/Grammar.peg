@@ -21,9 +21,7 @@
 namespace byrokrat\autogiro\Parser;
 
 use byrokrat\autogiro\Exception\ContentException;
-use byrokrat\autogiro\Tree\Account;
 use byrokrat\autogiro\Tree\Container;
-use byrokrat\autogiro\Tree\PayeeBankgiro;
 use byrokrat\autogiro\Tree\ImmediateDate;
 use byrokrat\autogiro\Tree\Date;
 use byrokrat\autogiro\Tree\DateTime;
@@ -224,8 +222,8 @@ grammar Grammar extends MultibyteHack
 
     MANDATE = '73' bg:BANKGIRO payerNr:PAYER_NR account:ACCOUNT16 id:ID (S5 / '00000') info:MSG2 status:MSG2 date:DATE validDate:$(A5 A)? EOR {
         // If account is empty a valid bankgiro number may be read from the payer number field
-        if (!trim($account->getValue())) {
-            $account = new Account($account->getLineNr(), $payerNr->getValue());
+        if (!trim($account->getChild('Number')->getValue())) {
+            $account = new Container('Account', new Number($account->getLineNr(), $payerNr->getValue()));
         }
 
         $info->setAttribute('message_id', "73.info.{$info->getValue()}");
@@ -320,11 +318,11 @@ grammar Grammar extends MultibyteHack
     // EXTERNAL TYPES
 
     ACCOUNT16 = number:$(A10 A5 A) {
-        return new Account($this->lineNr, $number);
+        return new Container('Account', new Number($this->lineNr, $number));
     };
 
     ACCOUNT35 = number:$(A10 A10 A10 A5) {
-        return new Account($this->lineNr, $number);
+        return new Container('Account', new Number($this->lineNr, $number));
     };
 
     AMOUNT12 = amount:$(A10 A2) {
@@ -336,7 +334,7 @@ grammar Grammar extends MultibyteHack
     };
 
     BANKGIRO = number:A10 {
-        return new PayeeBankgiro($this->lineNr, $number);
+        return new Container('PayeeBankgiro', new Number($this->lineNr, $number));
     };
 
     ID = number:$(A10 A2) {

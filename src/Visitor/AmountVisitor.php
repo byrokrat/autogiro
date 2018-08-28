@@ -28,7 +28,7 @@ use byrokrat\amount\Currency\SEK;
 use byrokrat\amount\Exception as AmountException;
 
 /**
- * Create amount object under attribute 'amount'
+ * Create amount object under child 'Object'
  */
 class AmountVisitor extends ErrorAwareVisitor
 {

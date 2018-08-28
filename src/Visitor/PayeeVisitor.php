@@ -54,14 +54,14 @@ class PayeeVisitor extends ErrorAwareVisitor
     public function beforePayeeBankgiro(Node $node): void
     {
         if (!$this->payeeBg) {
-            $this->payeeBg = (string)$node->getValue();
+            $this->payeeBg = (string)$node->getChild('Number')->getValue();
         }
 
-        if ($node->getValue() != $this->payeeBg) {
+        if ($node->getChild('Number')->getValue() != $this->payeeBg) {
             $this->getErrorObject()->addError(
                 "Non-matching payee bankgiro numbers (expecting: %s, found: %s) on line %s",
                 $this->payeeBg,
-                (string)$node->getValue(),
+                (string)$node->getChild('Number')->getValue(),
                 (string)$node->getLineNr()
             );
         }
@@ -73,7 +73,7 @@ class PayeeVisitor extends ErrorAwareVisitor
     public function beforePayeeBgcNumber(Node $node): void
     {
         if (!$this->payeeBgcNr) {
-            $this->payeeBgcNr = $node->getValue();
+            $this->payeeBgcNr = (string)$node->getValue();
         }
 
         if ($node->getValue() != $this->payeeBgcNr) {

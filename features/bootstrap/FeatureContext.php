@@ -88,7 +88,7 @@ class FeatureContext implements Context, SnippetAcceptingContext
 
         Assertions::assertEquals(
             $number,
-            array_pop($nodes)->getChild('account')->getAttribute('account')->getNumber()
+            array_pop($nodes)->getChild('Account')->getChild('Object')->getValue()->getNumber()
         );
     }
 

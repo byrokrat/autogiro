@@ -22,14 +22,12 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Writer;
 
-use byrokrat\autogiro\Tree\Account;
 use byrokrat\autogiro\Tree\AutogiroFile;
 use byrokrat\autogiro\Tree\Date;
 use byrokrat\autogiro\Tree\ImmediateDate;
 use byrokrat\autogiro\Tree\Interval;
 use byrokrat\autogiro\Tree\Number;
 use byrokrat\autogiro\Tree\Obj;
-use byrokrat\autogiro\Tree\PayeeBankgiro;
 use byrokrat\autogiro\Tree\Record;
 use byrokrat\autogiro\Tree\Section;
 use byrokrat\autogiro\Tree\Text;
@@ -78,7 +76,7 @@ class TreeBuilder
     private $bgcNr;
 
     /**
-     * @var PayeeBankgiro Wrapper around payee bankgiro account number
+     * @var Obj Wrapper around payee bankgiro account number
      */
     private $payeeBgNode;
 
@@ -112,7 +110,7 @@ class TreeBuilder
         RepititionsFormatter $repititionsFormatter
     ) {
         $this->bgcNr = $bgcNr;
-        $this->payeeBgNode = PayeeBankgiro::fromBankgiro($bankgiro);
+        $this->payeeBgNode = new Obj(0, $bankgiro, 'PayeeBankgiro');
         $this->date = $date;
         $this->intervalFormatter = $intervalFormatter;
         $this->repititionsFormatter = $repititionsFormatter;
@@ -147,7 +145,7 @@ class TreeBuilder
             'CreateMandateRequest',
             $this->payeeBgNode,
             new Number(0, $payerNr, 'PayerNumber'),
-            Account::fromAccount($account),
+            new Obj(0, $account, 'Account'),
             new Obj(0, $id, 'StateId'),
             new Text(0, str_pad('', 24))
         );

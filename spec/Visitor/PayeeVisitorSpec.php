@@ -7,8 +7,7 @@ namespace spec\byrokrat\autogiro\Visitor;
 use byrokrat\autogiro\Visitor\PayeeVisitor;
 use byrokrat\autogiro\Visitor\ErrorAwareVisitor;
 use byrokrat\autogiro\Visitor\ErrorObject;
-use byrokrat\autogiro\Tree\PayeeBankgiro;
-use byrokrat\autogiro\Tree\Number;
+use byrokrat\autogiro\Tree\Node;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -26,15 +25,22 @@ class PayeeVisitorSpec extends ObjectBehavior
 
     function let(
         ErrorObject $errorObj,
-        PayeeBankgiro $bgA,
-        PayeeBankgiro $bgB,
-        Number $custA,
-        Number $custB
+        Node $a,
+        Node $b,
+        Node $bgA,
+        Node $bgB,
+        Node $custA,
+        Node $custB
     ) {
         $this->beConstructedWith($errorObj);
-        $bgA->getValue()->willReturn('A');
-        $bgB->getValue()->willReturn('B');
+
+        $a->getValue()->willReturn('A');
+        $b->getValue()->willReturn('B');
+
+        $bgA->getChild('Number')->willReturn($a);
+        $bgB->getChild('Number')->willReturn($b);
         $bgB->getLineNr()->willReturn(1);
+
         $custA->getValue()->willReturn('A');
         $custB->getValue()->willReturn('B');
         $custB->getLineNr()->willReturn(1);

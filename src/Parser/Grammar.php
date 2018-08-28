@@ -3,9 +3,7 @@
 namespace byrokrat\autogiro\Parser;
 
 use byrokrat\autogiro\Exception\ContentException;
-use byrokrat\autogiro\Tree\Account;
 use byrokrat\autogiro\Tree\Container;
-use byrokrat\autogiro\Tree\PayeeBankgiro;
 use byrokrat\autogiro\Tree\ImmediateDate;
 use byrokrat\autogiro\Tree\Date;
 use byrokrat\autogiro\Tree\DateTime;
@@ -3887,8 +3885,8 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $this->value = call_user_func(function () use (&$bg, &$payerNr, &$account, &$id, &$info, &$status, &$date, &$validDate) {
                 // If account is empty a valid bankgiro number may be read from the payer number field
-                if (!trim($account->getValue())) {
-                    $account = new Account($account->getLineNr(), $payerNr->getValue());
+                if (!trim($account->getChild('Number')->getValue())) {
+                    $account = new Container('Account', new Number($account->getLineNr(), $payerNr->getValue()));
                 }
 
                 $info->setAttribute('message_id', "73.info.{$info->getValue()}");
@@ -5445,7 +5443,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$number) {
-                return new Account($this->lineNr, $number);
+                return new Container('Account', new Number($this->lineNr, $number));
             });
         }
 
@@ -5514,7 +5512,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$number) {
-                return new Account($this->lineNr, $number);
+                return new Container('Account', new Number($this->lineNr, $number));
             });
         }
 
@@ -5677,7 +5675,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$number) {
-                return new PayeeBankgiro($this->lineNr, $number);
+                return new Container('PayeeBankgiro', new Number($this->lineNr, $number));
             });
         }
 
