@@ -7,7 +7,8 @@ namespace spec\byrokrat\autogiro\Visitor;
 use byrokrat\autogiro\Visitor\AmountVisitor;
 use byrokrat\autogiro\Visitor\ErrorAwareVisitor;
 use byrokrat\autogiro\Visitor\ErrorObject;
-use byrokrat\autogiro\Tree\Amount;
+use byrokrat\autogiro\Tree\Node;
+use byrokrat\autogiro\Tree\Obj;
 use byrokrat\amount\Currency\SEK;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -29,36 +30,43 @@ class AmountVisitorSpec extends ObjectBehavior
         $this->shouldHaveType(ErrorAwareVisitor::CLASS);
     }
 
-    function it_fails_on_unvalid_amounts(Amount $amountNode, $errorObj)
+    function it_does_not_create_amount_if_object_exists(Node $amountNode)
     {
-        $amountNode->hasAttribute('amount')->willReturn(false);
+        $amountNode->hasChild('Object')->willReturn(true);
+        $this->beforeAmount($amountNode);
+        $amountNode->addChild(Argument::any())->shouldNotHaveBeenCalled();
+    }
+
+    function it_does_not_create_if_amount_is_empty(Node $amountNode, Node $text)
+    {
+        $amountNode->hasChild('Object')->willReturn(false);
+        $amountNode->getChild('Text')->willReturn($text);
+        $text->getValue()->willReturn('    ');
+        $this->beforeAmount($amountNode);
+        $amountNode->addChild(Argument::any())->shouldNotHaveBeenCalled();
+    }
+
+    function it_fails_on_unvalid_amounts(Node $amountNode, Node $text, $errorObj)
+    {
         $amountNode->getLineNr()->willReturn(1);
-        $amountNode->getValue()->willReturn('this-is-not-a-valid-signal-string');
+        $amountNode->hasChild('Object')->willReturn(false);
+        $amountNode->getChild('Text')->willReturn($text);
+        $text->getValue()->willReturn('this-is-not-a-valid-signal-string');
         $this->beforeAmount($amountNode);
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 
-    function it_creates_valid_amounts(Amount $amountNode, $errorObj)
+    function it_creates_valid_amounts(Node $amountNode, Node $text)
     {
-        $amountNode->hasAttribute('amount')->willReturn(false);
-        $amountNode->getValue()->willReturn('1230K');
-        $amountNode->setAttribute('amount', Argument::exact(new SEK('-123.02')))->shouldBeCalled();
-        $this->beforeAmount($amountNode);
-        $errorObj->addError(Argument::cetera())->shouldNotHaveBeenCalled();
-    }
+        $amountNode->getLineNr()->willReturn(1);
+        $amountNode->hasChild('Object')->willReturn(false);
+        $amountNode->getChild('Text')->willReturn($text);
+        $text->getValue()->willReturn('1230K');
 
-    function it_does_not_create_amount_if_attr_is_set(Amount $amountNode)
-    {
-        $amountNode->hasAttribute('amount')->willReturn(true);
-        $this->beforeAmount($amountNode);
-        $amountNode->setAttribute('amount', Argument::any())->shouldNotHaveBeenCalled();
-    }
+        $amountNode->addChild(Argument::that(function (Obj $obj) {
+            return (new SEK('-123.02'))->equals($obj->getValue());
+        }))->shouldBeCalled();
 
-    function it_does_not_create_if_amount_is_empty(Amount $amountNode)
-    {
-        $amountNode->hasAttribute('amount')->willReturn(false);
-        $amountNode->getValue()->willReturn('    ');
         $this->beforeAmount($amountNode);
-        $amountNode->setAttribute('amount', Argument::any())->shouldNotHaveBeenCalled();
     }
 }

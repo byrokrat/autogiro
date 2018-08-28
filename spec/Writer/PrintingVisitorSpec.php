@@ -14,7 +14,6 @@ use byrokrat\autogiro\Tree\Number;
 use byrokrat\autogiro\Tree\Obj;
 use byrokrat\autogiro\Tree\PayeeBankgiro;
 use byrokrat\autogiro\Tree\Account;
-use byrokrat\autogiro\Tree\Amount;
 use byrokrat\autogiro\Tree\Interval;
 use byrokrat\autogiro\Visitor\Visitor;
 use byrokrat\amount\Currency\SEK;
@@ -148,41 +147,30 @@ class PrintingVisitorSpec extends ObjectBehavior
         $output->write('9')->shouldHaveBeenCalled();
     }
 
-    function it_prints_amounts(Amount $node, $output)
+    function it_prints_amounts(Obj $node, $output)
     {
-        $node->hasAttribute('amount')->willReturn(true);
-        $node->getAttribute('amount')->willReturn(new SEK('12345678.90'));
+        $node->getValue()->willReturn(new SEK('12345678.90'));
         $this->beforeAmount($node);
         $output->write(Argument::is('001234567890'))->shouldHaveBeenCalled();
     }
 
-    function it_fails_on_to_large_amounts(Amount $node)
+    function it_fails_on_to_large_amounts(Obj $node)
     {
-        $node->hasAttribute('amount')->willReturn(true);
-        $node->getAttribute('amount')->willReturn(new SEK('10000000000.00'));
+        $node->getValue()->willReturn(new SEK('10000000000.00'));
         $this->shouldThrow(RuntimeException::CLASS)->duringBeforeAmount($node);
     }
 
-    function it_fails_on_to_small_amounts(Amount $node)
+    function it_fails_on_to_small_amounts(Obj $node)
     {
-        $node->hasAttribute('amount')->willReturn(true);
-        $node->getAttribute('amount')->willReturn(new SEK('-10000000000.00'));
+        $node->getValue()->willReturn(new SEK('-10000000000.00'));
         $this->shouldThrow(RuntimeException::CLASS)->duringBeforeAmount($node);
     }
 
-    function it_fails_on_missing_amounts(Amount $node)
+    function it_ignores_missing_amounts(Obj $node, $output)
     {
-        $node->hasAttribute('amount')->willReturn(false);
-        $node->getName()->willReturn('');
-        $this->shouldThrow(LogicException::CLASS)->duringBeforeAmount($node);
-    }
-
-    function it_fails_on_invalid_amounts(Amount $node)
-    {
-        $node->hasAttribute('amount')->willReturn(true);
-        $node->getAttribute('amount')->willReturn('not-an-object');
-        $node->getName()->willReturn('');
-        $this->shouldThrow(LogicException::CLASS)->duringBeforeAmount($node);
+        $node->getValue()->willReturn('this is not an amount');
+        $output->write(Argument::any())->shouldNotBeCalled();
+        $this->beforeAmount($node);
     }
 
     function it_prints_personal_ids(Obj $node, PersonalId $id, $output)

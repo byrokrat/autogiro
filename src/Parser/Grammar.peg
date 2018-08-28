@@ -22,7 +22,6 @@ namespace byrokrat\autogiro\Parser;
 
 use byrokrat\autogiro\Exception\ContentException;
 use byrokrat\autogiro\Tree\Account;
-use byrokrat\autogiro\Tree\Amount;
 use byrokrat\autogiro\Tree\Container;
 use byrokrat\autogiro\Tree\PayeeBankgiro;
 use byrokrat\autogiro\Tree\ImmediateDate;
@@ -329,11 +328,11 @@ grammar Grammar extends MultibyteHack
     };
 
     AMOUNT12 = amount:$(A10 A2) {
-        return new Amount($this->lineNr, $amount);
+        return new Container('Amount', new Text($this->lineNr, trim($amount)));
     };
 
     AMOUNT18 = amount:$(A10 A5 A2 A) {
-        return new Amount($this->lineNr, $amount);
+        return new Container('Amount', new Text($this->lineNr, trim($amount)));
     };
 
     BANKGIRO = number:A10 {

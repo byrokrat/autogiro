@@ -23,7 +23,6 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Writer;
 
 use byrokrat\autogiro\Tree\Account;
-use byrokrat\autogiro\Tree\Amount;
 use byrokrat\autogiro\Tree\AutogiroFile;
 use byrokrat\autogiro\Tree\Date;
 use byrokrat\autogiro\Tree\ImmediateDate;
@@ -302,7 +301,7 @@ class TreeBuilder
             new Text(0, $this->repititionsFormatter->format($repetitions), 'Repetitions'),
             new Text(0, ' '),
             new Number(0, $payerNr, 'PayerNumber'),
-            Amount::fromAmount($amount),
+            new Obj(0, $amount, 'Amount'),
             $this->payeeBgNode,
             new Text(0, str_pad($ref, 16, ' ', STR_PAD_LEFT)),
             new Text(0, str_pad('', 11))
@@ -318,7 +317,7 @@ class TreeBuilder
             new Text(0, '   ', 'Repetitions'),
             new Text(0, ' '),
             new Number(0, $payerNr, 'PayerNumber'),
-            Amount::fromAmount($amount),
+            new Obj(0, $amount, 'Amount'),
             $this->payeeBgNode,
             new Text(0, str_pad($ref, 16, ' ', STR_PAD_LEFT)),
             new Text(0, str_pad('', 11))

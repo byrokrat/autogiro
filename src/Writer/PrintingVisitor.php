@@ -32,7 +32,6 @@ use byrokrat\autogiro\Tree\Number;
 use byrokrat\autogiro\Tree\Obj;
 use byrokrat\autogiro\Tree\PayeeBankgiro;
 use byrokrat\autogiro\Tree\Account;
-use byrokrat\autogiro\Tree\Amount;
 use byrokrat\autogiro\Tree\Interval;
 use byrokrat\amount\Currency\SEK;
 use byrokrat\banking\AccountNumber;
@@ -108,19 +107,19 @@ class PrintingVisitor extends Visitor
         $this->output->write($node->getValue());
     }
 
-    public function beforeAmount(Amount $node): void
+    public function beforeAmount(Obj $node): void
     {
-        $this->assertAttribute($node, 'amount', SEK::CLASS);
+        if ($node->getValue() instanceof SEK) {
+            $amount = $node->getValue();
 
-        $amount = $node->getAttribute('amount');
+            if ($amount->isGreaterThan(new SEK('9999999999.99')) || $amount->isLessThan(new SEK('-9999999999.99'))) {
+                throw new RuntimeException('Amount must be between 9999999999.99 and -9999999999.99');
+            }
 
-        if ($amount->isGreaterThan(new SEK('9999999999.99')) || $amount->isLessThan(new SEK('-9999999999.99'))) {
-            throw new RuntimeException('Amount must be between 9999999999.99 and -9999999999.99');
+            $this->output->write(
+                str_pad($amount->getSignalString(), 12, '0', STR_PAD_LEFT)
+            );
         }
-
-        $this->output->write(
-            str_pad($amount->getSignalString(), 12, '0', STR_PAD_LEFT)
-        );
     }
 
     public function beforeStateId(Obj $node): void

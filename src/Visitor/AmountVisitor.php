@@ -22,7 +22,8 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Visitor;
 
-use byrokrat\autogiro\Tree\Amount;
+use byrokrat\autogiro\Tree\Node;
+use byrokrat\autogiro\Tree\Obj;
 use byrokrat\amount\Currency\SEK;
 use byrokrat\amount\Exception as AmountException;
 
@@ -31,25 +32,24 @@ use byrokrat\amount\Exception as AmountException;
  */
 class AmountVisitor extends ErrorAwareVisitor
 {
-    public function beforeAmount(Amount $node): void
+    public function beforeAmount(Node $node): void
     {
-        if ($node->hasAttribute('amount')) {
+        if ($node->hasChild('Object')) {
             return;
         }
 
-        if (trim($node->getValue()) == '') {
+        $signalStr = (string)$node->getChild('Text')->getValue();
+
+        if (trim($signalStr) == '') {
             return;
         }
 
         try {
-            $node->setAttribute(
-                'amount',
-                SEK::createFromSignalString($node->getValue())
-            );
+            $node->addChild(new Obj($node->getLineNr(), SEK::createFromSignalString($signalStr)));
         } catch (AmountException $e) {
             $this->getErrorObject()->addError(
                 "Invalid signaled amount %s on line %s",
-                $node->getValue(),
+                $signalStr,
                 (string)$node->getLineNr()
             );
         }

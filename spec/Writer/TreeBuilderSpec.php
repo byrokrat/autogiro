@@ -16,7 +16,6 @@ use byrokrat\autogiro\Tree\Account;
 use byrokrat\autogiro\Tree\Interval;
 use byrokrat\autogiro\Tree\Number;
 use byrokrat\autogiro\Tree\Obj;
-use byrokrat\autogiro\Tree\Amount;
 use byrokrat\autogiro\Tree\Record;
 use byrokrat\autogiro\Tree\Section;
 use byrokrat\banking\AccountNumber;
@@ -190,7 +189,6 @@ class TreeBuilderSpec extends ObjectBehavior
     {
         $intervalFormatter->format(0)->shouldBeCalled()->willReturn('formatted_interval');
         $repsFormatter->format(1)->shouldBeCalled()->willReturn('formatted_repititions');
-        $amount->getSignalString()->shouldBeCalled()->willReturn('formatted_amount');
 
         $this->addIncomingPaymentRequest('foobar', $amount, $date, 'ref', 0, 1);
 
@@ -206,7 +204,7 @@ class TreeBuilderSpec extends ObjectBehavior
                     new Text(0, 'formatted_repititions', 'Repetitions'),
                     new Text(0, ' '),
                     new Number(0, 'foobar', 'PayerNumber'),
-                    Amount::fromAmount($amount->getWrappedObject()),
+                    new Obj(0, $amount->getWrappedObject(), 'Amount'),
                     PayeeBankgiro::fromBankgiro($bankgiro->getWrappedObject()),
                     new Text(0, '             ref'),
                     new Text(0, str_pad('', 11))
@@ -219,7 +217,6 @@ class TreeBuilderSpec extends ObjectBehavior
     {
         $intervalFormatter->format(0)->shouldBeCalled()->willReturn('formatted_interval');
         $repsFormatter->format(1)->shouldBeCalled()->willReturn('formatted_repititions');
-        $amount->getSignalString()->shouldBeCalled()->willReturn('formatted_amount');
 
         $this->addOutgoingPaymentRequest('foobar', $amount, $date, 'ref', 0, 1);
 
@@ -235,7 +232,7 @@ class TreeBuilderSpec extends ObjectBehavior
                     new Text(0, 'formatted_repititions', 'Repetitions'),
                     new Text(0, ' '),
                     new Number(0, 'foobar', 'PayerNumber'),
-                    Amount::fromAmount($amount->getWrappedObject()),
+                    new Obj(0, $amount->getWrappedObject(), 'Amount'),
                     PayeeBankgiro::fromBankgiro($bankgiro->getWrappedObject()),
                     new Text(0, '             ref'),
                     new Text(0, str_pad('', 11))
@@ -246,8 +243,6 @@ class TreeBuilderSpec extends ObjectBehavior
 
     function it_builds_immediate_incoming_payment_trees(SEK $amount, $bankgiro, $date)
     {
-        $amount->getSignalString()->shouldBeCalled()->willReturn('formatted_amount');
-
         $this->addImmediateIncomingPaymentRequest('foobar', $amount, 'ref');
 
         $this->buildTree()->shouldBeLike(
@@ -262,7 +257,7 @@ class TreeBuilderSpec extends ObjectBehavior
                     new Text(0, '   ', 'Repetitions'),
                     new Text(0, ' '),
                     new Number(0, 'foobar', 'PayerNumber'),
-                    Amount::fromAmount($amount->getWrappedObject()),
+                    new Obj(0, $amount->getWrappedObject(), 'Amount'),
                     PayeeBankgiro::fromBankgiro($bankgiro->getWrappedObject()),
                     new Text(0, '             ref'),
                     new Text(0, str_pad('', 11))
@@ -273,8 +268,6 @@ class TreeBuilderSpec extends ObjectBehavior
 
     function it_builds_immediate_outgoing_payment_trees(SEK $amount, $bankgiro, $date)
     {
-        $amount->getSignalString()->shouldBeCalled()->willReturn('formatted_amount');
-
         $this->addImmediateOutgoingPaymentRequest('foobar', $amount, 'ref');
 
         $this->buildTree()->shouldBeLike(
@@ -289,7 +282,7 @@ class TreeBuilderSpec extends ObjectBehavior
                     new Text(0, '   ', 'Repetitions'),
                     new Text(0, ' '),
                     new Number(0, 'foobar', 'PayerNumber'),
-                    Amount::fromAmount($amount->getWrappedObject()),
+                    new Obj(0, $amount->getWrappedObject(), 'Amount'),
                     PayeeBankgiro::fromBankgiro($bankgiro->getWrappedObject()),
                     new Text(0, '             ref'),
                     new Text(0, str_pad('', 11))

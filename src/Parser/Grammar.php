@@ -4,7 +4,6 @@ namespace byrokrat\autogiro\Parser;
 
 use byrokrat\autogiro\Exception\ContentException;
 use byrokrat\autogiro\Tree\Account;
-use byrokrat\autogiro\Tree\Amount;
 use byrokrat\autogiro\Tree\Container;
 use byrokrat\autogiro\Tree\PayeeBankgiro;
 use byrokrat\autogiro\Tree\ImmediateDate;
@@ -5572,7 +5571,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$amount) {
-                return new Amount($this->lineNr, $amount);
+                return new Container('Amount', new Text($this->lineNr, trim($amount)));
             });
         }
 
@@ -5641,7 +5640,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$amount) {
-                return new Amount($this->lineNr, $amount);
+                return new Container('Amount', new Text($this->lineNr, trim($amount)));
             });
         }
 
