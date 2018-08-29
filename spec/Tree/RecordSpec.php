@@ -46,4 +46,10 @@ class RecordSpec extends ObjectBehavior
         $this->getChild('node1')->shouldEqual($node1);
         $this->getChild('node2')->shouldEqual($node2);
     }
+
+    function it_ignores_null_nodes(Node $node)
+    {
+        $this->beConstructedWith('', null, $node);
+        $this->getChildren()->shouldIterateAs([$node]);
+    }
 }

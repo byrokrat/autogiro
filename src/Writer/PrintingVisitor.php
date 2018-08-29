@@ -26,10 +26,8 @@ use byrokrat\autogiro\Visitor\Visitor;
 use byrokrat\autogiro\Exception\RuntimeException;
 use byrokrat\autogiro\Exception\LogicException;
 use byrokrat\autogiro\Tree\Node;
-use byrokrat\autogiro\Tree\Date;
 use byrokrat\autogiro\Tree\Text;
 use byrokrat\autogiro\Tree\Number;
-use byrokrat\autogiro\Tree\Obj;
 use byrokrat\autogiro\Tree\Interval;
 use byrokrat\amount\Currency\SEK;
 use byrokrat\banking\AccountNumber;
@@ -57,10 +55,11 @@ class PrintingVisitor extends Visitor
         $this->output = $output;
     }
 
-    public function beforeDate(Date $node): void
+    public function beforeDate(Node $node): void
     {
-        $this->assertAttribute($node, 'date', \DateTimeInterface::CLASS);
-        $this->output->write($node->getAttribute('date')->format('Ymd'));
+        if ($node->getValue() instanceof \DateTimeInterface) {
+            $this->output->write($node->getValue()->format('Ymd'));
+        }
     }
 
     public function beforeImmediateDate(): void
@@ -83,7 +82,7 @@ class PrintingVisitor extends Visitor
         $this->output->write(str_pad($node->getValue(), 6, '0', STR_PAD_LEFT));
     }
 
-    public function beforePayeeBankgiro(Obj $node): void
+    public function beforePayeeBankgiro(Node $node): void
     {
         if ($node->getValue() instanceof AccountNumber) {
             $account = $node->getValue();
@@ -93,7 +92,7 @@ class PrintingVisitor extends Visitor
         }
     }
 
-    public function beforeAccount(Obj $node): void
+    public function beforeAccount(Node $node): void
     {
         if ($node->getValue() instanceof AccountNumber) {
             $account = $node->getValue();
@@ -109,7 +108,7 @@ class PrintingVisitor extends Visitor
         $this->output->write($node->getValue());
     }
 
-    public function beforeAmount(Obj $node): void
+    public function beforeAmount(Node $node): void
     {
         if ($node->getValue() instanceof SEK) {
             $amount = $node->getValue();
@@ -124,7 +123,7 @@ class PrintingVisitor extends Visitor
         }
     }
 
-    public function beforeStateId(Obj $node): void
+    public function beforeStateId(Node $node): void
     {
         if ($node->getValue() instanceof PersonalId) {
             $this->output->write($node->getValue()->format('Ymdsk'));

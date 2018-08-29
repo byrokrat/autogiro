@@ -8,7 +8,6 @@ use byrokrat\autogiro\Writer\TreeBuilder;
 use byrokrat\autogiro\Writer\IntervalFormatter;
 use byrokrat\autogiro\Writer\RepititionsFormatter;
 use byrokrat\autogiro\Tree\AutogiroFile;
-use byrokrat\autogiro\Tree\Date;
 use byrokrat\autogiro\Tree\ImmediateDate;
 use byrokrat\autogiro\Tree\Text;
 use byrokrat\autogiro\Tree\Interval;
@@ -68,7 +67,7 @@ class TreeBuilderSpec extends ObjectBehavior
     {
         return new Record(
             'Opening',
-            Date::fromDate($date->getWrappedObject()),
+            new Obj(0, $date->getWrappedObject(), 'Date'),
             new Text(0, 'AUTOGIRO'),
             new Text(0, str_pad('', 44)),
             new Number(0, self::BCG_NR, 'PayeeBgcNumber'),
@@ -197,7 +196,7 @@ class TreeBuilderSpec extends ObjectBehavior
                 $date,
                 new Record(
                     'IncomingPaymentRequest',
-                    Date::fromDate($date->getWrappedObject()),
+                    new Obj(0, $date->getWrappedObject(), 'Date'),
                     new Interval(0, 'formatted_interval'),
                     new Text(0, 'formatted_repititions', 'Repetitions'),
                     new Text(0, ' '),
@@ -225,7 +224,7 @@ class TreeBuilderSpec extends ObjectBehavior
                 $date,
                 new Record(
                     'OutgoingPaymentRequest',
-                    Date::fromDate($date->getWrappedObject()),
+                    new Obj(0, $date->getWrappedObject(), 'Date'),
                     new Interval(0, 'formatted_interval'),
                     new Text(0, 'formatted_repititions', 'Repetitions'),
                     new Text(0, ' '),

@@ -17,6 +17,7 @@
 
 ## Node tree
 
+* `Account`, `Amount`, `StateId`, `Date` and `Message` nodes are now nested structures.
 * Removed the `Node` suffix from all node classes (except `NullNode`).
 * Using generic `Closing` and `Opening` records.
 * Renamed `BankgiroNode` => `PayeeBankgiro`.

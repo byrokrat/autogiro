@@ -21,11 +21,10 @@
 namespace byrokrat\autogiro\Parser;
 
 use byrokrat\autogiro\Exception\ContentException;
-use byrokrat\autogiro\Tree\Container;
-use byrokrat\autogiro\Tree\ImmediateDate;
-use byrokrat\autogiro\Tree\Date;
-use byrokrat\autogiro\Tree\DateTime;
 use byrokrat\autogiro\Tree\AutogiroFile;
+use byrokrat\autogiro\Tree\Container;
+use byrokrat\autogiro\Tree\Date;
+use byrokrat\autogiro\Tree\ImmediateDate;
 use byrokrat\autogiro\Tree\Interval;
 use byrokrat\autogiro\Tree\Message;
 use byrokrat\autogiro\Tree\Number;
@@ -52,7 +51,7 @@ grammar Grammar extends MultibyteHack
         return new AutogiroFile('AutogiroRequestFile', ...$sections);
     };
 
-    REQ_OPENING = '01' date:DATE 'AUTOGIRO' S20 S20 S4 bgcNr:BGC_NR bg:BANKGIRO EOR {
+    REQ_OPENING = '01' date:DATE8 'AUTOGIRO' S20 S20 S4 bgcNr:BGC_NR bg:BANKGIRO EOR {
         return new Record('Opening', $date, $bgcNr, $bg);
     };
 
@@ -86,7 +85,7 @@ grammar Grammar extends MultibyteHack
         return new Section('PaymentRequestSection', $open, ...$records);
     };
 
-    REQ_PAYMENT = tc:('82' / '32') date:(IMMEDIATE_DATE / DATE) ival:INTERVAL reps:REPS ' ' payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:VAR_TXT EOR {
+    REQ_PAYMENT = tc:('82' / '32') date:(IMMEDIATE_DATE / DATE8) ival:INTERVAL reps:REPS ' ' payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:VAR_TXT EOR {
         $types = [
             '82' => 'IncomingPaymentRequest',
             '32' => 'OutgoingPaymentRequest',
@@ -101,8 +100,9 @@ grammar Grammar extends MultibyteHack
         return new Section('AmendmentRequestSection', $open, ...$records);
     };
 
-    REQ_REVOCATION = &('2' [3-9]) tc:MSG2 bg:BANKGIRO payerNr:PAYER_NR date:DATE amount:AMOUNT12 type:MSG2 newDate:DATE ref:TXT16 EOR {
+    REQ_REVOCATION = &('2' [3-9]) tc:MSG2 bg:BANKGIRO payerNr:PAYER_NR date:DATE8 amount:AMOUNT12 type:MSG2 newDate:DATE8 ref:TXT16 EOR {
         $tc->setAttribute('message_id', 'AutogiroRequestFile.TC.' . $tc->getValue());
+        $newDate->setName('NewDate');
         return new Record('AmendmentRequest', $tc, $bg, $payerNr, $date, $amount, $type, $newDate, $ref);
     };
 
@@ -117,11 +117,11 @@ grammar Grammar extends MultibyteHack
         return new AutogiroFile('AutogiroPaymentResponseFile', $open, ...$sections);
     };
 
-    PAYMENT_OPENING = '01' 'AUTOGIRO' S10 S4 datetime:DATETIME 'BET. SPEC & STOPP TK' ^ bgcNr:BGC_NR bg:BANKGIRO EOR {
-        return new Record('Opening', $datetime, $bgcNr, $bg);
+    PAYMENT_OPENING = '01' 'AUTOGIRO' S10 S4 date:DATE20 'BET. SPEC & STOPP TK' ^ bgcNr:BGC_NR bg:BANKGIRO EOR {
+        return new Record('Opening', $date, $bgcNr, $bg);
     };
 
-    PAYMENT_CLOSING = '09' date:DATE '9900' nrInSecs:INT6 nrInRecs:INT12 nrOutSecs:INT6 nrOutRecs:INT12 nrRefSecs:INT6 nrRefRecs:INT12 EOR {
+    PAYMENT_CLOSING = '09' date:DATE8 '9900' nrInSecs:INT6 nrInRecs:INT12 nrOutSecs:INT6 nrOutRecs:INT12 nrRefSecs:INT6 nrRefRecs:INT12 EOR {
         return new Record('Closing', $date, $nrInSecs, $nrInRecs, $nrOutSecs, $nrOutRecs, $nrRefSecs, $nrRefRecs);
     };
 
@@ -131,19 +131,16 @@ grammar Grammar extends MultibyteHack
         return new Section('IncomingPaymentResponseSection', $open, ...$records);
     };
 
-    PAYMENT_INCOMING_OPENING = '15' account:ACCOUNT35 date:DATE serial:INT5 amount:AMOUNT18 A2 A nrRecs:INT8 EOR {
+    PAYMENT_INCOMING_OPENING = '15' account:ACCOUNT35 date:DATE8 serial:INT5 amount:AMOUNT18 A2 A nrRecs:INT8 EOR {
         return new Record('IncomingPaymentResponseSectionOpening', $account, $date, $serial, $amount, $nrRecs);
     };
 
-    PAYMENT_INCOMING = '82' date:DATE ival:INTERVAL reps:REPS A payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:TXT16 A10? status:MSG1? EOR {
-        $record = new Record('IncomingPaymentResponse', $date, $ival, $reps, $payerNr, $amount, $bg, $ref);
-
+    PAYMENT_INCOMING = '82' date:DATE8 ival:INTERVAL reps:REPS A payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:TXT16 A10? status:MSG1? EOR {
         if ($status) {
             $status->setAttribute('message_id', 'AutogiroPaymentResponseFile.' . $status->getValue());
-            $record->addChild($status);
         }
 
-        return $record;
+        return new Record('IncomingPaymentResponse', $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $status);
     };
 
     // OUTGOING PAYMENTS
@@ -152,19 +149,16 @@ grammar Grammar extends MultibyteHack
         return new Section('OutgoingPaymentResponseSection', $open, ...$records);
     };
 
-    PAYMENT_OUTGOING_OPENING = '16' account:ACCOUNT35 date:DATE serial:INT5 amount:AMOUNT18 A2 A nrRecs:INT8 EOR {
+    PAYMENT_OUTGOING_OPENING = '16' account:ACCOUNT35 date:DATE8 serial:INT5 amount:AMOUNT18 A2 A nrRecs:INT8 EOR {
         return new Record('OutgoingPaymentResponseSectionOpening', $account, $date, $serial, $amount, $nrRecs);
     };
 
-    PAYMENT_OUTGOING = '32' date:DATE ival:INTERVAL reps:REPS A payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:TXT16 A10? status:MSG1? EOR {
-        $record = new Record('OutgoingPaymentResponse', $date, $ival, $reps, $payerNr, $amount, $bg, $ref);
-
+    PAYMENT_OUTGOING = '32' date:DATE8 ival:INTERVAL reps:REPS A payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:TXT16 A10? status:MSG1? EOR {
         if ($status) {
             $status->setAttribute('message_id', 'AutogiroPaymentResponseFile.' . $status->getValue());
-            $record->addChild($status);
         }
 
-        return $record;
+        return new Record('OutgoingPaymentResponse', $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $status);
     };
 
     // REFUND PAYMENTS
@@ -173,12 +167,13 @@ grammar Grammar extends MultibyteHack
         return new Section('RefundPaymentResponseSection', $open, ...$records);
     };
 
-    PAYMENT_REFUND_OPENING = '17' account:ACCOUNT35 date:DATE serial:INT5 amount:AMOUNT18 A2 A nrRecs:INT8 EOR {
+    PAYMENT_REFUND_OPENING = '17' account:ACCOUNT35 date:DATE8 serial:INT5 amount:AMOUNT18 A2 A nrRecs:INT8 EOR {
         return new Record('RefundPaymentResponseSectionOpening', $account, $date, $serial, $amount, $nrRecs);
     };
 
-    PAYMENT_REFUND = '77' date:DATE ival:INTERVAL reps:REPS A payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:TXT16 refundDate:DATE status:MSG2 EOR {
+    PAYMENT_REFUND = '77' date:DATE8 ival:INTERVAL reps:REPS A payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:TXT16 refundDate:DATE8 status:MSG2 EOR {
         $status->setAttribute('message_id', 'AutogiroPaymentResponseFile.' . $status->getValue());
+        $refundDate->setName('RefundDate');
         return new Record('RefundPaymentResponse', $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $refundDate, $status);
     };
 
@@ -189,11 +184,11 @@ grammar Grammar extends MultibyteHack
         return new AutogiroFile('AutogiroPaymentResponseOldFile', $open, ...$recs);
     };
 
-    OLD_PAYMENT_OPENING = '01' date:DATE 'AUTOGIRO' '9900' S20 S20 bgcNr:BGC_NR bg:BANKGIRO EOR {
+    OLD_PAYMENT_OPENING = '01' date:DATE8 'AUTOGIRO' '9900' S20 S20 bgcNr:BGC_NR bg:BANKGIRO EOR {
         return new Record('Opening', $date, $bgcNr, $bg);
     };
 
-    OLD_PAYMENT_CLOSING = '09' date:DATE '9900' S10 S4 amountOut:AMOUNT12 nrOut:INT6 nrIn:INT6 '00000' amountIn:AMOUNT12 '00000000000' EOR {
+    OLD_PAYMENT_CLOSING = '09' date:DATE8 '9900' S10 S4 amountOut:AMOUNT12 nrOut:INT6 nrIn:INT6 '00000' amountIn:AMOUNT12 '00000000000' EOR {
         return new Record('Closing', $date, $amountOut, $nrOut, $nrIn, $amountIn);
     };
 
@@ -212,15 +207,15 @@ grammar Grammar extends MultibyteHack
         return new AutogiroFile('AutogiroMandateResponseFile', $open, ...$mands);
     };
 
-    MANDATE_OPENING = '01' 'AUTOGIRO' S10 S4 date:DATE S10 '  AG-MEDAVI' ^ S10 S bgcNr:BGC_NR bg:BANKGIRO EOR {
+    MANDATE_OPENING = '01' 'AUTOGIRO' S10 S4 date:DATE8 S10 '  AG-MEDAVI' ^ S10 S bgcNr:BGC_NR bg:BANKGIRO EOR {
         return new Record('Opening', $date, $bgcNr, $bg);
     };
 
-    OLD_MANDATE_OPENING = '01' date:DATE '9900' bg:BANKGIRO 'AG-MEDAVI' ^ EOR {
+    OLD_MANDATE_OPENING = '01' date:DATE8 '9900' bg:BANKGIRO 'AG-MEDAVI' ^ EOR {
         return new Record('Opening', $date, $bg);
     };
 
-    MANDATE = '73' bg:BANKGIRO payerNr:PAYER_NR account:ACCOUNT16 id:ID (S5 / '00000') info:MSG2 status:MSG2 date:DATE validDate:$(A5 A)? EOR {
+    MANDATE = '73' bg:BANKGIRO payerNr:PAYER_NR account:ACCOUNT16 id:ID (S5 / '00000') info:MSG2 status:MSG2 date:DATE8 validDate:DATE6? EOR {
         // If account is empty a valid bankgiro number may be read from the payer number field
         if (!trim($account->getChild('Number')->getValue())) {
             $account = new Container('Account', new Number($account->getLineNr(), $payerNr->getValue()));
@@ -229,19 +224,12 @@ grammar Grammar extends MultibyteHack
         $info->setAttribute('message_id', "73.info.{$info->getValue()}");
         $status->setAttribute('message_id', "73.status.{$status->getValue()}");
 
-        $record = new Record('MandateResponse', $bg, $payerNr, $account, $id, $info, $status, $date);
+        $validDate->setName('ValidFromDate');
 
-        // A mandate-valid-from-date is only present in the old layout
-        if ($validDate) {
-            // TODO error här om date är mellanslag.. Gör detta optional på något ballare sätt...
-            // se bin/autogiro2xml PG_8502000149_BGM_2018-08-15_001.txt
-            $record->addChild(new Text($this->lineNr - 1, (string)$validDate, 'ValidFromDate'));
-        }
-
-        return $record;
+        return new Record('MandateResponse', $bg, $payerNr, $account, $id, $info, $status, $date, $validDate);
     };
 
-    MANDATE_CLOSING = '09' date:DATE '9900' nrRecs:INT7 EOR {
+    MANDATE_CLOSING = '09' date:DATE8 '9900' nrRecs:INT7 EOR {
         return new Record('Closing', $date, $nrRecs);
     };
 
@@ -254,15 +242,15 @@ grammar Grammar extends MultibyteHack
         return new AutogiroFile('AutogiroPaymentRejectionFile', $open, ...$recs);
     };
 
-    PAYMENT_REJECTION_OPENING = '01' 'AUTOGIRO' S10 S4 date:DATE S10 '  AVVISADE BET UPPDR  ' ^ bgcNr:BGC_NR bg:BANKGIRO EOR {
+    PAYMENT_REJECTION_OPENING = '01' 'AUTOGIRO' S10 S4 date:DATE8 S10 '  AVVISADE BET UPPDR  ' ^ bgcNr:BGC_NR bg:BANKGIRO EOR {
         return new Record('Opening', $date, $bgcNr, $bg);
     };
 
-    OLD_PAYMENT_REJECTION_OPENING = '01' date:DATE 'AUTOGIRO' '9900' 'FELLISTA REG.KONTRL' ^ S20 S bgcNr:BGC_NR bg:BANKGIRO EOR {
+    OLD_PAYMENT_REJECTION_OPENING = '01' date:DATE8 'AUTOGIRO' '9900' 'FELLISTA REG.KONTRL' ^ S20 S bgcNr:BGC_NR bg:BANKGIRO EOR {
         return new Record('Opening', $date, $bgcNr, $bg);
     };
 
-    PAYMENT_REJECTION = tc:('82' / '32') date:DATE ival:INTERVAL reps:REPS payerNr:PAYER_NR amount:AMOUNT12 ref:TXT16 comment:MSG2 EOR {
+    PAYMENT_REJECTION = tc:('82' / '32') date:DATE8 ival:INTERVAL reps:REPS payerNr:PAYER_NR amount:AMOUNT12 ref:TXT16 comment:MSG2 EOR {
         $types = [
             '82' => 'IncomingPaymentRejectionResponse',
             '32' => 'OutgoingPaymentRejectionResponse',
@@ -271,7 +259,7 @@ grammar Grammar extends MultibyteHack
         return new Record($types[$tc], $date, $ival, $reps, $payerNr, $amount, $ref, $comment);
     };
 
-    PAYMENT_REJECTION_CLOSING = '09' date:DATE '9900' nrOut:INT6 amountOut:AMOUNT12 nrIn:INT6 amountIn:AMOUNT12 EOR {
+    PAYMENT_REJECTION_CLOSING = '09' date:DATE8 '9900' nrOut:INT6 amountOut:AMOUNT12 nrIn:INT6 amountIn:AMOUNT12 EOR {
         return new Record('Closing', $date, $nrOut, $amountOut, $nrIn, $amountIn);
     };
 
@@ -280,12 +268,12 @@ grammar Grammar extends MultibyteHack
     //
 
     // TODO flytta till annat ställe och använd för alla openings om jag får det att funka...
-    OPENING_INTRO = '01AUTOGIRO              ' date:DATE '            ' {
+    OPENING_INTRO = '01AUTOGIRO              ' date:DATE8 '            ' {
         return $date;
     };
 
     // TODO flytta till annat ställe och använd för alla openings om jag får det att funka...
-    OLD_OPENING_INTRO = '01' date:DATE 'AUTOGIRO9900' {
+    OLD_OPENING_INTRO = '01' date:DATE8 'AUTOGIRO9900' {
         return $date;
     };
 
@@ -302,12 +290,12 @@ grammar Grammar extends MultibyteHack
         return new Record('Opening', $date, $bgcNr, $bg);
     };
 
-    AMENDMENT = !'09' tc:MSG2 date:DATE payerNr:PAYER_NR type:MSG2 amount:AMOUNT12 A8 A8 ref:TXT16 comment:MSG2 EOR {
+    AMENDMENT = !'09' tc:MSG2 date:DATE8 payerNr:PAYER_NR type:MSG2 amount:AMOUNT12 A8 A8 ref:TXT16 comment:MSG2 EOR {
         $tc->setAttribute('message_id', 'AutogiroAmendmentResponseFile.TC.' . $tc->getValue());
         return new Record('AmendmentResponse', $tc, $date, $payerNr, $type, $amount, $ref, $comment);
     };
 
-    AMENDMENT_CLOSING = '09' date:DATE '9900' S10 S4 amountOut:AMOUNT12 nrOut:INT6 nrIn:INT6 A4 amountIn:AMOUNT12 EOR {
+    AMENDMENT_CLOSING = '09' date:DATE8 '9900' S10 S4 amountOut:AMOUNT12 nrOut:INT6 nrIn:INT6 A4 amountIn:AMOUNT12 EOR {
         return new Record('Closing', $date, $nrOut, $amountOut, $nrIn, $amountIn);
     };
 
@@ -347,16 +335,20 @@ grammar Grammar extends MultibyteHack
         return new Number($this->lineNr, $nr, 'PayeeBgcNumber');
     };
 
-    DATE = date:$(A5 A2 A) {
-        return new Date($this->lineNr, $date);
+    DATE6 = date:$(A5 A) {
+        return new Date(new Number($this->lineNr, trim($date)));
+    };
+
+    DATE8 = date:$(A5 A2 A) {
+        return new Date(new Number($this->lineNr, trim($date)));
+    };
+
+    DATE20 = date:$(A10 A10) {
+        return new Date(new Number($this->lineNr, trim($date)));
     };
 
     IMMEDIATE_DATE = 'GENAST  ' {
         return new ImmediateDate($this->lineNr);
-    };
-
-    DATETIME = datetime:$(A10 A10) {
-        return new DateTime($this->lineNr, $datetime);
     };
 
     INTERVAL = interval:$(A) {

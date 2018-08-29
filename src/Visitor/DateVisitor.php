@@ -22,43 +22,51 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Visitor;
 
-use byrokrat\autogiro\Tree\Date;
-use byrokrat\autogiro\Tree\DateTime;
+use byrokrat\autogiro\Tree\Node;
+use byrokrat\autogiro\Tree\Obj;
 
 /**
  * Visitor that expands date nodes
  *
- * Creates DateTime object as attribute 'date'
+ * Creates DateTime object as child 'Object'
  */
 class DateVisitor extends ErrorAwareVisitor
 {
-    public function beforeDate(Date $node): void
+    public function beforeDate(Node $node): void
     {
-        $this->setDateAttribute($node, $node->getValue());
-    }
-
-    public function beforeDateTime(DateTime $node): void
-    {
-        $this->setDateAttribute($node, substr($node->getValue(), 0, -6));
-    }
-
-    private function setDateAttribute(Date $node, string $value): void
-    {
-        if ($node->hasAttribute('date')) {
+        if ($node->hasChild('Object')) {
             return;
         }
 
-        try {
-            $node->setAttribute(
-                'date',
-                new \DateTimeImmutable($value)
-            );
-        } catch (\Exception $e) {
+        $number = (string)$node->getChild('Number')->getValue();
+
+        if (!trim($number)) {
+            return;
+        }
+
+        $date = null;
+
+        switch (strlen($number)) {
+            case 6:
+                $date = \DateTimeImmutable::createFromFormat('ymd', $number);
+                break;
+            case 8:
+                $date = \DateTimeImmutable::createFromFormat('Ymd', $number);
+                break;
+            case 20:
+                $date = \DateTimeImmutable::createFromFormat('YmdHis', substr($number, 0, -6));
+                break;
+        }
+
+        if (!$date) {
             $this->getErrorObject()->addError(
                 "Invalid date %s on line %s",
-                $node->getValue(),
+                $number,
                 (string)$node->getLineNr()
             );
+            return;
         }
+
+        $node->addChild(new Obj($node->getLineNr(), $date));
     }
 }

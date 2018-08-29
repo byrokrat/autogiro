@@ -12,13 +12,6 @@ use PhpSpec\ObjectBehavior;
 
 class ContainerSpec extends ObjectBehavior
 {
-    function let(Node $nodeA, Node $nodeB)
-    {
-        $nodeA->getName()->willReturn('nodeA');
-        $nodeB->getName()->willReturn('nodeB');
-        $this->beConstructedWith('', $nodeA, $nodeB);
-    }
-
     function it_is_initializable()
     {
         $this->shouldHaveType(Container::CLASS);
@@ -29,7 +22,12 @@ class ContainerSpec extends ObjectBehavior
         $this->shouldHaveType(Node::CLASS);
     }
 
-    function it_contains_a_name()
+    function it_contains_a_default_name()
+    {
+        $this->getName()->shouldEqual('Container');
+    }
+
+    function it_can_set_name()
     {
         $this->beConstructedWith('custom-name');
         $this->getName()->shouldEqual('custom-name');
@@ -40,8 +38,10 @@ class ContainerSpec extends ObjectBehavior
         $this->getType()->shouldEqual('Container');
     }
 
-    function it_accepts_a_visitor($nodeA, $nodeB, VisitorInterface $visitor)
+    function it_accepts_a_visitor(Node $nodeA, Node $nodeB, VisitorInterface $visitor)
     {
+        $this->beConstructedWith('', $nodeA, $nodeB);
+
         $visitor->visitBefore($this)->shouldBeCalled();
         $nodeA->accept($visitor)->shouldBeCalled();
         $nodeB->accept($visitor)->shouldBeCalled();
@@ -50,22 +50,28 @@ class ContainerSpec extends ObjectBehavior
         $this->accept($visitor);
     }
 
-    function it_contains_nodes($nodeA, $nodeB)
+    function it_contains_nodes(Node $nodeA, Node $nodeB)
     {
+        $nodeA->getName()->willReturn('nodeA');
+        $nodeB->getName()->willReturn('nodeB');
+
+        $this->beConstructedWith('', $nodeA, $nodeB);
+
         $this->getChildren()->shouldIterateAs([$nodeA, $nodeB]);
         $this->getChild('nodeA')->shouldReturn($nodeA);
         $this->getChild('nodeB')->shouldReturn($nodeB);
     }
 
-    function it_contains_a_line_number($nodeA)
+    function it_contains_a_line_number(Node $nodeA)
     {
+        $this->beConstructedWith('', $nodeA);
         $nodeA->getLineNr()->willReturn(15);
         $this->getLineNr()->shouldEqual(15);
     }
 
     function it_defaults_to_line_number_zero()
     {
-        $this->beConstructedWith('');
+        $this->beConstructedWith();
         $this->getLineNr()->shouldEqual(0);
     }
 }

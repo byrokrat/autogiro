@@ -24,13 +24,13 @@ namespace byrokrat\autogiro\Tree;
 
 class Container extends Node
 {
-    use TypeTrait;
-
-    public function __construct(string $name, Node ...$nodes)
+    public function __construct(string $name = '', Node ...$nodes)
     {
         parent::__construct();
 
-        $this->setName($name);
+        if ($name) {
+            $this->setName($name);
+        }
 
         foreach ($nodes as $node) {
             $this->addChild($node);
@@ -44,5 +44,10 @@ class Container extends Node
         }
 
         return 0;
+    }
+
+    public function getType(): string
+    {
+        return $this->getName();
     }
 }

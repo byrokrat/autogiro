@@ -24,17 +24,13 @@ namespace byrokrat\autogiro\Tree;
 
 /**
  * Node that wrapps a date
- *
- * @see \byrokrat\autogiro\Visitor\DateVisitor Creates attribute 'date'
  */
-class Date extends Node
+class Date extends Container
 {
     use TypeTrait;
 
-    public static function fromDate(\DateTimeInterface $date): Date
+    public function __construct(Node ...$nodes)
     {
-        $node = new self(0, $date->format('Ymd'));
-        $node->setAttribute('date', $date);
-        return $node;
+        parent::__construct('', ...$nodes);
     }
 }

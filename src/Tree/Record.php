@@ -28,4 +28,15 @@ namespace byrokrat\autogiro\Tree;
 class Record extends Container
 {
     use TypeTrait;
+
+    public function __construct(string $name, ?Node ...$nodes)
+    {
+        parent::__construct($name);
+
+        foreach ($nodes as $node) {
+            if ($node) {
+                $this->addChild($node);
+            }
+        }
+    }
 }

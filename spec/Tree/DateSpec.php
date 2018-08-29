@@ -30,12 +30,9 @@ class DateSpec extends ObjectBehavior
         $this->getType()->shouldEqual('Date');
     }
 
-    function it_can_be_created_using_factory()
+    function it_contains_nodes(Node $node)
     {
-        $date = new \DateTime('20180101');
-        $this->beConstructedThrough('fromDate', [$date]);
-        $this->getLineNr()->shouldEqual(0);
-        $this->getValue()->shouldEqual('20180101');
-        $this->getAttribute('date')->shouldEqual($date);
+        $this->beConstructedWith($node);
+        $this->getChildren()->shouldIterateAs([$node]);
     }
 }

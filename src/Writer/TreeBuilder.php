@@ -23,7 +23,6 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Writer;
 
 use byrokrat\autogiro\Tree\AutogiroFile;
-use byrokrat\autogiro\Tree\Date;
 use byrokrat\autogiro\Tree\ImmediateDate;
 use byrokrat\autogiro\Tree\Interval;
 use byrokrat\autogiro\Tree\Number;
@@ -124,7 +123,7 @@ class TreeBuilder
     {
         $this->opening = new Record(
             'Opening',
-            Date::fromDate($this->date),
+            new Obj(0, $this->date, 'Date'),
             new Text(0, 'AUTOGIRO'),
             new Text(0, str_pad('', 44)),
             new Number(0, $this->bgcNr, 'PayeeBgcNumber'),
@@ -294,7 +293,7 @@ class TreeBuilder
     ): void {
         $this->payments[] = new Record(
             $nodename,
-            Date::fromDate($date),
+            new Obj(0, $this->date, 'Date'),
             new Interval(0, $this->intervalFormatter->format($interval)),
             new Text(0, $this->repititionsFormatter->format($repetitions), 'Repetitions'),
             new Text(0, ' '),

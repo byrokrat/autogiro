@@ -87,8 +87,8 @@ Parsing an autogiro file creates a `AutogiroFile`.
     @include RawFile
 -->
 ```php
-/** @var \byrokrat\autogiro\Tree\AutogiroFile $fileNode */
-$fileNode = $parser->parse($rawFile);
+/** @var \byrokrat\autogiro\Tree\AutogiroFile $node */
+$node = $parser->parse($rawFile);
 ```
 
 ### Walking the parse tree
@@ -101,7 +101,7 @@ Walk the tree by calling `hasChild()`, `getChild()` and `getChildren()`.
     @expectOutput "0000001234567890"
 -->
 ```php
-echo $fileNode->getChild('MandateRequestSection')
+echo $node->getChild('MandateRequestSection')
     ->getChild('DeleteMandateRequest')
     ->getChild('PayerNumber')
     ->getValue();
@@ -116,7 +116,7 @@ Or access all `DeleteMandateRequest` nodes.
     @include AutogiroFile
 -->
 ```php
-foreach ($fileNode->getChild('MandateRequestSection')->getChildren('DeleteMandateRequest') as $node) {
+foreach ($node->getChild('MandateRequestSection')->getChildren('DeleteMandateRequest') as $child) {
     // process...
 }
 ```
@@ -129,7 +129,7 @@ Trying to access a child that does not exist returns a `NullNode`.
     @expectOutput "1"
 -->
 ```php
-echo $fileNode->getChild('this-does-not-exist')
+echo $node->getChild('this-does-not-exist')
     ->getChild('and-neither-does-this')
     ->isNull();
 ```
@@ -140,16 +140,22 @@ echo $fileNode->getChild('this-does-not-exist')
 
 ### Accessing special objects
 
-<!-- @ignore -->
-```php
-/** @var \byrokrat\amount\Amount $amount */
-$amount = $amountNode->getAttribute('amount');
+`Account`, `Amount`, `StateId` and `Date` nodes are nested structures.
+Child node `Number` (or `Text`) contains the raw parsed content and child node
+`Object` contains php objects.
 
-/** @var \byrokrat\id\IdInterface $id */
-$id = $idNode->getAttribute('id');
+With an `Account` node you could for example do the following:
+
+<!--
+    @example SpecialObjects
+    @include AutogiroFile
+-->
+```php
+/** @var string $rawNumber */
+$rawNumber = $node->getChild('Number')->getValue();
 
 /** @var \byrokrat\banking\AccountNumber $account */
-$account = $accountNode->getAttribute('account');
+$account = $node->getChild('Object')->getValue();
 ```
 
 ## Grep nodes based on name
@@ -165,7 +171,7 @@ $visitor = new class extends \byrokrat\autogiro\Visitor\Visitor {
     }
 };
 
-$fileNode->accept($visitor);
+$node->accept($visitor);
 ```
 
 This can also be done dynamically.
@@ -183,7 +189,7 @@ $visitor->{"before$dynamicNodeName"} = function ($node) {
     echo "Delete mandate request found!";
 };
 
-$fileNode->accept($visitor);
+$node->accept($visitor);
 ```
 
 ## Generate XML from node trees

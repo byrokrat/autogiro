@@ -7,8 +7,8 @@ namespace spec\byrokrat\autogiro\Visitor;
 use byrokrat\autogiro\Visitor\DateVisitor;
 use byrokrat\autogiro\Visitor\ErrorAwareVisitor;
 use byrokrat\autogiro\Visitor\ErrorObject;
-use byrokrat\autogiro\Tree\Date;
-use byrokrat\autogiro\Tree\DateTime;
+use byrokrat\autogiro\Tree\Node;
+use byrokrat\autogiro\Tree\Obj;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -29,38 +29,71 @@ class DateVisitorSpec extends ObjectBehavior
         $this->shouldHaveType(ErrorAwareVisitor::CLASS);
     }
 
-    function it_fails_on_unvalid_date(Date $dateNode, $errorObj)
+    function it_does_not_create_if_date_object_exists(Node $dateNode)
     {
-        $dateNode->hasAttribute('date')->willReturn(false);
+        $dateNode->hasChild('Object')->willReturn(true);
+        $this->beforeDate($dateNode);
+        $dateNode->addChild(Argument::any())->shouldNotHaveBeenCalled();
+    }
+
+    function it_ignores_empty_values(Node $dateNode, Node $number)
+    {
+        $dateNode->hasChild('Object')->willReturn(false);
+        $dateNode->getChild('Number')->willReturn($number);
+        $number->getValue()->willReturn('        ');
+        $this->beforeDate($dateNode);
+        $dateNode->addChild(Argument::any())->shouldNotHaveBeenCalled();
+    }
+
+    function it_fails_on_unvalid_date(Node $dateNode, Node $number, $errorObj)
+    {
         $dateNode->getLineNr()->willReturn(1);
-        $dateNode->getValue()->willReturn('this-is-not-a-valid-date');
+        $dateNode->hasChild('Object')->willReturn(false);
+        $dateNode->getChild('Number')->willReturn($number);
+        $number->getValue()->willReturn('this-is-not-a-valid-date');
         $this->beforeDate($dateNode);
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 
-    function it_creates_date(Date $dateNode, $errorObj)
+    function it_creates_date(Node $dateNode, Node $number)
     {
-        $dateNode->hasAttribute('date')->willReturn(false);
-        $dateNode->getValue()->willReturn('20161109');
-        $dateNode->setAttribute('date', new \DateTimeImmutable('20161109'))->shouldBeCalled();
+        $dateNode->getLineNr()->willReturn(1);
+        $dateNode->hasChild('Object')->willReturn(false);
+        $dateNode->getChild('Number')->willReturn($number);
+        $number->getValue()->willReturn('20161109');
+
+        $dateNode->addChild(Argument::that(function (Obj $obj) {
+            return $obj->getValue()->format('Ymd') == '20161109';
+        }))->shouldBeCalled();
+
         $this->beforeDate($dateNode);
-        $errorObj->addError(Argument::cetera())->shouldNotHaveBeenCalled();
     }
 
-    function it_does_not_create_date_if_attr_is_set(Date $dateNode)
+    function it_creates_date_times(Node $dateNode, Node $number)
     {
-        $dateNode->hasAttribute('date')->willReturn(true);
-        $dateNode->getValue()->willReturn('20161109');
+        $dateNode->getLineNr()->willReturn(1);
+        $dateNode->hasChild('Object')->willReturn(false);
+        $dateNode->getChild('Number')->willReturn($number);
+        $number->getValue()->willReturn('20091110193055123456');
+
+        $dateNode->addChild(Argument::that(function (Obj $obj) {
+            return $obj->getValue()->format('YmdHis') == '20091110193055';
+        }))->shouldBeCalled();
+
         $this->beforeDate($dateNode);
-        $dateNode->setAttribute('date', Argument::any())->shouldNotHaveBeenCalled();
     }
 
-    function it_creates_date_times(DateTime $dateNode, $errorObj)
+    function it_creates_short_dates(Node $dateNode, Node $number)
     {
-        $dateNode->hasAttribute('date')->willReturn(false);
-        $dateNode->getValue()->willReturn('20091110193055123456');
-        $dateNode->setAttribute('date', new \DateTimeImmutable('20091110193055'))->shouldBeCalled();
-        $this->beforeDateTime($dateNode);
-        $errorObj->addError(Argument::cetera())->shouldNotHaveBeenCalled();
+        $dateNode->getLineNr()->willReturn(1);
+        $dateNode->hasChild('Object')->willReturn(false);
+        $dateNode->getChild('Number')->willReturn($number);
+        $number->getValue()->willReturn('820323');
+
+        $dateNode->addChild(Argument::that(function (Obj $obj) {
+            return $obj->getValue()->format('ymd') == '820323';
+        }))->shouldBeCalled();
+
+        $this->beforeDate($dateNode);
     }
 }

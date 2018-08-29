@@ -8,10 +8,9 @@ use byrokrat\autogiro\Writer\PrintingVisitor;
 use byrokrat\autogiro\Writer\Output;
 use byrokrat\autogiro\Exception\RuntimeException;
 use byrokrat\autogiro\Exception\LogicException;
-use byrokrat\autogiro\Tree\Date;
 use byrokrat\autogiro\Tree\Text;
 use byrokrat\autogiro\Tree\Number;
-use byrokrat\autogiro\Tree\Obj;
+use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Tree\Interval;
 use byrokrat\autogiro\Visitor\Visitor;
 use byrokrat\amount\Currency\SEK;
@@ -37,27 +36,18 @@ class PrintingVisitorSpec extends ObjectBehavior
         $this->shouldHaveType(Visitor::CLASS);
     }
 
-    function it_prints_dates(Date $node, $output)
+    function it_prints_dates(Node $node, $output)
     {
-        $node->hasAttribute('date')->willReturn(true);
-        $node->getAttribute('date')->willReturn(new \DateTime('2017-01-10'));
+        $node->getValue()->willReturn(new \DateTime('2017-01-10'));
         $this->beforeDate($node);
         $output->write('20170110')->shouldHaveBeenCalled();
     }
 
-    function it_fails_on_missing_date(Date $node)
+    function it_fails_on_unvalid_date(Node $node, $output)
     {
-        $node->hasAttribute('date')->willReturn(false);
-        $node->getName()->willReturn('');
-        $this->shouldThrow(LogicException::CLASS)->duringBeforeDate($node);
-    }
-
-    function it_fails_on_unvalid_date(Date $node)
-    {
-        $node->hasAttribute('date')->willReturn(true);
-        $node->getAttribute('date')->willReturn('not-an-object');
-        $node->getName()->willReturn('');
-        $this->shouldThrow(LogicException::CLASS)->duringBeforeDate($node);
+        $node->getValue()->willReturn('not-an-object');
+        $this->beforeDate($node);
+        $output->write(Argument::any())->shouldNotHaveBeenCalled();
     }
 
     function it_prints_immediate_dates($output)
@@ -87,7 +77,7 @@ class PrintingVisitorSpec extends ObjectBehavior
         $output->write(Argument::is('000111'))->shouldHaveBeenCalled();
     }
 
-    function it_prints_payee_bankgiro_numbers(Obj $node, AccountNumber $account, $output)
+    function it_prints_payee_bankgiro_numbers(Node $node, AccountNumber $account, $output)
     {
         $account->getSerialNumber()->willReturn('1234567');
         $account->getCheckDigit()->willReturn('8');
@@ -96,14 +86,14 @@ class PrintingVisitorSpec extends ObjectBehavior
         $output->write(Argument::is('0012345678'))->shouldHaveBeenCalled();
     }
 
-    function it_fails_on_unvalid_payee_bankgiro_numbers(Obj $node, $output)
+    function it_fails_on_unvalid_payee_bankgiro_numbers(Node $node, $output)
     {
         $node->getValue()->willReturn('not-an-object');
         $this->beforePayeeBankgiro($node);
         $output->write(Argument::any())->shouldNotHaveBeenCalled();
     }
 
-    function it_prints_account_numbers(Obj $node, AccountNumber $account, $output)
+    function it_prints_account_numbers(Node $node, AccountNumber $account, $output)
     {
         $account->getClearingNumber()->willReturn('1111');
         $account->getSerialNumber()->willReturn('1234567');
@@ -113,7 +103,7 @@ class PrintingVisitorSpec extends ObjectBehavior
         $output->write('1111000012345678')->shouldHaveBeenCalled();
     }
 
-    function it_fails_on_invalid_account_numbers(Obj $node, $output)
+    function it_fails_on_invalid_account_numbers(Node $node, $output)
     {
         $node->getValue()->willReturn('not-an-object');
         $output->write(Argument::any())->shouldNotBeCalled();
@@ -127,33 +117,33 @@ class PrintingVisitorSpec extends ObjectBehavior
         $output->write('9')->shouldHaveBeenCalled();
     }
 
-    function it_prints_amounts(Obj $node, $output)
+    function it_prints_amounts(Node $node, $output)
     {
         $node->getValue()->willReturn(new SEK('12345678.90'));
         $this->beforeAmount($node);
         $output->write(Argument::is('001234567890'))->shouldHaveBeenCalled();
     }
 
-    function it_fails_on_to_large_amounts(Obj $node)
+    function it_fails_on_to_large_amounts(Node $node)
     {
         $node->getValue()->willReturn(new SEK('10000000000.00'));
         $this->shouldThrow(RuntimeException::CLASS)->duringBeforeAmount($node);
     }
 
-    function it_fails_on_to_small_amounts(Obj $node)
+    function it_fails_on_to_small_amounts(Node $node)
     {
         $node->getValue()->willReturn(new SEK('-10000000000.00'));
         $this->shouldThrow(RuntimeException::CLASS)->duringBeforeAmount($node);
     }
 
-    function it_ignores_missing_amounts(Obj $node, $output)
+    function it_ignores_missing_amounts(Node $node, $output)
     {
         $node->getValue()->willReturn('this is not an amount');
         $output->write(Argument::any())->shouldNotBeCalled();
         $this->beforeAmount($node);
     }
 
-    function it_prints_personal_ids(Obj $node, PersonalId $id, $output)
+    function it_prints_personal_ids(Node $node, PersonalId $id, $output)
     {
         $id->format('Ymdsk')->willReturn('201701101111');
         $node->getValue()->willReturn($id);
@@ -161,7 +151,7 @@ class PrintingVisitorSpec extends ObjectBehavior
         $output->write('201701101111')->shouldHaveBeenCalled();
     }
 
-    function it_prints_organization_ids(Obj $node, OrganizationId $id, $output)
+    function it_prints_organization_ids(Node $node, OrganizationId $id, $output)
     {
         $id->format('00Ssk')->willReturn('001234561111');
         $node->getValue()->willReturn($id);
@@ -169,7 +159,7 @@ class PrintingVisitorSpec extends ObjectBehavior
         $output->write(Argument::is('001234561111'))->shouldHaveBeenCalled();
     }
 
-    function it_ignores_invalid_ids(Obj $node, $output)
+    function it_ignores_invalid_ids(Node $node, $output)
     {
         $node->getValue()->willReturn(null);
         $this->beforeStateId($node);
