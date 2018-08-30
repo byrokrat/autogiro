@@ -108,6 +108,8 @@ class VisitorFactory
 
         if (!$flag(self::VISITOR_IGNORE_STRICT_VALIDATION)) {
             $container->addVisitor(new PayeeVisitor($errorObj));
+            $container->addVisitor(new CountingVisitor($errorObj));
+            $container->addVisitor(new SummaryVisitor($errorObj));
         }
 
         return $container;

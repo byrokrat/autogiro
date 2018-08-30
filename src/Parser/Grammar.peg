@@ -23,7 +23,9 @@ namespace byrokrat\autogiro\Parser;
 use byrokrat\autogiro\Exception\ContentException;
 use byrokrat\autogiro\Tree\AutogiroFile;
 use byrokrat\autogiro\Tree\Container;
+use byrokrat\autogiro\Tree\Count;
 use byrokrat\autogiro\Tree\Date;
+use byrokrat\autogiro\Tree\Flag;
 use byrokrat\autogiro\Tree\ImmediateDate;
 use byrokrat\autogiro\Tree\Interval;
 use byrokrat\autogiro\Tree\Message;
@@ -31,6 +33,7 @@ use byrokrat\autogiro\Tree\Number;
 use byrokrat\autogiro\Tree\Obj;
 use byrokrat\autogiro\Tree\Record;
 use byrokrat\autogiro\Tree\Section;
+use byrokrat\autogiro\Tree\Summary;
 use byrokrat\autogiro\Tree\Text;
 
 grammar Grammar extends MultibyteHack
@@ -122,7 +125,16 @@ grammar Grammar extends MultibyteHack
     };
 
     PAYMENT_CLOSING = '09' date:DATE8 '9900' nrInSecs:INT6 nrInRecs:INT12 nrOutSecs:INT6 nrOutRecs:INT12 nrRefSecs:INT6 nrRefRecs:INT12 EOR {
-        return new Record('Closing', $date, $nrInSecs, $nrInRecs, $nrOutSecs, $nrOutRecs, $nrRefSecs, $nrRefRecs);
+        return new Record(
+            'Closing',
+            $date,
+            new Count('IncomingPaymentResponseSection', $nrInSecs),
+            new Count('SuccessfulIncomingPaymentResponse', $nrInRecs),
+            new Count('OutgoingPaymentResponseSection', $nrOutSecs),
+            new Count('SuccessfulOutgoingPaymentResponse', $nrOutRecs),
+            new Count('RefundPaymentResponseSection', $nrRefSecs),
+            new Count('RefundPaymentResponse', $nrRefRecs)
+        );
     };
 
     // INCOMING PAYMENTS
@@ -132,6 +144,7 @@ grammar Grammar extends MultibyteHack
     };
 
     PAYMENT_INCOMING_OPENING = '15' account:ACCOUNT35 date:DATE8 serial:INT5 amount:AMOUNT18 A2 A nrRecs:INT8 EOR {
+        $nrRecs->setName('IncomingPaymentCount');
         return new Record('IncomingPaymentResponseSectionOpening', $account, $date, $serial, $amount, $nrRecs);
     };
 
@@ -140,7 +153,9 @@ grammar Grammar extends MultibyteHack
             $status->setAttribute('message_id', 'AutogiroPaymentResponseFile.' . $status->getValue());
         }
 
-        return new Record('IncomingPaymentResponse', $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $status);
+        $flag = !$status || $status->getValue() == '0' ? 'Successful' : 'Failed';
+
+        return new Record($flag.'IncomingPaymentResponse', new Flag($flag), $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $status);
     };
 
     // OUTGOING PAYMENTS
@@ -150,6 +165,7 @@ grammar Grammar extends MultibyteHack
     };
 
     PAYMENT_OUTGOING_OPENING = '16' account:ACCOUNT35 date:DATE8 serial:INT5 amount:AMOUNT18 A2 A nrRecs:INT8 EOR {
+        $nrRecs->setName('IncomingPaymentCount');
         return new Record('OutgoingPaymentResponseSectionOpening', $account, $date, $serial, $amount, $nrRecs);
     };
 
@@ -158,7 +174,9 @@ grammar Grammar extends MultibyteHack
             $status->setAttribute('message_id', 'AutogiroPaymentResponseFile.' . $status->getValue());
         }
 
-        return new Record('OutgoingPaymentResponse', $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $status);
+        $flag = !$status || $status->getValue() == '0' ? 'Successful' : 'Failed';
+
+        return new Record($flag.'OutgoingPaymentResponse', new Flag($flag), $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $status);
     };
 
     // REFUND PAYMENTS
@@ -168,6 +186,7 @@ grammar Grammar extends MultibyteHack
     };
 
     PAYMENT_REFUND_OPENING = '17' account:ACCOUNT35 date:DATE8 serial:INT5 amount:AMOUNT18 A2 A nrRecs:INT8 EOR {
+        $nrRecs->setName('IncomingPaymentCount');
         return new Record('RefundPaymentResponseSectionOpening', $account, $date, $serial, $amount, $nrRecs);
     };
 
@@ -179,7 +198,7 @@ grammar Grammar extends MultibyteHack
 
     // PAYMENT RESPONSES IN THE OLD FORMAT
 
-    OLD_PAYMENT_FILE = open:OLD_PAYMENT_OPENING recs:(PAYMENT_INCOMING / PAYMENT_OUTGOING )* close:OLD_PAYMENT_CLOSING {
+    OLD_PAYMENT_FILE = open:OLD_PAYMENT_OPENING recs:OLD_PAYMENT_RESPONSE* close:OLD_PAYMENT_CLOSING {
         $recs[] = $close;
         return new AutogiroFile('AutogiroPaymentResponseOldFile', $open, ...$recs);
     };
@@ -188,8 +207,33 @@ grammar Grammar extends MultibyteHack
         return new Record('Opening', $date, $bgcNr, $bg);
     };
 
-    OLD_PAYMENT_CLOSING = '09' date:DATE8 '9900' S10 S4 amountOut:AMOUNT12 nrOut:INT6 nrIn:INT6 '00000' amountIn:AMOUNT12 '00000000000' EOR {
-        return new Record('Closing', $date, $amountOut, $nrOut, $nrIn, $amountIn);
+    OLD_PAYMENT_RESPONSE = type:('32' / '82') date:DATE8 ival:INTERVAL reps:REPS A payerNr:PAYER_NR amount:AMOUNT12 bg:BANKGIRO ref:TXT16 A10? status:MSG1? EOR {
+        $flag = 'Successful';
+
+        if ($status) {
+            $status->setAttribute('message_id', 'AutogiroPaymentResponseFile.' . $status->getValue());
+            if ($status->getValue() != '0') {
+                $flag = 'Failed';
+            }
+        }
+
+        $types = [
+            '32' => 'OutgoingPaymentResponse',
+            '82' => 'IncomingPaymentResponse'
+        ];
+
+        return new Record($types[$type], new Flag($flag), $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $status);
+    };
+
+    OLD_PAYMENT_CLOSING = '09' date:DATE8 '9900' S10 S4 amountOut:AMOUNT12 nrOut:INT6 nrIn:INT6 '0000' amountIn:AMOUNT12 EOR {
+        return new Record(
+            'Closing',
+            $date,
+            new Summary('OutgoingPaymentResponse', $amountOut),
+            new Count('OutgoingPaymentResponse', $nrOut),
+            new Count('IncomingPaymentResponse', $nrIn),
+            new Summary('IncomingPaymentResponse', $amountIn)
+        );
     };
 
     // PAYMENT RESPONSES IN BGMAX FORMAT (NOT SUPPORTED)
@@ -230,11 +274,11 @@ grammar Grammar extends MultibyteHack
     };
 
     MANDATE_CLOSING = '09' date:DATE8 '9900' nrRecs:INT7 EOR {
-        return new Record('Closing', $date, $nrRecs);
+        return new Record('Closing', $date, new Count('MandateResponse', $nrRecs));
     };
 
     //
-    // REJECTED PAYMENT_RESPONSE
+    // REJECTED PAYMENT RESPONSE
     //
 
     PAYMENT_REJECTION_FILE = open:(PAYMENT_REJECTION_OPENING / OLD_PAYMENT_REJECTION_OPENING) recs:PAYMENT_REJECTION* close:PAYMENT_REJECTION_CLOSING {
@@ -260,7 +304,14 @@ grammar Grammar extends MultibyteHack
     };
 
     PAYMENT_REJECTION_CLOSING = '09' date:DATE8 '9900' nrOut:INT6 amountOut:AMOUNT12 nrIn:INT6 amountIn:AMOUNT12 EOR {
-        return new Record('Closing', $date, $nrOut, $amountOut, $nrIn, $amountIn);
+        return new Record(
+            'Closing',
+            $date,
+            new Count('OutgoingPaymentRejectionResponse', $nrOut),
+            new Summary('OutgoingPaymentRejectionResponse', $amountOut),
+            new Count('IncomingPaymentRejectionResponse', $nrIn),
+            new Summary('IncomingPaymentRejectionResponse', $amountIn)
+        );
     };
 
     //
@@ -290,13 +341,36 @@ grammar Grammar extends MultibyteHack
         return new Record('Opening', $date, $bgcNr, $bg);
     };
 
-    AMENDMENT = !'09' tc:MSG2 date:DATE8 payerNr:PAYER_NR type:MSG2 amount:AMOUNT12 A8 A8 ref:TXT16 comment:MSG2 EOR {
-        $tc->setAttribute('message_id', 'AutogiroAmendmentResponseFile.TC.' . $tc->getValue());
-        return new Record('AmendmentResponse', $tc, $date, $payerNr, $type, $amount, $ref, $comment);
+    AMENDMENT = !'09' status:MSG2 date:DATE8 payerNr:PAYER_NR type:MSG2 amount:AMOUNT12 A8 A8 ref:TXT16 comment:MSG2 EOR {
+        $status->setAttribute('message_id', 'AutogiroAmendmentResponseFile.TC.' . $status->getValue());
+
+        $flag = in_array($status->getValue(), ['26', '27', '28', '29']) ? 'Amendment' : 'Revocation';
+
+        $names = [
+            '00' => 'AmendmentResponse',
+            '82' => 'IncomingAmendmentResponse',
+            '32' => 'OutgoingAmendmentResponse',
+        ];
+
+        $namePrefix = in_array($comment->getValue(), ['12', '14', '18']) ? 'Successful' : 'Failed';
+
+        $status->setName('Status');
+        $type->setName('Type');
+        $ref->setName('Reference');
+        $comment->setName('Comment');
+
+        return new Record($namePrefix.$names[$type->getValue()], new Flag($flag), $status, $date, $payerNr, $type, $amount, $ref, $comment);
     };
 
     AMENDMENT_CLOSING = '09' date:DATE8 '9900' S10 S4 amountOut:AMOUNT12 nrOut:INT6 nrIn:INT6 A4 amountIn:AMOUNT12 EOR {
-        return new Record('Closing', $date, $nrOut, $amountOut, $nrIn, $amountIn);
+        return new Record(
+            'Closing',
+            $date,
+            new Summary('SuccessfulOutgoingAmendmentResponse', $amountOut),
+            new Count('SuccessfulOutgoingAmendmentResponse', $nrOut),
+            new Count('SuccessfulIncomingAmendmentResponse', $nrIn),
+            new Summary('SuccessfulIncomingAmendmentResponse', $amountIn)
+        );
     };
 
     //

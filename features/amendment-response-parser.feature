@@ -29,7 +29,12 @@ Feature: Amendment response parser
     09200806119900              0000005775000000020000040000000000111000000000000000
     """
     Then I find a "AutogiroAmendmentResponseFile" layout
-    And I find 18 "AmendmentResponse" nodes
+    And I find 4 "SuccessfulAmendmentResponse" nodes
+    And I find 0 "FailedAmendmentResponse" nodes
+    And I find 4 "SuccessfulIncomingAmendmentResponse" nodes
+    And I find 4 "FailedIncomingAmendmentResponse" nodes
+    And I find 2 "SuccessfulOutgoingAmendmentResponse" nodes
+    And I find 4 "FailedOutgoingAmendmentResponse" nodes
 
   Scenario: I parse the BGC testfile autogiro_gl_exempelfil_makulering-andring_fran-bankgirot-medgivanden-kontonummer_exempelfil_sv.txt
     Given a parser that ignores account and id structures
@@ -43,4 +48,4 @@ Feature: Amendment response parser
     09200410229900              0000000000000000000000040000000000095000000000000000
     """
     Then I find a "AutogiroAmendmentResponseFile" layout
-    And I find 4 "AmendmentResponse" nodes
+    And I find 4 "SuccessfulIncomingAmendmentResponse" nodes
