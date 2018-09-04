@@ -34,10 +34,6 @@ class XmlWritingVisitorSpec extends ObjectBehavior
         $node->getType()->willReturn('type_name');
         $writer->writeAttribute('type', 'type_name')->shouldBeCalled();
 
-        $node->getAttributes()->willReturn(['name' => 'value']);
-        $stringifier->stringify('value')->willReturn('stringified_value');
-        $writer->writeAttribute('name', 'stringified_value')->shouldBeCalled();
-
         $this->visitBefore($node);
     }
 
@@ -49,7 +45,6 @@ class XmlWritingVisitorSpec extends ObjectBehavior
         $node->getType()->willReturn('foo');
         $writer->writeAttribute('type', 'foo')->shouldNotBeCalled();
 
-        $node->getAttributes()->willReturn([]);
         $node->getValue()->willReturn('');
 
         $this->visitBefore($node);
@@ -62,8 +57,6 @@ class XmlWritingVisitorSpec extends ObjectBehavior
 
         $node->getType()->willReturn('type_name');
         $writer->writeAttribute('type', 'type_name')->shouldBeCalled();
-
-        $node->getAttributes()->willReturn([]);
 
         $node->getValue()->willReturn('');
         $writer->text(Argument::any())->shouldNotBeCalled();

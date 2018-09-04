@@ -30,11 +30,6 @@ use byrokrat\autogiro\Visitor\VisitorInterface;
 class Node
 {
     /**
-     * @var array
-     */
-    private $attributes = [];
-
-    /**
      * @var Node[]
      */
     private $children = [];
@@ -187,43 +182,5 @@ class Node
     public function getValueFrom(string $name)
     {
         return $this->getChild($name)->getValue();
-    }
-
-    /**
-     * Set a custom attribute on node
-     *
-     * @param string $name  Name of attribute
-     * @param mixed  $value Value of attribute
-     */
-    public function setAttribute(string $name, $value): void
-    {
-        $this->attributes[$name] = $value;
-    }
-
-    /**
-     * Get custom attribute
-     *
-     * @param  string $name Name of attribute
-     * @return mixed  Value of attribute
-     */
-    public function getAttribute(string $name)
-    {
-        return $this->attributes[$name] ?? null;
-    }
-
-    /**
-     * Check if attribute has been set
-     */
-    public function hasAttribute(string $name): bool
-    {
-        return isset($this->attributes[$name]);
-    }
-
-    /**
-     * Get all registered attributes
-     */
-    public function getAttributes(): array
-    {
-        return $this->attributes;
     }
 }

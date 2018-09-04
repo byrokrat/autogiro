@@ -10,6 +10,7 @@
 * `Node::getChild()` now returns a `NullNode` if child is missing.
 * Added `Node::isNull()` to check for null object implementation.
 * Added `Node::setName()` to enable dynamic node naming.
+* Removed support for node attributes.
 
 ## Visitor
 

@@ -110,27 +110,4 @@ class NodeSpec extends ObjectBehavior
 
         $this->getValueFrom('child')->shouldEqual('val');
     }
-
-    function it_can_save_attributes()
-    {
-        $this->hasAttribute('key')->shouldEqual(false);
-        $this->setAttribute('key', 'value');
-        $this->hasAttribute('key')->shouldEqual(true);
-        $this->getAttribute('key')->shouldEqual('value');
-    }
-
-    function it_defualts_attributes_to_null()
-    {
-        $this->getAttribute('does-not-exist')->shouldEqual(null);
-    }
-
-    function it_can_iterate_over_attributes()
-    {
-        $this->setAttribute('foo', 'bar');
-        $this->setAttribute('bar', 'foo');
-        $this->getAttributes()->shouldEqual([
-            'foo' => 'bar',
-            'bar' => 'foo'
-        ]);
-    }
 }

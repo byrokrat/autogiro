@@ -54,10 +54,6 @@ class XmlWritingVisitor implements VisitorInterface
             $this->xmlWriter->writeAttribute('type', $node->getType());
         }
 
-        foreach ($node->getAttributes() as $name => $value) {
-            $this->xmlWriter->writeAttribute($name, $this->stringifier->stringify($value));
-        }
-
         if ($node->getValue()) {
             $this->xmlWriter->text($this->stringifier->stringify($node->getValue()));
         }
