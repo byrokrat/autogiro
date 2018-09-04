@@ -8,7 +8,6 @@ use byrokrat\autogiro\Writer\PrintingVisitor;
 use byrokrat\autogiro\Writer\Output;
 use byrokrat\autogiro\Exception\RuntimeException;
 use byrokrat\autogiro\Exception\LogicException;
-use byrokrat\autogiro\Tree\Text;
 use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Visitor\Visitor;
 use byrokrat\amount\Currency\SEK;
@@ -54,7 +53,7 @@ class PrintingVisitorSpec extends ObjectBehavior
         $output->write(Argument::is('GENAST  '))->shouldHaveBeenCalled();
     }
 
-    function it_print_text_nodes(Text $node, $output)
+    function it_print_text_nodes(Node $node, $output)
     {
         $node->getValue()->willReturn('foobar');
         $this->beforeText($node);
@@ -177,22 +176,10 @@ class PrintingVisitorSpec extends ObjectBehavior
         $output->write('01')->shouldHaveBeenCalled();
     }
 
-    function it_prints_new_line_after_opening($output)
-    {
-        $this->afterOpening();
-        $output->write(PrintingVisitor::EOL)->shouldHaveBeenCalled();
-    }
-
     function it_prints_transaction_code_before_create_mandate($output)
     {
         $this->beforeCreateMandateRequest();
         $output->write('04')->shouldHaveBeenCalled();
-    }
-
-    function it_prints_new_line_after_create_mandate($output)
-    {
-        $this->afterCreateMandateRequest();
-        $output->write(PrintingVisitor::EOL)->shouldHaveBeenCalled();
     }
 
     function it_prints_transaction_code_before_delete_mandate($output)
@@ -201,22 +188,10 @@ class PrintingVisitorSpec extends ObjectBehavior
         $output->write('03')->shouldHaveBeenCalled();
     }
 
-    function it_prints_new_line_after_delete_mandate($output)
-    {
-        $this->afterDeleteMandateRequest();
-        $output->write(PrintingVisitor::EOL)->shouldHaveBeenCalled();
-    }
-
     function it_prints_transaction_code_before_accept_mandate($output)
     {
         $this->beforeAcceptDigitalMandateRequest();
         $output->write('04')->shouldHaveBeenCalled();
-    }
-
-    function it_prints_new_line_after_accept_mandate($output)
-    {
-        $this->afterAcceptDigitalMandateRequest();
-        $output->write(PrintingVisitor::EOL)->shouldHaveBeenCalled();
     }
 
     function it_prints_transaction_code_before_reject_mandate($output)
@@ -225,22 +200,10 @@ class PrintingVisitorSpec extends ObjectBehavior
         $output->write('04')->shouldHaveBeenCalled();
     }
 
-    function it_prints_new_line_after_reject_mandate($output)
-    {
-        $this->afterRejectDigitalMandateRequest();
-        $output->write(PrintingVisitor::EOL)->shouldHaveBeenCalled();
-    }
-
     function it_prints_transaction_code_before_update_mandate($output)
     {
         $this->beforeUpdateMandateRequest();
         $output->write('05')->shouldHaveBeenCalled();
-    }
-
-    function it_prints_new_line_after_update_mandate($output)
-    {
-        $this->afterUpdateMandateRequest();
-        $output->write(PrintingVisitor::EOL)->shouldHaveBeenCalled();
     }
 
     function it_prints_transaction_code_before_incoming_payment($output)
@@ -249,21 +212,15 @@ class PrintingVisitorSpec extends ObjectBehavior
         $output->write('82')->shouldHaveBeenCalled();
     }
 
-    function it_prints_new_line_after_incoming_payment($output)
-    {
-        $this->afterIncomingPaymentRequest();
-        $output->write(PrintingVisitor::EOL)->shouldHaveBeenCalled();
-    }
-
     function it_prints_transaction_code_before_outgoing_payment($output)
     {
         $this->beforeOutgoingPaymentRequest();
         $output->write('32')->shouldHaveBeenCalled();
     }
 
-    function it_prints_new_line_after_outgoing_payment($output)
+    function it_prints_new_line_after_record($output)
     {
-        $this->afterOutgoingPaymentRequest();
+        $this->afterRecord();
         $output->write(PrintingVisitor::EOL)->shouldHaveBeenCalled();
     }
 }

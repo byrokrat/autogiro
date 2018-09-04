@@ -26,7 +26,6 @@ use byrokrat\autogiro\Visitor\Visitor;
 use byrokrat\autogiro\Exception\RuntimeException;
 use byrokrat\autogiro\Exception\LogicException;
 use byrokrat\autogiro\Tree\Node;
-use byrokrat\autogiro\Tree\Text;
 use byrokrat\amount\Currency\SEK;
 use byrokrat\banking\AccountNumber;
 use byrokrat\id\IdInterface;
@@ -65,7 +64,7 @@ class PrintingVisitor extends Visitor
         $this->output->write('GENAST  ');
     }
 
-    public function beforeText(Text $node): void
+    public function beforeText(Node $node): void
     {
         $this->output->write($node->getValue());
     }
@@ -139,19 +138,9 @@ class PrintingVisitor extends Visitor
         $this->output->write('01');
     }
 
-    public function afterOpening(): void
-    {
-        $this->output->write(self::EOL);
-    }
-
     public function beforeCreateMandateRequest(): void
     {
         $this->output->write('04');
-    }
-
-    public function afterCreateMandateRequest(): void
-    {
-        $this->output->write(self::EOL);
     }
 
     public function beforeDeleteMandateRequest(): void
@@ -159,19 +148,9 @@ class PrintingVisitor extends Visitor
         $this->output->write('03');
     }
 
-    public function afterDeleteMandateRequest(): void
-    {
-        $this->output->write(self::EOL);
-    }
-
     public function beforeAcceptDigitalMandateRequest(): void
     {
         $this->output->write('04');
-    }
-
-    public function afterAcceptDigitalMandateRequest(): void
-    {
-        $this->output->write(self::EOL);
     }
 
     public function beforeRejectDigitalMandateRequest(): void
@@ -179,19 +158,9 @@ class PrintingVisitor extends Visitor
         $this->output->write('04');
     }
 
-    public function afterRejectDigitalMandateRequest(): void
-    {
-        $this->output->write(self::EOL);
-    }
-
     public function beforeUpdateMandateRequest(): void
     {
         $this->output->write('05');
-    }
-
-    public function afterUpdateMandateRequest(): void
-    {
-        $this->output->write(self::EOL);
     }
 
     public function beforeIncomingPaymentRequest(): void
@@ -199,17 +168,12 @@ class PrintingVisitor extends Visitor
         $this->output->write('82');
     }
 
-    public function afterIncomingPaymentRequest(): void
-    {
-        $this->output->write(self::EOL);
-    }
-
     public function beforeOutgoingPaymentRequest(): void
     {
         $this->output->write('32');
     }
 
-    public function afterOutgoingPaymentRequest(): void
+    public function afterRecord(): void
     {
         $this->output->write(self::EOL);
     }
