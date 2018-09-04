@@ -4,13 +4,12 @@ declare(strict_types = 1);
 
 namespace spec\byrokrat\autogiro\Writer;
 
+use byrokrat\autogiro\Intervals;
 use byrokrat\autogiro\Writer\TreeBuilder;
-use byrokrat\autogiro\Writer\IntervalFormatter;
 use byrokrat\autogiro\Writer\RepititionsFormatter;
 use byrokrat\autogiro\Tree\AutogiroFile;
 use byrokrat\autogiro\Tree\ImmediateDate;
 use byrokrat\autogiro\Tree\Text;
-use byrokrat\autogiro\Tree\Interval;
 use byrokrat\autogiro\Tree\Number;
 use byrokrat\autogiro\Tree\Obj;
 use byrokrat\autogiro\Tree\Record;
@@ -28,15 +27,11 @@ class TreeBuilderSpec extends ObjectBehavior
     const BANKGIRO = 'bankgiro';
     const DATE = 'date';
 
-    function let(
-        Bankgiro $bankgiro,
-        \DateTime $date,
-        IntervalFormatter $intervalFormatter,
-        RepititionsFormatter $repsFormatter
-    ) {
+    function let(Bankgiro $bankgiro, \DateTime $date, RepititionsFormatter $repsFormatter)
+    {
         $bankgiro->getNumber()->willReturn(self::BANKGIRO);
         $date->format('Ymd')->willReturn(self::DATE);
-        $this->beConstructedWith(self::BCG_NR, $bankgiro, $date, $intervalFormatter, $repsFormatter);
+        $this->beConstructedWith(self::BCG_NR, $bankgiro, $date, $repsFormatter);
     }
 
     function it_is_initializable()
@@ -182,12 +177,11 @@ class TreeBuilderSpec extends ObjectBehavior
         );
     }
 
-    function it_builds_incoming_payment_trees(SEK $amount, $bankgiro, $date, $intervalFormatter, $repsFormatter)
+    function it_builds_incoming_payment_trees(SEK $amount, $bankgiro, $date, $repsFormatter)
     {
-        $intervalFormatter->format(0)->shouldBeCalled()->willReturn('formatted_interval');
         $repsFormatter->format(1)->shouldBeCalled()->willReturn('formatted_repititions');
 
-        $this->addIncomingPaymentRequest('foobar', $amount, $date, 'ref', 0, 1);
+        $this->addIncomingPaymentRequest('foobar', $amount, $date, 'ref', 'ival', 1);
 
         $this->buildTree()->shouldBeLike(
             $this->a_tree(
@@ -197,7 +191,7 @@ class TreeBuilderSpec extends ObjectBehavior
                 new Record(
                     'IncomingPaymentRequest',
                     new Obj(0, $date->getWrappedObject(), 'Date'),
-                    new Interval(0, 'formatted_interval'),
+                    new Number(0, 'ival', 'Interval'),
                     new Text(0, 'formatted_repititions', 'Repetitions'),
                     new Text(0, ' '),
                     new Number(0, 'foobar', 'PayerNumber'),
@@ -210,12 +204,11 @@ class TreeBuilderSpec extends ObjectBehavior
         );
     }
 
-    function it_builds_outgoing_payment_trees(SEK $amount, $bankgiro, $date, $intervalFormatter, $repsFormatter)
+    function it_builds_outgoing_payment_trees(SEK $amount, $bankgiro, $date, $repsFormatter)
     {
-        $intervalFormatter->format(0)->shouldBeCalled()->willReturn('formatted_interval');
         $repsFormatter->format(1)->shouldBeCalled()->willReturn('formatted_repititions');
 
-        $this->addOutgoingPaymentRequest('foobar', $amount, $date, 'ref', 0, 1);
+        $this->addOutgoingPaymentRequest('foobar', $amount, $date, 'ref', 'ival', 1);
 
         $this->buildTree()->shouldBeLike(
             $this->a_tree(
@@ -225,7 +218,7 @@ class TreeBuilderSpec extends ObjectBehavior
                 new Record(
                     'OutgoingPaymentRequest',
                     new Obj(0, $date->getWrappedObject(), 'Date'),
-                    new Interval(0, 'formatted_interval'),
+                    new Number(0, 'ival', 'Interval'),
                     new Text(0, 'formatted_repititions', 'Repetitions'),
                     new Text(0, ' '),
                     new Number(0, 'foobar', 'PayerNumber'),
@@ -250,7 +243,7 @@ class TreeBuilderSpec extends ObjectBehavior
                 new Record(
                     'IncomingPaymentRequest',
                     new ImmediateDate,
-                    new Interval(0, '0'),
+                    new Number(0, Intervals::INTERVAL_ONCE, 'Interval'),
                     new Text(0, '   ', 'Repetitions'),
                     new Text(0, ' '),
                     new Number(0, 'foobar', 'PayerNumber'),
@@ -275,7 +268,7 @@ class TreeBuilderSpec extends ObjectBehavior
                 new Record(
                     'OutgoingPaymentRequest',
                     new ImmediateDate,
-                    new Interval(0, '0'),
+                    new Number(0, Intervals::INTERVAL_ONCE, 'Interval'),
                     new Text(0, '   ', 'Repetitions'),
                     new Text(0, ' '),
                     new Number(0, 'foobar', 'PayerNumber'),

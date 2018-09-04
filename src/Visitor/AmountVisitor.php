@@ -38,7 +38,7 @@ class AmountVisitor extends ErrorAwareVisitor
             return;
         }
 
-        $signalStr = (string)$node->getChild('Text')->getValue();
+        $signalStr = (string)$node->getValueFrom('Text');
 
         if (trim($signalStr) == '') {
             return;

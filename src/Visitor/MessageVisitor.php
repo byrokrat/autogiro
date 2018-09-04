@@ -22,66 +22,72 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Visitor;
 
-use byrokrat\autogiro\Tree\AutogiroFile;
-use byrokrat\autogiro\Tree\Message;
-use byrokrat\autogiro\Tree\Interval;
-use byrokrat\autogiro\Messages;
-use byrokrat\autogiro\Intervals;
+use byrokrat\autogiro\MessageRetriever;
+use byrokrat\autogiro\Tree\Node;
+use byrokrat\autogiro\Tree\Text;
 
 /**
  * Visitor of message nodes in tree
  *
- * Creates string message as attribute 'message'
+ * Creates string message as child 'Text'
  */
 class MessageVisitor extends ErrorAwareVisitor
 {
     /**
+     * @var MessageRetriever
+     */
+    private $messages;
+
+    /**
      * @var string
      */
-    private $layout;
+    private $layoutName = '';
 
-    public function beforeAutogiroFile(AutogiroFile $node): void
+    /**
+     * @var string
+     */
+    private $recordName = '';
+
+    public function __construct(ErrorObject $errorObj, MessageRetriever $messages = null)
     {
-        $this->layout = $node->getName();
+        parent::__construct($errorObj);
+        $this->messages = $messages ?: new MessageRetriever;
     }
 
-    public function beforeMessage(Message $node): void
+    public function beforeAutogiroFile(Node $node): void
     {
-        if ($node->hasAttribute('message')) {
-            return;
-        }
+        $this->layoutName = $node->getName();
+        $this->recordName = '';
+    }
 
-        $messageId = $node->hasAttribute('message_id')
-            ? $node->getAttribute('message_id')
-            : $this->layout . '.' . $node->getValue();
+    public function beforeRecord(Node $node): void
+    {
+        $this->recordName = $node->getName();
+    }
 
-        if (!isset(Messages::MESSAGE_MAP[$messageId])) {
+    public function beforeMessage(Node $node): void
+    {
+        $code = (string)$node->getValueFrom('Number');
+
+        $message = $this->messages->readMessage(
+            $this->layoutName,
+            $this->recordName,
+            $node->getName(),
+            $code
+        );
+
+        if (!$message) {
             $this->getErrorObject()->addError(
-                "Invalid message id %s on line %s",
-                $messageId,
+                "Invalid message id '%s:%s:%s:%s' on line %s",
+                $this->layoutName,
+                $this->recordName,
+                $node->getName(),
+                $code,
                 (string)$node->getLineNr()
             );
             return;
         }
 
-        $node->setAttribute('message', Messages::MESSAGE_MAP[$messageId]);
-    }
-
-    public function beforeInterval(Interval $node): void
-    {
-        if ($node->hasAttribute('message')) {
-            return;
-        }
-
-        if (!isset(Intervals::MESSAGE_MAP[$node->getValue()])) {
-            $this->getErrorObject()->addError(
-                "Invalid interval %s on line %s",
-                $node->getValue(),
-                (string)$node->getLineNr()
-            );
-            return;
-        }
-
-        $node->setAttribute('message', Intervals::MESSAGE_MAP[$node->getValue()]);
+        $node->addChild(new Text($node->getLineNr(), $message));
     }
 }

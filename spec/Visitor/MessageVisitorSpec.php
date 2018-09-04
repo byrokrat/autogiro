@@ -7,19 +7,17 @@ namespace spec\byrokrat\autogiro\Visitor;
 use byrokrat\autogiro\Visitor\MessageVisitor;
 use byrokrat\autogiro\Visitor\ErrorAwareVisitor;
 use byrokrat\autogiro\Visitor\ErrorObject;
-use byrokrat\autogiro\Tree\AutogiroFile;
-use byrokrat\autogiro\Tree\Message;
-use byrokrat\autogiro\Tree\Interval;
-use byrokrat\autogiro\Messages;
-use byrokrat\autogiro\Intervals;
+use byrokrat\autogiro\MessageRetriever;
+use byrokrat\autogiro\Tree\Node;
+use byrokrat\autogiro\Tree\Text;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
 class MessageVisitorSpec extends ObjectBehavior
 {
-    function let(ErrorObject $errorObj)
+    function let(ErrorObject $errorObj, MessageRetriever $messages)
     {
-        $this->beConstructedWith($errorObj);
+        $this->beConstructedWith($errorObj, $messages);
     }
 
     function it_is_initializable()
@@ -32,58 +30,70 @@ class MessageVisitorSpec extends ObjectBehavior
         $this->shouldHaveType(ErrorAwareVisitor::CLASS);
     }
 
-    function it_fails_on_unvalid_message(Message $node, $errorObj)
+    function it_fails_on_unvalid_message(Node $file, Node $record, Node $msg, $errorObj, $messages)
     {
-        $node->hasAttribute('message')->willReturn(false);
-        $node->hasAttribute('message_id')->willReturn(false);
-        $node->getLineNr()->willReturn(1);
-        $node->getValue()->willReturn('not-valid');
+        $file->getName()->willReturn('file');
+        $record->getName()->willReturn('record');
+        $msg->getLineNr()->willReturn(1);
+        $msg->getName()->willReturn('msg');
+        $msg->getValueFrom('Number')->willReturn('code');
 
-        $this->beforeMessage($node);
+        $messages->readMessage('file', 'record', 'msg', 'code')->willReturn('');
+
+        $this->beforeAutogiroFile($file);
+        $this->beforeRecord($record);
+        $this->beforeMessage($msg);
+
+
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 
-    function it_creates_messages_from_layout_and_node_value(Message $msgNode, AutogiroFile $fileNode, $errorObj)
+    function it_creates_messages(Node $file, Node $record, Node $msg, $errorObj, $messages)
     {
-        $msgNode->hasAttribute('message')->willReturn(false);
-        $msgNode->hasAttribute('message_id')->willReturn(false);
-        $msgNode->getValue()->willReturn('0');
-        $msgNode->setAttribute('message', Argument::type('string'))->shouldBeCalled();
+        $file->getName()->willReturn('file');
+        $record->getName()->willReturn('record');
+        $msg->getLineNr()->willReturn(1);
+        $msg->getName()->willReturn('msg');
+        $msg->getValueFrom('Number')->willReturn('code');
 
-        $fileNode->getName()->willReturn('AutogiroPaymentResponseFile');
+        $messages->readMessage('file', 'record', 'msg', 'code')->willReturn('message');
 
-        $this->beforeAutogiroFile($fileNode);
-        $this->beforeMessage($msgNode);
+        $msg->addChild(Argument::that(function (Text $text) {
+            return $text->getValue() == 'message';
+        }))->shouldBeCalled();
+
+        $this->beforeAutogiroFile($file);
+        $this->beforeRecord($record);
+        $this->beforeMessage($msg);
+
         $errorObj->addError(Argument::cetera())->shouldNotHaveBeenCalled();
     }
 
-    function it_creates_message_from_message_id_if_present(Message $node, $errorObj)
+    function it_defaults_to_empty_file_and_record_names(Node $msg, $messages)
     {
-        $node->hasAttribute('message')->willReturn(false);
-        $node->getValue()->willReturn('not-valid');
-        $node->hasAttribute('message_id')->willReturn(true);
-        $node->getAttribute('message_id')->willReturn(key(Messages::MESSAGE_MAP));
-        $node->setAttribute('message', Argument::type('string'))->shouldBeCalled();
+        $msg->getLineNr()->willReturn(1);
+        $msg->getName()->willReturn('msg');
+        $msg->getValueFrom('Number')->willReturn('code');
+        $msg->addChild(Argument::any())->shouldBeCalled();
 
-        $this->beforeMessage($node);
-        $errorObj->addError(Argument::cetera())->shouldNotHaveBeenCalled();
+        $messages->readMessage('', '', 'msg', 'code')->shouldBeCalled()->willReturn('foobar');
+
+        $this->beforeMessage($msg);
     }
 
-    function it_does_not_create_message_if_attr_is_set(Message $node)
+    function it_resets_record_name(Node $file, Node $record, Node $msg, $messages)
     {
-        $node->hasAttribute('message')->willReturn(true);
-        $this->beforeMessage($node);
-        $node->setAttribute('message', Argument::any())->shouldNotHaveBeenCalled();
-    }
+        $file->getName()->willReturn('file');
+        $record->getName()->willReturn('record');
+        $msg->getLineNr()->willReturn(1);
+        $msg->getName()->willReturn('msg');
+        $msg->getValueFrom('Number')->willReturn('code');
+        $msg->addChild(Argument::any())->shouldBeCalled();
 
-    function it_creates_valid_interval_descriptions(Interval $node, $errorObj)
-    {
-        $node->hasAttribute('message')->willReturn(false);
-        $node->hasAttribute('message_id')->willReturn(false);
-        $node->getValue()->willReturn(key(Intervals::MESSAGE_MAP));
-        $node->setAttribute('message', Argument::type('string'))->shouldBeCalled();
+        $messages->readMessage('file', '', 'msg', 'code')->shouldBeCalled()->willReturn('message');
 
-        $this->beforeInterval($node);
-        $errorObj->addError(Argument::cetera())->shouldNotHaveBeenCalled();
+        $this->beforeRecord($record);
+        $this->beforeAutogiroFile($file);
+        $this->beforeMessage($msg);
     }
 }

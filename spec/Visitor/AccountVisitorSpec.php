@@ -36,101 +36,93 @@ class AccountVisitorSpec extends ObjectBehavior
         $this->shouldHaveType(ErrorAwareVisitor::CLASS);
     }
 
-    function it_fails_on_unvalid_account_number(Node $accountNode, Node $number, $accountFactory, $errorObj)
+    function it_fails_on_unvalid_account_number(Node $node, $accountFactory, $errorObj)
     {
-        $accountNode->getLineNr()->willReturn(1);
-        $accountNode->hasChild('Object')->willReturn(false);
-        $accountNode->getChild('Number')->willReturn($number);
+        $node->getLineNr()->willReturn(1);
+        $node->hasChild('Object')->willReturn(false);
 
-        $number->getValue()->willReturn('not-valid');
+        $node->getValueFrom('Number')->willReturn('not-valid');
         $accountFactory->createAccount('not-valid')->willThrow(BankingException::CLASS);
 
-        $this->beforeAccount($accountNode);
+        $this->beforeAccount($node);
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 
     function it_creates_valid_account_numbers(
-        Node $accountNode,
-        Node $number,
+        Node $node,
         AccountNumber $accountNumber,
         $accountFactory
     ) {
-        $accountNode->getLineNr()->willReturn(1);
-        $accountNode->hasChild('Object')->willReturn(false);
-        $accountNode->getChild('Number')->willReturn($number);
+        $node->getLineNr()->willReturn(1);
+        $node->hasChild('Object')->willReturn(false);
 
-        $number->getValue()->willReturn('valid');
+        $node->getValueFrom('Number')->willReturn('valid');
         $accountFactory->createAccount('valid')->willReturn($accountNumber);
 
-        $accountNode->addChild(Argument::that(function (Obj $obj) use ($accountNumber) {
+        $node->addChild(Argument::that(function (Obj $obj) use ($accountNumber) {
             return $obj->getValue() == $accountNumber->getWrappedObject();
         }))->shouldBeCalled();
 
-        $this->beforeAccount($accountNode);
+        $this->beforeAccount($node);
     }
 
-    function it_does_not_create_account_if_object_exists(Node $accountNode)
+    function it_does_not_create_account_if_object_exists(Node $node)
     {
-        $accountNode->hasChild('Object')->willReturn(true);
-        $this->beforeAccount($accountNode);
-        $accountNode->addChild(Argument::any())->shouldNotHaveBeenCalled();
+        $node->hasChild('Object')->willReturn(true);
+        $this->beforeAccount($node);
+        $node->addChild(Argument::any())->shouldNotHaveBeenCalled();
     }
 
-    function it_does_not_create_account_if_number_is_zero(Node $accountNode, Node $number)
+    function it_does_not_create_account_if_number_is_zero(Node $node)
     {
-        $accountNode->hasChild('Object')->willReturn(false);
-        $accountNode->getChild('Number')->willReturn($number);
-        $number->getValue()->willReturn('0000');
-        $this->beforeAccount($accountNode);
-        $accountNode->addChild(Argument::any())->shouldNotHaveBeenCalled();
+        $node->hasChild('Object')->willReturn(false);
+        $node->getValueFrom('Number')->willReturn('0000');
+        $this->beforeAccount($node);
+        $node->addChild(Argument::any())->shouldNotHaveBeenCalled();
     }
 
-    function it_fails_on_unvalid_bankgiro_number(Node $bankgiroNode, Node $number, $bankgiroFactory, $errorObj)
+    function it_fails_on_unvalid_bankgiro_number(Node $node, $bankgiroFactory, $errorObj)
     {
-        $bankgiroNode->getLineNr()->willReturn(1);
-        $bankgiroNode->hasChild('Object')->willReturn(false);
-        $bankgiroNode->getChild('Number')->willReturn($number);
+        $node->getLineNr()->willReturn(1);
+        $node->hasChild('Object')->willReturn(false);
 
-        $number->getValue()->willReturn('not-valid');
+        $node->getValueFrom('Number')->willReturn('not-valid');
         $bankgiroFactory->createAccount('not-valid')->willThrow(BankingException::CLASS);
 
-        $this->beforePayeeBankgiro($bankgiroNode);
+        $this->beforePayeeBankgiro($node);
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 
     function it_creates_valid_bankgiro_numbers(
-        Node $bankgiroNode,
-        Node $number,
+        Node $node,
         AccountNumber $accountNumber,
         $bankgiroFactory
     ) {
-        $bankgiroNode->getLineNr()->willReturn(1);
-        $bankgiroNode->hasChild('Object')->willReturn(false);
-        $bankgiroNode->getChild('Number')->willReturn($number);
+        $node->getLineNr()->willReturn(1);
+        $node->hasChild('Object')->willReturn(false);
 
-        $number->getValue()->willReturn('valid');
+        $node->getValueFrom('Number')->willReturn('valid');
         $bankgiroFactory->createAccount('valid')->willReturn($accountNumber);
 
-        $bankgiroNode->addChild(Argument::that(function (Obj $obj) use ($accountNumber) {
+        $node->addChild(Argument::that(function (Obj $obj) use ($accountNumber) {
             return $obj->getValue() == $accountNumber->getWrappedObject();
         }))->shouldBeCalled();
 
-        $this->beforePayeeBankgiro($bankgiroNode);
+        $this->beforePayeeBankgiro($node);
     }
 
-    function it_does_not_create_bankgiro_if_object_exists(Node $bankgiroNode)
+    function it_does_not_create_bankgiro_if_object_exists(Node $node)
     {
-        $bankgiroNode->hasChild('Object')->willReturn(true);
-        $this->beforePayeeBankgiro($bankgiroNode);
-        $bankgiroNode->addChild(Argument::any())->shouldNotHaveBeenCalled();
+        $node->hasChild('Object')->willReturn(true);
+        $this->beforePayeeBankgiro($node);
+        $node->addChild(Argument::any())->shouldNotHaveBeenCalled();
     }
 
-    function it_does_not_create_bankgiro_if_number_is_zero(Node $bankgiroNode, Node $number)
+    function it_does_not_create_bankgiro_if_number_is_zero(Node $node)
     {
-        $bankgiroNode->hasChild('Object')->willReturn(false);
-        $bankgiroNode->getChild('Number')->willReturn($number);
-        $number->getValue()->willReturn('0000');
-        $this->beforePayeeBankgiro($bankgiroNode);
-        $bankgiroNode->addChild(Argument::any())->shouldNotHaveBeenCalled();
+        $node->hasChild('Object')->willReturn(false);
+        $node->getValueFrom('Number')->willReturn('0000');
+        $this->beforePayeeBankgiro($node);
+        $node->addChild(Argument::any())->shouldNotHaveBeenCalled();
     }
 }

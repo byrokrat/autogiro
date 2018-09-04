@@ -22,9 +22,9 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Writer;
 
+use byrokrat\autogiro\Intervals;
 use byrokrat\autogiro\Tree\AutogiroFile;
 use byrokrat\autogiro\Tree\ImmediateDate;
-use byrokrat\autogiro\Tree\Interval;
 use byrokrat\autogiro\Tree\Number;
 use byrokrat\autogiro\Tree\Obj;
 use byrokrat\autogiro\Tree\Record;
@@ -85,11 +85,6 @@ class TreeBuilder
     private $date;
 
     /**
-     * @var IntervalFormatter
-     */
-    private $intervalFormatter;
-
-    /**
      * @var RepititionsFormatter
      */
     private $repititionsFormatter;
@@ -98,20 +93,17 @@ class TreeBuilder
      * @param string               $bgcNr                The BGC customer number of payee
      * @param Bankgiro             $bankgiro             Payee bankgiro account number
      * @param \DateTimeInterface   $date                 Creation date
-     * @param IntervalFormatter    $intervalFormatter    Interval formatter
      * @param RepititionsFormatter $repititionsFormatter Repititions formatter
      */
     public function __construct(
         string $bgcNr,
         Bankgiro $bankgiro,
         \DateTimeInterface $date,
-        IntervalFormatter $intervalFormatter,
         RepititionsFormatter $repititionsFormatter
     ) {
         $this->bgcNr = $bgcNr;
         $this->payeeBgNode = new Obj(0, $bankgiro, 'PayeeBankgiro');
         $this->date = $date;
-        $this->intervalFormatter = $intervalFormatter;
         $this->repititionsFormatter = $repititionsFormatter;
         $this->reset();
     }
@@ -294,7 +286,7 @@ class TreeBuilder
         $this->payments[] = new Record(
             $nodename,
             new Obj(0, $this->date, 'Date'),
-            new Interval(0, $this->intervalFormatter->format($interval)),
+            new Number(0, $interval, 'Interval'),
             new Text(0, $this->repititionsFormatter->format($repetitions), 'Repetitions'),
             new Text(0, ' '),
             new Number(0, $payerNr, 'PayerNumber'),
@@ -310,7 +302,7 @@ class TreeBuilder
         $this->payments[] = new Record(
             $nodename,
             new ImmediateDate,
-            new Interval(0, '0'),
+            new Number(0, Intervals::INTERVAL_ONCE, 'Interval'),
             new Text(0, '   ', 'Repetitions'),
             new Text(0, ' '),
             new Number(0, $payerNr, 'PayerNumber'),

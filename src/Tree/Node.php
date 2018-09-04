@@ -180,6 +180,16 @@ class Node
     }
 
     /**
+     * Get raw value wrapped in child node
+     *
+     * @return mixed Loaded node value
+     */
+    public function getValueFrom(string $name)
+    {
+        return $this->getChild($name)->getValue();
+    }
+
+    /**
      * Set a custom attribute on node
      *
      * @param string $name  Name of attribute

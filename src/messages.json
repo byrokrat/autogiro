@@ -1,0 +1,152 @@
+{
+    "*": {
+        "*": {
+            "Direction": {
+                "": "Ingen",
+                "00": "Ingen",
+                "82": "Inbetalning",
+                "32": "Utbetalning"
+            },
+            "Interval": {
+                "": "Tills vidare.",
+                "0": "En gång",
+                "1": "En gång per månad på den kalenderdag som anges i betalningsposten.",
+                "2": "En gång per kvartal på den kalenderdag som anges i betalningsposten.",
+                "3": "En gång per halvår på den kalenderdag som anges i betalningsposten.",
+                "4": "En gång per år på den kalenderdag som anges i betalningsposten.",
+                "5": "En gång per månad på sista möjliga bankdag.",
+                "6": "En gång per kvartal på sista möjliga bankdag.",
+                "7": "En gång per halvår på sista möjliga bankdag.",
+                "8": "En gång per år på sista möjliga bankdag."
+            }
+        }
+    },
+    "AutogiroRequestFile": {
+        "AmendmentRequest": {
+            "Type": {
+                "23": "Makulera alla betalningar för ett betalarnummer.",
+                "24": "Makulera alla betalningar för ett betalarnummer på en angiven betalningsdag.",
+                "25": "Makulera en betalning för ett betalarnummer på en angiven betalningsdag och belopp.",
+                "26": "Ändra alla betalningar till ny betalningsdag.",
+                "27": "Ändra alla betalningar från angiven betalningsdag till ny betalningsdag.",
+                "28": "Ändra alla betalningar inom ett betalarnummer från angiven betalningsdag till ny betalningsdag",
+                "29": "Ändra Enstaka betalning från angiven betalningsdag till ny betalningsdag."
+            }
+        }
+    },
+    "AutogiroMandateResponseFile": {
+        "MandateResponse": {
+            "Info": {
+                "03": "Makulering: Initierat av betalningsmottagaren.",
+                "04": "Nyupplägg: Initierat av betalningsmottagaren.",
+                "05": "Byte av betalarnummer: Initierat av betalningsmottagaren.",
+                "10": "Makulerat på grund av att betalningsmottagarens bankgironummer är avslutat.",
+                "42": "Svar på kontoförfrågan från bank på ny betalare i Autogiro.",
+                "43": "Makulerat/borttaget på grund av obesvarad kontoförfrågan.",
+                "44": "Makulerat på grund av att betalarens bankgironummer är avslutat.",
+                "46": "Makulering: Initierat av betalaren eller betalarens bank.",
+                "93": "Makulering: Initierad av betalaren."
+            },
+            "Status": {
+                "02": "Medgivandet är makulerat på initiativ av betalaren eller betalarens bank.",
+                "03": "Kontoslaget är inte godkänt för Autogiro.",
+                "04": "Medgivandet saknas i Bankgirots Medgivanderegister.",
+                "05": "Felaktiga bankkonto- eller personuppgifter.",
+                "07": "Makulerat/borttaget på grund av obesvarad kontoförfrågan.",
+                "09": "Betalarbankgironumret saknas hos Bankgirot.",
+                "10": "Medgivandet finns redan upplagt i Bankgirots register eller är under förfrågan.",
+                "20": "Felaktigt person-/organisationsnummer eller avtal om medgivande med bankgironummer saknas.",
+                "21": "Felaktigt betalarnummer.",
+                "23": "Felaktigt bankkontonummer.",
+                "29": "Mottagarbankgironummer är felaktigt.",
+                "30": "Mottagarbankgironummer är avregistrerat.",
+                "32": "Nytt Medgivande.",
+                "33": "Makulerad.",
+                "98": "Medgivandet är makulerat på grund av makulerat betalarbankgironummer.",
+                "01": "Medgivandet makulerat på initiativ av banken.",
+                "06": "Medgivandet makulerat av Bankgirot.",
+                "11": "Medgivandet stoppat av betalaren.",
+                "12": "Hävning av stopp av Medgivandet.",
+                "24": "Maxbelopp ej tillåtet."
+            }
+        }
+    },
+    "AutogiroPaymentResponseFile": {
+        "*": {
+            "Status": {
+                "0": "Godkänd betalning, betalningen är genomförd.",
+                "1": "Täckning saknas, betalningen har inte genomförts.",
+                "2": "Koppling till Autogiro saknas (bankkontot avslutat), Annan orsak. Betalningen har inte genomförts.",
+                "9": "Förnyad täckning, betalningen har inte genomförts men nytt försök ska göras om avtal finns."
+            }
+        },
+        "RefundPaymentResponse": {
+            "Status": {
+                "01": "Medgivande har inte lämnats till betalningsmottagaren.",
+                "02": "Medgivande har återkallats.",
+                "03": "Beloppet angavs inte i samband med att Medgivandet tecknades och beloppet överstiger det betalaren rimligen kunde ha förväntat sig."
+            }
+        }
+    },
+    "AutogiroPaymentResponseOldFile": {
+        "*": {
+            "Status": {
+                "": "Godkänd betalning, betalningen är genomförd.",
+                "1": "Täckning saknas, betalningen har inte genomförts.",
+                "2": "Koppling till Autogiro saknas (bankkontot avslutat), Annan orsak. Betalningen har inte genomförts.",
+                "9": "Förnyad täckning, betalningen har inte genomförts men nytt försök ska göras om avtal finns."
+            }
+        }
+    },
+    "AutogiroAmendmentResponseFile": {
+        "*": {
+            "Type": {
+                "03": "Makulerad på grund av borttaget Medgivande.",
+                "11": "Makulerad av betalaren/betalarens bank.",
+                "21": "Makulerad, Betalningsmottagarens avtal avslutat.",
+                "23": "Makulera alla betalningar för ett betalarnummer.",
+                "24": "Makulera alla betalningar för ett betalarnummer inom en angiven betalningsdag.",
+                "25": "Makulera en betalning för ett betalarnummer inom angiven betalningsdag, belopp och eventuell referens.",
+                "22": "Makulera alla betalningar angiven betalningsdag",
+                "26": "Ändra alla betalningar till ny betalningsdag.",
+                "27": "Ändra alla betalningar från angiven betalningsdag till ny betalningsdag.",
+                "28": "Ändra alla betalningar inom ett betalarnummer från angiven betalningsdag till ny betalningsdag.",
+                "29": "Ändra en betalning från angiven betalningsdag till ny betalningsdag."
+            },
+            "Comment": {
+                "01": "Felaktig betalningsdag.",
+                "02": "Felaktigt betalarnummer.",
+                "04": "Felaktig debiteringskod.",
+                "05": "Felaktigt belopp.",
+                "06": "Felaktig ny betalningsdag.",
+                "10": "Felaktigt mottagarbankgironummer (fel checksiffra).",
+                "11": "Mottagarbankgironummer saknas (noll eller blankt).",
+                "12": "Makulerad.",
+                "13": "Betalning saknas, inte åtgärdad.",
+                "14": "Ändrad betalningsdag.",
+                "15": "Inte ändrad, Självförnyande uppdrag.",
+                "18": "Ändrad betalningsdag."
+            }
+        }
+    },
+    "AutogiroPaymentRejectionFile": {
+        "*": {
+            "Comment": {
+                "01": "Utgår, Medgivande saknas.",
+                "02": "Utgår, kontot är inte godkänt eller är avslutat.",
+                "06": "Felaktig periodkod.",
+                "07": "Felaktigt antal för Självförnyande uppdrag.",
+                "08": "Belopp inte numeriskt.",
+                "09": "Förbud mot utbetalningar.",
+                "10": "Bankgironumret saknas hos Bankgirot.",
+                "12": "Felaktigt betalningsdatum.",
+                "13": "Passerat betalningsdatum.",
+                "15": "Mottagarbankgironumret i öppningsposten och i transaktionsposten är inte detsamma.",
+                "24": "Beloppet överstiger maxbeloppet.",
+                "03": "Utgår, Medgivandet stoppat.",
+                "04": "Felaktigt betalarbankgironummer.",
+                "05": "Felaktigt mottagarbankgironummer."
+            }
+        }
+    }
+}

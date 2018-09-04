@@ -28,13 +28,10 @@ class CountingVisitorSpec extends ObjectBehavior
         $this->shouldHaveType(ErrorAwareVisitor::CLASS);
     }
 
-    function it_validates_record_counts(Node $count, Node $number, Node $text, Node $record, $errorObj)
+    function it_validates_record_counts(Node $count, Node $record, $errorObj)
     {
-        $count->getChild('Number')->willReturn($number);
-        $count->getChild('Text')->willReturn($text);
-        $number->getValue()->willReturn('0000001');
-        $text->getValue()->willReturn('foobar');
-
+        $count->getValueFrom('Number')->willReturn('0000001');
+        $count->getValueFrom('Text')->willReturn('foobar');
         $record->getName()->willReturn('foobar');
 
         $this->beforeRecord($record);
@@ -43,13 +40,10 @@ class CountingVisitorSpec extends ObjectBehavior
         $errorObj->addError(Argument::cetera())->shouldNotHaveBeenCalled();
     }
 
-    function it_validates_section_counts(Node $count, Node $number, Node $text, Node $section, $errorObj)
+    function it_validates_section_counts(Node $count, Node $section, $errorObj)
     {
-        $count->getChild('Number')->willReturn($number);
-        $count->getChild('Text')->willReturn($text);
-        $number->getValue()->willReturn('0000001');
-        $text->getValue()->willReturn('foobar');
-
+        $count->getValueFrom('Number')->willReturn('0000001');
+        $count->getValueFrom('Text')->willReturn('foobar');
         $section->getName()->willReturn('foobar');
 
         $this->beforeSection($section);
@@ -58,14 +52,11 @@ class CountingVisitorSpec extends ObjectBehavior
         $errorObj->addError(Argument::cetera())->shouldNotHaveBeenCalled();
     }
 
-    function it_fails_on_invalid_count(Node $count, Node $number, Node $text, Node $record, $errorObj)
+    function it_fails_on_invalid_count(Node $count, Node $record, $errorObj)
     {
         $count->getLineNr()->willReturn(1);
-        $count->getChild('Number')->willReturn($number);
-        $count->getChild('Text')->willReturn($text);
-        $number->getValue()->willReturn('0000000');
-        $text->getValue()->willReturn('foobar');
-
+        $count->getValueFrom('Number')->willReturn('0000000');
+        $count->getValueFrom('Text')->willReturn('foobar');
         $record->getName()->willReturn('foobar');
 
         $this->beforeRecord($record);
@@ -74,13 +65,10 @@ class CountingVisitorSpec extends ObjectBehavior
         $errorObj->addError(Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 
-    function it_resets_count_on_file_node(Node $count, Node $number, Node $text, Node $record, $errorObj)
+    function it_resets_count_on_file_node(Node $count, Node $record, $errorObj)
     {
-        $count->getChild('Number')->willReturn($number);
-        $count->getChild('Text')->willReturn($text);
-        $number->getValue()->willReturn('0000000');
-        $text->getValue()->willReturn('foobar');
-
+        $count->getValueFrom('Number')->willReturn('0000000');
+        $count->getValueFrom('Text')->willReturn('foobar');
         $record->getName()->willReturn('foobar');
 
         $this->beforeRecord($record);

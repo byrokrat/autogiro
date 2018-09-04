@@ -30,43 +30,40 @@ class AmountVisitorSpec extends ObjectBehavior
         $this->shouldHaveType(ErrorAwareVisitor::CLASS);
     }
 
-    function it_does_not_create_amount_if_object_exists(Node $amountNode)
+    function it_does_not_create_amount_if_object_exists(Node $node)
     {
-        $amountNode->hasChild('Object')->willReturn(true);
-        $this->beforeAmount($amountNode);
-        $amountNode->addChild(Argument::any())->shouldNotHaveBeenCalled();
+        $node->hasChild('Object')->willReturn(true);
+        $this->beforeAmount($node);
+        $node->addChild(Argument::any())->shouldNotHaveBeenCalled();
     }
 
-    function it_does_not_create_if_amount_is_empty(Node $amountNode, Node $text)
+    function it_does_not_create_if_amount_is_empty(Node $node)
     {
-        $amountNode->hasChild('Object')->willReturn(false);
-        $amountNode->getChild('Text')->willReturn($text);
-        $text->getValue()->willReturn('    ');
-        $this->beforeAmount($amountNode);
-        $amountNode->addChild(Argument::any())->shouldNotHaveBeenCalled();
+        $node->hasChild('Object')->willReturn(false);
+        $node->getValueFrom('Text')->willReturn('    ');
+        $this->beforeAmount($node);
+        $node->addChild(Argument::any())->shouldNotHaveBeenCalled();
     }
 
-    function it_fails_on_unvalid_amounts(Node $amountNode, Node $text, $errorObj)
+    function it_fails_on_unvalid_amounts(Node $node, $errorObj)
     {
-        $amountNode->getLineNr()->willReturn(1);
-        $amountNode->hasChild('Object')->willReturn(false);
-        $amountNode->getChild('Text')->willReturn($text);
-        $text->getValue()->willReturn('this-is-not-a-valid-signal-string');
-        $this->beforeAmount($amountNode);
+        $node->getLineNr()->willReturn(1);
+        $node->hasChild('Object')->willReturn(false);
+        $node->getValueFrom('Text')->willReturn('this-is-not-a-valid-signal-string');
+        $this->beforeAmount($node);
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 
-    function it_creates_valid_amounts(Node $amountNode, Node $text)
+    function it_creates_valid_amounts(Node $node)
     {
-        $amountNode->getLineNr()->willReturn(1);
-        $amountNode->hasChild('Object')->willReturn(false);
-        $amountNode->getChild('Text')->willReturn($text);
-        $text->getValue()->willReturn('1230K');
+        $node->getLineNr()->willReturn(1);
+        $node->hasChild('Object')->willReturn(false);
+        $node->getValueFrom('Text')->willReturn('1230K');
 
-        $amountNode->addChild(Argument::that(function (Obj $obj) {
+        $node->addChild(Argument::that(function (Obj $obj) {
             return (new SEK('-123.02'))->equals($obj->getValue());
         }))->shouldBeCalled();
 
-        $this->beforeAmount($amountNode);
+        $this->beforeAmount($node);
     }
 }

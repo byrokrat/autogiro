@@ -38,7 +38,7 @@ class DateVisitor extends ErrorAwareVisitor
             return;
         }
 
-        $number = (string)$node->getChild('Number')->getValue();
+        $number = (string)$node->getValueFrom('Number');
 
         if (!trim($number)) {
             return;

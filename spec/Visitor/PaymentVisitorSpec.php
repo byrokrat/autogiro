@@ -9,7 +9,6 @@ use byrokrat\autogiro\Visitor\ErrorAwareVisitor;
 use byrokrat\autogiro\Visitor\ErrorObject;
 use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Tree\ImmediateDate;
-use byrokrat\autogiro\Tree\Interval;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -33,15 +32,13 @@ class PaymentVisitorSpec extends ObjectBehavior
     function it_fails_if_interval_is_used_with_immediate_date_in_incoming_payment(
         Node $request,
         ImmediateDate $date,
-        Interval $ival,
-        Node $reps,
+        Node $ival,
         $errorObj
     ) {
-        $ival->getValue()->willReturn('1');
-        $reps->getValue()->willReturn('001');
+        $ival->getValueFrom('Number')->willReturn('1');
         $request->getChild('date')->willReturn($date);
         $request->getChild('interval')->willReturn($ival);
-        $request->getChild('repetitions')->willReturn($reps);
+        $request->getValueFrom('repetitions')->willReturn('001');
         $request->getLineNr()->willReturn(1);
         $this->beforeIncomingPaymentRequest($request);
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
@@ -50,15 +47,13 @@ class PaymentVisitorSpec extends ObjectBehavior
     function it_fails_if_interval_is_used_with_immediate_date_in_outgoing_payment(
         Node $request,
         ImmediateDate $date,
-        Interval $ival,
-        Node $reps,
+        Node $ival,
         $errorObj
     ) {
-        $ival->getValue()->willReturn('1');
-        $reps->getValue()->willReturn('001');
+        $ival->getValueFrom('Number')->willReturn('1');
         $request->getChild('date')->willReturn($date);
         $request->getChild('interval')->willReturn($ival);
-        $request->getChild('repetitions')->willReturn($reps);
+        $request->getValueFrom('repetitions')->willReturn('001');
         $request->getLineNr()->willReturn(1);
         $this->beforeOutgoingPaymentRequest($request);
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
@@ -67,15 +62,13 @@ class PaymentVisitorSpec extends ObjectBehavior
     function it_fails_if_no_interval_but_repetitions_are_used_in_incoming_payment(
         Node $request,
         ImmediateDate $date,
-        Interval $ival,
-        Node $reps,
+        Node $ival,
         $errorObj
     ) {
-        $ival->getValue()->willReturn('0');
-        $reps->getValue()->willReturn('001');
+        $ival->getValueFrom('Number')->willReturn('0');
         $request->getChild('date')->willReturn($date);
         $request->getChild('interval')->willReturn($ival);
-        $request->getChild('repetitions')->willReturn($reps);
+        $request->getValueFrom('repetitions')->willReturn('001');
         $request->getLineNr()->willReturn(1);
         $this->beforeIncomingPaymentRequest($request);
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
@@ -84,15 +77,13 @@ class PaymentVisitorSpec extends ObjectBehavior
     function it_fails_if_no_interval_but_repetitions_are_used_in_outgoing_payment(
         Node $request,
         ImmediateDate $date,
-        Interval $ival,
-        Node $reps,
+        Node $ival,
         $errorObj
     ) {
-        $ival->getValue()->willReturn('0');
-        $reps->getValue()->willReturn('001');
+        $ival->getValueFrom('Number')->willReturn('0');
         $request->getChild('date')->willReturn($date);
         $request->getChild('interval')->willReturn($ival);
-        $request->getChild('repetitions')->willReturn($reps);
+        $request->getValueFrom('repetitions')->willReturn('001');
         $request->getLineNr()->willReturn(1);
         $this->beforeOutgoingPaymentRequest($request);
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);

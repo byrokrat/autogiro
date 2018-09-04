@@ -27,8 +27,6 @@ use byrokrat\autogiro\Exception\RuntimeException;
 use byrokrat\autogiro\Exception\LogicException;
 use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Tree\Text;
-use byrokrat\autogiro\Tree\Number;
-use byrokrat\autogiro\Tree\Interval;
 use byrokrat\amount\Currency\SEK;
 use byrokrat\banking\AccountNumber;
 use byrokrat\id\IdInterface;
@@ -72,12 +70,12 @@ class PrintingVisitor extends Visitor
         $this->output->write($node->getValue());
     }
 
-    public function beforePayerNumber(Number $node): void
+    public function beforePayerNumber(Node $node): void
     {
         $this->output->write(str_pad($node->getValue(), 16, '0', STR_PAD_LEFT));
     }
 
-    public function beforePayeeBgcNumber(Number $node): void
+    public function beforePayeeBgcNumber(Node $node): void
     {
         $this->output->write(str_pad($node->getValue(), 6, '0', STR_PAD_LEFT));
     }
@@ -103,8 +101,11 @@ class PrintingVisitor extends Visitor
         }
     }
 
-    public function beforeInterval(Interval $node): void
+    public function beforeInterval(Node $node): void
     {
+        if (!in_array((int)$node->getValue(), range('0', '8'))) {
+            throw new RuntimeException('Interval must be between 0 and 8');
+        }
         $this->output->write($node->getValue());
     }
 
@@ -130,13 +131,6 @@ class PrintingVisitor extends Visitor
         }
         if ($node->getValue() instanceof OrganizationId) {
             $this->output->write($node->getValue()->format('00Ssk'));
-        }
-    }
-
-    private function assertAttribute(Node $node, string $attr, string $classname): void
-    {
-        if (!$node->hasAttribute($attr) || !$node->getAttribute($attr) instanceof $classname) {
-            throw new LogicException("Failing attribute '$attr' in {$node->getName()}");
         }
     }
 

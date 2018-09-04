@@ -42,7 +42,6 @@ class WriterFactory extends VisitorFactory
                 $bgcNr,
                 $bankgiro,
                 $date ?: new \DateTimeImmutable,
-                new IntervalFormatter,
                 new RepititionsFormatter
             ),
             new PrintingVisitor,

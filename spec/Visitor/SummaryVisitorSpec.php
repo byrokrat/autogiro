@@ -31,24 +31,18 @@ class SummaryVisitorSpec extends ObjectBehavior
 
     function it_validates_summary(
         Node $summary,
-        Node $summaryAmountNode,
-        Node $sumaryObjectNode,
-        Node $text,
+        Node $summaryAmount,
         Node $record,
-        Node $recordAmountNode,
-        Node $recordObjectNode,
+        Node $recordAmount,
         $errorObj
     ) {
-        $summary->getChild('Amount')->willReturn($summaryAmountNode);
-        $summaryAmountNode->getChild('Object')->willReturn($sumaryObjectNode);
-        $sumaryObjectNode->getValue()->willReturn(new SEK('100'));
-        $summary->getChild('Text')->willReturn($text);
-        $text->getValue()->willReturn('foobar');
+        $summary->getChild('Amount')->willReturn($summaryAmount);
+        $summaryAmount->getValueFrom('Object')->willReturn(new SEK('100'));
+        $summary->getValueFrom('Text')->willReturn('foobar');
 
         $record->getName()->willReturn('foobar');
-        $record->getChild('Amount')->willReturn($recordAmountNode);
-        $recordAmountNode->getChild('Object')->willReturn($recordObjectNode);
-        $recordObjectNode->getValue()->willReturn(new SEK('100'));
+        $record->getChild('Amount')->willReturn($recordAmount);
+        $recordAmount->getValueFrom('Object')->willReturn(new SEK('100'));
 
         $this->afterRecord($record);
         $this->afterSummary($summary);
@@ -58,24 +52,18 @@ class SummaryVisitorSpec extends ObjectBehavior
 
     function it_uses_absolute_values_to_validate(
         Node $summary,
-        Node $summaryAmountNode,
-        Node $sumaryObjectNode,
-        Node $text,
+        Node $summaryAmount,
         Node $record,
-        Node $recordAmountNode,
-        Node $recordObjectNode,
+        Node $recordAmount,
         $errorObj
     ) {
-        $summary->getChild('Amount')->willReturn($summaryAmountNode);
-        $summaryAmountNode->getChild('Object')->willReturn($sumaryObjectNode);
-        $sumaryObjectNode->getValue()->willReturn(new SEK('100'));
-        $summary->getChild('Text')->willReturn($text);
-        $text->getValue()->willReturn('foobar');
+        $summary->getChild('Amount')->willReturn($summaryAmount);
+        $summaryAmount->getValueFrom('Object')->willReturn(new SEK('100'));
+        $summary->getValueFrom('Text')->willReturn('foobar');
 
         $record->getName()->willReturn('foobar');
-        $record->getChild('Amount')->willReturn($recordAmountNode);
-        $recordAmountNode->getChild('Object')->willReturn($recordObjectNode);
-        $recordObjectNode->getValue()->willReturn(new SEK('-100'));
+        $record->getChild('Amount')->willReturn($recordAmount);
+        $recordAmount->getValueFrom('Object')->willReturn(new SEK('-100'));
 
         $this->afterRecord($record);
         $this->afterSummary($summary);
@@ -85,25 +73,19 @@ class SummaryVisitorSpec extends ObjectBehavior
 
     function it_fails_on_invalid_summary(
         Node $summary,
-        Node $summaryAmountNode,
-        Node $sumaryObjectNode,
-        Node $text,
+        Node $summaryAmount,
         Node $record,
-        Node $recordAmountNode,
-        Node $recordObjectNode,
+        Node $recordAmount,
         $errorObj
     ) {
-        $summary->getChild('Amount')->willReturn($summaryAmountNode);
-        $summaryAmountNode->getChild('Object')->willReturn($sumaryObjectNode);
-        $sumaryObjectNode->getValue()->willReturn(new SEK('100'));
-        $summary->getChild('Text')->willReturn($text);
-        $text->getValue()->willReturn('foobar');
+        $summary->getChild('Amount')->willReturn($summaryAmount);
+        $summaryAmount->getValueFrom('Object')->willReturn(new SEK('100'));
+        $summary->getValueFrom('Text')->willReturn('foobar');
         $summary->getLineNr()->willReturn(1);
 
         $record->getName()->willReturn('foobar');
-        $record->getChild('Amount')->willReturn($recordAmountNode);
-        $recordAmountNode->getChild('Object')->willReturn($recordObjectNode);
-        $recordObjectNode->getValue()->willReturn(new SEK('200'));
+        $record->getChild('Amount')->willReturn($recordAmount);
+        $recordAmount->getValueFrom('Object')->willReturn(new SEK('200'));
 
         $this->afterRecord($record);
         $this->afterSummary($summary);
@@ -113,25 +95,19 @@ class SummaryVisitorSpec extends ObjectBehavior
 
     function it_resets_on_file_node(
         Node $summary,
-        Node $summaryAmountNode,
-        Node $sumaryObjectNode,
-        Node $text,
+        Node $summaryAmount,
         Node $record,
-        Node $recordAmountNode,
-        Node $recordObjectNode,
+        Node $recordAmount,
         $errorObj
     ) {
-        $summary->getChild('Amount')->willReturn($summaryAmountNode);
-        $summaryAmountNode->getChild('Object')->willReturn($sumaryObjectNode);
-        $sumaryObjectNode->getValue()->willReturn(new SEK('0'));
-        $summary->getChild('Text')->willReturn($text);
-        $text->getValue()->willReturn('foobar');
+        $summary->getChild('Amount')->willReturn($summaryAmount);
+        $summaryAmount->getValueFrom('Object')->willReturn(new SEK('0'));
+        $summary->getValueFrom('Text')->willReturn('foobar');
         $summary->getLineNr()->willReturn(1);
 
         $record->getName()->willReturn('foobar');
-        $record->getChild('Amount')->willReturn($recordAmountNode);
-        $recordAmountNode->getChild('Object')->willReturn($recordObjectNode);
-        $recordObjectNode->getValue()->willReturn(new SEK('100'));
+        $record->getChild('Amount')->willReturn($recordAmount);
+        $recordAmount->getValueFrom('Object')->willReturn(new SEK('100'));
 
         $this->afterRecord($record);
         $this->beforeAutogiroFile();
@@ -142,13 +118,11 @@ class SummaryVisitorSpec extends ObjectBehavior
 
     function it_ignores_summaries_with_no_amount(
         Node $summary,
-        Node $summaryAmountNode,
-        Node $sumaryObjectNode,
+        Node $summaryAmount,
         $errorObj
     ) {
-        $summary->getChild('Amount')->willReturn($summaryAmountNode);
-        $summaryAmountNode->getChild('Object')->willReturn($sumaryObjectNode);
-        $sumaryObjectNode->getValue()->willReturn(null);
+        $summary->getChild('Amount')->willReturn($summaryAmount);
+        $summaryAmount->getValueFrom('Object')->willReturn(null);
 
         $this->afterSummary($summary);
 

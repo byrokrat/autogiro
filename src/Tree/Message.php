@@ -25,10 +25,9 @@ namespace byrokrat\autogiro\Tree;
 /**
  * Node that wrapps a message id
  *
- * @see \byrokrat\autogiro\Visitor\MessageVisitor Creates attribute 'message'
- *   from attribute 'message_id' if present.
+ * @see \byrokrat\autogiro\Visitor\MessageVisitor Creates child 'Text'
  */
-class Message extends Node
+class Message extends Container
 {
     use TypeTrait;
 }

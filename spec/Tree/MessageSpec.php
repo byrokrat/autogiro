@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace spec\byrokrat\autogiro\Tree;
 
 use byrokrat\autogiro\Tree\Message;
-use byrokrat\autogiro\Tree\Node;
+use byrokrat\autogiro\Tree\Container;
 use PhpSpec\ObjectBehavior;
 
 class MessageSpec extends ObjectBehavior
@@ -15,9 +15,9 @@ class MessageSpec extends ObjectBehavior
         $this->shouldHaveType(Message::CLASS);
     }
 
-    function it_implements_node_interface()
+    function it_is_a_container()
     {
-        $this->shouldHaveType(Node::CLASS);
+        $this->shouldHaveType(Container::CLASS);
     }
 
     function it_contains_a_name()

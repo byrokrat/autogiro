@@ -39,7 +39,7 @@ class SummaryVisitor extends ErrorAwareVisitor
 
     public function afterRecord(Node $node): void
     {
-        if ($amount = $node->getChild('Amount')->getChild('Object')->getValue()) {
+        if ($amount = $node->getChild('Amount')->getValueFrom('Object')) {
             $summary = $this->summaries[$node->getName()] ?? $amount->subtract($amount);
             $this->summaries[$node->getName()] = $summary->add($amount);
         }
@@ -47,22 +47,19 @@ class SummaryVisitor extends ErrorAwareVisitor
 
     public function afterSummary(Node $node): void
     {
-        $expectedAmount = $node->getChild('Amount')->getChild('Object')->getValue();
+        $expectedAmount = $node->getChild('Amount')->getValueFrom('Object');
 
         if (!$expectedAmount) {
             return;
         }
 
-        $currentAmount = $this->summaries[(string)$node->getChild('Text')->getValue()] ?? null;
-
-        if (!$currentAmount) {
-            $currentAmount = $expectedAmount->subtract($expectedAmount);
-        }
+        $currentAmount = $this->summaries[(string)$node->getValueFrom('Text')]
+            ?? $expectedAmount->subtract($expectedAmount);
 
         if (!$expectedAmount->getAbsolute()->equals($currentAmount->getAbsolute())) {
             $this->getErrorObject()->addError(
                 "Invalid %s node summary (found: %s, expected: %s) on line %s",
-                (string)$node->getChild('Text')->getValue(),
+                (string)$node->getValueFrom('Text'),
                 (string)$currentAmount,
                 (string)$expectedAmount,
                 (string)$node->getLineNr()

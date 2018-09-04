@@ -25,8 +25,6 @@ class PayeeVisitorSpec extends ObjectBehavior
 
     function let(
         ErrorObject $errorObj,
-        Node $a,
-        Node $b,
         Node $bgA,
         Node $bgB,
         Node $custA,
@@ -34,11 +32,8 @@ class PayeeVisitorSpec extends ObjectBehavior
     ) {
         $this->beConstructedWith($errorObj);
 
-        $a->getValue()->willReturn('A');
-        $b->getValue()->willReturn('B');
-
-        $bgA->getChild('Number')->willReturn($a);
-        $bgB->getChild('Number')->willReturn($b);
+        $bgA->getValueFrom('Number')->willReturn('A');
+        $bgB->getValueFrom('Number')->willReturn('B');
         $bgB->getLineNr()->willReturn(1);
 
         $custA->getValue()->willReturn('A');

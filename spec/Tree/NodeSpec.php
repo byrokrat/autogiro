@@ -101,6 +101,16 @@ class NodeSpec extends ObjectBehavior
         $this->getChildren('FOO')->shouldIterateAs([$a, $b]);
     }
 
+    function it_can_read_values_form_children(Node $child)
+    {
+        $child->getName()->willReturn('child');
+        $child->getValue()->willReturn('val');
+
+        $this->addChild($child);
+
+        $this->getValueFrom('child')->shouldEqual('val');
+    }
+
     function it_can_save_attributes()
     {
         $this->hasAttribute('key')->shouldEqual(false);

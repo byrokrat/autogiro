@@ -9,9 +9,7 @@ use byrokrat\autogiro\Writer\Output;
 use byrokrat\autogiro\Exception\RuntimeException;
 use byrokrat\autogiro\Exception\LogicException;
 use byrokrat\autogiro\Tree\Text;
-use byrokrat\autogiro\Tree\Number;
 use byrokrat\autogiro\Tree\Node;
-use byrokrat\autogiro\Tree\Interval;
 use byrokrat\autogiro\Visitor\Visitor;
 use byrokrat\amount\Currency\SEK;
 use byrokrat\banking\AccountNumber;
@@ -63,14 +61,14 @@ class PrintingVisitorSpec extends ObjectBehavior
         $output->write('foobar')->shouldHaveBeenCalled();
     }
 
-    function it_prints_payer_numbers(Number $node, $output)
+    function it_prints_payer_numbers(Node $node, $output)
     {
         $node->getValue()->willReturn('1234567890');
         $this->beforePayerNumber($node);
         $output->write(Argument::is('0000001234567890'))->shouldHaveBeenCalled();
     }
 
-    function it_prints_payee_bgc_numbers(Number $node, $output)
+    function it_prints_payee_bgc_numbers(Node $node, $output)
     {
         $node->getValue()->willReturn('111');
         $this->beforePayeeBgcNumber($node);
@@ -110,11 +108,18 @@ class PrintingVisitorSpec extends ObjectBehavior
         $this->beforeAccount($node);
     }
 
-    function it_prints_intervals(Interval $node, $output)
+    function it_prints_intervals(Node $node, $output)
+    {
+        $node->getValue()->willReturn('8');
+        $this->beforeInterval($node);
+        $output->write('8')->shouldHaveBeenCalled();
+    }
+
+    function it_fails_on_invalid_intervals(Node $node, $output)
     {
         $node->getValue()->willReturn('9');
-        $this->beforeInterval($node);
-        $output->write('9')->shouldHaveBeenCalled();
+        $this->shouldThrow(RuntimeException::CLASS)->duringBeforeInterval($node);
+        $output->write(Argument::any())->shouldNotHaveBeenCalled();
     }
 
     function it_prints_amounts(Node $node, $output)

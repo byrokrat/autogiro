@@ -48,13 +48,13 @@ class CountingVisitor extends ErrorAwareVisitor
 
     public function beforeCount(Node $node): void
     {
-        $expectedCount = (int)$node->getChild('Number')->getValue();
-        $currentCount = $this->getCount((string)$node->getChild('Text')->getValue());
+        $expectedCount = (int)$node->getValueFrom('Number');
+        $currentCount = $this->getCount((string)$node->getValueFrom('Text'));
 
         if ($expectedCount != $currentCount) {
             $this->getErrorObject()->addError(
                 "Invalid nr of %s nodes (found: %s, expected: %s) on line %s",
-                (string)$node->getChild('Text')->getValue(),
+                (string)$node->getValueFrom('Text'),
                 (string)$currentCount,
                 (string)$expectedCount,
                 (string)$node->getLineNr()
