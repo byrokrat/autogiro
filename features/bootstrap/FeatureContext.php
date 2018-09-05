@@ -127,79 +127,51 @@ class FeatureContext implements Context, SnippetAcceptingContext
     }
 
     /**
-     * @When I request mandate :payerNr be deleted
+     * @Transform table:type,value
      */
-    public function iRequestMandateBeDeleted($payerNr)
+    public function castArgumentsTable(TableNode $argsTable)
     {
-        $this->writer->deleteMandate($payerNr);
+        $args = [];
+
+        foreach ($argsTable->getHash() as $argHash) {
+            switch ($argHash['type']) {
+                case 'string':
+                    $args[] = $argHash['value'];
+                    break;
+                case 'account':
+                    $args[] = (new \byrokrat\banking\AccountFactory)->createAccount($argHash['value']);
+                    break;
+                case 'id':
+                    $args[] = new \byrokrat\id\PersonalId($argHash['value']);
+                    break;
+                case 'SEK':
+                    $args[] = new SEK($argHash['value']);
+                    break;
+                case 'Date':
+                    $args[] = new \DateTime($argHash['value']);
+                    break;
+                default:
+                    throw new \Exception("Unknown argument type: {$argHash['type']}");
+            }
+        }
+
+        return $args;
     }
 
     /**
-     * @When I request mandate :payerNr be added
+     * @When I call writer method :method with arguments:
      */
-    public function iRequestMandateBeAdded($payerNr)
+    public function iCallWriterMethodWithArguments($method, array $args)
     {
-        $this->writer->addNewMandate(
-            $payerNr,
-            (new \byrokrat\banking\AccountFactory)->createAccount('50001111116'),
-            new \byrokrat\id\PersonalId('820323-2775')
-        );
+        $this->writer->$method(...$args);
     }
 
     /**
-     * @When I request mandate :payerNr be accepted
+     * @When I call writer method :method with argument :arg
      */
-    public function iRequestMandateBeAccepted($payerNr)
+    public function iCallWriterMethodWithArgument($method, $arg)
     {
-        $this->writer->acceptDigitalMandate($payerNr);
-    }
-
-    /**
-     * @When I request mandate :payerNr be rejected
-     */
-    public function iRequestMandateBeRejected($payerNr)
-    {
-        $this->writer->rejectDigitalMandate($payerNr);
-    }
-
-    /**
-     * @When I request mandate :payerNr be updated to :newPayerNr
-     */
-    public function iRequestMandateBeUpdatedTo($payerNr, $newPayerNr)
-    {
-        $this->writer->updateMandate($payerNr, $newPayerNr);
-    }
-
-    /**
-     * @When I request a payment of :amount SEK from :payerNr
-     */
-    public function iRequestAPaymentOfSekFrom($amount, $payerNr)
-    {
-        $this->writer->addPayment($payerNr, new SEK($amount), new \DateTime);
-    }
-
-    /**
-     * @When I request a payment of :amount SEK to :payerNr
-     */
-    public function iRequestAPaymentOfSekTo($amount, $payerNr)
-    {
-        $this->writer->addOutgoingPayment($payerNr, new SEK($amount), new \DateTime);
-    }
-
-    /**
-     * @When I request a monthly payment of :amount SEK from :payerNr
-     */
-    public function iRequestAMonthlyPaymentOfSekFrom($amount, $payerNr)
-    {
-        $this->writer->addMonthlyPayment($payerNr, new SEK($amount), new \DateTime);
-    }
-
-    /**
-     * @When I request an immediate payment of :amount SEK from :payerNr
-     */
-    public function iRequestAnImmediatePaymentOfSekFrom($amount, $payerNr)
-    {
-        $this->writer->addImmediatePayment($payerNr, new SEK($amount));
+        $this->writer->$method($arg);
     }
 
     /**

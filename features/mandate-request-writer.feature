@@ -5,7 +5,7 @@ Feature: Mandate request writer
 
   Scenario: I request a mandate deletion
     Given a writer with BGC number "666666", bankgiro "1111-1119" and date "20170111"
-    When I request mandate "3333333333" be deleted
+    When I call writer method "deleteMandate" with argument "3333333333"
     And I generate the request file
     Then I get a file like:
     """
@@ -16,7 +16,7 @@ Feature: Mandate request writer
   Scenario: I parse a generated mandate deletion
     Given a writer with BGC number "222222", bankgiro "1111-1119" and date "20170111"
     And a parser
-    When I request mandate "1111111111" be deleted
+    When I call writer method "deleteMandate" with argument "1111111111"
     And I generate the request file
     And I parse the generated file
     Then I find a "AutogiroRequestFile" layout
@@ -25,7 +25,11 @@ Feature: Mandate request writer
   Scenario: I parse a generated added mandate file
     Given a writer with BGC number "222222", bankgiro "1111-1119" and date "20170111"
     And a parser
-    When I request mandate "1111111111" be added
+    When I call writer method "addNewMandate" with arguments:
+        | type    | value       |
+        | string  | 1111111111  |
+        | account | 50001111116 |
+        | id      | 820323-2775 |
     And I generate the request file
     And I parse the generated file
     Then I find a "AutogiroRequestFile" layout
@@ -34,8 +38,8 @@ Feature: Mandate request writer
   Scenario: I respond to received digital mandates
     Given a writer with BGC number "222222", bankgiro "1111-1119" and date "20170111"
     And a parser
-    When I request mandate "1111111111" be accepted
-    And I request mandate "2222222222" be rejected
+    When I call writer method "acceptDigitalMandate" with argument "1111111111"
+    And I call writer method "rejectDigitalMandate" with argument "2222222222"
     And I generate the request file
     And I parse the generated file
     Then I find a "AutogiroRequestFile" layout
@@ -45,7 +49,10 @@ Feature: Mandate request writer
   Scenario: I update a mandate
     Given a writer with BGC number "222222", bankgiro "1111-1119" and date "20170111"
     And a parser
-    When I request mandate "1111111111" be updated to "2222222222"
+    When I call writer method "updateMandate" with arguments:
+        | type   | value      |
+        | string | 1111111111 |
+        | string | 2222222222 |
     And I generate the request file
     And I parse the generated file
     Then I find a "AutogiroRequestFile" layout
@@ -54,10 +61,25 @@ Feature: Mandate request writer
   Scenario: I request payment
     Given a writer with BGC number "222222", bankgiro "1111-1119" and date "20170111"
     And a parser
-    When I request a payment of "100" SEK from "1111111111"
-    And I request a payment of "100" SEK to "1111111111"
-    And I request a monthly payment of "100" SEK from "1111111111"
-    And I request an immediate payment of "100" SEK from "1111111111"
+    When I call writer method "addPayment" with arguments:
+        | type   | value      |
+        | string | 1111111111 |
+        | SEK    | 100        |
+        | Date   | 20180905   |
+    And I call writer method "addOutgoingPayment" with arguments:
+        | type   | value      |
+        | string | 1111111111 |
+        | SEK    | 100        |
+        | Date   | 20180905   |
+    And I call writer method "addMonthlyPayment" with arguments:
+        | type   | value      |
+        | string | 1111111111 |
+        | SEK    | 100        |
+        | Date   | 20180905   |
+    And I call writer method "addImmediatePayment" with arguments:
+        | type   | value      |
+        | string | 1111111111 |
+        | SEK    | 100        |
     And I generate the request file
     And I parse the generated file
     Then I find a "AutogiroRequestFile" layout
