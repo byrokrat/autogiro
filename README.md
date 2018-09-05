@@ -181,13 +181,11 @@ This can also be done dynamically.
     @expectOutput "/Delete mandate request found!/"
 -->
 ```php
-$visitor = new class extends \byrokrat\autogiro\Visitor\Visitor {};
+$visitor = new \byrokrat\autogiro\Visitor\Visitor;
 
-$dynamicNodeName = "DeleteMandateRequest";
-
-$visitor->{"before$dynamicNodeName"} = function ($node) {
+$visitor->before("DeleteMandateRequest", function ($node) {
     echo "Delete mandate request found!";
-};
+});
 
 $node->accept($visitor);
 ```
@@ -212,32 +210,12 @@ echo $xmlWriter->asXml(
 
 ## Hacking
 
-Install dependencies
+Tweak as needed.
 
 ```shell
 composer install
-```
-
-Install the bob build environment
-
-```shell
 composer global require chh/bob:^1.0@alpha
-```
-
-If needed put the "global" composer bin dir in your path.
-
-```shell
 export PATH=$PATH:$HOME/.composer/vendor/bin/
-```
-
-Install development tools
-
-```shell
 bob install_dev_tools
-```
-
-Build and run tests
-
-```shell
 bob
 ```

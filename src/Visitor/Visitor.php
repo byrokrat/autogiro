@@ -32,33 +32,56 @@ use byrokrat\autogiro\Tree\Node;
  */
 class Visitor implements VisitorInterface
 {
-    public function visitBefore(Node $node): void
+    private const AFTER = 'after';
+    private const BEFORE = 'before';
+
+    /**
+     * @var array
+     */
+    private $hooks = [
+        self::AFTER => [],
+        self::BEFORE => [],
+    ];
+
+    public function after(string $name, callable $hook): void
     {
-        $this->visit('before', $node);
+        $this->hooks[self::AFTER][strtolower($name)] = $hook;
+    }
+
+    public function before(string $name, callable $hook): void
+    {
+        $this->hooks[self::BEFORE][strtolower($name)] = $hook;
     }
 
     public function visitAfter(Node $node): void
     {
-        $this->visit('after', $node);
+        $this->visit(self::AFTER, $node);
+    }
+
+    public function visitBefore(Node $node): void
+    {
+        $this->visit(self::BEFORE, $node);
     }
 
     private function visit(string $prefix, Node $node): void
     {
-        $this->dispatch($prefix . $node->getName(), $node);
+        if ($node->getName()) {
+            $this->dispatch($prefix, $node->getName(), $node);
+        }
 
-        if ($node->getType() != $node->getName()) {
-            $this->dispatch($prefix . $node->getType(), $node);
+        if ($node->getType() && $node->getType() != $node->getName()) {
+            $this->dispatch($prefix, $node->getType(), $node);
         }
     }
 
-    private function dispatch(string $method, Node $node): void
+    private function dispatch(string $prefix, string $name, Node $node): void
     {
+        ($this->hooks[$prefix][strtolower($name)] ?? function () {})($node); // phpcs:ignore
+
+        $method = $prefix . $name;
+
         if (method_exists($this, $method)) {
             $this->$method($node);
-        }
-
-        if (property_exists($this, $method) && is_callable($this->$method)) {
-            ($this->$method)($node);
         }
     }
 }

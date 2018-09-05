@@ -67,12 +67,12 @@ class FeatureContext implements Context, SnippetAcceptingContext
      */
     public function iFindNodes($number, $nodeType)
     {
+        $visitor = new Visitor;
         $count = 0;
 
-        $visitor = new class extends Visitor {};
-        $visitor->{"before$nodeType"} = function () use (&$count) {
+        $visitor->before($nodeType, function () use (&$count) {
             $count++;
-        };
+        });
 
         $this->fileNode->accept($visitor);
 
