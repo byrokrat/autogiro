@@ -177,8 +177,8 @@ $node->accept($visitor);
 This can also be done dynamically.
 
 <!--
+    @example Visitor
     @include AutogiroFile
-    @expectOutput "/Delete mandate request found!/"
 -->
 ```php
 $visitor = new \byrokrat\autogiro\Visitor\Visitor;
@@ -186,8 +186,42 @@ $visitor = new \byrokrat\autogiro\Visitor\Visitor;
 $visitor->before("DeleteMandateRequest", function ($node) {
     echo "Delete mandate request found!";
 });
+```
 
-$node->accept($visitor);
+### Find mandate responses
+
+<!--
+    @example Mandate-response-recipe
+    @include Visitor
+-->
+```php
+$visitor->before("MandateResponse", function ($node) {
+    if ($node->hasChild('CreatedFlag')) {
+        // Mandate successfully created
+    }
+    if ($node->hasChild('DeletedFlag')) {
+        // Mandate successfully deleted
+    }
+    if ($node->hasChild('ErrorFlag')) {
+        // Mandate error state
+    }
+});
+```
+
+### Find payment responses
+
+<!--
+    @example Payment-response-recipe
+    @include Visitor
+-->
+```php
+$visitor->before("SuccessfulIncomingPaymentResponse", function ($node) {
+    // successfull payment..
+});
+
+$visitor->before("FailedIncomingPaymentResponse", function ($node) {
+    // failed payment..
+});
 ```
 
 ## Generate XML from node trees

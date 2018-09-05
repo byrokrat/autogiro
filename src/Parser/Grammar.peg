@@ -92,7 +92,7 @@ grammar Grammar extends MultibyteHack
     };
 
     REQ_PAYMENT = tc:('82' / '32') date:(IMMEDIATE_DATE / DATE8) ival:IVAL1 reps:REPS3 ' ' payerNr:PNUM18 amount:AMOUNT12 bg:BG10 ref:REF16 EOR {
-        $types = [
+        static $types = [
             '82' => 'IncomingPaymentRequest',
             '32' => 'OutgoingPaymentRequest',
         ];
@@ -106,11 +106,11 @@ grammar Grammar extends MultibyteHack
         return new Section('AmendmentRequestSection', $open, ...$records);
     };
 
-    REQ_REVOCATION = &('2' [3-9]) type:MSG2 bg:BG10 payerNr:PNUM18 date:DATE8 amount:AMOUNT12 direction:MSG2 newDate:DATE8 ref:REF16 EOR {
+    REQ_REVOCATION = &('2' [3-9]) type:MSG2 bg:BG10 payerNr:PNUM18 date:DATE8 amount:AMOUNT12 dir:MSG2 newDate:DATE8 ref:REF16 EOR {
         $type->setName('Type');
-        $direction->setName('Direction');
+        $dir->setName('Direction');
         $newDate->setName('NewDate');
-        return new Record('AmendmentRequest', $type, $bg, $payerNr, $date, $amount, $direction, $newDate, $ref);
+        return new Record('AmendmentRequest', $type, $bg, $payerNr, $date, $amount, $dir, $newDate, $ref);
     };
 
     //
@@ -158,9 +158,9 @@ grammar Grammar extends MultibyteHack
         }
 
         $status->setName('Status');
-        $flag = $status->getValueFrom('Number') == '0' ? 'Successful' : 'Failed';
+        $flag = !$status->getValueFrom('Number') ? 'Successful' : 'Failed';
 
-        return new Record($flag.'IncomingPaymentResponse', new Flag($flag), $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $status);
+        return new Record($flag.'IncomingPaymentResponse', new Flag($flag.'Flag'), $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $status);
     };
 
     // OUTGOING PAYMENTS
@@ -182,7 +182,7 @@ grammar Grammar extends MultibyteHack
         $status->setName('Status');
         $flag = $status->getValueFrom('Number') == '0' ? 'Successful' : 'Failed';
 
-        return new Record($flag.'OutgoingPaymentResponse', new Flag($flag), $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $status);
+        return new Record($flag.'OutgoingPaymentResponse', new Flag($flag.'Flag'), $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $status);
     };
 
     // REFUND PAYMENTS
@@ -219,9 +219,9 @@ grammar Grammar extends MultibyteHack
         }
 
         $status->setName('Status');
-        $flag = $status->getValue() == '0' ? 'Successful' : 'Failed';
+        $flag = $status->getValue() == '0' ? 'SuccessfulFlag' : 'FailedFlag';
 
-        $types = [
+        static $types = [
             '32' => 'OutgoingPaymentResponse',
             '82' => 'IncomingPaymentResponse'
         ];
@@ -272,11 +272,23 @@ grammar Grammar extends MultibyteHack
         $info->setName('Info');
         $status->setName('Status');
 
+        static $status2flag = [
+            '32' => 'CreatedFlag',
+            '02' => 'DeletedFlag',
+            '07' => 'DeletedFlag',
+            '33' => 'DeletedFlag',
+            '98' => 'DeletedFlag',
+            '01' => 'DeletedFlag',
+            '06' => 'DeletedFlag',
+        ];
+
+        $flag = $status2flag[$status->getValueFrom('Number')] ?? 'ErrorFlag';
+
         if ($validDate) {
             $validDate->setName('ValidFromDate');
         }
 
-        return new Record('MandateResponse', $bg, $payerNr, $account, $id, $info, $status, $date, $validDate);
+        return new Record('MandateResponse', new Flag($flag), $bg, $payerNr, $account, $id, $info, $status, $date, $validDate);
     };
 
     MANDATE_CLOSING = '09' date:DATE8 '9900' nrRecs:INT7 EOR {
@@ -301,7 +313,7 @@ grammar Grammar extends MultibyteHack
     };
 
     PAYMENT_REJECTION = tc:('82' / '32') date:DATE8 ival:IVAL1 reps:REPS3 payerNr:PNUM18 amount:AMOUNT12 ref:REF16 comment:MSG2 EOR {
-        $types = [
+        static $types = [
             '82' => 'IncomingPaymentRejectionResponse',
             '32' => 'OutgoingPaymentRejectionResponse',
         ];
@@ -339,26 +351,27 @@ grammar Grammar extends MultibyteHack
         return new Record('Opening', $date, $bgcNr, $bg);
     };
 
-    AMENDMENT = !'09' type:MSG2 date:DATE8 payerNr:PNUM18 direction:MSG2 amount:AMOUNT12 A8 A8 ref:REF16 comment:MSG2 EOR {
+    AMENDMENT = !'09' type:MSG2 date:DATE8 payerNr:PNUM18 dir:MSG2 amount:AMOUNT12 A8 A8 ref:REF16 comment:MSG2 EOR {
         $type->setName('Type');
-        $direction->setName('Direction');
+        $dir->setName('Direction');
         $ref->setName('Reference');
         $comment->setName('Comment');
 
-        $flag = in_array($type->getValueFrom('Number'), ['26', '27', '28', '29']) ? 'Amendment' : 'Revocation';
-
-        $namePrefix = in_array($comment->getValueFrom('Number'), ['12', '14', '18']) ? 'Successful' : 'Failed';
-
-        $names = [
-            '00' => 'AmendmentResponse',
+        static $dirToName = [
             '82' => 'IncomingAmendmentResponse',
             '32' => 'OutgoingAmendmentResponse',
         ];
 
-        // TODO NOTE: fail om inte $names['key'] finns.
-        $name = $namePrefix.$names[(string)$direction->getValueFrom('Number')];
+        static $successComments = ['12', '14', '18'];
 
-        return new Record($name, new Flag($flag), $type, $date, $payerNr, $direction, $amount, $ref, $comment);
+        static $amendmentTypes = ['26', '27', '28', '29'];
+
+        $name = (in_array($comment->getValueFrom('Number'), $successComments) ? 'Successful' : 'Failed')
+            . ($dirToName[$dir->getValueFrom('Number')] ?? 'AmendmentResponse');
+
+        $flag = in_array($type->getValueFrom('Number'), $amendmentTypes) ? 'AmendmentFlag' : 'RevocationFlag';
+
+        return new Record($name, new Flag($flag), $type, $date, $payerNr, $dir, $amount, $ref, $comment);
     };
 
     AMENDMENT_CLOSING = '09' date:DATE8 '9900    ' S10 amountOut:AMOUNT12 nrOut:INT6 nrIn:INT6 A4 amountIn:AMOUNT12 EOR {

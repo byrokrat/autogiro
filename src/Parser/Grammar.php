@@ -1121,7 +1121,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$tc, &$date, &$ival, &$reps, &$payerNr, &$amount, &$bg, &$ref) {
-                $types = [
+                static $types = [
                     '82' => 'IncomingPaymentRequest',
                     '32' => 'OutgoingPaymentRequest',
                 ];
@@ -1332,7 +1332,7 @@ class Grammar extends MultibyteHack
             $_success = $this->parseMSG2();
 
             if ($_success) {
-                $direction = $this->value;
+                $dir = $this->value;
             }
         }
 
@@ -1369,11 +1369,11 @@ class Grammar extends MultibyteHack
         }
 
         if ($_success) {
-            $this->value = call_user_func(function () use (&$type, &$bg, &$payerNr, &$date, &$amount, &$direction, &$newDate, &$ref) {
+            $this->value = call_user_func(function () use (&$type, &$bg, &$payerNr, &$date, &$amount, &$dir, &$newDate, &$ref) {
                 $type->setName('Type');
-                $direction->setName('Direction');
+                $dir->setName('Direction');
                 $newDate->setName('NewDate');
-                return new Record('AmendmentRequest', $type, $bg, $payerNr, $date, $amount, $direction, $newDate, $ref);
+                return new Record('AmendmentRequest', $type, $bg, $payerNr, $date, $amount, $dir, $newDate, $ref);
             });
         }
 
@@ -2179,9 +2179,9 @@ class Grammar extends MultibyteHack
                 }
 
                 $status->setName('Status');
-                $flag = $status->getValueFrom('Number') == '0' ? 'Successful' : 'Failed';
+                $flag = !$status->getValueFrom('Number') ? 'Successful' : 'Failed';
 
-                return new Record($flag.'IncomingPaymentResponse', new Flag($flag), $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $status);
+                return new Record($flag.'IncomingPaymentResponse', new Flag($flag.'Flag'), $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $status);
             });
         }
 
@@ -2554,7 +2554,7 @@ class Grammar extends MultibyteHack
                 $status->setName('Status');
                 $flag = $status->getValueFrom('Number') == '0' ? 'Successful' : 'Failed';
 
-                return new Record($flag.'OutgoingPaymentResponse', new Flag($flag), $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $status);
+                return new Record($flag.'OutgoingPaymentResponse', new Flag($flag.'Flag'), $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $status);
             });
         }
 
@@ -3315,9 +3315,9 @@ class Grammar extends MultibyteHack
                 }
 
                 $status->setName('Status');
-                $flag = $status->getValue() == '0' ? 'Successful' : 'Failed';
+                $flag = $status->getValue() == '0' ? 'SuccessfulFlag' : 'FailedFlag';
 
-                $types = [
+                static $types = [
                     '32' => 'OutgoingPaymentResponse',
                     '82' => 'IncomingPaymentResponse'
                 ];
@@ -4034,11 +4034,23 @@ class Grammar extends MultibyteHack
                 $info->setName('Info');
                 $status->setName('Status');
 
+                static $status2flag = [
+                    '32' => 'CreatedFlag',
+                    '02' => 'DeletedFlag',
+                    '07' => 'DeletedFlag',
+                    '33' => 'DeletedFlag',
+                    '98' => 'DeletedFlag',
+                    '01' => 'DeletedFlag',
+                    '06' => 'DeletedFlag',
+                ];
+
+                $flag = $status2flag[$status->getValueFrom('Number')] ?? 'ErrorFlag';
+
                 if ($validDate) {
                     $validDate->setName('ValidFromDate');
                 }
 
-                return new Record('MandateResponse', $bg, $payerNr, $account, $id, $info, $status, $date, $validDate);
+                return new Record('MandateResponse', new Flag($flag), $bg, $payerNr, $account, $id, $info, $status, $date, $validDate);
             });
         }
 
@@ -4644,7 +4656,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$tc, &$date, &$ival, &$reps, &$payerNr, &$amount, &$ref, &$comment) {
-                $types = [
+                static $types = [
                     '82' => 'IncomingPaymentRejectionResponse',
                     '32' => 'OutgoingPaymentRejectionResponse',
                 ];
@@ -5216,7 +5228,7 @@ class Grammar extends MultibyteHack
             $_success = $this->parseMSG2();
 
             if ($_success) {
-                $direction = $this->value;
+                $dir = $this->value;
             }
         }
 
@@ -5275,26 +5287,27 @@ class Grammar extends MultibyteHack
         }
 
         if ($_success) {
-            $this->value = call_user_func(function () use (&$type, &$date, &$payerNr, &$direction, &$amount, &$ref, &$comment) {
+            $this->value = call_user_func(function () use (&$type, &$date, &$payerNr, &$dir, &$amount, &$ref, &$comment) {
                 $type->setName('Type');
-                $direction->setName('Direction');
+                $dir->setName('Direction');
                 $ref->setName('Reference');
                 $comment->setName('Comment');
 
-                $flag = in_array($type->getValueFrom('Number'), ['26', '27', '28', '29']) ? 'Amendment' : 'Revocation';
-
-                $namePrefix = in_array($comment->getValueFrom('Number'), ['12', '14', '18']) ? 'Successful' : 'Failed';
-
-                $names = [
-                    '00' => 'AmendmentResponse',
+                static $dirToName = [
                     '82' => 'IncomingAmendmentResponse',
                     '32' => 'OutgoingAmendmentResponse',
                 ];
 
-                // TODO NOTE: fail om inte $names['key'] finns.
-                $name = $namePrefix.$names[(string)$direction->getValueFrom('Number')];
+                static $successComments = ['12', '14', '18'];
 
-                return new Record($name, new Flag($flag), $type, $date, $payerNr, $direction, $amount, $ref, $comment);
+                static $amendmentTypes = ['26', '27', '28', '29'];
+
+                $name = (in_array($comment->getValueFrom('Number'), $successComments) ? 'Successful' : 'Failed')
+                    . ($dirToName[$dir->getValueFrom('Number')] ?? 'AmendmentResponse');
+
+                $flag = in_array($type->getValueFrom('Number'), $amendmentTypes) ? 'AmendmentFlag' : 'RevocationFlag';
+
+                return new Record($name, new Flag($flag), $type, $date, $payerNr, $dir, $amount, $ref, $comment);
             });
         }
 

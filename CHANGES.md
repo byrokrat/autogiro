@@ -1,5 +1,10 @@
 # Notable changes in 1.0-alpha3
 
+## Misc
+
+* Added `autogiro2xml` executable.
+* Removed the `Messages` and `Layouts` interfaces. Inspect node names and flags instead.
+
 ## Node
 
 * Added `Node::getName()` behaving as did previously `Node::getType()`.
@@ -28,33 +33,3 @@
 * Renamed `IncomingPaymentResponseOpening` => `IncomingPaymentResponseSectionOpening`
 * Renamed `OutgoingPaymentResponseOpening` => `OutgoingPaymentResponseSectionOpening`
 * Renamed `RefundPaymentResponseOpening` => `RefundPaymentResponseSectionOpening`
-
-# Notable changes in 1.0-alpha2
-
-## Node tree
-
-Standard nodes renamed:
-
-* `PayeeBgcNumberNode` => `BgcNumberNode`
-* `PayeeBankgiroNode` => `BankgiroNode`
-
-Response nodes renamed:
-
-* `Record/OpeningRecordNode` => `Response/ResponseOpening`
-* `Record/ClosingRecordNode` => `Response/MandateResponseClosing`
-* `Record/Response/MandateResponseNode` => `Response/MandateResponse`
-
-Request nodes renamed:
-
-* `Record/Request/AcceptDigitalMandateRequestNode` => `Request/AcceptDigitalMandateRequest`
-* `Record/Request/CreateMandateRequestNode` => `Request/CreateMandateRequest`
-* `Record/Request/DeleteMandateRequestNode` => `Request/DeleteMandateRequest`
-* `Record/Request/IncomingTransactionRequestNode` => `Request/IncomingPaymentRequest`
-* `Record/Request/OutgoingTransactionRequestNode` => `Request/OutgoingPaymentRequest`
-* `Record/Request/RejectDigitalMandateRequestNode` => `Request/RejectDigitalMandateRequest`
-* `Record/Request/RequestOpeningRecordNode` => `Request/RequestOpening`
-* `Record/Request/UpdateMandateRequestNode` => `Request/UpdateMandateRequest`
-
-## Writer
-
-Updated API to match name changes in node tree.
