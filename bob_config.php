@@ -25,18 +25,18 @@ task('examples', ['src/Parser/Grammar.php'], function() {
     println('Documentation examples valid');
 });
 
-desc('Run php code sniffer');
-task('sniff', function() {
-    sh('phpcs src --standard=PSR2 --ignore=src/Parser/Grammar.php', null, ['failOnError' => true]);
-    println('Syntax checker on src/ passed');
-    sh('phpcs spec --standard=spec/ruleset.xml', null, ['failOnError' => true]);
-    println('Syntax checker on spec/ passed');
-});
-
 desc('Run statical analysis using phpstan');
 task('phpstan', function() {
     sh('phpstan analyze -c phpstan.neon -l 7 src', null, ['failOnError' => true]);
     println('Phpstan analysis passed');
+});
+
+desc('Run php code sniffer');
+task('sniff', function() {
+    sh('phpcs src --standard=PSR2 --ignore=src/Parser/Grammar.php', null, ['failOnError' => false]);
+    println('Syntax checker on src/ done');
+    sh('phpcs spec --standard=spec/ruleset.xml', null, ['failOnError' => false]);
+    println('Syntax checker on spec/ done');
 });
 
 desc('Build parser');
