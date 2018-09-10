@@ -49,8 +49,8 @@ grammar Grammar extends MultibyteHack
     // REQUEST LAYOUTS
     //
 
-    REQUEST_FILE = sections:(REQ_MANDATE_SECTION / REQ_PAYMENT_SECTION / REQ_AMENDMENT_SECTION)+ {
-        return new AutogiroFile('AutogiroRequestFile', ...$sections);
+    REQUEST_FILE = secs:(REQ_MANDATE_SEC / REQ_PAYMENT_SEC / REQ_AMENDMENT_SEC)+ {
+        return new AutogiroFile('AutogiroRequestFile', ...$secs);
     };
 
     REQ_OPENING = '01' date:DATE8 'AUTOGIRO    ' S20 S20 bgcNr:BGC6 bg:BG10 EOR {
@@ -59,7 +59,7 @@ grammar Grammar extends MultibyteHack
 
     // MANDATE REQUESTS
 
-    REQ_MANDATE_SECTION = open:REQ_OPENING records:(REQ_DEL_MANDATE / REQ_REJECT_MANDATE / REQ_CREATE_MANDATE / REQ_UPDATE_MANDATE)+ {
+    REQ_MANDATE_SEC = open:REQ_OPENING records:(REQ_DEL_MANDATE / REQ_REJECT_MANDATE / REQ_CREATE_MANDATE / REQ_UPDATE_MANDATE)+ {
         return new Section('MandateRequestSection', $open, ...$records);
     };
 
@@ -87,11 +87,11 @@ grammar Grammar extends MultibyteHack
 
     // PAYMENT REQUESTS
 
-    REQ_PAYMENT_SECTION = open:REQ_OPENING records:REQ_PAYMENT+ {
+    REQ_PAYMENT_SEC = open:REQ_OPENING records:REQ_PAYMENT+ {
         return new Section('PaymentRequestSection', $open, ...$records);
     };
 
-    REQ_PAYMENT = tc:('82' / '32') date:(IMMEDIATE_DATE / DATE8) ival:IVAL1 reps:REPS3 ' ' payerNr:PNUM18 amount:AMOUNT12 bg:BG10 ref:REF16 EOR {
+    REQ_PAYMENT = tc:('82' / '32') date:(IMMEDIATE_DATE / DATE8) ival:IVAL1 reps:REPS3 S payerNr:PNUM18 amount:AMOUNT12 bg:BG10 ref:REF16 EOR {
         static $types = [
             '82' => 'IncomingPaymentRequest',
             '32' => 'OutgoingPaymentRequest',
@@ -102,7 +102,7 @@ grammar Grammar extends MultibyteHack
 
     // AMENDMENT REQUESTS
 
-    REQ_AMENDMENT_SECTION = open:REQ_OPENING records:REQ_REVOCATION+ {
+    REQ_AMENDMENT_SEC = open:REQ_OPENING records:REQ_REVOCATION+ {
         return new Section('AmendmentRequestSection', $open, ...$records);
     };
 
@@ -119,9 +119,9 @@ grammar Grammar extends MultibyteHack
 
     PAYMENT_FILE = NEW_PAYMENT_FILE / OLD_PAYMENT_FILE / BGMAX_FILE;
 
-    NEW_PAYMENT_FILE = open:PAYMENT_OPENING sections:(PAYMENT_INCOMING_SECTION / PAYMENT_OUTGOING_SECTION / PAYMENT_REFUND_SECTION)+ close:PAYMENT_CLOSING {
-        $sections[] = $close;
-        return new AutogiroFile('AutogiroPaymentResponseFile', $open, ...$sections);
+    NEW_PAYMENT_FILE = open:PAYMENT_OPENING secs:(PAYMENT_INCOMING_SEC / PAYMENT_OUTGOING_SEC / PAYMENT_REFUND_SEC)+ close:PAYMENT_CLOSING {
+        $secs[] = $close;
+        return new AutogiroFile('AutogiroPaymentResponseFile', $open, ...$secs);
     };
 
     PAYMENT_OPENING = '01AUTOGIRO    ' S10 date:DATE20 'BET. SPEC & STOPP TK' ^ bgcNr:BGC6 bg:BG10 EOR {
@@ -143,7 +143,7 @@ grammar Grammar extends MultibyteHack
 
     // INCOMING PAYMENTS
 
-    PAYMENT_INCOMING_SECTION = open:PAYMENT_INCOMING_OPENING records:(PAYMENT_INCOMING)* {
+    PAYMENT_INCOMING_SEC = open:PAYMENT_INCOMING_OPENING records:(PAYMENT_INCOMING)* {
         return new Section('IncomingPaymentResponseSection', $open, ...$records);
     };
 
@@ -165,7 +165,7 @@ grammar Grammar extends MultibyteHack
 
     // OUTGOING PAYMENTS
 
-    PAYMENT_OUTGOING_SECTION = open:PAYMENT_OUTGOING_OPENING records:(PAYMENT_OUTGOING)* {
+    PAYMENT_OUTGOING_SEC = open:PAYMENT_OUTGOING_OPENING records:(PAYMENT_OUTGOING)* {
         return new Section('OutgoingPaymentResponseSection', $open, ...$records);
     };
 
@@ -187,7 +187,7 @@ grammar Grammar extends MultibyteHack
 
     // REFUND PAYMENTS
 
-    PAYMENT_REFUND_SECTION = open:PAYMENT_REFUND_OPENING records:(PAYMENT_REFUND)* {
+    PAYMENT_REFUND_SEC = open:PAYMENT_REFUND_OPENING records:(PAYMENT_REFUND)* {
         return new Section('RefundPaymentResponseSection', $open, ...$records);
     };
 
@@ -219,7 +219,7 @@ grammar Grammar extends MultibyteHack
         }
 
         $status->setName('Status');
-        $flag = $status->getValue() == '0' ? 'SuccessfulFlag' : 'FailedFlag';
+        $flag = $status->getValueFrom('Number') == '0' ? 'SuccessfulFlag' : 'FailedFlag';
 
         static $types = [
             '32' => 'OutgoingPaymentResponse',
