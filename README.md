@@ -12,10 +12,19 @@ Read and write files for the swedish direct debit system autogirot.
 composer require byrokrat/autogiro:^1.0@alpha
 ```
 
+## Table of contents
+
+1. [Autogiro specifications](#autogiro-specifications)
+1. [Generating autogiro request files](#generating-autogiro-request-files)
+1. [Parsing autogiro files](#parsing-autogiro-files)
+1. [Accessing nodes using visitors](#accessing-nodes-using-visitors)
+1. [Generating XML from node trees](#generating-XML-from-node-trees)
+1. [Hacking](#hacking)
+
 ## Autogiro specifications
 
 This library is developed against the technichal manual (in swedish) of the
-direct debit system (autogirot) revised 2016-12-13. For current versions of this
+direct debit system (autogirot) revised 2016-12-13. For later versions of this
 document see [Bankgirocentralen](http://bgc.se).
 
 ## Generating autogiro request files
@@ -76,10 +85,10 @@ packages respectively. Opt out of this functionality by using one of the visitor
 
 <!-- @include ParserFactory -->
 ```php
-$parser = $factory->createParser(\byrokrat\autogiro\Parser\ParserFactory::VISITOR_IGNORE_EXTERNAL);
+$parser = $factory->createParser(\byrokrat\autogiro\Parser\ParserFactory::VISITOR_IGNORE_OBJECTS);
 ```
 
-Parsing an autogiro file creates a `AutogiroFile`.
+Parsing a file creates a node object.
 
 <!--
     @example AutogiroFile
@@ -91,7 +100,23 @@ Parsing an autogiro file creates a `AutogiroFile`.
 $node = $parser->parse($rawFile);
 ```
 
+### Accessing special objects
+
+`Account`, `Amount`, `StateId` and `Date` nodes are nested structures, where child
+node `Object` contains constructed php objects. Access using something like.
+
+<!--
+    @example SpecialObjects
+    @include AutogiroFile
+-->
+```php
+/** @var string $rawNumber */
+$amount = $node->getChild('Amount')->getValueFrom('Object');
+```
+
 ### Walking the parse tree
+
+> A simpler way of doing this is by using visitors. See below.
 
 Walk the tree by calling `hasChild()`, `getChild()` and `getChildren()`.
 
@@ -108,8 +133,6 @@ echo $node->getChild('MandateRequestSection')
 ```
 
 Or access all `DeleteMandateRequest` nodes.
-
-> NOTE! A simpler way of doing this is by using visitors. See below.
 
 <!--
     @example GetChildren
@@ -134,42 +157,22 @@ echo $node->getChild('this-does-not-exist')
     ->isNull();
 ```
 
-> NOTE! This package contains a simple command line tool (`autogiro2xml`) for
-> converting autogiro files to a more readable XML format suitable for visualy
-> examining parse trees.
+## Accessing nodes using visitors
 
-### Accessing special objects
-
-`Account`, `Amount`, `StateId` and `Date` nodes are nested structures.
-Child node `Number` (or `Text`) contains the raw parsed content and child node
-`Object` contains php objects.
-
-With an `Account` node you could for example do the following:
-
-<!--
-    @example SpecialObjects
-    @include AutogiroFile
--->
-```php
-/** @var string $rawNumber */
-$rawNumber = $node->getChild('Number')->getValue();
-
-/** @var \byrokrat\banking\AccountNumber $account */
-$account = $node->getChild('Object')->getValue();
-```
-
-## Grep nodes based on name
+With the use of visitors nodes can be accessed based on name or type.
 
 <!--
     @include AutogiroFile
     @expectOutput "/Delete mandate request found!/"
 -->
 ```php
-$visitor = new class extends \byrokrat\autogiro\Visitor\Visitor {
+class MyVisitor extends \byrokrat\autogiro\Visitor\Visitor {
     function beforeDeleteMandateRequest($node) {
         echo "Delete mandate request found!";
     }
-};
+}
+
+$visitor = new MyVisitor;
 
 $node->accept($visitor);
 ```
@@ -188,7 +191,7 @@ $visitor->before("DeleteMandateRequest", function ($node) {
 });
 ```
 
-### Find mandate responses
+### Finding mandate responses
 
 <!--
     @example Mandate-response-recipe
@@ -208,7 +211,7 @@ $visitor->before("MandateResponse", function ($node) {
 });
 ```
 
-### Find payment responses
+### Finding payment responses
 
 <!--
     @example Payment-response-recipe
@@ -224,7 +227,7 @@ $visitor->before("FailedIncomingPaymentResponse", function ($node) {
 });
 ```
 
-## Generate XML from node trees
+## Generating XML from node trees
 
 Autogiro is able to generate XML from node trees. Using this feature can be very
 helpful to understand how the parser interprets the various layouts.
@@ -240,6 +243,16 @@ $xmlWriter = (new \byrokrat\autogiro\Xml\XmlWriterFactory)->createXmlWriter();
 echo $xmlWriter->asXml(
     $parser->parse($rawFile)
 );
+```
+
+### autogiro2xml
+
+This package contains a simple command line tool (`autogiro2xml`) for
+converting autogiro files to a more readable XML format suitable for visualy
+examining parse trees.
+
+```shell
+bin/autogiro2xml <filename>
 ```
 
 ## Hacking

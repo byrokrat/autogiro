@@ -51,16 +51,40 @@ class VisitorFactory
     const VISITOR_IGNORE_IDS = 4;
 
     /**
-     * Ignore all visitors based on external dependencies
+     * Do not include date visitor
      */
-    const VISITOR_IGNORE_EXTERNAL = self::VISITOR_IGNORE_ACCOUNTS
-        | self::VISITOR_IGNORE_AMOUNTS
-        | self::VISITOR_IGNORE_IDS;
+    const VISITOR_IGNORE_DATES = 8;
+
+    /**
+     * Do not include message visitor
+     */
+    const VISITOR_IGNORE_MESSAGES = 16;
+
+    /**
+     * Do not include basic validation visitors
+     */
+    const VISITOR_IGNORE_BASIC_VALIDATION = 32;
 
     /**
      * Do not include strict validation visitors
      */
-    const VISITOR_IGNORE_STRICT_VALIDATION = 8;
+    const VISITOR_IGNORE_STRICT_VALIDATION = 64;
+
+    /**
+     * Ignore all visitors based on external dependencies
+     */
+    const VISITOR_IGNORE_OBJECTS = self::VISITOR_IGNORE_ACCOUNTS
+        | self::VISITOR_IGNORE_AMOUNTS
+        | self::VISITOR_IGNORE_IDS
+        | self::VISITOR_IGNORE_DATES;
+
+    /**
+     * Ignore all visitors
+     */
+    const VISITOR_IGNORE_ALL = self::VISITOR_IGNORE_OBJECTS
+        | self::VISITOR_IGNORE_MESSAGES
+        | self::VISITOR_IGNORE_BASIC_VALIDATION
+        | self::VISITOR_IGNORE_STRICT_VALIDATION;
 
     /**
      * Create the standard set of visitors used when processing a parse tree
@@ -72,15 +96,20 @@ class VisitorFactory
         };
 
         $errorObj = new ErrorObject;
+        $container = new VisitorContainer($errorObj);
 
-        $container = new VisitorContainer(
-            $errorObj,
-            new DateVisitor($errorObj),
-            new MessageVisitor($errorObj),
-            new NumberVisitor($errorObj),
-            new TextVisitor($errorObj),
-            new PaymentVisitor($errorObj)
-        );
+        if (!$flag(self::VISITOR_IGNORE_BASIC_VALIDATION)) {
+            $container->addVisitor(new NumberVisitor($errorObj));
+            $container->addVisitor(new TextVisitor($errorObj));
+        }
+
+        if (!$flag(self::VISITOR_IGNORE_MESSAGES)) {
+            $container->addVisitor(new MessageVisitor($errorObj));
+        }
+
+        if (!$flag(self::VISITOR_IGNORE_DATES)) {
+            $container->addVisitor(new DateVisitor($errorObj));
+        }
 
         if (!$flag(self::VISITOR_IGNORE_ACCOUNTS)) {
             $container->addVisitor(
@@ -107,6 +136,7 @@ class VisitorFactory
         }
 
         if (!$flag(self::VISITOR_IGNORE_STRICT_VALIDATION)) {
+            $container->addVisitor(new PaymentVisitor($errorObj));
             $container->addVisitor(new PayeeVisitor($errorObj));
             $container->addVisitor(new CountingVisitor($errorObj));
             $container->addVisitor(new SummaryVisitor($errorObj));
