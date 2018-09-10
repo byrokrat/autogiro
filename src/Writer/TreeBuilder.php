@@ -259,6 +259,19 @@ class TreeBuilder
     }
 
     /**
+     * Add a delete payment request to tree
+     */
+    public function addDeletePaymentRequest(string $payerNr): void
+    {
+        $this->amendments[] = new Record(
+            'AmendmentRequest',
+            $this->payeeBgNode,
+            new Number(0, $payerNr, 'PayerNumber'),
+            new Text(0, str_repeat(' ', 52))
+        );
+    }
+
+    /**
      * Get the created request tree
      */
     public function buildTree(): AutogiroFile

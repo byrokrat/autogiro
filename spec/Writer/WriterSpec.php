@@ -115,4 +115,10 @@ class WriterSpec extends ObjectBehavior
         $this->addImmediateOutgoingPayment('foo', $amount, 'ref');
         $treeBuilder->addImmediateOutgoingPaymentRequest('foo', $amount, 'ref')->shouldHaveBeenCalled();
     }
+
+    function it_creates_payment_deletion_requests($treeBuilder)
+    {
+        $this->deletePayments('foo');
+        $treeBuilder->addDeletePaymentRequest('foo')->shouldHaveBeenCalled();
+    }
 }

@@ -218,6 +218,12 @@ class PrintingVisitorSpec extends ObjectBehavior
         $output->write('32')->shouldHaveBeenCalled();
     }
 
+    function it_prints_transaction_code_before_payment_deletion($output)
+    {
+        $this->beforeAmendmentRequest();
+        $output->write('23')->shouldHaveBeenCalled();
+    }
+
     function it_prints_new_line_after_record($output)
     {
         $this->afterRecord();

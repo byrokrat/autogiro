@@ -106,10 +106,17 @@ grammar Grammar extends MultibyteHack
         return new Section('AmendmentRequestSection', $open, ...$records);
     };
 
-    REQ_REVOCATION = &('2' [3-9]) type:MSG2 bg:BG10 payerNr:PNUM18 date:DATE8 amount:AMOUNT12 dir:MSG2 newDate:DATE8 ref:REF16 EOR {
+    REQ_REVOCATION = &('2' [3-9]) type:MSG2 bg:BG10 payerNr:PNUM18 date:DATE8? amount:AMOUNT12? dir:MSG2? newDate:DATE8? ref:REF16? EOR {
         $type->setName('Type');
-        $dir->setName('Direction');
-        $newDate->setName('NewDate');
+
+        if ($dir) {
+            $dir->setName('Direction');
+        }
+
+        if ($newDate) {
+            $newDate->setName('NewDate');
+        }
+
         return new Record('AmendmentRequest', $type, $bg, $payerNr, $date, $amount, $dir, $newDate, $ref);
     };
 

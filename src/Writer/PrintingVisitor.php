@@ -173,6 +173,11 @@ class PrintingVisitor extends Visitor
         $this->output->write('32');
     }
 
+    public function beforeAmendmentRequest(): void
+    {
+        $this->output->write('23');
+    }
+
     public function afterRecord(): void
     {
         $this->output->write(self::EOL);

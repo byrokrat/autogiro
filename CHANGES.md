@@ -5,6 +5,7 @@
 * Added `autogiro2xml` executable.
 * Removed the `Messages` and `Layouts` interfaces. Inspect node names and flags instead.
 * `VISITOR_IGNORE_OBJECTS` instead of `VISITOR_IGNORE_EXTERNAL`.
+* Typehint on `WriterInterface` instead of `Writer`.
 
 ## Node
 

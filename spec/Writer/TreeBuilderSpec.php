@@ -280,4 +280,23 @@ class TreeBuilderSpec extends ObjectBehavior
             )
         );
     }
+
+    function it_builds_delete_payment_request_trees($bankgiro, $date)
+    {
+        $this->addDeletePaymentRequest('foobar');
+
+        $this->buildTree()->shouldBeLike(
+            $this->a_tree(
+                'AmendmentRequestSection',
+                $bankgiro,
+                $date,
+                new Record(
+                    'AmendmentRequest',
+                    new Obj(0, $bankgiro->getWrappedObject(), 'PayeeBankgiro'),
+                    new Number(0, 'foobar', 'PayerNumber'),
+                    new Text(0, str_pad('', 52))
+                )
+            )
+        );
+    }
 }

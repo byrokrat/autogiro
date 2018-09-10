@@ -196,7 +196,7 @@ class FeatureContext implements Context, SnippetAcceptingContext
     public function iGetAFileLike(PyStringNode $node)
     {
         if (Utils::normalize($node) != $this->generatedFile) {
-            throw new \Exception("Unvalid generated file: $this->generatedFile");
+            throw new \Exception("Unvalid generated file:\n$this->generatedFile\n");
         }
     }
 
