@@ -396,17 +396,37 @@ grammar Grammar extends MultibyteHack
     // MANDATE EXTRACTS
     //
 
-    MANDATE_EXTRACT_FILE = recs:MANDATE_EXTRACT* {
+    MANDATE_EXTRACT_FILE = MANDATE_EXTRACT_FILE_NEW / MANDATE_EXTRACT_FILE_OLD;
+
+    MANDATE_EXTRACT_FILE_NEW = recs:MANDATE_EXTRACT+ {
         return new AutogiroFile('AutogiroMandateExtractFile', ...$recs);
     };
 
-    MANDATE_EXTRACT = bg:BG10 id:ID12 payerNr:PNUM16 type:MSG1 active:INT2 created:DATE8 updated:DATE8 status:MSG1 S? S5? account:ACCOUNT16? EOR {
+    MANDATE_EXTRACT_FILE_OLD = recs:MANDATE_EXTRACT_OLD+ {
+        return new AutogiroFile('AutogiroMandateExtractFile', ...$recs);
+    };
+
+    MANDATE_EXTRACT = bg:BG10 id:ID12 payerNr:PNUM16 type:MSG1 active:INT2 created:DATE8 updated:DATE8 !'0' status:MSG1 S? S5? account:ACCOUNT16? EOR {
         $type->setName('Type');
         $active->setName('ActiveYear');
         $created->setName('Created');
         $updated->setName('Updated');
         $status->setName('Status');
         return new Record('Mandate', $bg, $id, $payerNr, $type, $active, $created, $updated, $status, $account);
+    };
+
+    MANDATE_EXTRACT_OLD = bg:BG10 id:ID12 payerNr:PNUM16 type:MSG1 active:INT1 created:DATE8 updated:DATE8 status:MSG1 '0' maxAmount:INT5? account:ACCOUNT16? EOR {
+        $type->setName('Type');
+        $active->setName('ActiveYear');
+        $created->setName('Created');
+        $updated->setName('Updated');
+        $status->setName('Status');
+
+        if ($maxAmount) {
+            $maxAmount->setName('MaxAmount');
+        }
+
+        return new Record('Mandate', $bg, $id, $payerNr, $type, $active, $created, $updated, $status, $maxAmount, $account);
     };
 
     //
@@ -491,24 +511,32 @@ grammar Grammar extends MultibyteHack
 
     // CONVENIENCE TYPES
 
+    INT1 = integer:$(A) {
+        return new Number($this->lineNr, trim($integer));
+    };
+
     INT2 = integer:$(A A) {
-        return new Number($this->lineNr, $integer);
+        return new Number($this->lineNr, trim($integer));
+    };
+
+    INT5 = integer:$(A5) {
+        return new Number($this->lineNr, trim($integer));
     };
 
     INT6 = integer:$(A5 A) {
-        return new Number($this->lineNr, $integer);
+        return new Number($this->lineNr, trim($integer));
     };
 
     INT7 = integer:$(A5 A2) {
-        return new Number($this->lineNr, $integer);
+        return new Number($this->lineNr, trim($integer));
     };
 
     INT8 = integer:$(A5 A2 A) {
-        return new Number($this->lineNr, $integer);
+        return new Number($this->lineNr, trim($integer));
     };
 
     INT12 = integer:$(A10 A2) {
-        return new Number($this->lineNr, $integer);
+        return new Number($this->lineNr, trim($integer));
     };
 
     // ALPHA-NUM
