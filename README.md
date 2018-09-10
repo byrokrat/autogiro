@@ -18,7 +18,7 @@ composer require byrokrat/autogiro:^1.0@alpha
 1. [Generating autogiro request files](#generating-autogiro-request-files)
 1. [Parsing autogiro files](#parsing-autogiro-files)
 1. [Accessing nodes using visitors](#accessing-nodes-using-visitors)
-1. [Generating XML from node trees](#generating-XML-from-node-trees)
+1. [Generating XML from node trees](#generating-xml-from-node-trees)
 1. [Hacking](#hacking)
 
 ## Autogiro specifications
@@ -96,21 +96,20 @@ Parsing a file creates a node object.
     @include RawFile
 -->
 ```php
-/** @var \byrokrat\autogiro\Tree\AutogiroFile $node */
+/** @var \byrokrat\autogiro\Tree\Node $node */
 $node = $parser->parse($rawFile);
 ```
 
 ### Accessing special objects
 
 `Account`, `Amount`, `StateId` and `Date` nodes are nested structures, where child
-node `Object` contains constructed php objects. Access using something like.
+node `Object` contains constructed php objects. Access using something like:
 
 <!--
     @example SpecialObjects
     @include AutogiroFile
 -->
 ```php
-/** @var string $rawNumber */
 $amount = $node->getChild('Amount')->getValueFrom('Object');
 ```
 
@@ -229,8 +228,8 @@ $visitor->before("FailedIncomingPaymentResponse", function ($node) {
 
 ## Generating XML from node trees
 
-Autogiro is able to generate XML from node trees. Using this feature can be very
-helpful to understand how the parser interprets the various layouts.
+Using this feature can be very helpful to understand how the parser interprets
+various layouts.
 
 <!--
     @include ParserFactory
@@ -247,7 +246,7 @@ echo $xmlWriter->asXml(
 
 ### autogiro2xml
 
-This package contains a simple command line tool (`autogiro2xml`) for
+This package also contains a simple command line tool (`autogiro2xml`) for
 converting autogiro files to a more readable XML format suitable for visualy
 examining parse trees.
 
