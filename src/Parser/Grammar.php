@@ -3388,7 +3388,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $this->value = call_user_func(function () use (&$type, &$date, &$ival, &$reps, &$payerNr, &$amount, &$bg, &$ref, &$status) {
                 if (!$status) {
-                    $status = new Message('', new Number($date->getLineNr(), '0'));
+                    $status = new Message('', new Number($date->getLineNr(), ''));
                 }
 
                 $status->setName('Status');

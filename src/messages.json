@@ -17,7 +17,8 @@
                 "5": "En gång per månad på sista möjliga bankdag.",
                 "6": "En gång per kvartal på sista möjliga bankdag.",
                 "7": "En gång per halvår på sista möjliga bankdag.",
-                "8": "En gång per år på sista möjliga bankdag."
+                "8": "En gång per år på sista möjliga bankdag.",
+                "9": "Felaktig periodkod."
             }
         }
     },

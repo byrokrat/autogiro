@@ -222,7 +222,7 @@ grammar Grammar extends MultibyteHack
 
     OLD_PAYMENT_RESPONSE = type:('32' / '82') date:DATE8 ival:IVAL1 reps:REPS3 A payerNr:PNUM16 amount:AMOUNT12 bg:BG10 ref:REF16 A10? status:MSG1? EOR {
         if (!$status) {
-            $status = new Message('', new Number($date->getLineNr(), '0'));
+            $status = new Message('', new Number($date->getLineNr(), ''));
         }
 
         $status->setName('Status');
