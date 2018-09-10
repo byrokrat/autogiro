@@ -37,7 +37,7 @@ use byrokrat\autogiro\Tree\Text;
 
 grammar Grammar extends MultibyteHack
 {
-    start FILE = RESET_LINE_COUNT file:(REQUEST_FILE / MANDATE_FILE / PAYMENT_FILE / PAYMENT_REJECTION_FILE / AMENDMENT_FILE / MANDATE_EXTRACT_FILE) VOID {
+    start FILE = RESET_LINE_COUNT file:(REQUEST_FILE / MANDATE_FILE / PAYMENT_FILE / PAYMENT_REJECTION_FILE / AMENDMENT_FILE / PAYMENT_EXTRACT_FILE / MANDATE_EXTRACT_FILE) VOID {
         return $file;
     };
 
@@ -389,6 +389,39 @@ grammar Grammar extends MultibyteHack
             new Count('SuccessfulOutgoingAmendmentResponse', $nrOut),
             new Count('SuccessfulIncomingAmendmentResponse', $nrIn),
             new Summary('SuccessfulIncomingAmendmentResponse', $amountIn)
+        );
+    };
+
+    //
+    // PAYMENT EXTRACTS
+    //
+
+    PAYMENT_EXTRACT_FILE = open:PAYMENT_EXTRACT_OPENING recs:PAYMENT_EXTRACT* close:PAYMENT_EXTRACT_CLOSING {
+        $recs[] = $close;
+        return new AutogiroFile('AutogiroPaymentExtractFile', $open, ...$recs);
+    };
+
+    PAYMENT_EXTRACT_OPENING = '01' date:DATE8 'AUTOGIRO9900BEVAKNINGSREG       ' ^ S20 bgcNr:BGC6 bg:BG10 EOR {
+        return new Record('Opening', $date, $bgcNr, $bg);
+    };
+
+    PAYMENT_EXTRACT = type:('82' / '32') date:DATE8 ival:IVAL1 reps:REPS3 S payerNr:PNUM16 amount:AMOUNT12 A10? ref:REF16? EOR {
+        static $types = [
+            '82' => 'IncomingPayment',
+            '32' => 'OutgoingPayment',
+        ];
+
+        return new Record($types[$type], $date, $ival, $reps, $payerNr, $amount, $ref);
+    };
+
+    PAYMENT_EXTRACT_CLOSING = '09' date:DATE8 '9900    ' S10 amountOut:AMOUNT12 nrOut:INT6 nrIn:INT6 A4 amountIn:AMOUNT12 EOR {
+        return new Record(
+            'Closing',
+            $date,
+            new Summary('OutgoingPayment', $amountOut),
+            new Count('OutgoingPayment', $nrOut),
+            new Count('IncomingPayment', $nrIn),
+            new Summary('IncomingPayment', $amountIn)
         );
     };
 
