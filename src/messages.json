@@ -148,5 +148,17 @@
                 "05": "Felaktigt mottagarbankgironummer."
             }
         }
+    },
+    "AutogiroMandateExtractFile": {
+        "Mandate": {
+            "Type": {
+                "1": "Medgivandet initierat av Betalningsmottagaren.",
+                "2": "Medgivandet initierat av betalare via Internetbank."
+            },
+            "Status": {
+                "1": "Godkänt för Autogiro",
+                "2": "Under förfrågan"
+            }
+        }
     }
 }

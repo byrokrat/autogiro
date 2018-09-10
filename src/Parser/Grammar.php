@@ -68,6 +68,12 @@ class Grammar extends MultibyteHack
                 $_success = $this->parseAMENDMENT_FILE();
             }
 
+            if (!$_success && !$this->cut) {
+                $this->position = $_position1;
+
+                $_success = $this->parseMANDATE_EXTRACT_FILE();
+            }
+
             $this->cut = $_cut2;
 
             if ($_success) {
@@ -523,7 +529,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $_value16[] = $this->value;
 
-            $_success = $this->parsePNUM18();
+            $_success = $this->parsePNUM16();
 
             if ($_success) {
                 $payerNr = $this->value;
@@ -598,7 +604,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $_value17[] = $this->value;
 
-            $_success = $this->parsePNUM18();
+            $_success = $this->parsePNUM16();
 
             if ($_success) {
                 $payerNr = $this->value;
@@ -699,7 +705,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $_value22[] = $this->value;
 
-            $_success = $this->parsePNUM18();
+            $_success = $this->parsePNUM16();
 
             if ($_success) {
                 $payerNr = $this->value;
@@ -820,7 +826,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $_value23[] = $this->value;
 
-            $_success = $this->parsePNUM18();
+            $_success = $this->parsePNUM16();
 
             if ($_success) {
                 $oldPayerNr = $this->value;
@@ -840,7 +846,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $_value23[] = $this->value;
 
-            $_success = $this->parsePNUM18();
+            $_success = $this->parsePNUM16();
 
             if ($_success) {
                 $newPayerNr = $this->value;
@@ -1062,7 +1068,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $_value32[] = $this->value;
 
-            $_success = $this->parsePNUM18();
+            $_success = $this->parsePNUM16();
 
             if ($_success) {
                 $payerNr = $this->value;
@@ -1291,7 +1297,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $_value49[] = $this->value;
 
-            $_success = $this->parsePNUM18();
+            $_success = $this->parsePNUM16();
 
             if ($_success) {
                 $payerNr = $this->value;
@@ -2142,7 +2148,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $_value69[] = $this->value;
 
-            $_success = $this->parsePNUM18();
+            $_success = $this->parsePNUM16();
 
             if ($_success) {
                 $payerNr = $this->value;
@@ -2515,7 +2521,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $_value79[] = $this->value;
 
-            $_success = $this->parsePNUM18();
+            $_success = $this->parsePNUM16();
 
             if ($_success) {
                 $payerNr = $this->value;
@@ -2888,7 +2894,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $_value85[] = $this->value;
 
-            $_success = $this->parsePNUM18();
+            $_success = $this->parsePNUM16();
 
             if ($_success) {
                 $payerNr = $this->value;
@@ -3278,7 +3284,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $_value97[] = $this->value;
 
-            $_success = $this->parsePNUM18();
+            $_success = $this->parsePNUM16();
 
             if ($_success) {
                 $payerNr = $this->value;
@@ -3966,7 +3972,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $_value111[] = $this->value;
 
-            $_success = $this->parsePNUM18();
+            $_success = $this->parsePNUM16();
 
             if ($_success) {
                 $payerNr = $this->value;
@@ -4664,7 +4670,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $_value123[] = $this->value;
 
-            $_success = $this->parsePNUM18();
+            $_success = $this->parsePNUM16();
 
             if ($_success) {
                 $payerNr = $this->value;
@@ -5274,7 +5280,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $_value135[] = $this->value;
 
-            $_success = $this->parsePNUM18();
+            $_success = $this->parsePNUM16();
 
             if ($_success) {
                 $payerNr = $this->value;
@@ -5521,6 +5527,249 @@ class Grammar extends MultibyteHack
         return $_success;
     }
 
+    protected function parseMANDATE_EXTRACT_FILE()
+    {
+        $_position = $this->position;
+
+        if (isset($this->cache['MANDATE_EXTRACT_FILE'][$_position])) {
+            $_success = $this->cache['MANDATE_EXTRACT_FILE'][$_position]['success'];
+            $this->position = $this->cache['MANDATE_EXTRACT_FILE'][$_position]['position'];
+            $this->value = $this->cache['MANDATE_EXTRACT_FILE'][$_position]['value'];
+
+            return $_success;
+        }
+
+        $_value138 = array();
+        $_cut139 = $this->cut;
+
+        while (true) {
+            $_position137 = $this->position;
+
+            $this->cut = false;
+            $_success = $this->parseMANDATE_EXTRACT();
+
+            if (!$_success) {
+                break;
+            }
+
+            $_value138[] = $this->value;
+        }
+
+        if (!$this->cut) {
+            $_success = true;
+            $this->position = $_position137;
+            $this->value = $_value138;
+        }
+
+        $this->cut = $_cut139;
+
+        if ($_success) {
+            $recs = $this->value;
+        }
+
+        if ($_success) {
+            $this->value = call_user_func(function () use (&$recs) {
+                return new AutogiroFile('AutogiroMandateExtractFile', ...$recs);
+            });
+        }
+
+        $this->cache['MANDATE_EXTRACT_FILE'][$_position] = array(
+            'success' => $_success,
+            'position' => $this->position,
+            'value' => $this->value
+        );
+
+        if (!$_success) {
+            $this->report($_position, 'MANDATE_EXTRACT_FILE');
+        }
+
+        return $_success;
+    }
+
+    protected function parseMANDATE_EXTRACT()
+    {
+        $_position = $this->position;
+
+        if (isset($this->cache['MANDATE_EXTRACT'][$_position])) {
+            $_success = $this->cache['MANDATE_EXTRACT'][$_position]['success'];
+            $this->position = $this->cache['MANDATE_EXTRACT'][$_position]['position'];
+            $this->value = $this->cache['MANDATE_EXTRACT'][$_position]['value'];
+
+            return $_success;
+        }
+
+        $_value146 = array();
+
+        $_success = $this->parseBG10();
+
+        if ($_success) {
+            $bg = $this->value;
+        }
+
+        if ($_success) {
+            $_value146[] = $this->value;
+
+            $_success = $this->parseID12();
+
+            if ($_success) {
+                $id = $this->value;
+            }
+        }
+
+        if ($_success) {
+            $_value146[] = $this->value;
+
+            $_success = $this->parsePNUM16();
+
+            if ($_success) {
+                $payerNr = $this->value;
+            }
+        }
+
+        if ($_success) {
+            $_value146[] = $this->value;
+
+            $_success = $this->parseMSG1();
+
+            if ($_success) {
+                $type = $this->value;
+            }
+        }
+
+        if ($_success) {
+            $_value146[] = $this->value;
+
+            $_success = $this->parseINT2();
+
+            if ($_success) {
+                $active = $this->value;
+            }
+        }
+
+        if ($_success) {
+            $_value146[] = $this->value;
+
+            $_success = $this->parseDATE8();
+
+            if ($_success) {
+                $created = $this->value;
+            }
+        }
+
+        if ($_success) {
+            $_value146[] = $this->value;
+
+            $_success = $this->parseDATE8();
+
+            if ($_success) {
+                $updated = $this->value;
+            }
+        }
+
+        if ($_success) {
+            $_value146[] = $this->value;
+
+            $_success = $this->parseMSG1();
+
+            if ($_success) {
+                $status = $this->value;
+            }
+        }
+
+        if ($_success) {
+            $_value146[] = $this->value;
+
+            $_position140 = $this->position;
+            $_cut141 = $this->cut;
+
+            $this->cut = false;
+            $_success = $this->parseS();
+
+            if (!$_success && !$this->cut) {
+                $_success = true;
+                $this->position = $_position140;
+                $this->value = null;
+            }
+
+            $this->cut = $_cut141;
+        }
+
+        if ($_success) {
+            $_value146[] = $this->value;
+
+            $_position142 = $this->position;
+            $_cut143 = $this->cut;
+
+            $this->cut = false;
+            $_success = $this->parseS5();
+
+            if (!$_success && !$this->cut) {
+                $_success = true;
+                $this->position = $_position142;
+                $this->value = null;
+            }
+
+            $this->cut = $_cut143;
+        }
+
+        if ($_success) {
+            $_value146[] = $this->value;
+
+            $_position144 = $this->position;
+            $_cut145 = $this->cut;
+
+            $this->cut = false;
+            $_success = $this->parseACCOUNT16();
+
+            if (!$_success && !$this->cut) {
+                $_success = true;
+                $this->position = $_position144;
+                $this->value = null;
+            }
+
+            $this->cut = $_cut145;
+
+            if ($_success) {
+                $account = $this->value;
+            }
+        }
+
+        if ($_success) {
+            $_value146[] = $this->value;
+
+            $_success = $this->parseEOR();
+        }
+
+        if ($_success) {
+            $_value146[] = $this->value;
+
+            $this->value = $_value146;
+        }
+
+        if ($_success) {
+            $this->value = call_user_func(function () use (&$bg, &$id, &$payerNr, &$type, &$active, &$created, &$updated, &$status, &$account) {
+                $type->setName('Type');
+                $active->setName('ActiveYear');
+                $created->setName('Created');
+                $updated->setName('Updated');
+                $status->setName('Status');
+                return new Record('Mandate', $bg, $id, $payerNr, $type, $active, $created, $updated, $status, $account);
+            });
+        }
+
+        $this->cache['MANDATE_EXTRACT'][$_position] = array(
+            'success' => $_success,
+            'position' => $this->position,
+            'value' => $this->value
+        );
+
+        if (!$_success) {
+            $this->report($_position, 'MANDATE_EXTRACT');
+        }
+
+        return $_success;
+    }
+
     protected function parseACCOUNT16()
     {
         $_position = $this->position;
@@ -5533,32 +5782,32 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_position138 = $this->position;
+        $_position148 = $this->position;
 
-        $_value137 = array();
+        $_value147 = array();
 
         $_success = $this->parseA10();
 
         if ($_success) {
-            $_value137[] = $this->value;
+            $_value147[] = $this->value;
 
             $_success = $this->parseA5();
         }
 
         if ($_success) {
-            $_value137[] = $this->value;
+            $_value147[] = $this->value;
 
             $_success = $this->parseA();
         }
 
         if ($_success) {
-            $_value137[] = $this->value;
+            $_value147[] = $this->value;
 
-            $this->value = $_value137;
+            $this->value = $_value147;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position138, $this->position - $_position138));
+            $this->value = strval(substr($this->string, $_position148, $this->position - $_position148));
         }
 
         if ($_success) {
@@ -5567,7 +5816,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$number) {
-                return new Container('Account', new Number($this->lineNr, $number));
+                return new Container('Account', new Number($this->lineNr, trim($number)));
             });
         }
 
@@ -5596,38 +5845,38 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_position140 = $this->position;
+        $_position150 = $this->position;
 
-        $_value139 = array();
+        $_value149 = array();
 
         $_success = $this->parseA10();
 
         if ($_success) {
-            $_value139[] = $this->value;
+            $_value149[] = $this->value;
 
             $_success = $this->parseA10();
         }
 
         if ($_success) {
-            $_value139[] = $this->value;
+            $_value149[] = $this->value;
 
             $_success = $this->parseA10();
         }
 
         if ($_success) {
-            $_value139[] = $this->value;
+            $_value149[] = $this->value;
 
             $_success = $this->parseA5();
         }
 
         if ($_success) {
-            $_value139[] = $this->value;
+            $_value149[] = $this->value;
 
-            $this->value = $_value139;
+            $this->value = $_value149;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position140, $this->position - $_position140));
+            $this->value = strval(substr($this->string, $_position150, $this->position - $_position150));
         }
 
         if ($_success) {
@@ -5636,7 +5885,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$number) {
-                return new Container('Account', new Number($this->lineNr, $number));
+                return new Container('Account', new Number($this->lineNr, trim($number)));
             });
         }
 
@@ -5665,26 +5914,26 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_position142 = $this->position;
+        $_position152 = $this->position;
 
-        $_value141 = array();
+        $_value151 = array();
 
         $_success = $this->parseA10();
 
         if ($_success) {
-            $_value141[] = $this->value;
+            $_value151[] = $this->value;
 
             $_success = $this->parseA2();
         }
 
         if ($_success) {
-            $_value141[] = $this->value;
+            $_value151[] = $this->value;
 
-            $this->value = $_value141;
+            $this->value = $_value151;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position142, $this->position - $_position142));
+            $this->value = strval(substr($this->string, $_position152, $this->position - $_position152));
         }
 
         if ($_success) {
@@ -5722,38 +5971,38 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_position144 = $this->position;
+        $_position154 = $this->position;
 
-        $_value143 = array();
+        $_value153 = array();
 
         $_success = $this->parseA10();
 
         if ($_success) {
-            $_value143[] = $this->value;
+            $_value153[] = $this->value;
 
             $_success = $this->parseA5();
         }
 
         if ($_success) {
-            $_value143[] = $this->value;
+            $_value153[] = $this->value;
 
             $_success = $this->parseA2();
         }
 
         if ($_success) {
-            $_value143[] = $this->value;
+            $_value153[] = $this->value;
 
             $_success = $this->parseA();
         }
 
         if ($_success) {
-            $_value143[] = $this->value;
+            $_value153[] = $this->value;
 
-            $this->value = $_value143;
+            $this->value = $_value153;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position144, $this->position - $_position144));
+            $this->value = strval(substr($this->string, $_position154, $this->position - $_position154));
         }
 
         if ($_success) {
@@ -5799,7 +6048,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$number) {
-                return new Container('PayeeBankgiro', new Number($this->lineNr, $number));
+                return new Container('PayeeBankgiro', new Number($this->lineNr, trim($number)));
             });
         }
 
@@ -5828,26 +6077,26 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_position146 = $this->position;
+        $_position156 = $this->position;
 
-        $_value145 = array();
+        $_value155 = array();
 
         $_success = $this->parseA10();
 
         if ($_success) {
-            $_value145[] = $this->value;
+            $_value155[] = $this->value;
 
             $_success = $this->parseA2();
         }
 
         if ($_success) {
-            $_value145[] = $this->value;
+            $_value155[] = $this->value;
 
-            $this->value = $_value145;
+            $this->value = $_value155;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position146, $this->position - $_position146));
+            $this->value = strval(substr($this->string, $_position156, $this->position - $_position156));
         }
 
         if ($_success) {
@@ -5885,26 +6134,26 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_position148 = $this->position;
+        $_position158 = $this->position;
 
-        $_value147 = array();
+        $_value157 = array();
 
         $_success = $this->parseA5();
 
         if ($_success) {
-            $_value147[] = $this->value;
+            $_value157[] = $this->value;
 
             $_success = $this->parseA();
         }
 
         if ($_success) {
-            $_value147[] = $this->value;
+            $_value157[] = $this->value;
 
-            $this->value = $_value147;
+            $this->value = $_value157;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position148, $this->position - $_position148));
+            $this->value = strval(substr($this->string, $_position158, $this->position - $_position158));
         }
 
         if ($_success) {
@@ -5913,7 +6162,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$nr) {
-                return new Number($this->lineNr, $nr, 'PayeeBgcNumber');
+                return new Number($this->lineNr, trim($nr), 'PayeeBgcNumber');
             });
         }
 
@@ -5942,26 +6191,26 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_position150 = $this->position;
+        $_position160 = $this->position;
 
-        $_value149 = array();
+        $_value159 = array();
 
         $_success = $this->parseA5();
 
         if ($_success) {
-            $_value149[] = $this->value;
+            $_value159[] = $this->value;
 
             $_success = $this->parseA();
         }
 
         if ($_success) {
-            $_value149[] = $this->value;
+            $_value159[] = $this->value;
 
-            $this->value = $_value149;
+            $this->value = $_value159;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position150, $this->position - $_position150));
+            $this->value = strval(substr($this->string, $_position160, $this->position - $_position160));
         }
 
         if ($_success) {
@@ -5999,32 +6248,32 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_position152 = $this->position;
+        $_position162 = $this->position;
 
-        $_value151 = array();
+        $_value161 = array();
 
         $_success = $this->parseA5();
 
         if ($_success) {
-            $_value151[] = $this->value;
+            $_value161[] = $this->value;
 
             $_success = $this->parseA2();
         }
 
         if ($_success) {
-            $_value151[] = $this->value;
+            $_value161[] = $this->value;
 
             $_success = $this->parseA();
         }
 
         if ($_success) {
-            $_value151[] = $this->value;
+            $_value161[] = $this->value;
 
-            $this->value = $_value151;
+            $this->value = $_value161;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position152, $this->position - $_position152));
+            $this->value = strval(substr($this->string, $_position162, $this->position - $_position162));
         }
 
         if ($_success) {
@@ -6062,26 +6311,26 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_position154 = $this->position;
+        $_position164 = $this->position;
 
-        $_value153 = array();
+        $_value163 = array();
 
         $_success = $this->parseA10();
 
         if ($_success) {
-            $_value153[] = $this->value;
+            $_value163[] = $this->value;
 
             $_success = $this->parseA10();
         }
 
         if ($_success) {
-            $_value153[] = $this->value;
+            $_value163[] = $this->value;
 
-            $this->value = $_value153;
+            $this->value = $_value163;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position154, $this->position - $_position154));
+            $this->value = strval(substr($this->string, $_position164, $this->position - $_position164));
         }
 
         if ($_success) {
@@ -6160,12 +6409,12 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_position155 = $this->position;
+        $_position165 = $this->position;
 
         $_success = $this->parseA();
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position155, $this->position - $_position155));
+            $this->value = strval(substr($this->string, $_position165, $this->position - $_position165));
         }
 
         if ($_success) {
@@ -6203,12 +6452,12 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_position156 = $this->position;
+        $_position166 = $this->position;
 
         $_success = $this->parseA();
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position156, $this->position - $_position156));
+            $this->value = strval(substr($this->string, $_position166, $this->position - $_position166));
         }
 
         if ($_success) {
@@ -6246,26 +6495,26 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_position158 = $this->position;
+        $_position168 = $this->position;
 
-        $_value157 = array();
+        $_value167 = array();
 
         $_success = $this->parseA();
 
         if ($_success) {
-            $_value157[] = $this->value;
+            $_value167[] = $this->value;
 
             $_success = $this->parseA();
         }
 
         if ($_success) {
-            $_value157[] = $this->value;
+            $_value167[] = $this->value;
 
-            $this->value = $_value157;
+            $this->value = $_value167;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position158, $this->position - $_position158));
+            $this->value = strval(substr($this->string, $_position168, $this->position - $_position168));
         }
 
         if ($_success) {
@@ -6291,44 +6540,44 @@ class Grammar extends MultibyteHack
         return $_success;
     }
 
-    protected function parsePNUM18()
+    protected function parsePNUM16()
     {
         $_position = $this->position;
 
-        if (isset($this->cache['PNUM18'][$_position])) {
-            $_success = $this->cache['PNUM18'][$_position]['success'];
-            $this->position = $this->cache['PNUM18'][$_position]['position'];
-            $this->value = $this->cache['PNUM18'][$_position]['value'];
+        if (isset($this->cache['PNUM16'][$_position])) {
+            $_success = $this->cache['PNUM16'][$_position]['success'];
+            $this->position = $this->cache['PNUM16'][$_position]['position'];
+            $this->value = $this->cache['PNUM16'][$_position]['value'];
 
             return $_success;
         }
 
-        $_position160 = $this->position;
+        $_position170 = $this->position;
 
-        $_value159 = array();
+        $_value169 = array();
 
         $_success = $this->parseA10();
 
         if ($_success) {
-            $_value159[] = $this->value;
+            $_value169[] = $this->value;
 
             $_success = $this->parseA5();
         }
 
         if ($_success) {
-            $_value159[] = $this->value;
+            $_value169[] = $this->value;
 
             $_success = $this->parseA();
         }
 
         if ($_success) {
-            $_value159[] = $this->value;
+            $_value169[] = $this->value;
 
-            $this->value = $_value159;
+            $this->value = $_value169;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position160, $this->position - $_position160));
+            $this->value = strval(substr($this->string, $_position170, $this->position - $_position170));
         }
 
         if ($_success) {
@@ -6341,14 +6590,14 @@ class Grammar extends MultibyteHack
             });
         }
 
-        $this->cache['PNUM18'][$_position] = array(
+        $this->cache['PNUM16'][$_position] = array(
             'success' => $_success,
             'position' => $this->position,
             'value' => $this->value
         );
 
         if (!$_success) {
-            $this->report($_position, 'PNUM18');
+            $this->report($_position, 'PNUM16');
         }
 
         return $_success;
@@ -6366,26 +6615,26 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_position162 = $this->position;
+        $_position172 = $this->position;
 
-        $_value161 = array();
+        $_value171 = array();
 
         $_success = $this->parseA2();
 
         if ($_success) {
-            $_value161[] = $this->value;
+            $_value171[] = $this->value;
 
             $_success = $this->parseA();
         }
 
         if ($_success) {
-            $_value161[] = $this->value;
+            $_value171[] = $this->value;
 
-            $this->value = $_value161;
+            $this->value = $_value171;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position162, $this->position - $_position162));
+            $this->value = strval(substr($this->string, $_position172, $this->position - $_position172));
         }
 
         if ($_success) {
@@ -6423,12 +6672,12 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_position163 = $this->position;
+        $_position173 = $this->position;
 
         $_success = $this->parseA5();
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position163, $this->position - $_position163));
+            $this->value = strval(substr($this->string, $_position173, $this->position - $_position173));
         }
 
         if ($_success) {
@@ -6437,7 +6686,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$integer) {
-                return new Number($this->lineNr, $integer, 'Serial');
+                return new Number($this->lineNr, trim($integer), 'Serial');
             });
         }
 
@@ -6466,116 +6715,26 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_position197 = $this->position;
+        $_position207 = $this->position;
 
-        $_value196 = array();
+        $_value206 = array();
 
-        $_position164 = $this->position;
-        $_cut165 = $this->cut;
+        $_position174 = $this->position;
+        $_cut175 = $this->cut;
 
         $this->cut = false;
         $_success = $this->parseA();
 
         if (!$_success && !$this->cut) {
             $_success = true;
-            $this->position = $_position164;
+            $this->position = $_position174;
             $this->value = null;
         }
 
-        $this->cut = $_cut165;
+        $this->cut = $_cut175;
 
         if ($_success) {
-            $_value196[] = $this->value;
-
-            $_position166 = $this->position;
-            $_cut167 = $this->cut;
-
-            $this->cut = false;
-            $_success = $this->parseA();
-
-            if (!$_success && !$this->cut) {
-                $_success = true;
-                $this->position = $_position166;
-                $this->value = null;
-            }
-
-            $this->cut = $_cut167;
-        }
-
-        if ($_success) {
-            $_value196[] = $this->value;
-
-            $_position168 = $this->position;
-            $_cut169 = $this->cut;
-
-            $this->cut = false;
-            $_success = $this->parseA();
-
-            if (!$_success && !$this->cut) {
-                $_success = true;
-                $this->position = $_position168;
-                $this->value = null;
-            }
-
-            $this->cut = $_cut169;
-        }
-
-        if ($_success) {
-            $_value196[] = $this->value;
-
-            $_position170 = $this->position;
-            $_cut171 = $this->cut;
-
-            $this->cut = false;
-            $_success = $this->parseA();
-
-            if (!$_success && !$this->cut) {
-                $_success = true;
-                $this->position = $_position170;
-                $this->value = null;
-            }
-
-            $this->cut = $_cut171;
-        }
-
-        if ($_success) {
-            $_value196[] = $this->value;
-
-            $_position172 = $this->position;
-            $_cut173 = $this->cut;
-
-            $this->cut = false;
-            $_success = $this->parseA();
-
-            if (!$_success && !$this->cut) {
-                $_success = true;
-                $this->position = $_position172;
-                $this->value = null;
-            }
-
-            $this->cut = $_cut173;
-        }
-
-        if ($_success) {
-            $_value196[] = $this->value;
-
-            $_position174 = $this->position;
-            $_cut175 = $this->cut;
-
-            $this->cut = false;
-            $_success = $this->parseA();
-
-            if (!$_success && !$this->cut) {
-                $_success = true;
-                $this->position = $_position174;
-                $this->value = null;
-            }
-
-            $this->cut = $_cut175;
-        }
-
-        if ($_success) {
-            $_value196[] = $this->value;
+            $_value206[] = $this->value;
 
             $_position176 = $this->position;
             $_cut177 = $this->cut;
@@ -6593,7 +6752,7 @@ class Grammar extends MultibyteHack
         }
 
         if ($_success) {
-            $_value196[] = $this->value;
+            $_value206[] = $this->value;
 
             $_position178 = $this->position;
             $_cut179 = $this->cut;
@@ -6611,7 +6770,7 @@ class Grammar extends MultibyteHack
         }
 
         if ($_success) {
-            $_value196[] = $this->value;
+            $_value206[] = $this->value;
 
             $_position180 = $this->position;
             $_cut181 = $this->cut;
@@ -6629,7 +6788,7 @@ class Grammar extends MultibyteHack
         }
 
         if ($_success) {
-            $_value196[] = $this->value;
+            $_value206[] = $this->value;
 
             $_position182 = $this->position;
             $_cut183 = $this->cut;
@@ -6647,7 +6806,7 @@ class Grammar extends MultibyteHack
         }
 
         if ($_success) {
-            $_value196[] = $this->value;
+            $_value206[] = $this->value;
 
             $_position184 = $this->position;
             $_cut185 = $this->cut;
@@ -6665,7 +6824,7 @@ class Grammar extends MultibyteHack
         }
 
         if ($_success) {
-            $_value196[] = $this->value;
+            $_value206[] = $this->value;
 
             $_position186 = $this->position;
             $_cut187 = $this->cut;
@@ -6683,7 +6842,7 @@ class Grammar extends MultibyteHack
         }
 
         if ($_success) {
-            $_value196[] = $this->value;
+            $_value206[] = $this->value;
 
             $_position188 = $this->position;
             $_cut189 = $this->cut;
@@ -6701,7 +6860,7 @@ class Grammar extends MultibyteHack
         }
 
         if ($_success) {
-            $_value196[] = $this->value;
+            $_value206[] = $this->value;
 
             $_position190 = $this->position;
             $_cut191 = $this->cut;
@@ -6719,7 +6878,7 @@ class Grammar extends MultibyteHack
         }
 
         if ($_success) {
-            $_value196[] = $this->value;
+            $_value206[] = $this->value;
 
             $_position192 = $this->position;
             $_cut193 = $this->cut;
@@ -6737,7 +6896,7 @@ class Grammar extends MultibyteHack
         }
 
         if ($_success) {
-            $_value196[] = $this->value;
+            $_value206[] = $this->value;
 
             $_position194 = $this->position;
             $_cut195 = $this->cut;
@@ -6755,13 +6914,103 @@ class Grammar extends MultibyteHack
         }
 
         if ($_success) {
-            $_value196[] = $this->value;
+            $_value206[] = $this->value;
 
-            $this->value = $_value196;
+            $_position196 = $this->position;
+            $_cut197 = $this->cut;
+
+            $this->cut = false;
+            $_success = $this->parseA();
+
+            if (!$_success && !$this->cut) {
+                $_success = true;
+                $this->position = $_position196;
+                $this->value = null;
+            }
+
+            $this->cut = $_cut197;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position197, $this->position - $_position197));
+            $_value206[] = $this->value;
+
+            $_position198 = $this->position;
+            $_cut199 = $this->cut;
+
+            $this->cut = false;
+            $_success = $this->parseA();
+
+            if (!$_success && !$this->cut) {
+                $_success = true;
+                $this->position = $_position198;
+                $this->value = null;
+            }
+
+            $this->cut = $_cut199;
+        }
+
+        if ($_success) {
+            $_value206[] = $this->value;
+
+            $_position200 = $this->position;
+            $_cut201 = $this->cut;
+
+            $this->cut = false;
+            $_success = $this->parseA();
+
+            if (!$_success && !$this->cut) {
+                $_success = true;
+                $this->position = $_position200;
+                $this->value = null;
+            }
+
+            $this->cut = $_cut201;
+        }
+
+        if ($_success) {
+            $_value206[] = $this->value;
+
+            $_position202 = $this->position;
+            $_cut203 = $this->cut;
+
+            $this->cut = false;
+            $_success = $this->parseA();
+
+            if (!$_success && !$this->cut) {
+                $_success = true;
+                $this->position = $_position202;
+                $this->value = null;
+            }
+
+            $this->cut = $_cut203;
+        }
+
+        if ($_success) {
+            $_value206[] = $this->value;
+
+            $_position204 = $this->position;
+            $_cut205 = $this->cut;
+
+            $this->cut = false;
+            $_success = $this->parseA();
+
+            if (!$_success && !$this->cut) {
+                $_success = true;
+                $this->position = $_position204;
+                $this->value = null;
+            }
+
+            $this->cut = $_cut205;
+        }
+
+        if ($_success) {
+            $_value206[] = $this->value;
+
+            $this->value = $_value206;
+        }
+
+        if ($_success) {
+            $this->value = strval(substr($this->string, $_position207, $this->position - $_position207));
         }
 
         if ($_success) {
@@ -6787,6 +7036,63 @@ class Grammar extends MultibyteHack
         return $_success;
     }
 
+    protected function parseINT2()
+    {
+        $_position = $this->position;
+
+        if (isset($this->cache['INT2'][$_position])) {
+            $_success = $this->cache['INT2'][$_position]['success'];
+            $this->position = $this->cache['INT2'][$_position]['position'];
+            $this->value = $this->cache['INT2'][$_position]['value'];
+
+            return $_success;
+        }
+
+        $_position209 = $this->position;
+
+        $_value208 = array();
+
+        $_success = $this->parseA();
+
+        if ($_success) {
+            $_value208[] = $this->value;
+
+            $_success = $this->parseA();
+        }
+
+        if ($_success) {
+            $_value208[] = $this->value;
+
+            $this->value = $_value208;
+        }
+
+        if ($_success) {
+            $this->value = strval(substr($this->string, $_position209, $this->position - $_position209));
+        }
+
+        if ($_success) {
+            $integer = $this->value;
+        }
+
+        if ($_success) {
+            $this->value = call_user_func(function () use (&$integer) {
+                return new Number($this->lineNr, $integer);
+            });
+        }
+
+        $this->cache['INT2'][$_position] = array(
+            'success' => $_success,
+            'position' => $this->position,
+            'value' => $this->value
+        );
+
+        if (!$_success) {
+            $this->report($_position, 'INT2');
+        }
+
+        return $_success;
+    }
+
     protected function parseINT6()
     {
         $_position = $this->position;
@@ -6799,26 +7105,26 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_position199 = $this->position;
+        $_position211 = $this->position;
 
-        $_value198 = array();
+        $_value210 = array();
 
         $_success = $this->parseA5();
 
         if ($_success) {
-            $_value198[] = $this->value;
+            $_value210[] = $this->value;
 
             $_success = $this->parseA();
         }
 
         if ($_success) {
-            $_value198[] = $this->value;
+            $_value210[] = $this->value;
 
-            $this->value = $_value198;
+            $this->value = $_value210;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position199, $this->position - $_position199));
+            $this->value = strval(substr($this->string, $_position211, $this->position - $_position211));
         }
 
         if ($_success) {
@@ -6856,26 +7162,26 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_position201 = $this->position;
+        $_position213 = $this->position;
 
-        $_value200 = array();
+        $_value212 = array();
 
         $_success = $this->parseA5();
 
         if ($_success) {
-            $_value200[] = $this->value;
+            $_value212[] = $this->value;
 
             $_success = $this->parseA2();
         }
 
         if ($_success) {
-            $_value200[] = $this->value;
+            $_value212[] = $this->value;
 
-            $this->value = $_value200;
+            $this->value = $_value212;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position201, $this->position - $_position201));
+            $this->value = strval(substr($this->string, $_position213, $this->position - $_position213));
         }
 
         if ($_success) {
@@ -6913,32 +7219,32 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_position203 = $this->position;
+        $_position215 = $this->position;
 
-        $_value202 = array();
+        $_value214 = array();
 
         $_success = $this->parseA5();
 
         if ($_success) {
-            $_value202[] = $this->value;
+            $_value214[] = $this->value;
 
             $_success = $this->parseA2();
         }
 
         if ($_success) {
-            $_value202[] = $this->value;
+            $_value214[] = $this->value;
 
             $_success = $this->parseA();
         }
 
         if ($_success) {
-            $_value202[] = $this->value;
+            $_value214[] = $this->value;
 
-            $this->value = $_value202;
+            $this->value = $_value214;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position203, $this->position - $_position203));
+            $this->value = strval(substr($this->string, $_position215, $this->position - $_position215));
         }
 
         if ($_success) {
@@ -6976,26 +7282,26 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_position205 = $this->position;
+        $_position217 = $this->position;
 
-        $_value204 = array();
+        $_value216 = array();
 
         $_success = $this->parseA10();
 
         if ($_success) {
-            $_value204[] = $this->value;
+            $_value216[] = $this->value;
 
             $_success = $this->parseA2();
         }
 
         if ($_success) {
-            $_value204[] = $this->value;
+            $_value216[] = $this->value;
 
-            $this->value = $_value204;
+            $this->value = $_value216;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position205, $this->position - $_position205));
+            $this->value = strval(substr($this->string, $_position217, $this->position - $_position217));
         }
 
         if ($_success) {
@@ -7033,10 +7339,10 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_value208 = array();
+        $_value220 = array();
 
-        $_position206 = $this->position;
-        $_cut207 = $this->cut;
+        $_position218 = $this->position;
+        $_cut219 = $this->cut;
 
         $this->cut = false;
         $_success = $this->parseEOL();
@@ -7048,11 +7354,11 @@ class Grammar extends MultibyteHack
             $_success = false;
         }
 
-        $this->position = $_position206;
-        $this->cut = $_cut207;
+        $this->position = $_position218;
+        $this->cut = $_cut219;
 
         if ($_success) {
-            $_value208[] = $this->value;
+            $_value220[] = $this->value;
 
             if ($this->position < strlen($this->string)) {
                 $_success = true;
@@ -7064,9 +7370,9 @@ class Grammar extends MultibyteHack
         }
 
         if ($_success) {
-            $_value208[] = $this->value;
+            $_value220[] = $this->value;
 
-            $this->value = $_value208;
+            $this->value = $_value220;
         }
 
         $this->cache['A'][$_position] = array(
@@ -7094,26 +7400,26 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_position210 = $this->position;
+        $_position222 = $this->position;
 
-        $_value209 = array();
+        $_value221 = array();
 
         $_success = $this->parseA();
 
         if ($_success) {
-            $_value209[] = $this->value;
+            $_value221[] = $this->value;
 
             $_success = $this->parseA();
         }
 
         if ($_success) {
-            $_value209[] = $this->value;
+            $_value221[] = $this->value;
 
-            $this->value = $_value209;
+            $this->value = $_value221;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position210, $this->position - $_position210));
+            $this->value = strval(substr($this->string, $_position222, $this->position - $_position222));
         }
 
         $this->cache['A2'][$_position] = array(
@@ -7141,26 +7447,26 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_position212 = $this->position;
+        $_position224 = $this->position;
 
-        $_value211 = array();
+        $_value223 = array();
 
         $_success = $this->parseA2();
 
         if ($_success) {
-            $_value211[] = $this->value;
+            $_value223[] = $this->value;
 
             $_success = $this->parseA2();
         }
 
         if ($_success) {
-            $_value211[] = $this->value;
+            $_value223[] = $this->value;
 
-            $this->value = $_value211;
+            $this->value = $_value223;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position212, $this->position - $_position212));
+            $this->value = strval(substr($this->string, $_position224, $this->position - $_position224));
         }
 
         $this->cache['A4'][$_position] = array(
@@ -7188,44 +7494,44 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_position214 = $this->position;
+        $_position226 = $this->position;
 
-        $_value213 = array();
+        $_value225 = array();
 
         $_success = $this->parseA();
 
         if ($_success) {
-            $_value213[] = $this->value;
+            $_value225[] = $this->value;
 
             $_success = $this->parseA();
         }
 
         if ($_success) {
-            $_value213[] = $this->value;
+            $_value225[] = $this->value;
 
             $_success = $this->parseA();
         }
 
         if ($_success) {
-            $_value213[] = $this->value;
+            $_value225[] = $this->value;
 
             $_success = $this->parseA();
         }
 
         if ($_success) {
-            $_value213[] = $this->value;
+            $_value225[] = $this->value;
 
             $_success = $this->parseA();
         }
 
         if ($_success) {
-            $_value213[] = $this->value;
+            $_value225[] = $this->value;
 
-            $this->value = $_value213;
+            $this->value = $_value225;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position214, $this->position - $_position214));
+            $this->value = strval(substr($this->string, $_position226, $this->position - $_position226));
         }
 
         $this->cache['A5'][$_position] = array(
@@ -7253,32 +7559,32 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_position216 = $this->position;
+        $_position228 = $this->position;
 
-        $_value215 = array();
+        $_value227 = array();
 
         $_success = $this->parseA5();
 
         if ($_success) {
-            $_value215[] = $this->value;
+            $_value227[] = $this->value;
 
             $_success = $this->parseA2();
         }
 
         if ($_success) {
-            $_value215[] = $this->value;
+            $_value227[] = $this->value;
 
             $_success = $this->parseA();
         }
 
         if ($_success) {
-            $_value215[] = $this->value;
+            $_value227[] = $this->value;
 
-            $this->value = $_value215;
+            $this->value = $_value227;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position216, $this->position - $_position216));
+            $this->value = strval(substr($this->string, $_position228, $this->position - $_position228));
         }
 
         $this->cache['A8'][$_position] = array(
@@ -7306,26 +7612,26 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_position218 = $this->position;
+        $_position230 = $this->position;
 
-        $_value217 = array();
+        $_value229 = array();
 
         $_success = $this->parseA5();
 
         if ($_success) {
-            $_value217[] = $this->value;
+            $_value229[] = $this->value;
 
             $_success = $this->parseA5();
         }
 
         if ($_success) {
-            $_value217[] = $this->value;
+            $_value229[] = $this->value;
 
-            $this->value = $_value217;
+            $this->value = $_value229;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position218, $this->position - $_position218));
+            $this->value = strval(substr($this->string, $_position230, $this->position - $_position230));
         }
 
         $this->cache['A10'][$_position] = array(
@@ -7353,38 +7659,38 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_position220 = $this->position;
+        $_position232 = $this->position;
 
-        $_value219 = array();
+        $_value231 = array();
 
         $_success = $this->parseA10();
 
         if ($_success) {
-            $_value219[] = $this->value;
+            $_value231[] = $this->value;
 
             $_success = $this->parseA10();
         }
 
         if ($_success) {
-            $_value219[] = $this->value;
+            $_value231[] = $this->value;
 
             $_success = $this->parseA10();
         }
 
         if ($_success) {
-            $_value219[] = $this->value;
+            $_value231[] = $this->value;
 
             $_success = $this->parseA10();
         }
 
         if ($_success) {
-            $_value219[] = $this->value;
+            $_value231[] = $this->value;
 
-            $this->value = $_value219;
+            $this->value = $_value231;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position220, $this->position - $_position220));
+            $this->value = strval(substr($this->string, $_position232, $this->position - $_position232));
         }
 
         $this->cache['A40'][$_position] = array(
@@ -7447,44 +7753,44 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_position222 = $this->position;
+        $_position234 = $this->position;
 
-        $_value221 = array();
+        $_value233 = array();
 
         $_success = $this->parseS();
 
         if ($_success) {
-            $_value221[] = $this->value;
+            $_value233[] = $this->value;
 
             $_success = $this->parseS();
         }
 
         if ($_success) {
-            $_value221[] = $this->value;
+            $_value233[] = $this->value;
 
             $_success = $this->parseS();
         }
 
         if ($_success) {
-            $_value221[] = $this->value;
+            $_value233[] = $this->value;
 
             $_success = $this->parseS();
         }
 
         if ($_success) {
-            $_value221[] = $this->value;
+            $_value233[] = $this->value;
 
             $_success = $this->parseS();
         }
 
         if ($_success) {
-            $_value221[] = $this->value;
+            $_value233[] = $this->value;
 
-            $this->value = $_value221;
+            $this->value = $_value233;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position222, $this->position - $_position222));
+            $this->value = strval(substr($this->string, $_position234, $this->position - $_position234));
         }
 
         $this->cache['S5'][$_position] = array(
@@ -7512,26 +7818,26 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_position224 = $this->position;
+        $_position236 = $this->position;
 
-        $_value223 = array();
+        $_value235 = array();
 
         $_success = $this->parseS5();
 
         if ($_success) {
-            $_value223[] = $this->value;
+            $_value235[] = $this->value;
 
             $_success = $this->parseS5();
         }
 
         if ($_success) {
-            $_value223[] = $this->value;
+            $_value235[] = $this->value;
 
-            $this->value = $_value223;
+            $this->value = $_value235;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position224, $this->position - $_position224));
+            $this->value = strval(substr($this->string, $_position236, $this->position - $_position236));
         }
 
         $this->cache['S10'][$_position] = array(
@@ -7559,26 +7865,26 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_position226 = $this->position;
+        $_position238 = $this->position;
 
-        $_value225 = array();
+        $_value237 = array();
 
         $_success = $this->parseS10();
 
         if ($_success) {
-            $_value225[] = $this->value;
+            $_value237[] = $this->value;
 
             $_success = $this->parseS10();
         }
 
         if ($_success) {
-            $_value225[] = $this->value;
+            $_value237[] = $this->value;
 
-            $this->value = $_value225;
+            $this->value = $_value237;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position226, $this->position - $_position226));
+            $this->value = strval(substr($this->string, $_position238, $this->position - $_position238));
         }
 
         $this->cache['S20'][$_position] = array(
@@ -7606,13 +7912,13 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_value232 = array();
+        $_value244 = array();
 
-        $_value228 = array();
-        $_cut229 = $this->cut;
+        $_value240 = array();
+        $_cut241 = $this->cut;
 
         while (true) {
-            $_position227 = $this->position;
+            $_position239 = $this->position;
 
             $this->cut = false;
             $_success = $this->parseA();
@@ -7621,39 +7927,39 @@ class Grammar extends MultibyteHack
                 break;
             }
 
-            $_value228[] = $this->value;
+            $_value240[] = $this->value;
         }
 
         if (!$this->cut) {
             $_success = true;
-            $this->position = $_position227;
-            $this->value = $_value228;
+            $this->position = $_position239;
+            $this->value = $_value240;
         }
 
-        $this->cut = $_cut229;
+        $this->cut = $_cut241;
 
         if ($_success) {
-            $_value232[] = $this->value;
+            $_value244[] = $this->value;
 
-            $_position230 = $this->position;
-            $_cut231 = $this->cut;
+            $_position242 = $this->position;
+            $_cut243 = $this->cut;
 
             $this->cut = false;
             $_success = $this->parseEOL();
 
             if (!$_success && !$this->cut) {
-                $this->position = $_position230;
+                $this->position = $_position242;
 
                 $_success = $this->parseEOF();
             }
 
-            $this->cut = $_cut231;
+            $this->cut = $_cut243;
         }
 
         if ($_success) {
-            $_value232[] = $this->value;
+            $_value244[] = $this->value;
 
-            $this->value = $_value232;
+            $this->value = $_value244;
         }
 
         $this->cache['EOR'][$_position] = array(
@@ -7681,10 +7987,10 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_value235 = array();
+        $_value247 = array();
 
-        $_position233 = $this->position;
-        $_cut234 = $this->cut;
+        $_position245 = $this->position;
+        $_cut246 = $this->cut;
 
         $this->cut = false;
         if (substr($this->string, $this->position, strlen("\r")) === "\r") {
@@ -7699,14 +8005,14 @@ class Grammar extends MultibyteHack
 
         if (!$_success && !$this->cut) {
             $_success = true;
-            $this->position = $_position233;
+            $this->position = $_position245;
             $this->value = null;
         }
 
-        $this->cut = $_cut234;
+        $this->cut = $_cut246;
 
         if ($_success) {
-            $_value235[] = $this->value;
+            $_value247[] = $this->value;
 
             if (substr($this->string, $this->position, strlen("\n")) === "\n") {
                 $_success = true;
@@ -7720,9 +8026,9 @@ class Grammar extends MultibyteHack
         }
 
         if ($_success) {
-            $_value235[] = $this->value;
+            $_value247[] = $this->value;
 
-            $this->value = $_value235;
+            $this->value = $_value247;
         }
 
         if ($_success) {
@@ -7756,8 +8062,8 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_position236 = $this->position;
-        $_cut237 = $this->cut;
+        $_position248 = $this->position;
+        $_cut249 = $this->cut;
 
         $this->cut = false;
         if ($this->position < strlen($this->string)) {
@@ -7775,8 +8081,8 @@ class Grammar extends MultibyteHack
             $_success = false;
         }
 
-        $this->position = $_position236;
-        $this->cut = $_cut237;
+        $this->position = $_position248;
+        $this->cut = $_cut249;
 
         $this->cache['EOF'][$_position] = array(
             'success' => $_success,
@@ -7803,21 +8109,21 @@ class Grammar extends MultibyteHack
             return $_success;
         }
 
-        $_value241 = array();
-        $_cut242 = $this->cut;
+        $_value253 = array();
+        $_cut254 = $this->cut;
 
         while (true) {
-            $_position240 = $this->position;
+            $_position252 = $this->position;
 
             $this->cut = false;
-            $_position238 = $this->position;
-            $_cut239 = $this->cut;
+            $_position250 = $this->position;
+            $_cut251 = $this->cut;
 
             $this->cut = false;
             $_success = $this->parseS();
 
             if (!$_success && !$this->cut) {
-                $this->position = $_position238;
+                $this->position = $_position250;
 
                 if (substr($this->string, $this->position, strlen("\t")) === "\t") {
                     $_success = true;
@@ -7831,27 +8137,27 @@ class Grammar extends MultibyteHack
             }
 
             if (!$_success && !$this->cut) {
-                $this->position = $_position238;
+                $this->position = $_position250;
 
                 $_success = $this->parseEOL();
             }
 
-            $this->cut = $_cut239;
+            $this->cut = $_cut251;
 
             if (!$_success) {
                 break;
             }
 
-            $_value241[] = $this->value;
+            $_value253[] = $this->value;
         }
 
         if (!$this->cut) {
             $_success = true;
-            $this->position = $_position240;
-            $this->value = $_value241;
+            $this->position = $_position252;
+            $this->value = $_value253;
         }
 
-        $this->cut = $_cut242;
+        $this->cut = $_cut254;
 
         $this->cache['VOID'][$_position] = array(
             'success' => $_success,
