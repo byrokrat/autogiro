@@ -71,6 +71,15 @@
             }
         }
     },
+    "DigitalMandateFile": {
+        "DigitalMandate": {
+            "Type": {
+                "0": "Nytt",
+                "1": "Påminnelse 1",
+                "2": "Påminnelse 2"
+            }
+        }
+    },
     "AutogiroPaymentResponseFile": {
         "*": {
             "Status": {

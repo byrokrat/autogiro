@@ -37,7 +37,7 @@ use byrokrat\autogiro\Tree\Text;
 
 grammar Grammar extends MultibyteHack
 {
-    start FILE = RESET_LINE_COUNT file:(REQUEST_FILE / MANDATE_FILE / PAYMENT_FILE / PAYMENT_REJECTION_FILE / AMENDMENT_FILE / PAYMENT_EXTRACT_FILE / MANDATE_EXTRACT_FILE) VOID {
+    start FILE = RESET_LINE_COUNT file:(REQUEST_FILE / MANDATE_FILE / DIGITAL_MANDATE_FILE / PAYMENT_FILE / PAYMENT_REJECTION_FILE / AMENDMENT_FILE / PAYMENT_EXTRACT_FILE / MANDATE_EXTRACT_FILE) VOID {
         return $file;
     };
 
@@ -303,6 +303,60 @@ grammar Grammar extends MultibyteHack
     };
 
     //
+    // DIGITAL MANDATES
+    //
+
+    DIGITAL_MANDATE_FILE = open:DIGITAL_MANDATE_OPENING mands:DIGITAL_MANDATE* close:DIGITAL_MANDATE_CLOSING {
+        $mands[] = $close;
+        return new AutogiroFile('DigitalMandateFile', $open, ...$mands);
+    };
+
+    DIGITAL_MANDATE_OPENING = '51' date:DATE8 '9900' bg:BG10 'AG-EMEDGIV' ^  EOR {
+        return new Record('Opening', $date, $bg);
+    };
+
+    DIGITAL_MANDATE_CLOSING = '59' date:DATE8 '9900' nrRecs:INT7 EOR {
+        $nrRecs->setName('NumberOfRecords');
+        return new Record('Closing', $date, $nrRecs);
+    };
+
+    DIGITAL_MANDATE = data:DIGITAL_MANDATE_START extras:(DIGITAL_MANDATE_INFO / DIGITAL_MANDATE_ADDRESS_1 / DIGITAL_MANDATE_ADDRESS_2 / DIGITAL_MANDATE_ADDRESS_3)* {
+        if ($extras) {
+            $extras = array_merge(...$extras);
+        }
+
+        return new Record('DigitalMandate', ...$data, ...$extras);
+    };
+
+    DIGITAL_MANDATE_START = '52' bg:BG10 payerNr:PNUM16 account:ACCOUNT16 id:ID12 S5 type:MSG1 EOR {
+        $type->setName('Type');
+        return [$bg, $payerNr, $account, $id, $type];
+    };
+
+    DIGITAL_MANDATE_INFO = '53' info:TXT36 EOR {
+        $info->setName('Information');
+        return [$info];
+    };
+
+    DIGITAL_MANDATE_ADDRESS_1 = '54' line1:TXT36 line2:TXT36 EOR {
+        $line1->setName('Adress1');
+        $line2->setName('Adress2');
+        return [$line1, $line2];
+    };
+
+    DIGITAL_MANDATE_ADDRESS_2 = '55' line1:TXT36 line2:TXT36 EOR {
+        $line1->setName('Adress3');
+        $line2->setName('Adress4');
+        return [$line1, $line2];
+    };
+
+    DIGITAL_MANDATE_ADDRESS_3 = '56' postcode:INT5 city:TXT36 EOR {
+        $postcode->setName('Postcode');
+        $city->setName('City');
+        return [$postcode, $city];
+    };
+
+    //
     // REJECTED PAYMENT RESPONSE
     //
 
@@ -540,6 +594,10 @@ grammar Grammar extends MultibyteHack
 
     REF16 = text:$(A? A? A? A? A? A? A? A? A? A? A? A? A? A? A? A?) {
         return new Text($this->lineNr, trim($text), 'Reference');
+    };
+
+    TXT36 = text:$(REF16? REF16? A? A? A? A?) {
+        return new Text($this->lineNr, trim($text));
     };
 
     // CONVENIENCE TYPES
