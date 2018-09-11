@@ -24,7 +24,6 @@ namespace byrokrat\autogiro\Writer;
 
 use byrokrat\autogiro\Visitor\Visitor;
 use byrokrat\autogiro\Exception\RuntimeException;
-use byrokrat\autogiro\Exception\LogicException;
 use byrokrat\autogiro\Tree\Node;
 use byrokrat\amount\Currency\SEK;
 use byrokrat\banking\AccountNumber;
@@ -37,9 +36,6 @@ use byrokrat\id\OrganizationId;
  */
 class PrintingVisitor extends Visitor
 {
-    /**
-     * End-of-line chars used when generating files
-     */
     const EOL = "\r\n";
 
     /**
@@ -52,38 +48,45 @@ class PrintingVisitor extends Visitor
         $this->output = $output;
     }
 
+    private function write(string $text): void
+    {
+        if ($this->output) {
+            $this->output->write($text);
+        }
+    }
+
     public function beforeDate(Node $node): void
     {
         if ($node->getValue() instanceof \DateTimeInterface) {
-            $this->output->write($node->getValue()->format('Ymd'));
+            $this->write($node->getValue()->format('Ymd'));
         }
     }
 
     public function beforeImmediateDate(): void
     {
-        $this->output->write('GENAST  ');
+        $this->write('GENAST  ');
     }
 
     public function beforeText(Node $node): void
     {
-        $this->output->write($node->getValue());
+        $this->write($node->getValue());
     }
 
     public function beforePayerNumber(Node $node): void
     {
-        $this->output->write(str_pad($node->getValue(), 16, '0', STR_PAD_LEFT));
+        $this->write(str_pad($node->getValue(), 16, '0', STR_PAD_LEFT));
     }
 
     public function beforePayeeBgcNumber(Node $node): void
     {
-        $this->output->write(str_pad($node->getValue(), 6, '0', STR_PAD_LEFT));
+        $this->write(str_pad($node->getValue(), 6, '0', STR_PAD_LEFT));
     }
 
     public function beforePayeeBankgiro(Node $node): void
     {
         if ($node->getValue() instanceof AccountNumber) {
             $account = $node->getValue();
-            $this->output->write(
+            $this->write(
                 str_pad($account->getSerialNumber() . $account->getCheckDigit(), 10, '0', STR_PAD_LEFT)
             );
         }
@@ -93,7 +96,7 @@ class PrintingVisitor extends Visitor
     {
         if ($node->getValue() instanceof AccountNumber) {
             $account = $node->getValue();
-            $this->output->write(
+            $this->write(
                 $account->getClearingNumber()
                 . str_pad($account->getSerialNumber() . $account->getCheckDigit(), 12, '0', STR_PAD_LEFT)
             );
@@ -105,7 +108,19 @@ class PrintingVisitor extends Visitor
         if (!in_array((int)$node->getValue(), range('0', '8'))) {
             throw new RuntimeException('Interval must be between 0 and 8');
         }
-        $this->output->write($node->getValue());
+
+        $this->write($node->getValue());
+    }
+
+    public function beforeRepetitions(Node $node): void
+    {
+        if (!ctype_digit($node->getValue()) || strlen($node->getValue()) > 3) {
+            throw new RuntimeException("Invalid number of repitions: {$node->getValue()}");
+        }
+
+        $this->write(
+            $node->getValue() ? str_pad($node->getValue(), 3, '0', STR_PAD_LEFT) : '   '
+        );
     }
 
     public function beforeAmount(Node $node): void
@@ -117,7 +132,7 @@ class PrintingVisitor extends Visitor
                 throw new RuntimeException('Amount must be between 9999999999.99 and -9999999999.99');
             }
 
-            $this->output->write(
+            $this->write(
                 str_pad($amount->getSignalString(), 12, '0', STR_PAD_LEFT)
             );
         }
@@ -126,60 +141,60 @@ class PrintingVisitor extends Visitor
     public function beforeStateId(Node $node): void
     {
         if ($node->getValue() instanceof PersonalId) {
-            $this->output->write($node->getValue()->format('Ymdsk'));
+            $this->write($node->getValue()->format('Ymdsk'));
         }
         if ($node->getValue() instanceof OrganizationId) {
-            $this->output->write($node->getValue()->format('00Ssk'));
+            $this->write($node->getValue()->format('00Ssk'));
         }
     }
 
     public function beforeOpening(): void
     {
-        $this->output->write('01');
+        $this->write('01');
     }
 
     public function beforeCreateMandateRequest(): void
     {
-        $this->output->write('04');
+        $this->write('04');
     }
 
     public function beforeDeleteMandateRequest(): void
     {
-        $this->output->write('03');
+        $this->write('03');
     }
 
     public function beforeAcceptDigitalMandateRequest(): void
     {
-        $this->output->write('04');
+        $this->write('04');
     }
 
     public function beforeRejectDigitalMandateRequest(): void
     {
-        $this->output->write('04');
+        $this->write('04');
     }
 
     public function beforeUpdateMandateRequest(): void
     {
-        $this->output->write('05');
+        $this->write('05');
     }
 
     public function beforeIncomingPaymentRequest(): void
     {
-        $this->output->write('82');
+        $this->write('82');
     }
 
     public function beforeOutgoingPaymentRequest(): void
     {
-        $this->output->write('32');
+        $this->write('32');
     }
 
     public function beforeAmendmentRequest(): void
     {
-        $this->output->write('23');
+        $this->write('23');
     }
 
     public function afterRecord(): void
     {
-        $this->output->write(self::EOL);
+        $this->write(self::EOL);
     }
 }

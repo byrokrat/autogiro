@@ -23,6 +23,7 @@ class PrintingVisitorSpec extends ObjectBehavior
     {
         $this->setOutput($output);
     }
+
     function it_is_initializable()
     {
         $this->shouldHaveType(PrintingVisitor::CLASS);
@@ -118,6 +119,34 @@ class PrintingVisitorSpec extends ObjectBehavior
     {
         $node->getValue()->willReturn('9');
         $this->shouldThrow(RuntimeException::CLASS)->duringBeforeInterval($node);
+        $output->write(Argument::any())->shouldNotHaveBeenCalled();
+    }
+
+    function it_prints_repititions(Node $node, $output)
+    {
+        $node->getValue()->willReturn('123');
+        $this->beforeRepetitions($node);
+        $output->write('123')->shouldHaveBeenCalled();
+    }
+
+    function it_prints_cero_repititions(Node $node, $output)
+    {
+        $node->getValue()->willReturn('0');
+        $this->beforeRepetitions($node);
+        $output->write('   ')->shouldHaveBeenCalled();
+    }
+
+    function it_pads_repititions(Node $node, $output)
+    {
+        $node->getValue()->willReturn('1');
+        $this->beforeRepetitions($node);
+        $output->write('001')->shouldHaveBeenCalled();
+    }
+
+    function it_fails_on_invalid_repititions(Node $node, $output)
+    {
+        $node->getValue()->willReturn('1000');
+        $this->shouldThrow(RuntimeException::CLASS)->duringBeforeRepetitions($node);
         $output->write(Argument::any())->shouldNotHaveBeenCalled();
     }
 

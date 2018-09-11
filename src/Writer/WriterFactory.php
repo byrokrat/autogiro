@@ -22,30 +22,24 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Writer;
 
-use byrokrat\autogiro\Visitor\VisitorFactory;
 use byrokrat\banking\Bankgiro;
 
-/**
- * Creates a standard writer
- */
-class WriterFactory extends VisitorFactory
+final class WriterFactory
 {
     /**
      * @param string             $bgcNr    The BGC customer number of payee
      * @param Bankgiro           $bankgiro Payee bankgiro account number
      * @param \DateTimeInterface $date     Optional creation date
      */
-    public function createWriter(string $bgcNr, Bankgiro $bankgiro, \DateTimeInterface $date = null): Writer
+    public function createWriter(string $bgcNr, Bankgiro $bankgiro, \DateTimeInterface $date = null): WriterInterface
     {
         return new Writer(
             new TreeBuilder(
                 $bgcNr,
                 $bankgiro,
-                $date ?: new \DateTimeImmutable,
-                new RepititionsFormatter
+                $date ?: new \DateTimeImmutable
             ),
-            new PrintingVisitor,
-            $this->createVisitors()
+            new PrintingVisitor
         );
     }
 }

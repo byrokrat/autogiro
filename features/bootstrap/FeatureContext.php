@@ -30,7 +30,7 @@ class FeatureContext implements Context, SnippetAcceptingContext
     private $exception;
 
     /**
-     * @var \byrokrat\autogiro\Writer\Writer
+     * @var \byrokrat\autogiro\Writer\WriterInterface
      */
     private $writer;
 

@@ -25,6 +25,7 @@ namespace byrokrat\autogiro\Writer;
 use byrokrat\autogiro\Intervals;
 use byrokrat\autogiro\Tree\AutogiroFile;
 use byrokrat\autogiro\Tree\ImmediateDate;
+use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Tree\Number;
 use byrokrat\autogiro\Tree\Obj;
 use byrokrat\autogiro\Tree\Record;
@@ -85,26 +86,15 @@ class TreeBuilder
     private $date;
 
     /**
-     * @var RepititionsFormatter
-     */
-    private $repititionsFormatter;
-
-    /**
      * @param string               $bgcNr                The BGC customer number of payee
      * @param Bankgiro             $bankgiro             Payee bankgiro account number
      * @param \DateTimeInterface   $date                 Creation date
-     * @param RepititionsFormatter $repititionsFormatter Repititions formatter
      */
-    public function __construct(
-        string $bgcNr,
-        Bankgiro $bankgiro,
-        \DateTimeInterface $date,
-        RepititionsFormatter $repititionsFormatter
-    ) {
+    public function __construct(string $bgcNr, Bankgiro $bankgiro, \DateTimeInterface $date)
+    {
         $this->bgcNr = $bgcNr;
         $this->payeeBgNode = new Obj(0, $bankgiro, 'PayeeBankgiro');
         $this->date = $date;
-        $this->repititionsFormatter = $repititionsFormatter;
         $this->reset();
     }
 
@@ -274,7 +264,7 @@ class TreeBuilder
     /**
      * Get the created request tree
      */
-    public function buildTree(): AutogiroFile
+    public function buildTree(): Node
     {
         $sections = [];
 
@@ -300,7 +290,7 @@ class TreeBuilder
             $nodename,
             new Obj(0, $this->date, 'Date'),
             new Number(0, $interval, 'Interval'),
-            new Text(0, $this->repititionsFormatter->format($repetitions), 'Repetitions'),
+            new Number(0, (string)$repetitions, 'Repetitions'),
             new Text(0, ' '),
             new Number(0, $payerNr, 'PayerNumber'),
             new Obj(0, $amount, 'Amount'),
@@ -316,7 +306,7 @@ class TreeBuilder
             $nodename,
             new ImmediateDate,
             new Number(0, Intervals::INTERVAL_ONCE, 'Interval'),
-            new Text(0, '   ', 'Repetitions'),
+            new Number(0, '0', 'Repetitions'),
             new Text(0, ' '),
             new Number(0, $payerNr, 'PayerNumber'),
             new Obj(0, $amount, 'Amount'),

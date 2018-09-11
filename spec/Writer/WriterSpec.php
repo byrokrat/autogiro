@@ -8,8 +8,7 @@ use byrokrat\autogiro\Writer\Writer;
 use byrokrat\autogiro\Writer\TreeBuilder;
 use byrokrat\autogiro\Writer\PrintingVisitor;
 use byrokrat\autogiro\Writer\Output;
-use byrokrat\autogiro\Visitor\VisitorInterface;
-use byrokrat\autogiro\Tree\AutogiroFile;
+use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Intervals;
 use byrokrat\banking\AccountNumber;
 use byrokrat\id\IdInterface;
@@ -19,9 +18,9 @@ use Prophecy\Argument;
 
 class WriterSpec extends ObjectBehavior
 {
-    function let(TreeBuilder $treeBuilder, PrintingVisitor $printer, VisitorInterface $visitor)
+    function let(TreeBuilder $treeBuilder, PrintingVisitor $printer)
     {
-        $this->beConstructedWith($treeBuilder, $printer, $visitor);
+        $this->beConstructedWith($treeBuilder, $printer);
     }
 
     function it_is_initializable()
@@ -29,10 +28,9 @@ class WriterSpec extends ObjectBehavior
         $this->shouldHaveType(Writer::CLASS);
     }
 
-    function it_can_create_content($treeBuilder, $printer, $visitor, AutogiroFile $tree)
+    function it_can_create_content($treeBuilder, $printer, Node $tree)
     {
         $treeBuilder->buildTree()->willReturn($tree)->shouldBeCalled();
-        $tree->accept($visitor)->shouldBeCalled();
         $printer->setOutput(Argument::type(Output::CLASS))->shouldBeCalled();
         $tree->accept($printer)->shouldBeCalled();
         $this->getContent()->shouldEqual('');
