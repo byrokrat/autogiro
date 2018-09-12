@@ -65,6 +65,6 @@ class MessageRetriever
             return '';
         }
 
-        return $value;
+        return (string)$value;
     }
 }
