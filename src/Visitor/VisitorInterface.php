@@ -22,9 +22,6 @@ namespace byrokrat\autogiro\Visitor;
 
 use byrokrat\autogiro\Tree\Node;
 
-/**
- * Base node visitor interface
- */
 interface VisitorInterface
 {
     /**

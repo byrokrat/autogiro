@@ -18,16 +18,15 @@
  * Copyright 2016-18 Hannes Forsgård
  */
 
-declare(strict_types = 1);
-
 namespace byrokrat\autogiro\Parser;
 
-use byrokrat\autogiro\Visitor\VisitorFactory;
+use byrokrat\autogiro\Tree\Node;
+use byrokrat\autogiro\Exception;
 
-final class ParserFactory extends VisitorFactory
+interface ParserInterface
 {
-    public function createParser(int $flags = 0): ParserInterface
-    {
-        return new Parser(new Grammar, $this->createVisitors($flags));
-    }
+    /**
+     * @throws Exception If parsing fails
+     */
+    public function parse(string $content): Node;
 }

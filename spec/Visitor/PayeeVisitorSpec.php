@@ -5,7 +5,6 @@ declare(strict_types = 1);
 namespace spec\byrokrat\autogiro\Visitor;
 
 use byrokrat\autogiro\Visitor\PayeeVisitor;
-use byrokrat\autogiro\Visitor\ErrorAwareVisitor;
 use byrokrat\autogiro\Visitor\ErrorObject;
 use byrokrat\autogiro\Tree\Node;
 use PhpSpec\ObjectBehavior;
@@ -16,11 +15,6 @@ class PayeeVisitorSpec extends ObjectBehavior
     function it_is_initializable()
     {
         $this->shouldHaveType(PayeeVisitor::CLASS);
-    }
-
-    function it_is_an_error_aware_visitor()
-    {
-        $this->shouldHaveType(ErrorAwareVisitor::CLASS);
     }
 
     function let(

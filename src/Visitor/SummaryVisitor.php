@@ -25,8 +25,10 @@ namespace byrokrat\autogiro\Visitor;
 use byrokrat\autogiro\Tree\Node;
 use byrokrat\amount\Amount;
 
-class SummaryVisitor extends ErrorAwareVisitor
+final class SummaryVisitor extends Visitor
 {
+    use ErrorAwareTrait;
+
     /**
      * @var Amount[]
      */

@@ -27,8 +27,10 @@ use byrokrat\autogiro\Tree\Node;
 /**
  * Validate that payee bankgiro and BGC customer number are constant within tree
  */
-class PayeeVisitor extends ErrorAwareVisitor
+final class PayeeVisitor extends Visitor
 {
+    use ErrorAwareTrait;
+
     /**
      * @var string Payee bankgiro account number
      */

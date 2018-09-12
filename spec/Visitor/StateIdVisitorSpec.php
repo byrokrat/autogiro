@@ -5,7 +5,6 @@ declare(strict_types = 1);
 namespace spec\byrokrat\autogiro\Visitor;
 
 use byrokrat\autogiro\Visitor\StateIdVisitor;
-use byrokrat\autogiro\Visitor\ErrorAwareVisitor;
 use byrokrat\autogiro\Visitor\ErrorObject;
 use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Tree\Obj;
@@ -29,11 +28,6 @@ class StateIdVisitorSpec extends ObjectBehavior
     function it_is_initializable()
     {
         $this->shouldHaveType(StateIdVisitor::CLASS);
-    }
-
-    function it_is_an_error_aware_visitor()
-    {
-        $this->shouldHaveType(ErrorAwareVisitor::CLASS);
     }
 
     function it_does_not_create_id_if_object_is_set(Node $node)

@@ -22,10 +22,7 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Xml;
 
-/**
- * Factory to create xml writer
- */
-class XmlWriterFactory
+final class XmlWriterFactory
 {
     public function createXmlWriter(): XmlWriter
     {

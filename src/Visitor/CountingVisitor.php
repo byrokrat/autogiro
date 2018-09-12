@@ -24,8 +24,10 @@ namespace byrokrat\autogiro\Visitor;
 
 use byrokrat\autogiro\Tree\Node;
 
-class CountingVisitor extends ErrorAwareVisitor
+final class CountingVisitor extends Visitor
 {
+    use ErrorAwareTrait;
+
     /**
      * @var int[]
      */

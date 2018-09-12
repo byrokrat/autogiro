@@ -6,10 +6,10 @@ use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use byrokrat\autogiro\Tree\Node;
-use byrokrat\autogiro\Parser\ParserFactory;
 use byrokrat\autogiro\Visitor\Visitor;
 use byrokrat\autogiro\Writer\WriterFactory;
-use byrokrat\autogiro\Exception\ContentException;
+use byrokrat\autogiro\Exception;
+use byrokrat\autogiro\Exception\TreeException;
 use byrokrat\amount\Currency\SEK;
 
 /**
@@ -20,12 +20,12 @@ class FeatureContext implements Context, SnippetAcceptingContext
     use ParserTrait;
 
     /**
-     * @var \byrokrat\autogiro\Tree\AutogiroFile Created at parse time
+     * @var \byrokrat\autogiro\Tree\Node Created at parse time
      */
     private $fileNode;
 
     /**
-     * @var ContentException
+     * @var Exception
      */
     private $exception;
 
@@ -97,10 +97,13 @@ class FeatureContext implements Context, SnippetAcceptingContext
      */
     public function iGetErrorWithMessage(string $error)
     {
-        Assertions::assertInArray(
-            $error,
-            $this->exception->getErrors()
-        );
+        $errors = [$this->exception->getMessage()];
+
+        if ($this->exception instanceof TreeException) {
+            $errors = $this->exception->getErrors();
+        }
+
+        Assertions::assertInArray($error, $errors);
     }
 
     /**
@@ -108,10 +111,7 @@ class FeatureContext implements Context, SnippetAcceptingContext
      */
     public function iGetAnError()
     {
-        Assertions::assertEquals(
-            ContentException::CLASS,
-            get_class($this->exception)
-        );
+        Assertions::assertNotNull($this->exception);
     }
 
     /**
@@ -204,7 +204,7 @@ class FeatureContext implements Context, SnippetAcceptingContext
     {
         try {
             $this->fileNode = $this->getParser()->parse($content);
-        } catch (ContentException $e) {
+        } catch (Exception $e) {
             $this->exception = $e;
         }
     }

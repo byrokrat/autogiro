@@ -28,7 +28,7 @@ use byrokrat\autogiro\Visitor\VisitorInterface;
 /**
  * Transform node tree into xml
  */
-class XmlWritingVisitor implements VisitorInterface
+final class XmlWritingVisitor implements VisitorInterface
 {
     /**
      * @var \XMLWriter

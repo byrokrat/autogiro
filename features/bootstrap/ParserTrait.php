@@ -1,6 +1,6 @@
 <?php
 
-use byrokrat\autogiro\Parser\Parser;
+use byrokrat\autogiro\Parser\ParserInterface;
 use byrokrat\autogiro\Parser\ParserFactory;
 
 /**
@@ -9,7 +9,7 @@ use byrokrat\autogiro\Parser\ParserFactory;
 trait ParserTrait
 {
     /**
-     * @var Parser
+     * @var ParserInterface
      */
     private $parser;
 
@@ -34,7 +34,7 @@ trait ParserTrait
     /**
      * Get the created parser
      */
-    protected function getParser(): Parser
+    protected function getParser(): ParserInterface
     {
         if (!$this->parser) {
             throw new \LogicException("Parser not generated");

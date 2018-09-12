@@ -27,8 +27,10 @@ use byrokrat\autogiro\Tree\Text;
 /**
  * Validate the content of text nodes
  */
-class TextVisitor extends ErrorAwareVisitor
+final class TextVisitor extends Visitor
 {
+    use ErrorAwareTrait;
+
     public function beforeText(Text $node): void
     {
         if (!$node->getValidationRegexp()) {

@@ -22,10 +22,7 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Visitor;
 
-/**
- * Visitor that handles an ErrorObject
- */
-class ErrorAwareVisitor extends Visitor
+trait ErrorAwareTrait
 {
     /**
      * @var ErrorObject
@@ -33,6 +30,11 @@ class ErrorAwareVisitor extends Visitor
     private $errorObj;
 
     public function __construct(ErrorObject $errorObj)
+    {
+        $this->setErrorObject($errorObj);
+    }
+
+    public function setErrorObject(ErrorObject $errorObj): void
     {
         $this->errorObj = $errorObj;
     }

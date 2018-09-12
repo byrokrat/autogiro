@@ -32,8 +32,10 @@ use byrokrat\id\Exception as IdException;
  *
  * Creates Id object as child 'Object'
  */
-class StateIdVisitor extends ErrorAwareVisitor
+final class StateIdVisitor extends Visitor
 {
+    use ErrorAwareTrait;
+
     /**
      * @var IdFactoryInterface
      */
@@ -49,7 +51,7 @@ class StateIdVisitor extends ErrorAwareVisitor
         IdFactoryInterface $organizationIdFactory,
         IdFactoryInterface $personalIdFactory
     ) {
-        parent::__construct($errorObj);
+        $this->setErrorObject($errorObj);
         $this->organizationIdFactory = $organizationIdFactory;
         $this->personalIdFactory = $personalIdFactory;
     }

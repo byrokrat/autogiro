@@ -32,8 +32,10 @@ use byrokrat\banking\Exception as BankingException;
  *
  * Creates account object as child 'Object'
  */
-class AccountVisitor extends ErrorAwareVisitor
+final class AccountVisitor extends Visitor
 {
+    use ErrorAwareTrait;
+
     /**
      * @var AccountFactoryInterface
      */
@@ -49,7 +51,7 @@ class AccountVisitor extends ErrorAwareVisitor
         AccountFactoryInterface $accountFactory,
         AccountFactoryInterface $bankgiroFactory
     ) {
-        parent::__construct($errorObj);
+        $this->setErrorObject($errorObj);
         $this->accountFactory = $accountFactory;
         $this->bankgiroFactory = $bankgiroFactory;
     }

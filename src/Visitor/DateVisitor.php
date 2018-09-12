@@ -30,8 +30,10 @@ use byrokrat\autogiro\Tree\Obj;
  *
  * Creates DateTime object as child 'Object'
  */
-class DateVisitor extends ErrorAwareVisitor
+final class DateVisitor extends Visitor
 {
+    use ErrorAwareTrait;
+
     public function beforeDate(Node $node): void
     {
         if ($node->hasChild('Object')) {

@@ -25,18 +25,13 @@ namespace byrokrat\autogiro\Exception;
 /**
  * Exception thrown when a parse tree contains invalid data
  */
-class ContentException extends RuntimeException
+final class TreeException extends \RuntimeException implements \byrokrat\autogiro\Exception
 {
     /**
      * @var string[]
      */
     private $errors;
 
-    /**
-     * Set list of errors at construct
-     *
-     * @param string[] $errors Messages describing found parsing errors
-     */
     public function __construct(array $errors)
     {
         parent::__construct("Tree invalid due to the following issues:\n" . implode("\n", $errors));

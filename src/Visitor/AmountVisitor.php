@@ -30,8 +30,10 @@ use byrokrat\amount\Exception as AmountException;
 /**
  * Create amount object under child 'Object'
  */
-class AmountVisitor extends ErrorAwareVisitor
+final class AmountVisitor extends Visitor
 {
+    use ErrorAwareTrait;
+
     public function beforeAmount(Node $node): void
     {
         if ($node->hasChild('Object')) {

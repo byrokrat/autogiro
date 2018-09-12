@@ -2,7 +2,7 @@
 
 namespace byrokrat\autogiro\Parser;
 
-use byrokrat\autogiro\Exception\ContentException;
+use byrokrat\autogiro\Exception\ParserException;
 use byrokrat\autogiro\Tree\AutogiroFile;
 use byrokrat\autogiro\Tree\Container;
 use byrokrat\autogiro\Tree\Count;
@@ -3586,7 +3586,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () {
-                throw new ContentException(['BGMAX format currently not supported']);
+                throw new ParserException('BGMAX format currently not supported');
             });
         }
 

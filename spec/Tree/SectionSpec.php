@@ -8,7 +8,6 @@ use byrokrat\autogiro\Tree\Section;
 use byrokrat\autogiro\Tree\Container;
 use byrokrat\autogiro\Tree\Record;
 use byrokrat\autogiro\Visitor\VisitorInterface;
-use byrokrat\autogiro\Exception\LogicException;
 use PhpSpec\ObjectBehavior;
 
 class SectionSpec extends ObjectBehavior

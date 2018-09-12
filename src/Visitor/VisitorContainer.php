@@ -23,23 +23,19 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Visitor;
 
 use byrokrat\autogiro\Tree\Node;
-use byrokrat\autogiro\Exception\ContentException;
+use byrokrat\autogiro\Exception\TreeException;
 
 /**
  * Container for multiple visitors
  */
-class VisitorContainer extends ErrorAwareVisitor
+final class VisitorContainer extends Visitor
 {
+    use ErrorAwareTrait;
+
     /**
      * @var VisitorInterface[] Contained visitors
      */
-    private $visitors;
-
-    public function __construct(ErrorObject $errorObj, VisitorInterface ...$visitors)
-    {
-        parent::__construct($errorObj);
-        $this->visitors = $visitors;
-    }
+    private $visitors = [];
 
     /**
      * Get contained visitors
@@ -97,7 +93,7 @@ class VisitorContainer extends ErrorAwareVisitor
     public function afterAutogiroFile(): void
     {
         if ($this->getErrorObject()->hasErrors()) {
-            throw new ContentException($this->getErrorObject()->getErrors());
+            throw new TreeException($this->getErrorObject()->getErrors());
         }
     }
 }

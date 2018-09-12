@@ -7,7 +7,6 @@ namespace spec\byrokrat\autogiro\Writer;
 use byrokrat\autogiro\Writer\PrintingVisitor;
 use byrokrat\autogiro\Writer\Output;
 use byrokrat\autogiro\Exception\RuntimeException;
-use byrokrat\autogiro\Exception\LogicException;
 use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Visitor\Visitor;
 use byrokrat\amount\Currency\SEK;

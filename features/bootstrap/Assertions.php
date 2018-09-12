@@ -6,6 +6,16 @@
 class Assertions
 {
     /**
+     * Assert that variable is set
+     */
+    public static function assertNotNull($value)
+    {
+        if (is_null($value)) {
+            throw new Exception("Unable to assert that value is null");
+        }
+    }
+
+    /**
      * Assert that two variables are equal (===)
      */
     public static function assertEquals($expected, $current)

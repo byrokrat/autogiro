@@ -31,8 +31,10 @@ use byrokrat\autogiro\Tree\Text;
  *
  * Creates string message as child 'Text'
  */
-class MessageVisitor extends ErrorAwareVisitor
+final class MessageVisitor extends Visitor
 {
+    use ErrorAwareTrait;
+
     /**
      * @var MessageRetriever
      */
@@ -50,7 +52,7 @@ class MessageVisitor extends ErrorAwareVisitor
 
     public function __construct(ErrorObject $errorObj, MessageRetriever $messages = null)
     {
-        parent::__construct($errorObj);
+        $this->setErrorObject($errorObj);
         $this->messages = $messages ?: new MessageRetriever;
     }
 

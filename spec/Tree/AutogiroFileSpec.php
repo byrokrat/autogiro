@@ -7,7 +7,6 @@ namespace spec\byrokrat\autogiro\Tree;
 use byrokrat\autogiro\Tree\AutogiroFile;
 use byrokrat\autogiro\Tree\Container;
 use byrokrat\autogiro\Tree\Text;
-use byrokrat\autogiro\Exception\LogicException;
 use PhpSpec\ObjectBehavior;
 
 class AutogiroFileSpec extends ObjectBehavior

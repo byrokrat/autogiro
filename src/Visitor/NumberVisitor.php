@@ -27,8 +27,10 @@ use byrokrat\autogiro\Tree\Number;
 /**
  * Validate the content of number nodes
  */
-class NumberVisitor extends ErrorAwareVisitor
+final class NumberVisitor extends Visitor
 {
+    use ErrorAwareTrait;
+
     public function beforeNumber(Number $node): void
     {
         if ($node->getValue() && !ctype_digit($node->getValue())) {

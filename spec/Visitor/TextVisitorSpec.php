@@ -5,7 +5,6 @@ declare(strict_types = 1);
 namespace spec\byrokrat\autogiro\Visitor;
 
 use byrokrat\autogiro\Visitor\TextVisitor;
-use byrokrat\autogiro\Visitor\ErrorAwareVisitor;
 use byrokrat\autogiro\Visitor\ErrorObject;
 use byrokrat\autogiro\Tree\Text;
 use PhpSpec\ObjectBehavior;
@@ -21,11 +20,6 @@ class TextVisitorSpec extends ObjectBehavior
     function it_is_initializable()
     {
         $this->shouldHaveType(TextVisitor::CLASS);
-    }
-
-    function it_is_an_error_aware_visitor()
-    {
-        $this->shouldHaveType(ErrorAwareVisitor::CLASS);
     }
 
     function it_captures_invalid_text_nodes(Text $textNode, $errorObj)

@@ -1,3 +1,10 @@
+# Notable changes in 1.0-beta2
+
+* Added `ParserInterface`.
+* Use of the final keyword.
+* Renamed `ContentException` => `TreeException`.
+* Added `ParserException`.
+
 # Notable changes in 1.0-alpha3
 
 ## Misc

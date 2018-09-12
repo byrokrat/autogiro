@@ -20,7 +20,7 @@
 
 namespace byrokrat\autogiro\Parser;
 
-use byrokrat\autogiro\Exception\ContentException;
+use byrokrat\autogiro\Exception\ParserException;
 use byrokrat\autogiro\Tree\AutogiroFile;
 use byrokrat\autogiro\Tree\Container;
 use byrokrat\autogiro\Tree\Count;
@@ -250,7 +250,7 @@ grammar Grammar extends MultibyteHack
     // PAYMENT RESPONSES IN BGMAX FORMAT (NOT SUPPORTED)
 
     BGMAX_FILE = '01BGMAX' {
-        throw new ContentException(['BGMAX format currently not supported']);
+        throw new ParserException('BGMAX format currently not supported');
     };
 
     //

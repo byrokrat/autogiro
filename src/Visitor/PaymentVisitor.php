@@ -29,8 +29,10 @@ use byrokrat\autogiro\Tree\ImmediateDate;
 /**
  * Validate intervals, repetitions and dates of payment requests
  */
-class PaymentVisitor extends ErrorAwareVisitor
+final class PaymentVisitor extends Visitor
 {
+    use ErrorAwareTrait;
+
     public function beforeIncomingPaymentRequest(Node $node): void
     {
         $this->validateImmediateDateWithInterval($node);

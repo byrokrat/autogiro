@@ -23,14 +23,11 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Parser;
 
 use byrokrat\autogiro\Visitor\VisitorInterface;
-use byrokrat\autogiro\Tree\AutogiroFile;
-use byrokrat\autogiro\Exception\ContentException;
+use byrokrat\autogiro\Tree\Node;
+use byrokrat\autogiro\Exception\ParserException;
 use \ForceUTF8\Encoding;
 
-/**
- * Facade to Grammar with error handling
- */
-class Parser
+final class Parser implements ParserInterface
 {
     /**
      * @var Grammar
@@ -48,17 +45,14 @@ class Parser
         $this->visitor = $visitor;
     }
 
-    /**
-     * @throws ContentException If grammar fails
-     */
-    public function parse(string $content): AutogiroFile
+    public function parse(string $content): Node
     {
         try {
             $tree = $this->grammar->parse(
                 Encoding::toUTF8($content)
             );
         } catch (\InvalidArgumentException $exception) {
-            throw new ContentException(["Parser: {$exception->getMessage()}"]);
+            throw new ParserException("Parser: {$exception->getMessage()}");
         }
 
         $tree->accept($this->visitor);

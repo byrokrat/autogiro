@@ -9,7 +9,6 @@ use byrokrat\autogiro\Tree\Container;
 use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Tree\Text;
 use byrokrat\autogiro\Visitor\VisitorInterface;
-use byrokrat\autogiro\Exception\LogicException;
 use PhpSpec\ObjectBehavior;
 
 class SummarySpec extends ObjectBehavior

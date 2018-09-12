@@ -27,7 +27,7 @@ use byrokrat\autogiro\Tree\Node;
 /**
  * Access class to transform node tree into xml
  */
-class XmlWriter
+final class XmlWriter
 {
     /**
      * @var Stringifier

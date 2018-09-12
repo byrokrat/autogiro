@@ -89,7 +89,7 @@ class VisitorFactory
     /**
      * Create the standard set of visitors used when processing a parse tree
      */
-    public function createVisitors(int $flags = 0): VisitorInterface
+    final public function createVisitors(int $flags = 0): VisitorInterface
     {
         $flag = function (int $needle) use ($flags) {
             return ($needle & $flags) == $needle;
