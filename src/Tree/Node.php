@@ -47,9 +47,9 @@ class Node
     /**
      * @var mixed
      */
-    private $value = '';
+    private $value;
 
-    public function __construct(int $lineNr = 0, $value = '')
+    public function __construct(int $lineNr = 0, $value = null)
     {
         $this->lineNr = $lineNr;
         $this->value = $value;

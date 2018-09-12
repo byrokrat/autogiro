@@ -27,7 +27,7 @@ namespace byrokrat\autogiro\Tree;
  */
 class Obj extends Node
 {
-    public function __construct(int $lineNr = 0, object $value = null, string $name = 'Object')
+    public function __construct(int $lineNr = 0, $value = null, string $name = 'Object')
     {
         parent::__construct($lineNr, $value);
         $this->setName($name);

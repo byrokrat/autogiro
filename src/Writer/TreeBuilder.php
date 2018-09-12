@@ -288,7 +288,7 @@ class TreeBuilder
     ): void {
         $this->payments[] = new Record(
             $nodename,
-            new Obj(0, $this->date, 'Date'),
+            new Obj(0, $date, 'Date'),
             new Number(0, $interval, 'Interval'),
             new Number(0, (string)$repetitions, 'Repetitions'),
             new Text(0, ' '),

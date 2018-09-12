@@ -53,7 +53,7 @@ class MessageRetriever
     {
         $value = $messages[$key] ?? [];
 
-        if ($additionalKeys) {
+        if (!empty($additionalKeys)) {
             $value = $this->pickMessage((array)$value, ...$additionalKeys);
         }
 
