@@ -32,7 +32,6 @@ use byrokrat\autogiro\Tree\Record;
 use byrokrat\autogiro\Tree\Section;
 use byrokrat\autogiro\Tree\Text;
 use byrokrat\banking\AccountNumber;
-use byrokrat\banking\Bankgiro;
 use byrokrat\id\IdInterface;
 use byrokrat\amount\Currency\SEK;
 
@@ -86,11 +85,11 @@ class TreeBuilder
     private $date;
 
     /**
-     * @param string               $bgcNr                The BGC customer number of payee
-     * @param Bankgiro             $bankgiro             Payee bankgiro account number
-     * @param \DateTimeInterface   $date                 Creation date
+     * @param string             $bgcNr    The BGC customer number of payee
+     * @param AccountNumber      $bankgiro Payee bankgiro account number
+     * @param \DateTimeInterface $date     Creation date
      */
-    public function __construct(string $bgcNr, Bankgiro $bankgiro, \DateTimeInterface $date)
+    public function __construct(string $bgcNr, AccountNumber $bankgiro, \DateTimeInterface $date)
     {
         $this->bgcNr = $bgcNr;
         $this->payeeBgNode = new Obj(0, $bankgiro, 'PayeeBankgiro');

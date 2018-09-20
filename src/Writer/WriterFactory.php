@@ -22,17 +22,20 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Writer;
 
-use byrokrat\banking\Bankgiro;
+use byrokrat\banking\AccountNumber;
 
 final class WriterFactory
 {
     /**
      * @param string             $bgcNr    The BGC customer number of payee
-     * @param Bankgiro           $bankgiro Payee bankgiro account number
+     * @param AccountNumber      $bankgiro Payee bankgiro account number
      * @param \DateTimeInterface $date     Optional creation date
      */
-    public function createWriter(string $bgcNr, Bankgiro $bankgiro, \DateTimeInterface $date = null): WriterInterface
-    {
+    public function createWriter(
+        string $bgcNr,
+        AccountNumber $bankgiro,
+        \DateTimeInterface $date = null
+    ): WriterInterface {
         return new Writer(
             new TreeBuilder(
                 $bgcNr,

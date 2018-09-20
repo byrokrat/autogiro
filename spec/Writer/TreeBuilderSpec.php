@@ -14,7 +14,6 @@ use byrokrat\autogiro\Tree\Obj;
 use byrokrat\autogiro\Tree\Record;
 use byrokrat\autogiro\Tree\Section;
 use byrokrat\banking\AccountNumber;
-use byrokrat\banking\Bankgiro;
 use byrokrat\id\IdInterface;
 use byrokrat\amount\Currency\SEK;
 use PhpSpec\ObjectBehavior;
@@ -26,7 +25,7 @@ class TreeBuilderSpec extends ObjectBehavior
     const BANKGIRO = 'bankgiro';
     const DATE = 'date';
 
-    function let(Bankgiro $bankgiro, \DateTime $date)
+    function let(AccountNumber $bankgiro, \DateTime $date)
     {
         $bankgiro->getNumber()->willReturn(self::BANKGIRO);
         $date->format('Ymd')->willReturn(self::DATE);
