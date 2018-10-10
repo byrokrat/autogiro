@@ -6,6 +6,9 @@
 
 Read and write files for the swedish direct debit system autogirot.
 
+> For a command line utility that can convert autogiro files to XML see
+> [`autogiro2xml`](https://github.com/byrokrat/autogiro2xml).
+
 ## Installation
 
 ```shell
@@ -242,16 +245,6 @@ $xmlWriter = (new \byrokrat\autogiro\Xml\XmlWriterFactory)->createXmlWriter();
 echo $xmlWriter->asXml(
     $parser->parse($rawFile)
 );
-```
-
-### autogiro2xml
-
-This package also contains a simple command line tool (`autogiro2xml`) for
-converting autogiro files to a more readable XML format suitable for visualy
-examining parse trees.
-
-```shell
-bin/autogiro2xml <filename>
 ```
 
 ## Hacking
