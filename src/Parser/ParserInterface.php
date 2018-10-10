@@ -21,12 +21,12 @@
 namespace byrokrat\autogiro\Parser;
 
 use byrokrat\autogiro\Tree\Node;
-use byrokrat\autogiro\Exception;
+use byrokrat\autogiro\Exception\ParserException;
 
 interface ParserInterface
 {
     /**
-     * @throws Exception If parsing fails
+     * @throws ParserException If parsing fails
      */
     public function parse(string $content): Node;
 }

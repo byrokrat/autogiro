@@ -39,7 +39,7 @@ class PrintingVisitor extends Visitor
     const EOL = "\r\n";
 
     /**
-     * @var Output
+     * @var ?Output
      */
     private $output;
 

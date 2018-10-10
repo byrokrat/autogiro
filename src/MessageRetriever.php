@@ -41,7 +41,7 @@ class MessageRetriever
 
     public function __construct(array $messages = [])
     {
-        $this->messages = $messages ?: json_decode(file_get_contents(self::DEFAULT_MESSAGE_STORE), true);
+        $this->messages = $messages ?: json_decode((string)file_get_contents(self::DEFAULT_MESSAGE_STORE), true);
     }
 
     public function readMessage(string ...$keys): string
