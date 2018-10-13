@@ -25,7 +25,7 @@ namespace byrokrat\autogiro\Parser;
 use byrokrat\autogiro\Visitor\VisitorInterface;
 use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Exception\ParserException;
-use \ForceUTF8\Encoding;
+use ForceUTF8\Encoding;
 
 final class Parser implements ParserInterface
 {

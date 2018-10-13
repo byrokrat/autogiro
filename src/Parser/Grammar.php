@@ -5836,14 +5836,40 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $_value148[] = $this->value;
 
-            if (substr($this->string, $this->position, strlen('  MAKULERING/ÄNDRING  ')) === '  MAKULERING/ÄNDRING  ') {
+            if (substr($this->string, $this->position, strlen('  MAKULERING/')) === '  MAKULERING/') {
                 $_success = true;
-                $this->value = substr($this->string, $this->position, strlen('  MAKULERING/ÄNDRING  '));
-                $this->position += strlen('  MAKULERING/ÄNDRING  ');
+                $this->value = substr($this->string, $this->position, strlen('  MAKULERING/'));
+                $this->position += strlen('  MAKULERING/');
             } else {
                 $_success = false;
 
-                $this->report($this->position, '\'  MAKULERING/ÄNDRING  \'');
+                $this->report($this->position, '\'  MAKULERING/\'');
+            }
+        }
+
+        if ($_success) {
+            $_value148[] = $this->value;
+
+            if ($this->position < strlen($this->string)) {
+                $_success = true;
+                $this->value = substr($this->string, $this->position, 1);
+                $this->position += 1;
+            } else {
+                $_success = false;
+            }
+        }
+
+        if ($_success) {
+            $_value148[] = $this->value;
+
+            if (substr($this->string, $this->position, strlen('NDRING  ')) === 'NDRING  ') {
+                $_success = true;
+                $this->value = substr($this->string, $this->position, strlen('NDRING  '));
+                $this->position += strlen('NDRING  ');
+            } else {
+                $_success = false;
+
+                $this->report($this->position, '\'NDRING  \'');
             }
         }
 
@@ -5958,14 +5984,40 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $_value149[] = $this->value;
 
-            if (substr($this->string, $this->position, strlen('MAK/ÄNDRINGSLISTA   ')) === 'MAK/ÄNDRINGSLISTA   ') {
+            if (substr($this->string, $this->position, strlen('MAK/')) === 'MAK/') {
                 $_success = true;
-                $this->value = substr($this->string, $this->position, strlen('MAK/ÄNDRINGSLISTA   '));
-                $this->position += strlen('MAK/ÄNDRINGSLISTA   ');
+                $this->value = substr($this->string, $this->position, strlen('MAK/'));
+                $this->position += strlen('MAK/');
             } else {
                 $_success = false;
 
-                $this->report($this->position, '\'MAK/ÄNDRINGSLISTA   \'');
+                $this->report($this->position, '\'MAK/\'');
+            }
+        }
+
+        if ($_success) {
+            $_value149[] = $this->value;
+
+            if ($this->position < strlen($this->string)) {
+                $_success = true;
+                $this->value = substr($this->string, $this->position, 1);
+                $this->position += 1;
+            } else {
+                $_success = false;
+            }
+        }
+
+        if ($_success) {
+            $_value149[] = $this->value;
+
+            if (substr($this->string, $this->position, strlen('NDRINGSLISTA   ')) === 'NDRINGSLISTA   ') {
+                $_success = true;
+                $this->value = substr($this->string, $this->position, strlen('NDRINGSLISTA   '));
+                $this->position += strlen('NDRINGSLISTA   ');
+            } else {
+                $_success = false;
+
+                $this->report($this->position, '\'NDRINGSLISTA   \'');
             }
         }
 

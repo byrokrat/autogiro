@@ -404,11 +404,11 @@ grammar Grammar extends MultibyteHack
         return new AutogiroFile('AutogiroAmendmentResponseFile', $open, ...$recs);
     };
 
-    AMENDMENT_OPENING = '01AUTOGIRO    ' S10 date:DATE8 S10 '  MAKULERING/ÄNDRING  ' ^ bgcNr:BGC6 bg:BG10 EOR {
+    AMENDMENT_OPENING = '01AUTOGIRO    ' S10 date:DATE8 S10 '  MAKULERING/'.'NDRING  ' ^ bgcNr:BGC6 bg:BG10 EOR {
         return new Record('Opening', $date, $bgcNr, $bg);
     };
 
-    OLD_AMENDMENT_OPENING = '01' date:DATE8 'AUTOGIRO9900' 'MAK/ÄNDRINGSLISTA   ' ^ S20 bgcNr:BGC6 bg:BG10 EOR {
+    OLD_AMENDMENT_OPENING = '01' date:DATE8 'AUTOGIRO9900' 'MAK/'.'NDRINGSLISTA   ' ^ S20 bgcNr:BGC6 bg:BG10 EOR {
         return new Record('Opening', $date, $bgcNr, $bg);
     };
 

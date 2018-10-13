@@ -47,11 +47,25 @@ final class AmountVisitor extends Visitor
         }
 
         try {
-            $node->addChild(new Obj($node->getLineNr(), SEK::createFromSignalString($signalStr)));
+            $invertSign = false;
+
+            // due to charset issues unknown trailing signal chars are treated as 'å'
+            if (!preg_match('/^[0-9åJKLMNOPQR]$/', mb_substr($signalStr, -1))) {
+                $signalStr = mb_substr($signalStr, 0, -1) . '0';
+                $invertSign = true;
+            }
+
+            $object = SEK::createFromSignalString($signalStr);
+
+            if ($invertSign) {
+                $object = $object->getInverted();
+            }
+
+            $node->addChild(new Obj($node->getLineNr(), $object));
         } catch (AmountException $e) {
             $this->getErrorObject()->addError(
                 "Invalid signaled amount %s on line %s",
-                $signalStr,
+                (string)$node->getValueFrom('Text'),
                 (string)$node->getLineNr()
             );
         }
