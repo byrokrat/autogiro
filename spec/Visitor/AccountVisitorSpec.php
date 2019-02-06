@@ -50,7 +50,7 @@ class AccountVisitorSpec extends ObjectBehavior
         $node->getLineNr()->willReturn(1);
         $node->hasChild('Object')->willReturn(false);
 
-        $node->getValueFrom('Number')->willReturn('valid');
+        $node->getValueFrom('Number')->willReturn('00valid');
         $accountFactory->createAccount('valid')->willReturn($accountNumber);
 
         $node->addChild(Argument::that(function (Obj $obj) use ($accountNumber) {

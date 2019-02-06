@@ -72,9 +72,9 @@ final class AccountVisitor extends Visitor
             return;
         }
 
-        $number = (string)$node->getValueFrom('Number');
+        $number = ltrim((string)$node->getValueFrom('Number'), '0');
 
-        if (trim($number, '0') == '') {
+        if (!$number) {
             return;
         }
 
