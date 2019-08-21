@@ -33,7 +33,7 @@ use byrokrat\autogiro\Tree\Section;
 use byrokrat\autogiro\Tree\Text;
 use byrokrat\banking\AccountNumber;
 use byrokrat\id\IdInterface;
-use byrokrat\amount\Currency\SEK;
+use Money\Money;
 
 /**
  * Build trees representing autogiro request files
@@ -192,7 +192,7 @@ class TreeBuilder
      */
     public function addIncomingPaymentRequest(
         string $payerNr,
-        SEK $amount,
+        Money $amount,
         \DateTimeInterface $date,
         string $ref,
         string $interval,
@@ -214,7 +214,7 @@ class TreeBuilder
      */
     public function addOutgoingPaymentRequest(
         string $payerNr,
-        SEK $amount,
+        Money $amount,
         \DateTimeInterface $date,
         string $ref,
         string $interval,
@@ -234,7 +234,7 @@ class TreeBuilder
     /**
      * Add an incoming payment at next possible bank date request to tree
      */
-    public function addImmediateIncomingPaymentRequest(string $payerNr, SEK $amount, string $ref): void
+    public function addImmediateIncomingPaymentRequest(string $payerNr, Money $amount, string $ref): void
     {
         $this->addImmediatePaymentRequest('IncomingPaymentRequest', $payerNr, $amount, $ref);
     }
@@ -242,7 +242,7 @@ class TreeBuilder
     /**
      * Add an outgoing payment at next possible bank date request to tree
      */
-    public function addImmediateOutgoingPaymentRequest(string $payerNr, SEK $amount, string $ref): void
+    public function addImmediateOutgoingPaymentRequest(string $payerNr, Money $amount, string $ref): void
     {
         $this->addImmediatePaymentRequest('OutgoingPaymentRequest', $payerNr, $amount, $ref);
     }
@@ -279,7 +279,7 @@ class TreeBuilder
     private function addPaymentRequest(
         string $nodename,
         string $payerNr,
-        SEK $amount,
+        Money $amount,
         \DateTimeInterface $date,
         string $ref,
         string $interval,
@@ -299,7 +299,7 @@ class TreeBuilder
         );
     }
 
-    private function addImmediatePaymentRequest(string $nodename, string $payerNr, SEK $amount, string $ref): void
+    private function addImmediatePaymentRequest(string $nodename, string $payerNr, Money $amount, string $ref): void
     {
         $this->payments[] = new Record(
             $nodename,

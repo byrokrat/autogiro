@@ -25,7 +25,7 @@ namespace byrokrat\autogiro\Writer;
 use byrokrat\autogiro\Intervals;
 use byrokrat\banking\AccountNumber;
 use byrokrat\id\IdInterface;
-use byrokrat\amount\Currency\SEK;
+use Money\Money;
 
 final class Writer implements WriterInterface
 {
@@ -87,7 +87,7 @@ final class Writer implements WriterInterface
 
     public function addPayment(
         string $payerNr,
-        SEK $amount,
+        Money $amount,
         \DateTimeInterface $date,
         string $ref = '',
         string $interval = Intervals::INTERVAL_ONCE,
@@ -96,19 +96,19 @@ final class Writer implements WriterInterface
         $this->treeBuilder->addIncomingPaymentRequest($payerNr, $amount, $date, $ref, $interval, $repetitions);
     }
 
-    public function addMonthlyPayment(string $payerNr, SEK $amount, \DateTimeInterface $date, string $ref = ''): void
+    public function addMonthlyPayment(string $payerNr, Money $amount, \DateTimeInterface $date, string $ref = ''): void
     {
         $this->addPayment($payerNr, $amount, $date, $ref, Intervals::INTERVAL_MONTHLY_ON_DATE, 0);
     }
 
-    public function addImmediatePayment(string $payerNr, SEK $amount, string $ref = ''): void
+    public function addImmediatePayment(string $payerNr, Money $amount, string $ref = ''): void
     {
         $this->treeBuilder->addImmediateIncomingPaymentRequest($payerNr, $amount, $ref);
     }
 
     public function addOutgoingPayment(
         string $payerNr,
-        SEK $amount,
+        Money $amount,
         \DateTimeInterface $date,
         string $ref = '',
         string $interval = Intervals::INTERVAL_ONCE,
@@ -117,7 +117,7 @@ final class Writer implements WriterInterface
         $this->treeBuilder->addOutgoingPaymentRequest($payerNr, $amount, $date, $ref, $interval, $repetitions);
     }
 
-    public function addImmediateOutgoingPayment(string $payerNr, SEK $amount, string $ref = ''): void
+    public function addImmediateOutgoingPayment(string $payerNr, Money $amount, string $ref = ''): void
     {
         $this->treeBuilder->addImmediateOutgoingPaymentRequest($payerNr, $amount, $ref);
     }

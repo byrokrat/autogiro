@@ -22,6 +22,7 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Writer;
 
+use byrokrat\autogiro\Money\SignalMoneyFormatter;
 use byrokrat\banking\AccountNumber;
 
 final class WriterFactory
@@ -42,7 +43,9 @@ final class WriterFactory
                 $bankgiro,
                 $date ?: new \DateTimeImmutable
             ),
-            new PrintingVisitor
+            new PrintingVisitor(
+                new SignalMoneyFormatter
+            )
         );
     }
 }

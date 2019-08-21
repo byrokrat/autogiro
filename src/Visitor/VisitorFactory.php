@@ -22,6 +22,7 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Visitor;
 
+use byrokrat\autogiro\Money\SignalMoneyParser;
 use byrokrat\id\CoordinationIdFactory;
 use byrokrat\id\NullIdFactory;
 use byrokrat\id\OrganizationIdFactory;
@@ -122,7 +123,12 @@ class VisitorFactory
         }
 
         if (!$flag(self::VISITOR_IGNORE_AMOUNTS)) {
-            $container->addVisitor(new AmountVisitor($errorObj));
+            $container->addVisitor(
+                new AmountVisitor(
+                    $errorObj,
+                    new SignalMoneyParser
+                )
+            );
         }
 
         if (!$flag(self::VISITOR_IGNORE_IDS)) {

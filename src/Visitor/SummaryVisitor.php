@@ -23,14 +23,14 @@ declare(strict_types = 1);
 namespace byrokrat\autogiro\Visitor;
 
 use byrokrat\autogiro\Tree\Node;
-use byrokrat\amount\Amount;
+use Money\Money;
 
 final class SummaryVisitor extends Visitor
 {
     use ErrorAwareTrait;
 
     /**
-     * @var Amount[]
+     * @var Money[]
      */
     private $summaries = [];
 
@@ -58,12 +58,12 @@ final class SummaryVisitor extends Visitor
         $currentAmount = $this->summaries[(string)$node->getValueFrom('Text')]
             ?? $expectedAmount->subtract($expectedAmount);
 
-        if (!$expectedAmount->getAbsolute()->equals($currentAmount->getAbsolute())) {
+        if (!$expectedAmount->absolute()->equals($currentAmount->absolute())) {
             $this->getErrorObject()->addError(
                 "Invalid %s node summary (found: %s, expected: %s) on line %s",
                 (string)$node->getValueFrom('Text'),
-                (string)$currentAmount,
-                (string)$expectedAmount,
+                (string)$currentAmount->getAmount(),
+                (string)$expectedAmount->getAmount(),
                 (string)$node->getLineNr()
             );
         }

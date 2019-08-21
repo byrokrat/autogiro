@@ -24,8 +24,8 @@ namespace byrokrat\autogiro\Visitor;
 
 use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Tree\Obj;
-use byrokrat\amount\Currency\SEK;
-use byrokrat\amount\Exception as AmountException;
+use Money\Money;
+use Money\MoneyParser;
 
 /**
  * Create amount object under child 'Object'
@@ -33,6 +33,17 @@ use byrokrat\amount\Exception as AmountException;
 final class AmountVisitor extends Visitor
 {
     use ErrorAwareTrait;
+
+    /**
+     * @var MoneyParser
+     */
+    private $moneyParser;
+
+    public function __construct(ErrorObject $errorObj, MoneyParser $moneyParser)
+    {
+        $this->setErrorObject($errorObj);
+        $this->moneyParser = $moneyParser;
+    }
 
     public function beforeAmount(Node $node): void
     {
@@ -47,22 +58,15 @@ final class AmountVisitor extends Visitor
         }
 
         try {
-            $invertSign = false;
-
             // due to charset issues unknown trailing signal chars are treated as 'å'
             if (!preg_match('/^[0-9åJKLMNOPQR]$/', mb_substr($signalStr, -1))) {
-                $signalStr = mb_substr($signalStr, 0, -1) . '0';
-                $invertSign = true;
+                $signalStr = '-' . mb_substr($signalStr, 0, -1) . '0';
             }
 
-            $object = SEK::createFromSignalString($signalStr);
+            $money = $this->moneyParser->parse($signalStr);
 
-            if ($invertSign) {
-                $object = $object->getInverted();
-            }
-
-            $node->addChild(new Obj($node->getLineNr(), $object));
-        } catch (AmountException $e) {
+            $node->addChild(new Obj($node->getLineNr(), $money));
+        } catch (\Exception $e) {
             $this->getErrorObject()->addError(
                 "Invalid signaled amount %s on line %s",
                 (string)$node->getValueFrom('Text'),

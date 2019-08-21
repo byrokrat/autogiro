@@ -25,11 +25,12 @@ namespace byrokrat\autogiro\Writer;
 use byrokrat\autogiro\Visitor\Visitor;
 use byrokrat\autogiro\Exception\RuntimeException;
 use byrokrat\autogiro\Tree\Node;
-use byrokrat\amount\Currency\SEK;
 use byrokrat\banking\AccountNumber;
 use byrokrat\id\IdInterface;
 use byrokrat\id\PersonalId;
 use byrokrat\id\OrganizationId;
+use Money\Money;
+use Money\MoneyFormatter;
 
 /**
  * Visitor that generates files to bgc from parse trees
@@ -42,6 +43,16 @@ class PrintingVisitor extends Visitor
      * @var ?Output
      */
     private $output;
+
+    /**
+     * @var MoneyFormatter
+     */
+    private $moneyFormatter;
+
+    public function __construct(MoneyFormatter $moneyFormatter)
+    {
+        $this->moneyFormatter = $moneyFormatter;
+    }
 
     public function setOutput(Output $output): void
     {
@@ -125,15 +136,19 @@ class PrintingVisitor extends Visitor
 
     public function beforeAmount(Node $node): void
     {
-        if ($node->getValue() instanceof SEK) {
-            $amount = $node->getValue();
+        $amount = $node->getValue();
 
-            if ($amount->isGreaterThan(new SEK('9999999999.99')) || $amount->isLessThan(new SEK('-9999999999.99'))) {
+        if ($amount instanceof Money) {
+            if ($amount->getCurrency()->getCode() != 'SEK') {
+                throw new RuntimeException('Printing visitor can only work with SEK');
+            }
+
+            if ($amount->greaterThan(Money::SEK('999999999999')) || $amount->lessThan(Money::SEK('-999999999999'))) {
                 throw new RuntimeException('Amount must be between 9999999999.99 and -9999999999.99');
             }
 
             $this->write(
-                str_pad($amount->getSignalString(), 12, '0', STR_PAD_LEFT)
+                str_pad($this->moneyFormatter->format($amount), 12, '0', STR_PAD_LEFT)
             );
         }
     }

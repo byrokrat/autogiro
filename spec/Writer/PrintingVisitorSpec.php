@@ -9,17 +9,19 @@ use byrokrat\autogiro\Writer\Output;
 use byrokrat\autogiro\Exception\RuntimeException;
 use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Visitor\Visitor;
-use byrokrat\amount\Currency\SEK;
 use byrokrat\banking\AccountNumber;
 use byrokrat\id\PersonalId;
 use byrokrat\id\OrganizationId;
+use Money\Money;
+use Money\MoneyFormatter;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
 class PrintingVisitorSpec extends ObjectBehavior
 {
-    function let(Output $output)
+    function let(MoneyFormatter $moneyFormatter, Output $output)
     {
+        $this->beConstructedWith($moneyFormatter);
         $this->setOutput($output);
     }
 
@@ -149,22 +151,30 @@ class PrintingVisitorSpec extends ObjectBehavior
         $output->write(Argument::any())->shouldNotHaveBeenCalled();
     }
 
-    function it_prints_amounts(Node $node, $output)
+    function it_prints_amounts(Node $node, $moneyFormatter, $output)
     {
-        $node->getValue()->willReturn(new SEK('12345678.90'));
+        $money = Money::SEK(1);
+        $moneyFormatter->format($money)->willReturn('foobar');
+        $node->getValue()->willReturn($money);
         $this->beforeAmount($node);
-        $output->write(Argument::is('001234567890'))->shouldHaveBeenCalled();
+        $output->write(Argument::is('000000foobar'))->shouldHaveBeenCalled();
+    }
+
+    function it_fails_on_non_sek_amounts(Node $node)
+    {
+        $node->getValue()->willReturn(Money::EUR(1));
+        $this->shouldThrow(RuntimeException::class)->duringBeforeAmount($node);
     }
 
     function it_fails_on_to_large_amounts(Node $node)
     {
-        $node->getValue()->willReturn(new SEK('10000000000.00'));
+        $node->getValue()->willReturn(Money::SEK('1000000000000'));
         $this->shouldThrow(RuntimeException::CLASS)->duringBeforeAmount($node);
     }
 
     function it_fails_on_to_small_amounts(Node $node)
     {
-        $node->getValue()->willReturn(new SEK('-10000000000.00'));
+        $node->getValue()->willReturn(Money::SEK('-1000000000000'));
         $this->shouldThrow(RuntimeException::CLASS)->duringBeforeAmount($node);
     }
 

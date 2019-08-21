@@ -19,9 +19,9 @@
     "require": {
         "php": ">=7.1",
         "ext-mbstring": "*",
-        "byrokrat/amount": "^2",
         "byrokrat/banking": "^2.1",
         "byrokrat/id": "^2",
+        "moneyphp/money": "^3",
         "neitanod/forceutf8": "~2.0"
     }
 }

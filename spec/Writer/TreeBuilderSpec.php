@@ -15,7 +15,7 @@ use byrokrat\autogiro\Tree\Record;
 use byrokrat\autogiro\Tree\Section;
 use byrokrat\banking\AccountNumber;
 use byrokrat\id\IdInterface;
-use byrokrat\amount\Currency\SEK;
+use Money\Money;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -175,8 +175,10 @@ class TreeBuilderSpec extends ObjectBehavior
         );
     }
 
-    function it_builds_incoming_payment_trees(SEK $amount, $bankgiro, $date)
+    function it_builds_incoming_payment_trees($bankgiro, $date)
     {
+        $amount = Money::SEK(100);
+
         $this->addIncomingPaymentRequest('foobar', $amount, $date, 'ref', 'ival', 1);
 
         $this->buildTree()->shouldBeLike(
@@ -191,7 +193,7 @@ class TreeBuilderSpec extends ObjectBehavior
                     new Number(0, '1', 'Repetitions'),
                     new Text(0, ' '),
                     new Number(0, 'foobar', 'PayerNumber'),
-                    new Obj(0, $amount->getWrappedObject(), 'Amount'),
+                    new Obj(0, $amount, 'Amount'),
                     new Obj(0, $bankgiro->getWrappedObject(), 'PayeeBankgiro'),
                     new Text(0, '             ref'),
                     new Text(0, str_pad('', 11))
@@ -200,8 +202,10 @@ class TreeBuilderSpec extends ObjectBehavior
         );
     }
 
-    function it_builds_outgoing_payment_trees(SEK $amount, $bankgiro, $date)
+    function it_builds_outgoing_payment_trees($bankgiro, $date)
     {
+        $amount = Money::SEK(100);
+
         $this->addOutgoingPaymentRequest('foobar', $amount, $date, 'ref', 'ival', 1);
 
         $this->buildTree()->shouldBeLike(
@@ -216,7 +220,7 @@ class TreeBuilderSpec extends ObjectBehavior
                     new Number(0, '1', 'Repetitions'),
                     new Text(0, ' '),
                     new Number(0, 'foobar', 'PayerNumber'),
-                    new Obj(0, $amount->getWrappedObject(), 'Amount'),
+                    new Obj(0, $amount, 'Amount'),
                     new Obj(0, $bankgiro->getWrappedObject(), 'PayeeBankgiro'),
                     new Text(0, '             ref'),
                     new Text(0, str_pad('', 11))
@@ -225,8 +229,10 @@ class TreeBuilderSpec extends ObjectBehavior
         );
     }
 
-    function it_builds_immediate_incoming_payment_trees(SEK $amount, $bankgiro, $date)
+    function it_builds_immediate_incoming_payment_trees($bankgiro, $date)
     {
+        $amount = Money::SEK(100);
+
         $this->addImmediateIncomingPaymentRequest('foobar', $amount, 'ref');
 
         $this->buildTree()->shouldBeLike(
@@ -241,7 +247,7 @@ class TreeBuilderSpec extends ObjectBehavior
                     new Number(0, '0', 'Repetitions'),
                     new Text(0, ' '),
                     new Number(0, 'foobar', 'PayerNumber'),
-                    new Obj(0, $amount->getWrappedObject(), 'Amount'),
+                    new Obj(0, $amount, 'Amount'),
                     new Obj(0, $bankgiro->getWrappedObject(), 'PayeeBankgiro'),
                     new Text(0, '             ref'),
                     new Text(0, str_pad('', 11))
@@ -250,8 +256,10 @@ class TreeBuilderSpec extends ObjectBehavior
         );
     }
 
-    function it_builds_immediate_outgoing_payment_trees(SEK $amount, $bankgiro, $date)
+    function it_builds_immediate_outgoing_payment_trees($bankgiro, $date)
     {
+        $amount = Money::SEK(100);
+
         $this->addImmediateOutgoingPaymentRequest('foobar', $amount, 'ref');
 
         $this->buildTree()->shouldBeLike(
@@ -266,7 +274,7 @@ class TreeBuilderSpec extends ObjectBehavior
                     new Number(0, '0', 'Repetitions'),
                     new Text(0, ' '),
                     new Number(0, 'foobar', 'PayerNumber'),
-                    new Obj(0, $amount->getWrappedObject(), 'Amount'),
+                    new Obj(0, $amount, 'Amount'),
                     new Obj(0, $bankgiro->getWrappedObject(), 'PayeeBankgiro'),
                     new Text(0, '             ref'),
                     new Text(0, str_pad('', 11))

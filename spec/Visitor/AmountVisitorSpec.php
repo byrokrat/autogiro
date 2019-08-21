@@ -8,15 +8,16 @@ use byrokrat\autogiro\Visitor\AmountVisitor;
 use byrokrat\autogiro\Visitor\ErrorObject;
 use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Tree\Obj;
-use byrokrat\amount\Currency\SEK;
+use Money\Money;
+use Money\MoneyParser;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
 class AmountVisitorSpec extends ObjectBehavior
 {
-    function let(ErrorObject $errorObj)
+    function let(ErrorObject $errorObj, MoneyParser $moneyParser)
     {
-        $this->beConstructedWith($errorObj);
+        $this->beConstructedWith($errorObj, $moneyParser);
     }
 
     function it_is_initializable()
@@ -48,28 +49,30 @@ class AmountVisitorSpec extends ObjectBehavior
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
 
-    function it_creates_valid_amounts(Node $node)
+    function it_creates_valid_amounts($moneyParser, Node $node)
     {
         $node->getLineNr()->willReturn(1);
         $node->hasChild('Object')->willReturn(false);
         $node->getValueFrom('Text')->willReturn('1230K');
 
-        $node->addChild(Argument::that(function (Obj $obj) {
-            return (new SEK('-123.02'))->equals($obj->getValue());
-        }))->shouldBeCalled();
+        $money = Money::SEK('-12300');
+        $moneyParser->parse('1230K')->willReturn($money);
+
+        $node->addChild(new Obj(1, $money))->shouldBeCalled();
 
         $this->beforeAmount($node);
     }
 
-    function it_creates_amounts_from_strings_with_broken_charset(Node $node)
+    function it_creates_amounts_from_strings_with_broken_charset($moneyParser, Node $node)
     {
         $node->getLineNr()->willReturn(1);
         $node->hasChild('Object')->willReturn(false);
         $node->getValueFrom('Text')->willReturn('1230¤');
 
-        $node->addChild(Argument::that(function (Obj $obj) {
-            return (new SEK('-123.00'))->equals($obj->getValue());
-        }))->shouldBeCalled();
+        $money = Money::SEK('-12300');
+        $moneyParser->parse('-12300')->willReturn($money);
+
+        $node->addChild(new Obj(1, $money))->shouldBeCalled();
 
         $this->beforeAmount($node);
     }

@@ -81,10 +81,11 @@ $factory = new \byrokrat\autogiro\Parser\ParserFactory;
 $parser = $factory->createParser();
 ```
 
-The created parser can parse and validate monetary amounts, account numbers and
-identification numbers using the [Amount](https://github.com/byrokrat/amount),
-[Id](https://github.com/byrokrat/id) and [Banking](https://github.com/byrokrat/banking)
-packages respectively. Opt out of this functionality by using one of the visitor constants:
+The created parser will by default parse and validate
+[monetary amounts](https://github.com/moneyphp/money),
+[account numbers]((https://github.com/byrokrat/banking)) and
+[identification numbers] (https://github.com/byrokrat/id). Opt out of this
+functionality by using one of the visitor constants:
 
 <!-- @include ParserFactory -->
 ```php
@@ -113,7 +114,7 @@ node `Object` contains constructed php objects. Access using something like:
     @include AutogiroFile
 -->
 ```php
-$amount = $node->getChild('Amount')->getValueFrom('Object');
+$money = $node->getChild('Amount')->getValueFrom('Object');
 ```
 
 ### Walking the parse tree

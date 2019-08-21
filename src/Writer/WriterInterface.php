@@ -21,9 +21,9 @@
 namespace byrokrat\autogiro\Writer;
 
 use byrokrat\autogiro\Intervals;
-use byrokrat\amount\Currency\SEK;
 use byrokrat\banking\AccountNumber;
 use byrokrat\id\IdInterface;
+use Money\Money;
 
 interface WriterInterface
 {
@@ -66,7 +66,7 @@ interface WriterInterface
      * Add an incoming payment request to the build queue
      *
      * @param string             $payerNr     Number identifying the payer
-     * @param SEK                $amount      The requested payment amount
+     * @param Money              $amount      The requested payment amount
      * @param \DateTimeInterface $date        Requested date of payment (or first date for repeated payments)
      * @param string             $ref         Custom payment reference number
      * @param string             $interval    Interval for repeted payment, use one of the Intervals constants
@@ -74,7 +74,7 @@ interface WriterInterface
      */
     public function addPayment(
         string $payerNr,
-        SEK $amount,
+        Money $amount,
         \DateTimeInterface $date,
         string $ref = '',
         string $interval = Intervals::INTERVAL_ONCE,
@@ -85,26 +85,31 @@ interface WriterInterface
      * Add an incoming payment request to the build queue
      *
      * @param string             $payerNr Number identifying the payer
-     * @param SEK                $amount  The requested payment amount
+     * @param Money              $amount  The requested payment amount
      * @param \DateTimeInterface $date    Requested  first date of payment
      * @param string             $ref     Custom payment reference number
      */
-    public function addMonthlyPayment(string $payerNr, SEK $amount, \DateTimeInterface $date, string $ref = ''): void;
+    public function addMonthlyPayment(
+        string $payerNr,
+        Money $amount,
+        \DateTimeInterface $date,
+        string $ref = ''
+    ): void;
 
     /**
      * Add an incoming payment at next possible bank date request to the build queue
      *
      * @param string $payerNr Number identifying the payer
-     * @param SEK    $amount  The requested payment amount
+     * @param Money  $amount  The requested payment amount
      * @param string $ref     Custom payment reference number
      */
-    public function addImmediatePayment(string $payerNr, SEK $amount, string $ref = ''): void;
+    public function addImmediatePayment(string $payerNr, Money $amount, string $ref = ''): void;
 
     /**
      * Add an outgoing payment request to the build queue
      *
      * @param string             $payerNr     Number identifying the payer
-     * @param SEK                $amount      The requested payment amount
+     * @param Money              $amount      The requested payment amount
      * @param \DateTimeInterface $date        Requested date of payment (or first date for repeated payments)
      * @param string             $ref         Custom payment reference number
      * @param string             $interval    Interval for repeted payment, use one of the Intervals constants
@@ -112,7 +117,7 @@ interface WriterInterface
      */
     public function addOutgoingPayment(
         string $payerNr,
-        SEK $amount,
+        Money $amount,
         \DateTimeInterface $date,
         string $ref = '',
         string $interval = Intervals::INTERVAL_ONCE,
@@ -123,10 +128,10 @@ interface WriterInterface
      * Add an outgoing payment on next possible bank date request to the build queue
      *
      * @param string $payerNr Number identifying the payer
-     * @param SEK    $amount  The requested payment amount
+     * @param Money  $amount  The requested payment amount
      * @param string $ref     Custom payment reference number
      */
-    public function addImmediateOutgoingPayment(string $payerNr, SEK $amount, string $ref = ''): void;
+    public function addImmediateOutgoingPayment(string $payerNr, Money $amount, string $ref = ''): void;
 
     /**
      * Delete all payments to or from payer

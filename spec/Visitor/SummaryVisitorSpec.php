@@ -7,7 +7,7 @@ namespace spec\byrokrat\autogiro\Visitor;
 use byrokrat\autogiro\Visitor\SummaryVisitor;
 use byrokrat\autogiro\Visitor\ErrorObject;
 use byrokrat\autogiro\Tree\Node;
-use byrokrat\amount\Currency\SEK;
+use Money\Money;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -31,12 +31,12 @@ class SummaryVisitorSpec extends ObjectBehavior
         $errorObj
     ) {
         $summary->getChild('Amount')->willReturn($summaryAmount);
-        $summaryAmount->getValueFrom('Object')->willReturn(new SEK('100'));
+        $summaryAmount->getValueFrom('Object')->willReturn(Money::SEK('100'));
         $summary->getValueFrom('Text')->willReturn('foobar');
 
         $record->getName()->willReturn('foobar');
         $record->getChild('Amount')->willReturn($recordAmount);
-        $recordAmount->getValueFrom('Object')->willReturn(new SEK('100'));
+        $recordAmount->getValueFrom('Object')->willReturn(Money::SEK('100'));
 
         $this->afterRecord($record);
         $this->afterSummary($summary);
@@ -52,12 +52,12 @@ class SummaryVisitorSpec extends ObjectBehavior
         $errorObj
     ) {
         $summary->getChild('Amount')->willReturn($summaryAmount);
-        $summaryAmount->getValueFrom('Object')->willReturn(new SEK('100'));
+        $summaryAmount->getValueFrom('Object')->willReturn(Money::SEK('100'));
         $summary->getValueFrom('Text')->willReturn('foobar');
 
         $record->getName()->willReturn('foobar');
         $record->getChild('Amount')->willReturn($recordAmount);
-        $recordAmount->getValueFrom('Object')->willReturn(new SEK('-100'));
+        $recordAmount->getValueFrom('Object')->willReturn(Money::SEK('-100'));
 
         $this->afterRecord($record);
         $this->afterSummary($summary);
@@ -73,13 +73,13 @@ class SummaryVisitorSpec extends ObjectBehavior
         $errorObj
     ) {
         $summary->getChild('Amount')->willReturn($summaryAmount);
-        $summaryAmount->getValueFrom('Object')->willReturn(new SEK('100'));
+        $summaryAmount->getValueFrom('Object')->willReturn(Money::SEK('100'));
         $summary->getValueFrom('Text')->willReturn('foobar');
         $summary->getLineNr()->willReturn(1);
 
         $record->getName()->willReturn('foobar');
         $record->getChild('Amount')->willReturn($recordAmount);
-        $recordAmount->getValueFrom('Object')->willReturn(new SEK('200'));
+        $recordAmount->getValueFrom('Object')->willReturn(Money::SEK('200'));
 
         $this->afterRecord($record);
         $this->afterSummary($summary);
@@ -95,13 +95,13 @@ class SummaryVisitorSpec extends ObjectBehavior
         $errorObj
     ) {
         $summary->getChild('Amount')->willReturn($summaryAmount);
-        $summaryAmount->getValueFrom('Object')->willReturn(new SEK('0'));
+        $summaryAmount->getValueFrom('Object')->willReturn(Money::SEK('0'));
         $summary->getValueFrom('Text')->willReturn('foobar');
         $summary->getLineNr()->willReturn(1);
 
         $record->getName()->willReturn('foobar');
         $record->getChild('Amount')->willReturn($recordAmount);
-        $recordAmount->getValueFrom('Object')->willReturn(new SEK('100'));
+        $recordAmount->getValueFrom('Object')->willReturn(Money::SEK('100'));
 
         $this->afterRecord($record);
         $this->beforeAutogiroFile();

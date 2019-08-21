@@ -10,7 +10,7 @@ use byrokrat\autogiro\Visitor\Visitor;
 use byrokrat\autogiro\Writer\WriterFactory;
 use byrokrat\autogiro\Exception;
 use byrokrat\autogiro\Exception\TreeException;
-use byrokrat\amount\Currency\SEK;
+use Money\Money;
 
 /**
  * Defines application features from the specific context.
@@ -145,7 +145,7 @@ class FeatureContext implements Context, SnippetAcceptingContext
                     $args[] = new \byrokrat\id\PersonalId($argHash['value']);
                     break;
                 case 'SEK':
-                    $args[] = new SEK($argHash['value']);
+                    $args[] = Money::SEK($argHash['value']);
                     break;
                 case 'Date':
                     $args[] = new \DateTime($argHash['value']);

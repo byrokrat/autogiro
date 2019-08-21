@@ -12,7 +12,7 @@ use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Intervals;
 use byrokrat\banking\AccountNumber;
 use byrokrat\id\IdInterface;
-use byrokrat\amount\Currency\SEK;
+use Money\Money;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -72,44 +72,50 @@ class WriterSpec extends ObjectBehavior
         $treeBuilder->addUpdateMandateRequest('foo', 'bar')->shouldHaveBeenCalled();
     }
 
-    function it_calls_tree_builder_on_add_payment($treeBuilder, SEK $amount)
+    function it_calls_tree_builder_on_add_payment($treeBuilder)
     {
+        $amount = Money::SEK(100);
         $date = new \DateTime;
         $this->addPayment('foo', $amount, $date, 'ref', '10', 100);
         $treeBuilder->addIncomingPaymentRequest('foo', $amount, $date, 'ref', '10', 100)->shouldHaveBeenCalled();
     }
 
-    function it_defaults_to_creating_one_time_payments($treeBuilder, SEK $amount)
+    function it_defaults_to_creating_one_time_payments($treeBuilder)
     {
+        $amount = Money::SEK(100);
         $date = new \DateTime;
         $this->addPayment('foo', $amount, $date);
         $treeBuilder->addIncomingPaymentRequest('foo', $amount, $date, '', Intervals::INTERVAL_ONCE, 0)
             ->shouldHaveBeenCalled();
     }
 
-    function it_creates_monthly_payments($treeBuilder, SEK $amount)
+    function it_creates_monthly_payments($treeBuilder)
     {
+        $amount = Money::SEK(100);
         $date = new \DateTime;
         $this->addMonthlyPayment('foo', $amount, $date, 'ref');
         $treeBuilder->addIncomingPaymentRequest('foo', $amount, $date, 'ref', Intervals::INTERVAL_MONTHLY_ON_DATE, 0)
             ->shouldHaveBeenCalled();
     }
 
-    function it_creates_immediate_payments($treeBuilder, SEK $amount)
+    function it_creates_immediate_payments($treeBuilder)
     {
+        $amount = Money::SEK(100);
         $this->addImmediatePayment('foo', $amount, 'ref');
         $treeBuilder->addImmediateIncomingPaymentRequest('foo', $amount, 'ref')->shouldHaveBeenCalled();
     }
 
-    function it_calls_tree_builder_on_add_outgoing_payment($treeBuilder, SEK $amount)
+    function it_calls_tree_builder_on_add_outgoing_payment($treeBuilder)
     {
+        $amount = Money::SEK(100);
         $date = new \DateTime;
         $this->addOutgoingPayment('foo', $amount, $date, 'ref', '10', 100);
         $treeBuilder->addOutgoingPaymentRequest('foo', $amount, $date, 'ref', '10', 100)->shouldHaveBeenCalled();
     }
 
-    function it_creates_immediate_outgoing_payments($treeBuilder, SEK $amount)
+    function it_creates_immediate_outgoing_payments($treeBuilder)
     {
+        $amount = Money::SEK(100);
         $this->addImmediateOutgoingPayment('foo', $amount, 'ref');
         $treeBuilder->addImmediateOutgoingPaymentRequest('foo', $amount, 'ref')->shouldHaveBeenCalled();
     }
