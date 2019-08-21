@@ -83,8 +83,8 @@ $parser = $factory->createParser();
 
 The created parser will by default parse and validate
 [monetary amounts](https://github.com/moneyphp/money),
-[account numbers]((https://github.com/byrokrat/banking)) and
-[identification numbers] (https://github.com/byrokrat/id). Opt out of this
+[account numbers](https://github.com/byrokrat/banking) and
+[identification numbers](https://github.com/byrokrat/id). Opt out of this
 functionality by using one of the visitor constants:
 
 <!-- @include ParserFactory -->
