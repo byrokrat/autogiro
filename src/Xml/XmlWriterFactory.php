@@ -22,10 +22,19 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Xml;
 
+use Money\Currencies\ISOCurrencies;
+use Money\Formatter\DecimalMoneyFormatter;
+
 final class XmlWriterFactory
 {
     public function createXmlWriter(): XmlWriter
     {
-        return new XmlWriter(new Stringifier);
+        return new XmlWriter(
+            new Stringifier(
+                new DecimalMoneyFormatter(
+                    new ISOCurrencies
+                )
+            )
+        );
     }
 }

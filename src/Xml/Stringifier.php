@@ -22,6 +22,9 @@ declare(strict_types = 1);
 
 namespace byrokrat\autogiro\Xml;
 
+use Money\Money;
+use Money\MoneyFormatter;
+
 /**
  * Helper class to cast values to string
  */
@@ -38,12 +41,26 @@ class Stringifier
     const OBJECT_VALUE = 'OBJECT_VALUE';
 
     /**
+     * @var MoneyFormatter
+     */
+    private $moneyFormatter;
+
+    public function __construct(MoneyFormatter $moneyFormatter)
+    {
+        $this->moneyFormatter = $moneyFormatter;
+    }
+
+    /**
      * Cast value to string
      */
     public function stringify($value): string
     {
         if ($value instanceof \DateTimeInterface) {
             return $value->format('Y-m-d');
+        }
+
+        if ($value instanceof Money) {
+            return $this->moneyFormatter->format($value);
         }
 
         if (is_array($value)) {

@@ -5,11 +5,18 @@ declare(strict_types = 1);
 namespace spec\byrokrat\autogiro\Xml;
 
 use byrokrat\autogiro\Xml\Stringifier;
+use Money\Money;
+use Money\MoneyFormatter;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
 class StringifierSpec extends ObjectBehavior
 {
+    function let(MoneyFormatter $moneyFormatter)
+    {
+        $this->beConstructedWith($moneyFormatter);
+    }
+
     function it_is_initializable()
     {
         $this->shouldHaveType(Stringifier::CLASS);
@@ -23,6 +30,13 @@ class StringifierSpec extends ObjectBehavior
     function it_casts_dates()
     {
         $this->stringify(new \DateTime('20180101'))->shouldEqual('2018-01-01');
+    }
+
+    function it_casts_money($moneyFormatter)
+    {
+        $money = Money::SEK(100);
+        $moneyFormatter->format($money)->willReturn('money');
+        $this->stringify($money)->shouldEqual('money');
     }
 
     function it_casts_arrays()
