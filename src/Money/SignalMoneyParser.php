@@ -57,6 +57,11 @@ final class SignalMoneyParser implements MoneyParser
             $money = '0';
         }
 
+        // due to charset issues unknown trailing signal chars are treated as 'å'
+        if (!preg_match('/^[0-9åJKLMNOPQR]$/', mb_substr($money, -1))) {
+            $money = mb_substr($money, 0, -1) . 'å';
+        }
+
         $lastChar = mb_substr($money, -1);
 
         if (isset(self::SIGNALS[$lastChar])) {

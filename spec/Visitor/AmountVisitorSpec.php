@@ -62,18 +62,4 @@ class AmountVisitorSpec extends ObjectBehavior
 
         $this->beforeAmount($node);
     }
-
-    function it_creates_amounts_from_strings_with_broken_charset($moneyParser, Node $node)
-    {
-        $node->getLineNr()->willReturn(1);
-        $node->hasChild('Object')->willReturn(false);
-        $node->getValueFrom('Text')->willReturn('1230¤');
-
-        $money = Money::SEK('-12300');
-        $moneyParser->parse('-12300')->willReturn($money);
-
-        $node->addChild(new Obj(1, $money))->shouldBeCalled();
-
-        $this->beforeAmount($node);
-    }
 }

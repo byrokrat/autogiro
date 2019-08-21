@@ -35,27 +35,27 @@ class SignalMoneyParserSpec extends ObjectBehavior
 
     function it_creates_regular_money()
     {
-        $this->parse('100')->shouldReturnSEK('100');
-    }
-
-    function it_creates_signaled_money()
-    {
-        $this->parse('10å')->shouldReturnSEK('-100');
+        $this->parse('100')->shouldReturnAmount('100');
     }
 
     function it_trims_leading_zeros()
     {
-        $this->parse('00100')->shouldReturnSEK('100');
+        $this->parse('00100')->shouldReturnAmount('100');
     }
 
     function it_defaults_to_zero()
     {
-        $this->parse('0000')->shouldReturnSEK('0');
+        $this->parse('0000')->shouldReturnAmount('0');
     }
 
-    function it_fails_on_invalid_signal()
+    function it_creates_signaled_money()
     {
-        $this->shouldThrow(RuntimeException::class)->duringParse('10j');
+        $this->parse('10å')->shouldReturnAmount('-100');
+    }
+
+    function it_creates_signaled_money_with_broken_charset()
+    {
+        $this->parse('1230¤')->shouldReturnAmount('-12300');
     }
 
     function it_fails_on_dubble_negation()
@@ -66,8 +66,12 @@ class SignalMoneyParserSpec extends ObjectBehavior
     public function getMatchers(): array
     {
         return [
-            'returnSEK' => function (Money $money, string $expected) {
-                return $money->equals(Money::SEK($expected));
+            'returnAmount' => function (Money $money, string $expected) {
+                if (strcmp($money->getAmount(), $expected) != 0) {
+                    throw new \Exception("Raw money {$money->getAmount()} does not equal $expected");
+                }
+
+                return true;
             },
         ];
     }

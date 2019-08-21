@@ -58,14 +58,12 @@ final class AmountVisitor extends Visitor
         }
 
         try {
-            // due to charset issues unknown trailing signal chars are treated as 'å'
-            if (!preg_match('/^[0-9åJKLMNOPQR]$/', mb_substr($signalStr, -1))) {
-                $signalStr = '-' . mb_substr($signalStr, 0, -1) . '0';
-            }
-
-            $money = $this->moneyParser->parse($signalStr);
-
-            $node->addChild(new Obj($node->getLineNr(), $money));
+            $node->addChild(
+                new Obj(
+                    $node->getLineNr(),
+                    $this->moneyParser->parse($signalStr)
+                )
+            );
         } catch (\Exception $e) {
             $this->getErrorObject()->addError(
                 "Invalid signaled amount %s on line %s",

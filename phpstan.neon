@@ -1,7 +1,3 @@
 parameters:
 	excludes_analyse:
 		- src/Parser/Grammar.php
-	ignoreErrors:
-		-
-			message: "#'å', 'J', 'K', 'L', 'M', 'N'#"
-			path: src/Money/SignalMoneyFormatter.php
