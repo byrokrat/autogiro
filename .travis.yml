@@ -8,10 +8,9 @@ php:
   - 7.1
 
 install:
-  - composer install
-  - composer global require chh/bob:^1@alpha
-  - export PATH=$PATH:$HOME/.config/composer/vendor/bin/:$HOME/.composer/vendor/bin/
-  - bob install_dev_tools
+  - make vendor-bin/installed
 
 script:
-  - bob
+  - vendor/bin/phpspec run --verbose
+  - vendor/bin/behat
+  - vendor/bin/readme-tester README.md

@@ -250,12 +250,14 @@ echo $xmlWriter->asXml(
 
 ## Hacking
 
-Tweak as needed.
+With [composer](https://getcomposer.org/) installed as `composer`
 
 ```shell
-composer install
-composer global require chh/bob:^1.0@alpha
-export PATH=$PATH:$HOME/.composer/vendor/bin/
-bob install_dev_tools
-bob
+make
+```
+
+Or use something like
+
+```shell
+make COMPOSER_CMD=./composer.phar
 ```
