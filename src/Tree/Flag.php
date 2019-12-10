@@ -26,7 +26,7 @@ class Flag extends Node
 {
     use TypeTrait;
 
-    public function __construct($name = '')
+    public function __construct(string $name = '')
     {
         parent::__construct();
         $this->setName($name);

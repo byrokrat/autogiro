@@ -28,10 +28,13 @@ namespace byrokrat\autogiro\Exception;
 final class TreeException extends \RuntimeException implements \byrokrat\autogiro\Exception
 {
     /**
-     * @var string[]
+     * @var array<string>
      */
     private $errors;
 
+    /**
+     * @param array<string> $errors
+     */
     public function __construct(array $errors)
     {
         parent::__construct("Tree invalid due to the following issues:\n" . implode("\n", $errors));
@@ -39,7 +42,7 @@ final class TreeException extends \RuntimeException implements \byrokrat\autogir
     }
 
     /**
-     * @return string[]
+     * @return array<string>
      */
     public function getErrors(): array
     {

@@ -55,10 +55,10 @@ final class SignalMoneyFormatter implements MoneyFormatter
 
         $lastChar = substr($amount, -1);
 
-        if (!isset(self::SIGNALS[$lastChar])) {
-            throw new \LogicException("Unknown signal amount ending char: $lastChar");
+        if (isset(self::SIGNALS[$lastChar])) {
+            return substr($amount, 1, -1) . self::SIGNALS[$lastChar];
         }
 
-        return substr($amount, 1, -1) . self::SIGNALS[$lastChar];
+        throw new \LogicException("Unknown signal amount ending char: $lastChar");
     }
 }

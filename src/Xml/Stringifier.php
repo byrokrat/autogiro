@@ -52,6 +52,8 @@ class Stringifier
 
     /**
      * Cast value to string
+     *
+     * @param mixed $value
      */
     public function stringify($value): string
     {

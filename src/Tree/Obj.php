@@ -27,6 +27,9 @@ namespace byrokrat\autogiro\Tree;
  */
 class Obj extends Node
 {
+    /**
+     * @param mixed $value
+     */
     public function __construct(int $lineNr = 0, $value = null, string $name = 'Object')
     {
         parent::__construct($lineNr, $value);

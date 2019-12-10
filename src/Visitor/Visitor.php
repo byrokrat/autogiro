@@ -36,7 +36,7 @@ class Visitor implements VisitorInterface
     private const BEFORE = 'before';
 
     /**
-     * @var array
+     * @var array<string, array>
      */
     private $hooks = [
         self::AFTER => [],

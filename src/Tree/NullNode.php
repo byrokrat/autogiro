@@ -29,6 +29,9 @@ class NullNode extends Node
 {
     use TypeTrait;
 
+    /**
+     * @param mixed $value
+     */
     public function __construct(int $lineNr = 0, $value = null)
     {
         parent::__construct($lineNr, $value);

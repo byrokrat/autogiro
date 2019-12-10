@@ -49,6 +49,9 @@ class Node
      */
     private $value;
 
+    /**
+     * @param mixed $value
+     */
     public function __construct(int $lineNr = 0, $value = null)
     {
         $this->lineNr = $lineNr;

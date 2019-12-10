@@ -31,11 +31,21 @@ class MultibyteHack
 {
 }
 
+/**
+ * @param string $str
+ * @return int
+ */
 function strlen($str)
 {
     return mb_strlen($str);
 }
 
+/**
+ * @param string $str
+ * @param int $start
+ * @param int $length
+ * @return string
+ */
 function substr($str, $start, $length)
 {
     return mb_substr($str, $start, $length);

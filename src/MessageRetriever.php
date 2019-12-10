@@ -35,10 +35,13 @@ class MessageRetriever
     const DEFAULT_MESSAGE_STORE = __DIR__ . '/messages.json';
 
     /**
-     * @var array
+     * @var array<string, array>
      */
     private $messages;
 
+    /**
+     * @param array<string, array> $messages
+     */
     public function __construct(array $messages = [])
     {
         $this->messages = $messages ?: json_decode((string)file_get_contents(self::DEFAULT_MESSAGE_STORE), true);
@@ -49,6 +52,9 @@ class MessageRetriever
         return $this->pickMessage($this->messages, ...$keys);
     }
 
+    /**
+     * @param array<string, array> $messages
+     */
     private function pickMessage(array $messages, string $key, string ...$additionalKeys): string
     {
         $value = $messages[$key] ?? [];
