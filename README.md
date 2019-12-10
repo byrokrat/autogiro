@@ -12,7 +12,7 @@ Read and write files for the swedish direct debit system autogirot.
 ## Installation
 
 ```shell
-composer require byrokrat/autogiro:^1.0@beta
+composer require byrokrat/autogiro
 ```
 
 ## Table of contents
