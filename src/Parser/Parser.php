@@ -49,7 +49,7 @@ final class Parser implements ParserInterface
     {
         try {
             $tree = $this->grammar->parse(
-                Encoding::toUTF8($content)
+                @Encoding::toUTF8($content)
             );
         } catch (\InvalidArgumentException $exception) {
             throw new ParserException("Parser: {$exception->getMessage()}");
