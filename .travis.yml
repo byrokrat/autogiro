@@ -3,15 +3,17 @@ sudo: false
 language: php
 
 php:
-  - 7.4
-  - 7.3
-  - 7.2
-  - 7.1
+    - 7.4
+    - 7.3
+    - 7.2
+    - 7.1
 
 install:
-  - make vendor-bin/installed
+    - make vendor/installed
+    - wget -O phive.phar https://phar.io/releases/phive.phar
+    - make tools/phpspec tools/behat tools/readme-tester PHIVE_CMD="php phive.phar"
 
 script:
-  - vendor/bin/phpspec run --verbose
-  - vendor/bin/behat
-  - vendor/bin/readme-tester README.md
+    - tools/phpspec run --verbose
+    - tools/behat
+    - tools/readme-tester README.md
