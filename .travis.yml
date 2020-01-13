@@ -16,4 +16,4 @@ install:
 script:
     - tools/phpspec run --verbose
     - tools/behat
-    - tools/readme-tester README.md
+    - if [[ "$TRAVIS_PHP_VERSION" != '7.1' ]]; then tools/readme-tester README.md ; fi
