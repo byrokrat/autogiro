@@ -12,7 +12,7 @@ class VisitorSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType(Visitor::CLASS);
+        $this->shouldHaveType(Visitor::class);
     }
 
     function it_ignores_unknown_nodes(Node $node)

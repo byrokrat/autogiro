@@ -12,7 +12,7 @@ class MessageRetrieverSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType(MessageRetriever::CLASS);
+        $this->shouldHaveType(MessageRetriever::class);
     }
 
     function it_reads_message_from_single_id()

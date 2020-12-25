@@ -14,13 +14,13 @@ class WriterFactorySpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType(WriterFactory::CLASS);
+        $this->shouldHaveType(WriterFactory::class);
     }
 
     function it_creates_writers(AccountNumber $bankgiro, \DateTime $date)
     {
         $bankgiro->getNumber()->willReturn('');
         $date->format(Argument::any())->willReturn('');
-        $this->createWriter('bgc_cust', $bankgiro, $date)->shouldHaveType(WriterInterface::CLASS);
+        $this->createWriter('bgc_cust', $bankgiro, $date)->shouldHaveType(WriterInterface::class);
     }
 }

@@ -19,7 +19,7 @@ class NumberVisitorSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(NumberVisitor::CLASS);
+        $this->shouldHaveType(NumberVisitor::class);
     }
 
     function it_captures_invalid_nodes(Number $node, $errorObj)

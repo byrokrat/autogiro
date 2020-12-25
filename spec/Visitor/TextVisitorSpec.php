@@ -19,7 +19,7 @@ class TextVisitorSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(TextVisitor::CLASS);
+        $this->shouldHaveType(TextVisitor::class);
     }
 
     function it_captures_invalid_text_nodes(Text $textNode, $errorObj)

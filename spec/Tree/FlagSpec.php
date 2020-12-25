@@ -17,12 +17,12 @@ class FlagSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(Flag::CLASS);
+        $this->shouldHaveType(Flag::class);
     }
 
     function it_is_a_node()
     {
-        $this->shouldHaveType(Node::CLASS);
+        $this->shouldHaveType(Node::class);
     }
 
     function it_contains_a_name()

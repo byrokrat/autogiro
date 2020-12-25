@@ -20,7 +20,7 @@ class PaymentVisitorSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(PaymentVisitor::CLASS);
+        $this->shouldHaveType(PaymentVisitor::class);
     }
 
     function it_fails_if_interval_is_used_with_immediate_date_in_incoming_payment(

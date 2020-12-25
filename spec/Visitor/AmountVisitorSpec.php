@@ -22,7 +22,7 @@ class AmountVisitorSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(AmountVisitor::CLASS);
+        $this->shouldHaveType(AmountVisitor::class);
     }
 
     function it_does_not_create_amount_if_object_exists(Node $node)

@@ -27,12 +27,12 @@ class PrintingVisitorSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(PrintingVisitor::CLASS);
+        $this->shouldHaveType(PrintingVisitor::class);
     }
 
     function it_is_a_visitor()
     {
-        $this->shouldHaveType(Visitor::CLASS);
+        $this->shouldHaveType(Visitor::class);
     }
 
     function it_prints_dates(Node $node, $output)
@@ -119,7 +119,7 @@ class PrintingVisitorSpec extends ObjectBehavior
     function it_fails_on_invalid_intervals(Node $node, $output)
     {
         $node->getValue()->willReturn('9');
-        $this->shouldThrow(RuntimeException::CLASS)->duringBeforeInterval($node);
+        $this->shouldThrow(RuntimeException::class)->duringBeforeInterval($node);
         $output->write(Argument::any())->shouldNotHaveBeenCalled();
     }
 
@@ -147,7 +147,7 @@ class PrintingVisitorSpec extends ObjectBehavior
     function it_fails_on_invalid_repititions(Node $node, $output)
     {
         $node->getValue()->willReturn('1000');
-        $this->shouldThrow(RuntimeException::CLASS)->duringBeforeRepetitions($node);
+        $this->shouldThrow(RuntimeException::class)->duringBeforeRepetitions($node);
         $output->write(Argument::any())->shouldNotHaveBeenCalled();
     }
 
@@ -169,13 +169,13 @@ class PrintingVisitorSpec extends ObjectBehavior
     function it_fails_on_to_large_amounts(Node $node)
     {
         $node->getValue()->willReturn(Money::SEK('1000000000000'));
-        $this->shouldThrow(RuntimeException::CLASS)->duringBeforeAmount($node);
+        $this->shouldThrow(RuntimeException::class)->duringBeforeAmount($node);
     }
 
     function it_fails_on_to_small_amounts(Node $node)
     {
         $node->getValue()->willReturn(Money::SEK('-1000000000000'));
-        $this->shouldThrow(RuntimeException::CLASS)->duringBeforeAmount($node);
+        $this->shouldThrow(RuntimeException::class)->duringBeforeAmount($node);
     }
 
     function it_ignores_missing_amounts(Node $node, $output)

@@ -27,7 +27,7 @@ class AccountVisitorSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(AccountVisitor::CLASS);
+        $this->shouldHaveType(AccountVisitor::class);
     }
 
     function it_fails_on_unvalid_account_number(Node $node, $accountFactory, $errorObj)
@@ -36,7 +36,7 @@ class AccountVisitorSpec extends ObjectBehavior
         $node->hasChild(Node::OBJ)->willReturn(false);
 
         $node->getValueFrom(Node::NUMBER)->willReturn('not-valid');
-        $accountFactory->createAccount('not-valid')->willThrow(BankingException::CLASS);
+        $accountFactory->createAccount('not-valid')->willThrow(BankingException::class);
 
         $this->beforeAccount($node);
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
@@ -81,7 +81,7 @@ class AccountVisitorSpec extends ObjectBehavior
         $node->hasChild(Node::OBJ)->willReturn(false);
 
         $node->getValueFrom(Node::NUMBER)->willReturn('not-valid');
-        $bankgiroFactory->createAccount('not-valid')->willThrow(BankingException::CLASS);
+        $bankgiroFactory->createAccount('not-valid')->willThrow(BankingException::class);
 
         $this->beforePayeeBankgiro($node);
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);

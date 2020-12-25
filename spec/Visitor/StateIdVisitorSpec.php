@@ -27,7 +27,7 @@ class StateIdVisitorSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(StateIdVisitor::CLASS);
+        $this->shouldHaveType(StateIdVisitor::class);
     }
 
     function it_does_not_create_id_if_object_is_set(Node $node)
@@ -51,7 +51,7 @@ class StateIdVisitorSpec extends ObjectBehavior
         $node->hasChild(Node::OBJ)->willReturn(false);
 
         $node->getValueFrom(Node::NUMBER)->willReturn('99-not-a-valid-id');
-        $organizationIdFactory->createId('-not-a-valid-id')->willThrow(IdException::CLASS);
+        $organizationIdFactory->createId('-not-a-valid-id')->willThrow(IdException::class);
 
         $this->beforeStateId($node);
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
@@ -78,7 +78,7 @@ class StateIdVisitorSpec extends ObjectBehavior
         $node->hasChild(Node::OBJ)->willReturn(false);
 
         $node->getValueFrom(Node::NUMBER)->willReturn('not-valid');
-        $personalIdFactory->createId('not-valid')->willThrow(IdException::CLASS);
+        $personalIdFactory->createId('not-valid')->willThrow(IdException::class);
 
         $this->beforeStateId($node);
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);

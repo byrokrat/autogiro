@@ -25,13 +25,13 @@ class WriterSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(Writer::CLASS);
+        $this->shouldHaveType(Writer::class);
     }
 
     function it_can_create_content($treeBuilder, $printer, Node $tree)
     {
         $treeBuilder->buildTree()->willReturn($tree)->shouldBeCalled();
-        $printer->setOutput(Argument::type(Output::CLASS))->shouldBeCalled();
+        $printer->setOutput(Argument::type(Output::class))->shouldBeCalled();
         $tree->accept($printer)->shouldBeCalled();
         $this->getContent()->shouldEqual('');
     }

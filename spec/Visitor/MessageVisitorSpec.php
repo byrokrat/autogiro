@@ -21,7 +21,7 @@ class MessageVisitorSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(MessageVisitor::CLASS);
+        $this->shouldHaveType(MessageVisitor::class);
     }
 
     function it_fails_on_unvalid_message(Node $file, Node $record, Node $msg, $errorObj, $messages)

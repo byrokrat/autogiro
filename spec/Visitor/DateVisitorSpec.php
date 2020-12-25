@@ -20,7 +20,7 @@ class DateVisitorSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(DateVisitor::CLASS);
+        $this->shouldHaveType(DateVisitor::class);
     }
 
     function it_does_not_create_if_date_object_exists(Node $node)

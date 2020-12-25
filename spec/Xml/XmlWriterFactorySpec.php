@@ -13,11 +13,11 @@ class XmlWriterFactorySpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType(XmlWriterFactory::CLASS);
+        $this->shouldHaveType(XmlWriterFactory::class);
     }
 
     function it_can_create_writers()
     {
-        $this->createXmlWriter()->shouldHaveType(XmlWriter::CLASS);
+        $this->createXmlWriter()->shouldHaveType(XmlWriter::class);
     }
 }

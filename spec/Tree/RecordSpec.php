@@ -17,7 +17,7 @@ class RecordSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(Record::CLASS);
+        $this->shouldHaveType(Record::class);
     }
 
     function it_contains_a_name()

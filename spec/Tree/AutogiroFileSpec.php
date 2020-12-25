@@ -18,12 +18,12 @@ class AutogiroFileSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(AutogiroFile::CLASS);
+        $this->shouldHaveType(AutogiroFile::class);
     }
 
     function it_is_a_container_node()
     {
-        $this->shouldHaveType(Container::CLASS);
+        $this->shouldHaveType(Container::class);
     }
 
     function it_contains_a_name()

@@ -12,12 +12,12 @@ class NumberSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType(Number::CLASS);
+        $this->shouldHaveType(Number::class);
     }
 
     function it_implements_node_interface()
     {
-        $this->shouldHaveType(Node::CLASS);
+        $this->shouldHaveType(Node::class);
     }
 
     function it_contains_a_default_name()

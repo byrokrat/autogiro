@@ -13,12 +13,12 @@ class NullNodeSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType(NullNode::CLASS);
+        $this->shouldHaveType(NullNode::class);
     }
 
     function it_implements_node_interface()
     {
-        $this->shouldHaveType(Node::CLASS);
+        $this->shouldHaveType(Node::class);
     }
 
     function it_contains_a_name()

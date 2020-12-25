@@ -22,12 +22,12 @@ class ParserSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(Parser::CLASS);
+        $this->shouldHaveType(Parser::class);
     }
 
     function it_is_a_parser()
     {
-        $this->shouldHaveType(ParserInterface::CLASS);
+        $this->shouldHaveType(ParserInterface::class);
     }
 
     function it_creates_trees($grammar, $visitor, Node $node)
@@ -40,7 +40,7 @@ class ParserSpec extends ObjectBehavior
     function it_throws_parser_exception_if_grammar_fails($grammar)
     {
         $grammar->parse('invalid-ag-file')->willThrow('\InvalidArgumentException');
-        $this->shouldThrow(ParserException::CLASS)->duringParse('invalid-ag-file');
+        $this->shouldThrow(ParserException::class)->duringParse('invalid-ag-file');
     }
 
     function it_converts_to_utf8($grammar, $visitor, Node $node)

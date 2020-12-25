@@ -19,12 +19,12 @@ class TreeExceptionSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(TreeException::CLASS);
+        $this->shouldHaveType(TreeException::class);
     }
 
     function it_is_throwable()
     {
-        $this->shouldHaveType(\Throwable::CLASS);
+        $this->shouldHaveType(\Throwable::class);
     }
 
     function it_contains_error_messages()

@@ -19,7 +19,7 @@ class CountingVisitorSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(CountingVisitor::CLASS);
+        $this->shouldHaveType(CountingVisitor::class);
     }
 
     function it_validates_record_counts(Node $count, Node $record, $errorObj)

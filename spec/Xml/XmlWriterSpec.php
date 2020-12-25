@@ -20,12 +20,12 @@ class XmlWriterSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(XmlWriter::CLASS);
+        $this->shouldHaveType(XmlWriter::class);
     }
 
     function it_can_generate_xml(Node $node)
     {
-        $node->accept(Argument::type(XmlWritingVisitor::CLASS))->shouldBeCalled();
+        $node->accept(Argument::type(XmlWritingVisitor::class))->shouldBeCalled();
         $this->asXml($node)->shouldBeString();
     }
 }

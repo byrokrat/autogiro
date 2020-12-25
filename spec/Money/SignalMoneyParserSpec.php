@@ -15,12 +15,12 @@ class SignalMoneyParserSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType(SignalMoneyParser::CLASS);
+        $this->shouldHaveType(SignalMoneyParser::class);
     }
 
     function it_is_a_money_parser()
     {
-        $this->shouldHaveType(MoneyParser::CLASS);
+        $this->shouldHaveType(MoneyParser::class);
     }
 
     function it_fails_on_non_string()

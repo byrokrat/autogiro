@@ -14,7 +14,7 @@ class PayeeVisitorSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType(PayeeVisitor::CLASS);
+        $this->shouldHaveType(PayeeVisitor::class);
     }
 
     function let(

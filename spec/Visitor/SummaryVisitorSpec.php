@@ -20,7 +20,7 @@ class SummaryVisitorSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(SummaryVisitor::CLASS);
+        $this->shouldHaveType(SummaryVisitor::class);
     }
 
     function it_validates_summary(

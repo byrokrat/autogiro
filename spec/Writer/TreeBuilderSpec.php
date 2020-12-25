@@ -35,7 +35,7 @@ class TreeBuilderSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(TreeBuilder::CLASS);
+        $this->shouldHaveType(TreeBuilder::class);
     }
 
     function it_can_reset()

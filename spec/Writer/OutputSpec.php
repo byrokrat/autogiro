@@ -12,7 +12,7 @@ class OutputSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType(Output::CLASS);
+        $this->shouldHaveType(Output::class);
     }
 
     function it_captures_output()

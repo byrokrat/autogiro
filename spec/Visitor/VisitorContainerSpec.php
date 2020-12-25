@@ -21,7 +21,7 @@ class VisitorContainerSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(VisitorContainer::CLASS);
+        $this->shouldHaveType(VisitorContainer::class);
     }
 
     function it_can_load_visitors(VisitorInterface $visitorA, VisitorInterface $visitorB)
@@ -59,7 +59,7 @@ class VisitorContainerSpec extends ObjectBehavior
         $node->getType()->willReturn('');
         $errorObj->hasErrors()->willReturn(true);
         $errorObj->getErrors()->willReturn(['an error']);
-        $this->shouldThrow(TreeException::CLASS)->duringVisitAfter($node);
+        $this->shouldThrow(TreeException::class)->duringVisitAfter($node);
     }
 
     function it_resets_errors($errorObj, Node $node)

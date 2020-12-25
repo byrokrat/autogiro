@@ -19,7 +19,7 @@ class XmlWritingVisitorSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(XmlWritingVisitor::CLASS);
+        $this->shouldHaveType(XmlWritingVisitor::class);
     }
 
     function it_writes_elements_before(Node $node, $writer, $stringifier)

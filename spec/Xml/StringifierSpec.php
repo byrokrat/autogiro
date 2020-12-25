@@ -19,7 +19,7 @@ class StringifierSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(Stringifier::CLASS);
+        $this->shouldHaveType(Stringifier::class);
     }
 
     function it_casts_scalars()

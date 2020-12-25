@@ -13,7 +13,7 @@ class NodeSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType(Node::CLASS);
+        $this->shouldHaveType(Node::class);
     }
 
     function it_contains_a_name()
@@ -71,7 +71,7 @@ class NodeSpec extends ObjectBehavior
 
     function it_defaults_undefined_child_to_null_node()
     {
-        $this->getChild('this-is-not-definied')->shouldHaveType(NullNode::CLASS);
+        $this->getChild('this-is-not-definied')->shouldHaveType(NullNode::class);
     }
 
     function it_identifies_child_nodes_insensitive_to_case(Node $node)

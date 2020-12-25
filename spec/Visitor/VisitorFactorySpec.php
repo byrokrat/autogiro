@@ -13,12 +13,12 @@ class VisitorFactorySpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType(VisitorFactory::CLASS);
+        $this->shouldHaveType(VisitorFactory::class);
     }
 
     function it_creates_visitors()
     {
-        $this->createVisitors()->shouldHaveType(VisitorInterface::CLASS);
+        $this->createVisitors()->shouldHaveType(VisitorInterface::class);
     }
 
     function it_creates_visitors_with_no_external_visitors()

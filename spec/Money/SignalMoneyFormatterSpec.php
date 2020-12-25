@@ -15,12 +15,12 @@ class SignalMoneyFormatterSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType(SignalMoneyFormatter::CLASS);
+        $this->shouldHaveType(SignalMoneyFormatter::class);
     }
 
     function it_is_a_money_formatter()
     {
-        $this->shouldHaveType(MoneyFormatter::CLASS);
+        $this->shouldHaveType(MoneyFormatter::class);
     }
 
     function it_fails_on_non_sek_money()

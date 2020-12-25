@@ -12,12 +12,12 @@ class DateSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType(Date::CLASS);
+        $this->shouldHaveType(Date::class);
     }
 
     function it_implements_node_interface()
     {
-        $this->shouldHaveType(Node::CLASS);
+        $this->shouldHaveType(Node::class);
     }
 
     function it_contains_a_name()

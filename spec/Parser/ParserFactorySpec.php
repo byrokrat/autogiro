@@ -12,16 +12,16 @@ class ParserFactorySpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType(ParserFactory::CLASS);
+        $this->shouldHaveType(ParserFactory::class);
     }
 
     function it_creates_parsers()
     {
-        $this->createParser()->shouldHaveType(ParserInterface::CLASS);
+        $this->createParser()->shouldHaveType(ParserInterface::class);
     }
 
     function it_creates_parses_with_no_external_visitors()
     {
-        $this->createParser(ParserFactory::VISITOR_IGNORE_OBJECTS)->shouldHaveType(ParserInterface::CLASS);
+        $this->createParser(ParserFactory::VISITOR_IGNORE_OBJECTS)->shouldHaveType(ParserInterface::class);
     }
 }

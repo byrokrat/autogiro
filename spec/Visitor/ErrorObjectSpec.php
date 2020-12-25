@@ -11,7 +11,7 @@ class ErrorObjectSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType(ErrorObject::CLASS);
+        $this->shouldHaveType(ErrorObject::class);
     }
 
     function it_defaults_to_no_error()
