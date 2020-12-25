@@ -29,7 +29,7 @@ use Money\Money;
 use Money\MoneyParser;
 
 /**
- * Create amount object under child 'Object'
+ * Create amount object under child Node::OBJ
  */
 final class AmountVisitor extends Visitor
 {
@@ -48,7 +48,7 @@ final class AmountVisitor extends Visitor
 
     public function beforeAmount(Node $node): void
     {
-        if ($node->hasChild('Object')) {
+        if ($node->hasChild(Node::OBJ)) {
             return;
         }
 

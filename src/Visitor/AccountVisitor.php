@@ -31,7 +31,7 @@ use byrokrat\banking\Exception as BankingException;
 /**
  * Validates the structure of account numbers in tree
  *
- * Creates account object as child 'Object'
+ * Creates account object as child Node::OBJ
  */
 final class AccountVisitor extends Visitor
 {
@@ -69,11 +69,11 @@ final class AccountVisitor extends Visitor
 
     private function writeAccount(Node $node, AccountFactoryInterface $factory): void
     {
-        if ($node->hasChild('Object')) {
+        if ($node->hasChild(Node::OBJ)) {
             return;
         }
 
-        $number = ltrim((string)$node->getValueFrom('Number'), '0');
+        $number = ltrim((string)$node->getValueFrom(Node::NUMBER), '0');
 
         if (!$number) {
             return;

@@ -57,14 +57,14 @@ final class PayeeVisitor extends Visitor
     public function beforePayeeBankgiro(Node $node): void
     {
         if (!$this->payeeBg) {
-            $this->payeeBg = (string)$node->getValueFrom('Number');
+            $this->payeeBg = (string)$node->getValueFrom(Node::NUMBER);
         }
 
-        if ($node->getValueFrom('Number') != $this->payeeBg) {
+        if ($node->getValueFrom(Node::NUMBER) != $this->payeeBg) {
             $this->getErrorObject()->addError(
                 "Non-matching payee bankgiro numbers (expecting: %s, found: %s) on line %s",
                 $this->payeeBg,
-                (string)$node->getValueFrom('Number'),
+                (string)$node->getValueFrom(Node::NUMBER),
                 (string)$node->getLineNr()
             );
         }

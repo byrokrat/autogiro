@@ -24,7 +24,7 @@ class CountingVisitorSpec extends ObjectBehavior
 
     function it_validates_record_counts(Node $count, Node $record, $errorObj)
     {
-        $count->getValueFrom('Number')->willReturn('0000001');
+        $count->getValueFrom(Node::NUMBER)->willReturn('0000001');
         $count->getValueFrom('Text')->willReturn('foobar');
         $record->getName()->willReturn('foobar');
 
@@ -36,7 +36,7 @@ class CountingVisitorSpec extends ObjectBehavior
 
     function it_validates_section_counts(Node $count, Node $section, $errorObj)
     {
-        $count->getValueFrom('Number')->willReturn('0000001');
+        $count->getValueFrom(Node::NUMBER)->willReturn('0000001');
         $count->getValueFrom('Text')->willReturn('foobar');
         $section->getName()->willReturn('foobar');
 
@@ -49,7 +49,7 @@ class CountingVisitorSpec extends ObjectBehavior
     function it_fails_on_invalid_count(Node $count, Node $record, $errorObj)
     {
         $count->getLineNr()->willReturn(1);
-        $count->getValueFrom('Number')->willReturn('0000000');
+        $count->getValueFrom(Node::NUMBER)->willReturn('0000000');
         $count->getValueFrom('Text')->willReturn('foobar');
         $record->getName()->willReturn('foobar');
 
@@ -61,7 +61,7 @@ class CountingVisitorSpec extends ObjectBehavior
 
     function it_resets_count_on_file_node(Node $count, Node $record, $errorObj)
     {
-        $count->getValueFrom('Number')->willReturn('0000000');
+        $count->getValueFrom(Node::NUMBER)->willReturn('0000000');
         $count->getValueFrom('Text')->willReturn('foobar');
         $record->getName()->willReturn('foobar');
 

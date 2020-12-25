@@ -10,6 +10,7 @@ use byrokrat\autogiro\Tree\Date;
 use byrokrat\autogiro\Tree\Flag;
 use byrokrat\autogiro\Tree\ImmediateDate;
 use byrokrat\autogiro\Tree\Message;
+use byrokrat\autogiro\Tree\Node;
 use byrokrat\autogiro\Tree\Number;
 use byrokrat\autogiro\Tree\Obj;
 use byrokrat\autogiro\Tree\Record;
@@ -247,7 +248,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$secs) {
-                return new AutogiroFile('AutogiroRequestFile', ...$secs);
+                return new AutogiroFile(Node::AUTOGIRO_REQUEST_FILE, ...$secs);
             });
         }
 
@@ -358,7 +359,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$bgcNr, &$bg) {
-                return new Record('Opening', $date, $bgcNr, $bg);
+                return new Record(Node::OPENING, $date, $bgcNr, $bg);
             });
         }
 
@@ -487,7 +488,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$open, &$records) {
-                return new Section('MandateRequestSection', $open, ...$records);
+                return new Section(Node::MANDATE_REQUEST_SECTION, $open, ...$records);
             });
         }
 
@@ -562,7 +563,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$bg, &$payerNr) {
-                return new Record('DeleteMandateRequest', $bg, $payerNr);
+                return new Record(Node::DELETE_MANDATE_REQUEST, $bg, $payerNr);
             });
         }
 
@@ -663,7 +664,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$bg, &$payerNr) {
-                return new Record('RejectDigitalMandateRequest', $bg, $payerNr);
+                return new Record(Node::REJECT_DIGITAL_MANDATE_REQUEST, $bg, $payerNr);
             });
         }
 
@@ -782,9 +783,9 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$bg, &$payerNr, &$account, &$id) {
-                return $id && trim($id->getValueFrom('Number'))
-                    ? new Record('CreateMandateRequest', $bg, $payerNr, $account, $id)
-                    : new Record('AcceptDigitalMandateRequest', $bg, $payerNr);
+                return $id && trim($id->getValueFrom(Node::NUMBER))
+                    ? new Record(Node::CREATE_MANDATE_REQUEST, $bg, $payerNr, $account, $id)
+                    : new Record(Node::ACCEPT_DIGITAL_MANDATE_REQUEST, $bg, $payerNr);
             });
         }
 
@@ -879,11 +880,11 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$oldBg, &$oldPayerNr, &$newBg, &$newPayerNr) {
-                $oldPayerNr->setName('OldPayerNumber');
-                $newPayerNr->setName('NewPayerNumber');
-                $oldBg->setName('OldPayeeBankgiro');
-                $newBg->setName('NewPayeeBankgiro');
-                return new Record('UpdateMandateRequest', $oldBg, $oldPayerNr, $newBg, $newPayerNr);
+                $oldPayerNr->setName(Node::OLD_PAYER_NUMBER);
+                $newPayerNr->setName(Node::NEW_PAYER_NUMBER);
+                $oldBg->setName(Node::OLD_PAYEE_BANKGIRO);
+                $newBg->setName(Node::NEW_PAYEE_BANKGIRO);
+                return new Record(Node::UPDATE_MANDATE_REQUEST, $oldBg, $oldPayerNr, $newBg, $newPayerNr);
             });
         }
 
@@ -964,7 +965,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$open, &$records) {
-                return new Section('PaymentRequestSection', $open, ...$records);
+                return new Section(Node::PAYMENT_REQUEST_SECTION, $open, ...$records);
             });
         }
 
@@ -1132,8 +1133,8 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $this->value = call_user_func(function () use (&$tc, &$date, &$ival, &$reps, &$payerNr, &$amount, &$bg, &$ref) {
                 static $types = [
-                    '82' => 'IncomingPaymentRequest',
-                    '32' => 'OutgoingPaymentRequest',
+                    '82' => Node::INCOMING_PAYMENT_REQUEST,
+                    '32' => Node::OUTGOING_PAYMENT_REQUEST,
                 ];
 
                 return new Record($types[$tc], $date, $ival, $reps, $payerNr, $amount, $bg, $ref);
@@ -1217,7 +1218,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$open, &$records) {
-                return new Section('AmendmentRequestSection', $open, ...$records);
+                return new Section(Node::AMENDMENT_REQUEST_SECTION, $open, ...$records);
             });
         }
 
@@ -1440,17 +1441,17 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$type, &$bg, &$payerNr, &$date, &$amount, &$dir, &$newDate, &$ref) {
-                $type->setName('Type');
+                $type->setName(Node::TYPE);
 
                 if ($dir) {
-                    $dir->setName('Direction');
+                    $dir->setName(Node::DIRECTION);
                 }
 
                 if ($newDate) {
-                    $newDate->setName('NewDate');
+                    $newDate->setName(Node::NEW_DATE);
                 }
 
-                return new Record('AmendmentRequest', $type, $bg, $payerNr, $date, $amount, $dir, $newDate, $ref);
+                return new Record(Node::AMENDMENT_REQUEST, $type, $bg, $payerNr, $date, $amount, $dir, $newDate, $ref);
             });
         }
 
@@ -1623,7 +1624,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $this->value = call_user_func(function () use (&$open, &$secs, &$close) {
                 $secs[] = $close;
-                return new AutogiroFile('AutogiroPaymentResponseFile', $open, ...$secs);
+                return new AutogiroFile(Node::AUTOGIRO_PAYMENT_RESPONSE_FILE, $open, ...$secs);
             });
         }
 
@@ -1737,7 +1738,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$bgcNr, &$bg) {
-                return new Record('Opening', $date, $bgcNr, $bg);
+                return new Record(Node::OPENING, $date, $bgcNr, $bg);
             });
         }
 
@@ -1877,14 +1878,14 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$nrInSecs, &$nrInRecs, &$nrOutSecs, &$nrOutRecs, &$nrRefSecs, &$nrRefRecs) {
                 return new Record(
-                    'Closing',
+                    Node::CLOSING,
                     $date,
-                    new Count('IncomingPaymentResponseSection', $nrInSecs),
-                    new Count('SuccessfulIncomingPaymentResponse', $nrInRecs),
-                    new Count('OutgoingPaymentResponseSection', $nrOutSecs),
-                    new Count('SuccessfulOutgoingPaymentResponse', $nrOutRecs),
-                    new Count('RefundPaymentResponseSection', $nrRefSecs),
-                    new Count('RefundPaymentResponse', $nrRefRecs)
+                    new Count(Node::INCOMING_PAYMENT_RESPONSE_SECTION, $nrInSecs),
+                    new Count(Node::SUCCESSFUL_INCOMING_PAYMENT_RESPONSE, $nrInRecs),
+                    new Count(Node::OUTGOING_PAYMENT_RESPONSE_SECTION, $nrOutSecs),
+                    new Count(Node::SUCCESSFUL_OUTGOING_PAYMENT_RESPONSE, $nrOutRecs),
+                    new Count(Node::REFUND_PAYMENT_RESPONSE_SECTION, $nrRefSecs),
+                    new Count(Node::REFUND_PAYMENT_RESPONSE, $nrRefRecs)
                 );
             });
         }
@@ -1962,7 +1963,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$open, &$records) {
-                return new Section('IncomingPaymentResponseSection', $open, ...$records);
+                return new Section(Node::INCOMING_PAYMENT_RESPONSE_SECTION, $open, ...$records);
             });
         }
 
@@ -2079,8 +2080,8 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$account, &$date, &$serial, &$amount, &$nrRecs) {
-                $nrRecs->setName('IncomingPaymentCount');
-                return new Record('IncomingPaymentResponseSectionOpening', $account, $date, $serial, $amount, $nrRecs);
+                $nrRecs->setName(Node::INCOMING_PAYMENT_COUNT);
+                return new Record(Node::INCOMING_PAYMENT_RESPONSE_SECTION_OPENING, $account, $date, $serial, $amount, $nrRecs);
             });
         }
 
@@ -2255,10 +2256,13 @@ class Grammar extends MultibyteHack
                     $status = new Message('', new Number($date->getLineNr(), '0'));
                 }
 
-                $status->setName('Status');
-                $flag = !$status->getValueFrom('Number') ? 'Successful' : 'Failed';
+                $status->setName(Node::STATUS);
 
-                return new Record($flag.'IncomingPaymentResponse', new Flag($flag.'Flag'), $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $status);
+                if ($status->getValueFrom(Node::NUMBER)) {
+                    return new Record(Node::FAILED_INCOMING_PAYMENT_RESPONSE, new Flag(Node::FAILED_FLAG), $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $status);
+                }
+
+                return new Record(Node::SUCCESSFUL_INCOMING_PAYMENT_RESPONSE, new Flag(Node::SUCCESSFUL_FLAG), $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $status);
             });
         }
 
@@ -2335,7 +2339,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$open, &$records) {
-                return new Section('OutgoingPaymentResponseSection', $open, ...$records);
+                return new Section(Node::OUTGOING_PAYMENT_RESPONSE_SECTION, $open, ...$records);
             });
         }
 
@@ -2452,8 +2456,8 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$account, &$date, &$serial, &$amount, &$nrRecs) {
-                $nrRecs->setName('IncomingPaymentCount');
-                return new Record('OutgoingPaymentResponseSectionOpening', $account, $date, $serial, $amount, $nrRecs);
+                $nrRecs->setName(Node::OUTGOING_PAYMENT_COUNT);
+                return new Record(Node::OUTGOING_PAYMENT_RESPONSE_SECTION_OPENING, $account, $date, $serial, $amount, $nrRecs);
             });
         }
 
@@ -2628,10 +2632,13 @@ class Grammar extends MultibyteHack
                     $status = new Message('', new Number($date->getLineNr(), '0'));
                 }
 
-                $status->setName('Status');
-                $flag = $status->getValueFrom('Number') == '0' ? 'Successful' : 'Failed';
+                $status->setName(Node::STATUS);
 
-                return new Record($flag.'OutgoingPaymentResponse', new Flag($flag.'Flag'), $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $status);
+                if ($status->getValueFrom(Node::NUMBER) == '0') {
+                    return new Record(Node::SUCCESSFUL_OUTGOING_PAYMENT_RESPONSE, new Flag(Node::SUCCESSFUL_FLAG), $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $status);
+                }
+
+                return new Record(Node::FAILED_OUTGOING_PAYMENT_RESPONSE, new Flag(Node::FAILED_FLAG), $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $status);
             });
         }
 
@@ -2708,7 +2715,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$open, &$records) {
-                return new Section('RefundPaymentResponseSection', $open, ...$records);
+                return new Section(Node::REFUND_PAYMENT_RESPONSE_SECTION, $open, ...$records);
             });
         }
 
@@ -2825,8 +2832,8 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$account, &$date, &$serial, &$amount, &$nrRecs) {
-                $nrRecs->setName('IncomingPaymentCount');
-                return new Record('RefundPaymentResponseSectionOpening', $account, $date, $serial, $amount, $nrRecs);
+                $nrRecs->setName(Node::REFUND_PAYMENT_COUNT);
+                return new Record(Node::REFUND_PAYMENT_RESPONSE_SECTION_OPENING, $account, $date, $serial, $amount, $nrRecs);
             });
         }
 
@@ -2977,9 +2984,9 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$ival, &$reps, &$payerNr, &$amount, &$bg, &$ref, &$refundDate, &$status) {
-                $refundDate->setName('RefundDate');
-                $status->setName('Status');
-                return new Record('RefundPaymentResponse', $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $refundDate, $status);
+                $refundDate->setName(Node::REFUND_DATE);
+                $status->setName(Node::STATUS);
+                return new Record(Node::REFUND_PAYMENT_RESPONSE, $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $refundDate, $status);
             });
         }
 
@@ -3067,7 +3074,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $this->value = call_user_func(function () use (&$open, &$recs, &$close) {
                 $recs[] = $close;
-                return new AutogiroFile('AutogiroPaymentResponseOldFile', $open, ...$recs);
+                return new AutogiroFile(Node::AUTOGIRO_PAYMENT_RESPONSE_OLD_FILE, $open, ...$recs);
             });
         }
 
@@ -3192,7 +3199,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$bgcNr, &$bg) {
-                return new Record('Opening', $date, $bgcNr, $bg);
+                return new Record(Node::OPENING, $date, $bgcNr, $bg);
             });
         }
 
@@ -3387,17 +3394,18 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$type, &$date, &$ival, &$reps, &$payerNr, &$amount, &$bg, &$ref, &$status) {
+                static $types = [
+                    '32' => Node::OUTGOING_PAYMENT_RESPONSE,
+                    '82' => Node::INCOMING_PAYMENT_RESPONSE
+                ];
+
                 if (!$status) {
                     $status = new Message('', new Number($date->getLineNr(), ''));
                 }
 
-                $status->setName('Status');
-                $flag = $status->getValueFrom('Number') == '0' ? 'SuccessfulFlag' : 'FailedFlag';
+                $status->setName(Node::STATUS);
 
-                static $types = [
-                    '32' => 'OutgoingPaymentResponse',
-                    '82' => 'IncomingPaymentResponse'
-                ];
+                $flag = $status->getValueFrom(Node::NUMBER) == '0' ? Node::SUCCESSFUL_FLAG : Node::FAILED_FLAG;
 
                 return new Record($types[$type], new Flag($flag), $date, $ival, $reps, $payerNr, $amount, $bg, $ref, $status);
             });
@@ -3539,12 +3547,12 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$amountOut, &$nrOut, &$nrIn, &$amountIn) {
                 return new Record(
-                    'Closing',
+                    Node::CLOSING,
                     $date,
-                    new Summary('OutgoingPaymentResponse', $amountOut),
-                    new Count('OutgoingPaymentResponse', $nrOut),
-                    new Count('IncomingPaymentResponse', $nrIn),
-                    new Summary('IncomingPaymentResponse', $amountIn)
+                    new Summary(Node::OUTGOING_PAYMENT_RESPONSE, $amountOut),
+                    new Count(Node::OUTGOING_PAYMENT_RESPONSE, $nrOut),
+                    new Count(Node::INCOMING_PAYMENT_RESPONSE, $nrIn),
+                    new Summary(Node::INCOMING_PAYMENT_RESPONSE, $amountIn)
                 );
             });
         }
@@ -3686,7 +3694,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $this->value = call_user_func(function () use (&$open, &$mands, &$close) {
                 $mands[] = $close;
-                return new AutogiroFile('AutogiroMandateResponseFile', $open, ...$mands);
+                return new AutogiroFile(Node::AUTOGIRO_MANDATE_RESPONSE_FILE, $open, ...$mands);
             });
         }
 
@@ -3818,7 +3826,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$bgcNr, &$bg) {
-                return new Record('Opening', $date, $bgcNr, $bg);
+                return new Record(Node::OPENING, $date, $bgcNr, $bg);
             });
         }
 
@@ -3930,7 +3938,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$bg) {
-                return new Record('Opening', $date, $bg);
+                return new Record(Node::OPENING, $date, $bg);
             });
         }
 
@@ -4103,31 +4111,31 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$bg, &$payerNr, &$account, &$id, &$info, &$status, &$date, &$validDate) {
-                // If account is empty a valid bankgiro number may be read from the payer number field
-                if (!trim($account->getValueFrom('Number'))) {
-                    $account = new Container('Account', new Number($account->getLineNr(), $payerNr->getValue()));
-                }
-
-                $info->setName('Info');
-                $status->setName('Status');
-
                 static $status2flag = [
-                    '32' => 'CreatedFlag',
-                    '02' => 'DeletedFlag',
-                    '07' => 'DeletedFlag',
-                    '33' => 'DeletedFlag',
-                    '98' => 'DeletedFlag',
-                    '01' => 'DeletedFlag',
-                    '06' => 'DeletedFlag',
+                    '32' => Node::CREATED_FLAG,
+                    '02' => Node::DELETED_FLAG,
+                    '07' => Node::DELETED_FLAG,
+                    '33' => Node::DELETED_FLAG,
+                    '98' => Node::DELETED_FLAG,
+                    '01' => Node::DELETED_FLAG,
+                    '06' => Node::DELETED_FLAG,
                 ];
 
-                $flag = $status2flag[$status->getValueFrom('Number')] ?? 'ErrorFlag';
-
-                if ($validDate) {
-                    $validDate->setName('ValidFromDate');
+                // If account is empty a valid bankgiro number may be read from the payer number field
+                if (!trim($account->getValueFrom(Node::NUMBER))) {
+                    $account = new Container(Node::ACCOUNT, new Number($account->getLineNr(), $payerNr->getValue()));
                 }
 
-                return new Record('MandateResponse', new Flag($flag), $bg, $payerNr, $account, $id, $info, $status, $date, $validDate);
+                $info->setName(Node::INFO);
+                $status->setName(Node::STATUS);
+
+                $flag = $status2flag[$status->getValueFrom(Node::NUMBER)] ?? Node::ERROR_FLAG;
+
+                if ($validDate) {
+                    $validDate->setName(Node::VALID_FROM_DATE);
+                }
+
+                return new Record(Node::MANDATE_RESPONSE, new Flag($flag), $bg, $payerNr, $account, $id, $info, $status, $date, $validDate);
             });
         }
 
@@ -4216,7 +4224,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$nrRecs) {
-                return new Record('Closing', $date, new Count('MandateResponse', $nrRecs));
+                return new Record(Node::CLOSING, $date, new Count(Node::MANDATE_RESPONSE, $nrRecs));
             });
         }
 
@@ -4304,7 +4312,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $this->value = call_user_func(function () use (&$open, &$mands, &$close) {
                 $mands[] = $close;
-                return new AutogiroFile('DigitalMandateFile', $open, ...$mands);
+                return new AutogiroFile(Node::DIGITAL_MANDATE_FILE, $open, ...$mands);
             });
         }
 
@@ -4416,7 +4424,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$bg) {
-                return new Record('Opening', $date, $bg);
+                return new Record(Node::OPENING, $date, $bg);
             });
         }
 
@@ -4505,8 +4513,8 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$nrRecs) {
-                $nrRecs->setName('NumberOfRecords');
-                return new Record('Closing', $date, $nrRecs);
+                $nrRecs->setName(Node::DIGITAL_MANDATE_COUNT);
+                return new Record(Node::CLOSING, $date, $nrRecs);
             });
         }
 
@@ -4611,7 +4619,7 @@ class Grammar extends MultibyteHack
                     $extras = array_merge(...$extras);
                 }
 
-                return new Record('DigitalMandate', ...$data, ...$extras);
+                return new Record(Node::DIGITAL_MANDATE, ...$data, ...$extras);
             });
         }
 
@@ -4722,7 +4730,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$bg, &$payerNr, &$account, &$id, &$type) {
-                $type->setName('Type');
+                $type->setName(Node::TYPE);
                 return [$bg, $payerNr, $account, $id, $type];
             });
         }
@@ -4788,7 +4796,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$info) {
-                $info->setName('Information');
+                $info->setName(Node::INFO);
                 return [$info];
             });
         }
@@ -4864,8 +4872,8 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$line1, &$line2) {
-                $line1->setName('Adress1');
-                $line2->setName('Adress2');
+                $line1->setName(Node::ADRESS_1);
+                $line2->setName(Node::ADRESS_2);
                 return [$line1, $line2];
             });
         }
@@ -4941,8 +4949,8 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$line1, &$line2) {
-                $line1->setName('Adress3');
-                $line2->setName('Adress4');
+                $line1->setName(Node::ADRESS_3);
+                $line2->setName(Node::ADRESS_4);
                 return [$line1, $line2];
             });
         }
@@ -5018,8 +5026,8 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$postcode, &$city) {
-                $postcode->setName('Postcode');
-                $city->setName('City');
+                $postcode->setName(Node::POST_CODE);
+                $city->setName(Node::CITY);
                 return [$postcode, $city];
             });
         }
@@ -5120,7 +5128,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $this->value = call_user_func(function () use (&$open, &$recs, &$close) {
                 $recs[] = $close;
-                return new AutogiroFile('AutogiroPaymentRejectionFile', $open, ...$recs);
+                return new AutogiroFile(Node::AUTOGIRO_PAYMENT_REJECTION_FILE, $open, ...$recs);
             });
         }
 
@@ -5240,7 +5248,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$bgcNr, &$bg) {
-                return new Record('Opening', $date, $bgcNr, $bg);
+                return new Record(Node::OPENING, $date, $bgcNr, $bg);
             });
         }
 
@@ -5388,7 +5396,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$bgcNr, &$bg) {
-                return new Record('Opening', $date, $bgcNr, $bg);
+                return new Record(Node::OPENING, $date, $bgcNr, $bg);
             });
         }
 
@@ -5538,11 +5546,11 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $this->value = call_user_func(function () use (&$tc, &$date, &$ival, &$reps, &$payerNr, &$amount, &$ref, &$comment) {
                 static $types = [
-                    '82' => 'IncomingPaymentRejectionResponse',
-                    '32' => 'OutgoingPaymentRejectionResponse',
+                    '82' => Node::INCOMING_PAYMENT_REJECTION_RESPONSE,
+                    '32' => Node::OUTGOING_PAYMENT_REJECTION_RESPONSE,
                 ];
 
-                $comment->setName('Comment');
+                $comment->setName(Node::COMMENT);
 
                 return new Record($types[$tc], $date, $ival, $reps, $payerNr, $amount, $ref, $comment);
             });
@@ -5664,12 +5672,12 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$nrOut, &$amountOut, &$nrIn, &$amountIn) {
                 return new Record(
-                    'Closing',
+                    Node::CLOSING,
                     $date,
-                    new Count('OutgoingPaymentRejectionResponse', $nrOut),
-                    new Summary('OutgoingPaymentRejectionResponse', $amountOut),
-                    new Count('IncomingPaymentRejectionResponse', $nrIn),
-                    new Summary('IncomingPaymentRejectionResponse', $amountIn)
+                    new Count(Node::OUTGOING_PAYMENT_REJECTION_RESPONSE, $nrOut),
+                    new Summary(Node::OUTGOING_PAYMENT_REJECTION_RESPONSE, $amountOut),
+                    new Count(Node::INCOMING_PAYMENT_REJECTION_RESPONSE, $nrIn),
+                    new Summary(Node::INCOMING_PAYMENT_REJECTION_RESPONSE, $amountIn)
                 );
             });
         }
@@ -5770,7 +5778,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $this->value = call_user_func(function () use (&$open, &$recs, &$close) {
                 $recs[] = $close;
-                return new AutogiroFile('AutogiroAmendmentResponseFile', $open, ...$recs);
+                return new AutogiroFile(Node::AUTOGIRO_AMENDMENT_RESPONSE_FILE, $open, ...$recs);
             });
         }
 
@@ -5916,7 +5924,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$bgcNr, &$bg) {
-                return new Record('Opening', $date, $bgcNr, $bg);
+                return new Record(Node::OPENING, $date, $bgcNr, $bg);
             });
         }
 
@@ -6070,7 +6078,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$bgcNr, &$bg) {
-                return new Record('Opening', $date, $bgcNr, $bg);
+                return new Record(Node::OPENING, $date, $bgcNr, $bg);
             });
         }
 
@@ -6221,24 +6229,33 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$type, &$date, &$payerNr, &$dir, &$amount, &$ref, &$comment) {
-                $type->setName('Type');
-                $dir->setName('Direction');
-                $ref->setName('Reference');
-                $comment->setName('Comment');
-
-                static $dirToName = [
-                    '82' => 'IncomingAmendmentResponse',
-                    '32' => 'OutgoingAmendmentResponse',
-                ];
-
                 static $successComments = ['12', '14', '18'];
-
                 static $amendmentTypes = ['26', '27', '28', '29'];
 
-                $name = (in_array($comment->getValueFrom('Number'), $successComments) ? 'Successful' : 'Failed')
-                    . ($dirToName[$dir->getValueFrom('Number')] ?? 'AmendmentResponse');
+                $type->setName(Node::TYPE);
+                $dir->setName(Node::DIRECTION);
+                $ref->setName(Node::REFERENCE);
+                $comment->setName(Node::COMMENT);
 
-                $flag = in_array($type->getValueFrom('Number'), $amendmentTypes) ? 'AmendmentFlag' : 'RevocationFlag';
+                if (in_array($comment->getValueFrom(Node::NUMBER), $successComments)) {
+                    if ($dir->getValueFrom(Node::NUMBER) == '82') {
+                        $name = Node::SUCCESSFUL_INCOMING_AMENDMENT_RESPONSE;
+                    } else if ($dir->getValueFrom(Node::NUMBER) == '32') {
+                        $name = Node::SUCCESSFUL_OUTGOING_AMENDMENT_RESPONSE;
+                    } else {
+                        $name = Node::SUCCESSFUL_AMENDMENT_RESPONSE;
+                    }
+                } else {
+                    if ($dir->getValueFrom(Node::NUMBER) == '82') {
+                        $name = Node::FAILED_INCOMING_AMENDMENT_RESPONSE;
+                    } else if ($dir->getValueFrom(Node::NUMBER) == '32') {
+                        $name = Node::FAILED_OUTGOING_AMENDMENT_RESPONSE;
+                    } else {
+                        $name = Node::FAILED_AMENDMENT_RESPONSE;
+                    }
+                }
+
+                $flag = in_array($type->getValueFrom(Node::NUMBER), $amendmentTypes) ? Node::AMENDMENT_FLAG : Node::REVOCATION_FLAG;
 
                 return new Record($name, new Flag($flag), $type, $date, $payerNr, $dir, $amount, $ref, $comment);
             });
@@ -6372,12 +6389,12 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$amountOut, &$nrOut, &$nrIn, &$amountIn) {
                 return new Record(
-                    'Closing',
+                    Node::CLOSING,
                     $date,
-                    new Summary('SuccessfulOutgoingAmendmentResponse', $amountOut),
-                    new Count('SuccessfulOutgoingAmendmentResponse', $nrOut),
-                    new Count('SuccessfulIncomingAmendmentResponse', $nrIn),
-                    new Summary('SuccessfulIncomingAmendmentResponse', $amountIn)
+                    new Summary(Node::SUCCESSFUL_OUTGOING_AMENDMENT_RESPONSE, $amountOut),
+                    new Count(Node::SUCCESSFUL_OUTGOING_AMENDMENT_RESPONSE, $nrOut),
+                    new Count(Node::SUCCESSFUL_INCOMING_AMENDMENT_RESPONSE, $nrIn),
+                    new Summary(Node::SUCCESSFUL_INCOMING_AMENDMENT_RESPONSE, $amountIn)
                 );
             });
         }
@@ -6466,7 +6483,7 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $this->value = call_user_func(function () use (&$open, &$recs, &$close) {
                 $recs[] = $close;
-                return new AutogiroFile('AutogiroPaymentExtractFile', $open, ...$recs);
+                return new AutogiroFile(Node::AUTOGIRO_PAYMENT_EXTRACT_FILE, $open, ...$recs);
             });
         }
 
@@ -6580,7 +6597,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$bgcNr, &$bg) {
-                return new Record('Opening', $date, $bgcNr, $bg);
+                return new Record(Node::OPENING, $date, $bgcNr, $bg);
             });
         }
 
@@ -6756,8 +6773,8 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $this->value = call_user_func(function () use (&$type, &$date, &$ival, &$reps, &$payerNr, &$amount, &$ref) {
                 static $types = [
-                    '82' => 'IncomingPayment',
-                    '32' => 'OutgoingPayment',
+                    '82' => Node::INCOMING_PAYMENT_EXTRACT,
+                    '32' => Node::OUTGOING_PAYMENT_EXTRACT,
                 ];
 
                 return new Record($types[$type], $date, $ival, $reps, $payerNr, $amount, $ref);
@@ -6892,12 +6909,12 @@ class Grammar extends MultibyteHack
         if ($_success) {
             $this->value = call_user_func(function () use (&$date, &$amountOut, &$nrOut, &$nrIn, &$amountIn) {
                 return new Record(
-                    'Closing',
+                    Node::CLOSING,
                     $date,
-                    new Summary('OutgoingPayment', $amountOut),
-                    new Count('OutgoingPayment', $nrOut),
-                    new Count('IncomingPayment', $nrIn),
-                    new Summary('IncomingPayment', $amountIn)
+                    new Summary(Node::OUTGOING_PAYMENT_EXTRACT, $amountOut),
+                    new Count(Node::OUTGOING_PAYMENT_EXTRACT, $nrOut),
+                    new Count(Node::INCOMING_PAYMENT_EXTRACT, $nrIn),
+                    new Summary(Node::INCOMING_PAYMENT_EXTRACT, $amountIn)
                 );
             });
         }
@@ -7000,7 +7017,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$recs) {
-                return new AutogiroFile('AutogiroMandateExtractFile', ...$recs);
+                return new AutogiroFile(Node::AUTOGIRO_MANDATE_EXTRACT_FILE, ...$recs);
             });
         }
 
@@ -7063,7 +7080,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$recs) {
-                return new AutogiroFile('AutogiroMandateExtractFile', ...$recs);
+                return new AutogiroFile(Node::AUTOGIRO_MANDATE_EXTRACT_FILE, ...$recs);
             });
         }
 
@@ -7270,12 +7287,12 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$bg, &$id, &$payerNr, &$type, &$active, &$created, &$updated, &$status, &$account) {
-                $type->setName('Type');
-                $active->setName('ActiveYear');
-                $created->setName('Created');
-                $updated->setName('Updated');
-                $status->setName('Status');
-                return new Record('Mandate', $bg, $id, $payerNr, $type, $active, $created, $updated, $status, $account);
+                $type->setName(Node::TYPE);
+                $active->setName(Node::ACTIVE_YEAR);
+                $created->setName(Node::CREATED);
+                $updated->setName(Node::UPDATED);
+                $status->setName(Node::STATUS);
+                return new Record(Node::MANDATE_EXTRACT, $bg, $id, $payerNr, $type, $active, $created, $updated, $status, $account);
             });
         }
 
@@ -7454,17 +7471,17 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$bg, &$id, &$payerNr, &$type, &$active, &$created, &$updated, &$status, &$maxAmount, &$account) {
-                $type->setName('Type');
-                $active->setName('ActiveYear');
-                $created->setName('Created');
-                $updated->setName('Updated');
-                $status->setName('Status');
+                $type->setName(Node::TYPE);
+                $active->setName(Node::ACTIVE_YEAR);
+                $created->setName(Node::CREATED);
+                $updated->setName(Node::UPDATED);
+                $status->setName(Node::STATUS);
 
                 if ($maxAmount) {
-                    $maxAmount->setName('MaxAmount');
+                    $maxAmount->setName(Node::MAX_AMOUNT);
                 }
 
-                return new Record('Mandate', $bg, $id, $payerNr, $type, $active, $created, $updated, $status, $maxAmount, $account);
+                return new Record(Node::MANDATE_EXTRACT, $bg, $id, $payerNr, $type, $active, $created, $updated, $status, $maxAmount, $account);
             });
         }
 
@@ -7527,7 +7544,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$number) {
-                return new Container('Account', new Number($this->lineNr, trim($number)));
+                return new Container(Node::ACCOUNT, new Number($this->lineNr, trim($number)));
             });
         }
 
@@ -7596,7 +7613,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$number) {
-                return new Container('Account', new Number($this->lineNr, trim($number)));
+                return new Container(Node::ACCOUNT, new Number($this->lineNr, trim($number)));
             });
         }
 
@@ -7653,7 +7670,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$amount) {
-                return new Container('Amount', new Text($this->lineNr, trim($amount)));
+                return new Container(Node::AMOUNT, new Text($this->lineNr, trim($amount)));
             });
         }
 
@@ -7722,7 +7739,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$amount) {
-                return new Container('Amount', new Text($this->lineNr, trim($amount)));
+                return new Container(Node::AMOUNT, new Text($this->lineNr, trim($amount)));
             });
         }
 
@@ -7759,7 +7776,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$number) {
-                return new Container('PayeeBankgiro', new Number($this->lineNr, trim($number)));
+                return new Container(Node::PAYEE_BANKGIRO, new Number($this->lineNr, trim($number)));
             });
         }
 
@@ -7816,7 +7833,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$number) {
-                return new Container('StateId', new Number($this->lineNr, trim($number)));
+                return new Container(Node::STATE_ID, new Number($this->lineNr, trim($number)));
             });
         }
 
@@ -7873,7 +7890,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$nr) {
-                return new Number($this->lineNr, trim($nr), 'PayeeBgcNumber');
+                return new Number($this->lineNr, trim($nr), Node::PAYEE_BGC_NUMBER);
             });
         }
 
@@ -8134,7 +8151,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$interval) {
-                return new Message('Interval', new Number($this->lineNr, trim($interval)));
+                return new Message(Node::INTERVAL, new Number($this->lineNr, trim($interval)));
             });
         }
 
@@ -8297,7 +8314,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$nr) {
-                return new Number($this->lineNr, trim($nr), 'PayerNumber');
+                return new Number($this->lineNr, trim($nr), Node::PAYER_NUMBER);
             });
         }
 
@@ -8354,7 +8371,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$repetitions) {
-                return new Number($this->lineNr, trim($repetitions), 'Repetitions');
+                return new Number($this->lineNr, trim($repetitions), Node::REPETITIONS);
             });
         }
 
@@ -8397,7 +8414,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$integer) {
-                return new Number($this->lineNr, trim($integer), 'Serial');
+                return new Number($this->lineNr, trim($integer), Node::SERIAL_NUMBER);
             });
         }
 
@@ -8730,7 +8747,7 @@ class Grammar extends MultibyteHack
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$text) {
-                return new Text($this->lineNr, trim($text), 'Reference');
+                return new Text($this->lineNr, trim($text), Node::REFERENCE);
             });
         }
 

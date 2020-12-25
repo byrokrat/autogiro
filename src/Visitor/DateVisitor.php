@@ -29,7 +29,7 @@ use byrokrat\autogiro\Tree\Obj;
 /**
  * Visitor that expands date nodes
  *
- * Creates DateTime object as child 'Object'
+ * Creates DateTime object as child Node::OBJ
  */
 final class DateVisitor extends Visitor
 {
@@ -37,11 +37,11 @@ final class DateVisitor extends Visitor
 
     public function beforeDate(Node $node): void
     {
-        if ($node->hasChild('Object')) {
+        if ($node->hasChild(Node::OBJ)) {
             return;
         }
 
-        $number = (string)$node->getValueFrom('Number');
+        $number = (string)$node->getValueFrom(Node::NUMBER);
 
         if (!trim($number)) {
             return;

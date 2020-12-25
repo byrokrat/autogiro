@@ -12,3 +12,5 @@
 /phpspec.yml export-ignore
 /phpstan.neon export-ignore
 /README.md export-ignore
+/.phive export-ignore
+/src/Parser/Grammar.php binary

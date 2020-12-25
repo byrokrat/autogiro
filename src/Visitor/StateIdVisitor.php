@@ -31,7 +31,7 @@ use byrokrat\id\Exception as IdException;
 /**
  * Validates the structure of id numbers in tree
  *
- * Creates Id object as child 'Object'
+ * Creates Id object as child Node::OBJ
  */
 final class StateIdVisitor extends Visitor
 {
@@ -59,11 +59,11 @@ final class StateIdVisitor extends Visitor
 
     public function beforeStateId(Node $node): void
     {
-        if ($node->hasChild('Object')) {
+        if ($node->hasChild(Node::OBJ)) {
             return;
         }
 
-        $number = (string)$node->getValueFrom('Number');
+        $number = (string)$node->getValueFrom(Node::NUMBER);
 
         if (!trim($number, '0')) {
             return;

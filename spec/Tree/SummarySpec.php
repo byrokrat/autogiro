@@ -16,7 +16,7 @@ class SummarySpec extends ObjectBehavior
     function let(Node $amount)
     {
         $amount->getLineNr()->willReturn(1);
-        $amount->getName()->willReturn('Amount');
+        $amount->getName()->willReturn(Node::AMOUNT);
         $this->beConstructedWith('', $amount);
     }
 
@@ -42,7 +42,7 @@ class SummarySpec extends ObjectBehavior
 
     function it_contains_a_number_node($amount)
     {
-        $this->getChild('Amount')->shouldReturn($amount);
+        $this->getChild(Node::AMOUNT)->shouldReturn($amount);
     }
 
     function it_contains_a_text_node($amount)

@@ -30,6 +30,117 @@ use byrokrat\autogiro\Visitor\VisitorInterface;
  */
 class Node
 {
+    public const ACCOUNT = 'Account';
+    public const ACTIVE_YEAR = 'ActiveYear';
+    public const ADRESS_1 = 'Adress1';
+    public const ADRESS_2 = 'Adress2';
+    public const ADRESS_3 = 'Adress3';
+    public const ADRESS_4 = 'Adress4';
+    public const AMOUNT = 'Amount';
+    public const CITY = 'City';
+    public const CLOSING = 'Closing';
+    public const COMMENT = 'Comment';
+    public const CREATED = 'Created';
+    public const DATE = 'Date';
+    public const DIRECTION = 'Direction';
+    public const INFO = 'Info';
+    public const INTERVAL = 'Interval';
+    public const MAX_AMOUNT = 'MaxAmount';
+    public const NEW_DATE = 'NewDate';
+    public const NUMBER = 'Number';
+    public const OBJ = 'Object';
+    public const OPENING = 'Opening';
+    public const PAYEE_BANKGIRO = 'PayeeBankgiro';
+    public const PAYEE_BGC_NUMBER = 'PayeeBgcNumber';
+    public const PAYER_NUMBER = 'PayerNumber';
+    public const POST_CODE = 'Postcode';
+    public const REFERENCE = 'Reference';
+    public const REFUND_DATE = 'RefundDate';
+    public const REPETITIONS = 'Repetitions';
+    public const SERIAL_NUMBER = 'Serial';
+    public const STATE_ID = 'StateId';
+    public const STATUS = 'Status';
+    public const TYPE = 'Type';
+    public const UPDATED = 'Updated';
+    public const VALID_FROM_DATE = 'ValidFromDate';
+
+    public const AMENDMENT_FLAG = 'AmendmentFlag';
+    public const CREATED_FLAG = 'CreatedFlag';
+    public const DELETED_FLAG = 'DeletedFlag';
+    public const ERROR_FLAG = 'ErrorFlag';
+    public const FAILED_FLAG = 'FailedFlag';
+    public const REVOCATION_FLAG = 'RevocationFlag';
+    public const SUCCESSFUL_FLAG = 'SuccessfulFlag';
+
+    public const AUTOGIRO_REQUEST_FILE = 'AutogiroRequestFile';
+
+    public const MANDATE_REQUEST_SECTION = 'MandateRequestSection';
+    public const ACCEPT_DIGITAL_MANDATE_REQUEST = 'AcceptDigitalMandateRequest';
+    public const CREATE_MANDATE_REQUEST = 'CreateMandateRequest';
+    public const DELETE_MANDATE_REQUEST = 'DeleteMandateRequest';
+    public const REJECT_DIGITAL_MANDATE_REQUEST = 'RejectDigitalMandateRequest';
+    public const UPDATE_MANDATE_REQUEST = 'UpdateMandateRequest';
+    public const NEW_PAYER_NUMBER = 'NewPayerNumber';
+    public const OLD_PAYER_NUMBER = 'OldPayerNumber';
+    public const NEW_PAYEE_BANKGIRO = 'NewPayeeBankgiro';
+    public const OLD_PAYEE_BANKGIRO = 'OldPayeeBankgiro';
+
+    public const PAYMENT_REQUEST_SECTION = 'PaymentRequestSection';
+    public const INCOMING_PAYMENT_REQUEST = 'IncomingPaymentRequest';
+    public const OUTGOING_PAYMENT_REQUEST = 'OutgoingPaymentRequest';
+
+    public const AMENDMENT_REQUEST_SECTION = 'AmendmentRequestSection';
+    public const AMENDMENT_REQUEST = 'AmendmentRequest';
+
+    public const AUTOGIRO_PAYMENT_RESPONSE_FILE = 'AutogiroPaymentResponseFile';
+
+    public const INCOMING_PAYMENT_RESPONSE_SECTION = 'IncomingPaymentResponseSection';
+    public const INCOMING_PAYMENT_RESPONSE_SECTION_OPENING = 'IncomingPaymentResponseSectionOpening';
+    public const INCOMING_PAYMENT_COUNT = 'IncomingPaymentCount';
+    public const FAILED_INCOMING_PAYMENT_RESPONSE = 'FailedIncomingPaymentResponse';
+    public const SUCCESSFUL_INCOMING_PAYMENT_RESPONSE = 'SuccessfulIncomingPaymentResponse';
+
+    public const OUTGOING_PAYMENT_RESPONSE_SECTION = 'OutgoingPaymentResponseSection';
+    public const OUTGOING_PAYMENT_RESPONSE_SECTION_OPENING = 'OutgoingPaymentResponseSectionOpening';
+    public const OUTGOING_PAYMENT_COUNT = 'OutgoingPaymentCount';
+    public const SUCCESSFUL_OUTGOING_PAYMENT_RESPONSE = 'SuccessfulOutgoingPaymentResponse';
+    public const FAILED_OUTGOING_PAYMENT_RESPONSE = 'FailedOutgoingPaymentResponse';
+
+    public const REFUND_PAYMENT_RESPONSE_SECTION = 'RefundPaymentResponseSection';
+    public const REFUND_PAYMENT_RESPONSE_SECTION_OPENING = 'RefundPaymentResponseSectionOpening';
+    public const REFUND_PAYMENT_COUNT = 'RefundPaymentCount';
+    public const REFUND_PAYMENT_RESPONSE = 'RefundPaymentResponse';
+
+    public const AUTOGIRO_PAYMENT_RESPONSE_OLD_FILE = 'AutogiroPaymentResponseOldFile';
+    public const OUTGOING_PAYMENT_RESPONSE = 'OutgoingPaymentResponse';
+    public const INCOMING_PAYMENT_RESPONSE = 'IncomingPaymentResponse';
+
+    public const AUTOGIRO_MANDATE_RESPONSE_FILE = 'AutogiroMandateResponseFile';
+    public const MANDATE_RESPONSE = 'MandateResponse';
+
+    public const DIGITAL_MANDATE_FILE = 'DigitalMandateFile';
+    public const DIGITAL_MANDATE_COUNT = 'DigitalMandateCount';
+    public const DIGITAL_MANDATE = 'DigitalMandate';
+
+    public const AUTOGIRO_PAYMENT_REJECTION_FILE = 'AutogiroPaymentRejectionFile';
+    public const INCOMING_PAYMENT_REJECTION_RESPONSE = 'IncomingPaymentRejectionResponse';
+    public const OUTGOING_PAYMENT_REJECTION_RESPONSE = 'OutgoingPaymentRejectionResponse';
+
+    public const AUTOGIRO_AMENDMENT_RESPONSE_FILE = 'AutogiroAmendmentResponseFile';
+    public const SUCCESSFUL_INCOMING_AMENDMENT_RESPONSE = 'SuccessfulIncomingAmendmentResponse';
+    public const SUCCESSFUL_OUTGOING_AMENDMENT_RESPONSE = 'SuccessfulOutgoingAmendmentResponse';
+    public const SUCCESSFUL_AMENDMENT_RESPONSE = 'SuccessfulAmendmentResponse';
+    public const FAILED_INCOMING_AMENDMENT_RESPONSE = 'FailedIncomingAmendmentResponse';
+    public const FAILED_OUTGOING_AMENDMENT_RESPONSE = 'FailedOutgoingAmendmentResponse';
+    public const FAILED_AMENDMENT_RESPONSE = 'FailedAmendmentResponse';
+
+    public const AUTOGIRO_PAYMENT_EXTRACT_FILE = 'AutogiroPaymentExtractFile';
+    public const INCOMING_PAYMENT_EXTRACT = 'IncomingPayment';
+    public const OUTGOING_PAYMENT_EXTRACT = 'OutgoingPayment';
+
+    public const AUTOGIRO_MANDATE_EXTRACT_FILE = 'AutogiroMandateExtractFile';
+    public const MANDATE_EXTRACT = 'Mandate';
+
     /**
      * @var Node[]
      */

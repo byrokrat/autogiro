@@ -31,7 +31,7 @@ class Obj extends Node
     /**
      * @param mixed $value
      */
-    public function __construct(int $lineNr = 0, $value = null, string $name = 'Object')
+    public function __construct(int $lineNr = 0, $value = null, string $name = Node::OBJ)
     {
         parent::__construct($lineNr, $value);
         $this->setName($name);
@@ -39,6 +39,6 @@ class Obj extends Node
 
     public function getType(): string
     {
-        return 'Object';
+        return Node::OBJ;
     }
 }

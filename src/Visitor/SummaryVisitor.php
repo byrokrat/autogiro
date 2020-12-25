@@ -42,7 +42,7 @@ final class SummaryVisitor extends Visitor
 
     public function afterRecord(Node $node): void
     {
-        if ($amount = $node->getChild('Amount')->getValueFrom('Object')) {
+        if ($amount = $node->getChild(Node::AMOUNT)->getValueFrom(Node::OBJ)) {
             $summary = $this->summaries[$node->getName()] ?? $amount->subtract($amount);
             $this->summaries[$node->getName()] = $summary->add($amount);
         }
@@ -50,7 +50,7 @@ final class SummaryVisitor extends Visitor
 
     public function afterSummary(Node $node): void
     {
-        $expectedAmount = $node->getChild('Amount')->getValueFrom('Object');
+        $expectedAmount = $node->getChild(Node::AMOUNT)->getValueFrom(Node::OBJ);
 
         if (!$expectedAmount) {
             return;

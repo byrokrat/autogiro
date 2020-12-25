@@ -22,12 +22,12 @@ class DateSpec extends ObjectBehavior
 
     function it_contains_a_name()
     {
-        $this->getName()->shouldEqual('Date');
+        $this->getName()->shouldEqual(Node::DATE);
     }
 
     function it_contains_a_type()
     {
-        $this->getType()->shouldEqual('Date');
+        $this->getType()->shouldEqual(Node::DATE);
     }
 
     function it_contains_nodes(Node $node)

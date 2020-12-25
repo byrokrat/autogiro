@@ -33,9 +33,9 @@ class AccountVisitorSpec extends ObjectBehavior
     function it_fails_on_unvalid_account_number(Node $node, $accountFactory, $errorObj)
     {
         $node->getLineNr()->willReturn(1);
-        $node->hasChild('Object')->willReturn(false);
+        $node->hasChild(Node::OBJ)->willReturn(false);
 
-        $node->getValueFrom('Number')->willReturn('not-valid');
+        $node->getValueFrom(Node::NUMBER)->willReturn('not-valid');
         $accountFactory->createAccount('not-valid')->willThrow(BankingException::CLASS);
 
         $this->beforeAccount($node);
@@ -48,9 +48,9 @@ class AccountVisitorSpec extends ObjectBehavior
         $accountFactory
     ) {
         $node->getLineNr()->willReturn(1);
-        $node->hasChild('Object')->willReturn(false);
+        $node->hasChild(Node::OBJ)->willReturn(false);
 
-        $node->getValueFrom('Number')->willReturn('00valid');
+        $node->getValueFrom(Node::NUMBER)->willReturn('00valid');
         $accountFactory->createAccount('valid')->willReturn($accountNumber);
 
         $node->addChild(Argument::that(function (Obj $obj) use ($accountNumber) {
@@ -62,15 +62,15 @@ class AccountVisitorSpec extends ObjectBehavior
 
     function it_does_not_create_account_if_object_exists(Node $node)
     {
-        $node->hasChild('Object')->willReturn(true);
+        $node->hasChild(Node::OBJ)->willReturn(true);
         $this->beforeAccount($node);
         $node->addChild(Argument::any())->shouldNotHaveBeenCalled();
     }
 
     function it_does_not_create_account_if_number_is_zero(Node $node)
     {
-        $node->hasChild('Object')->willReturn(false);
-        $node->getValueFrom('Number')->willReturn('0000');
+        $node->hasChild(Node::OBJ)->willReturn(false);
+        $node->getValueFrom(Node::NUMBER)->willReturn('0000');
         $this->beforeAccount($node);
         $node->addChild(Argument::any())->shouldNotHaveBeenCalled();
     }
@@ -78,9 +78,9 @@ class AccountVisitorSpec extends ObjectBehavior
     function it_fails_on_unvalid_bankgiro_number(Node $node, $bankgiroFactory, $errorObj)
     {
         $node->getLineNr()->willReturn(1);
-        $node->hasChild('Object')->willReturn(false);
+        $node->hasChild(Node::OBJ)->willReturn(false);
 
-        $node->getValueFrom('Number')->willReturn('not-valid');
+        $node->getValueFrom(Node::NUMBER)->willReturn('not-valid');
         $bankgiroFactory->createAccount('not-valid')->willThrow(BankingException::CLASS);
 
         $this->beforePayeeBankgiro($node);
@@ -93,9 +93,9 @@ class AccountVisitorSpec extends ObjectBehavior
         $bankgiroFactory
     ) {
         $node->getLineNr()->willReturn(1);
-        $node->hasChild('Object')->willReturn(false);
+        $node->hasChild(Node::OBJ)->willReturn(false);
 
-        $node->getValueFrom('Number')->willReturn('valid');
+        $node->getValueFrom(Node::NUMBER)->willReturn('valid');
         $bankgiroFactory->createAccount('valid')->willReturn($accountNumber);
 
         $node->addChild(Argument::that(function (Obj $obj) use ($accountNumber) {
@@ -107,15 +107,15 @@ class AccountVisitorSpec extends ObjectBehavior
 
     function it_does_not_create_bankgiro_if_object_exists(Node $node)
     {
-        $node->hasChild('Object')->willReturn(true);
+        $node->hasChild(Node::OBJ)->willReturn(true);
         $this->beforePayeeBankgiro($node);
         $node->addChild(Argument::any())->shouldNotHaveBeenCalled();
     }
 
     function it_does_not_create_bankgiro_if_number_is_zero(Node $node)
     {
-        $node->hasChild('Object')->willReturn(false);
-        $node->getValueFrom('Number')->willReturn('0000');
+        $node->hasChild(Node::OBJ)->willReturn(false);
+        $node->getValueFrom(Node::NUMBER)->willReturn('0000');
         $this->beforePayeeBankgiro($node);
         $node->addChild(Argument::any())->shouldNotHaveBeenCalled();
     }

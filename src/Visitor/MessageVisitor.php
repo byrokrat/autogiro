@@ -70,7 +70,7 @@ final class MessageVisitor extends Visitor
 
     public function beforeMessage(Node $node): void
     {
-        $code = (string)$node->getValueFrom('Number');
+        $code = (string)$node->getValueFrom(Node::NUMBER);
 
         $message = $this->messages->readMessage(
             $this->layoutName,

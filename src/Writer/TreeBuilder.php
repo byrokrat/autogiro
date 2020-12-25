@@ -45,9 +45,9 @@ class TreeBuilder
      * Map section classes to record store array names
      */
     private const SECTION_TO_RECORD_STORE_MAP = [
-        'MandateRequestSection' => 'mandates',
-        'PaymentRequestSection' => 'payments',
-        'AmendmentRequestSection' => 'amendments'
+        Node::MANDATE_REQUEST_SECTION => 'mandates',
+        Node::PAYMENT_REQUEST_SECTION => 'payments',
+        Node::AMENDMENT_REQUEST_SECTION => 'amendments'
     ];
 
     /**
@@ -93,7 +93,7 @@ class TreeBuilder
     public function __construct(string $bgcNr, AccountNumber $bankgiro, \DateTimeInterface $date)
     {
         $this->bgcNr = $bgcNr;
-        $this->payeeBgNode = new Obj(0, $bankgiro, 'PayeeBankgiro');
+        $this->payeeBgNode = new Obj(0, $bankgiro, Node::PAYEE_BANKGIRO);
         $this->date = $date;
         $this->reset();
     }
@@ -104,11 +104,11 @@ class TreeBuilder
     public function reset(): void
     {
         $this->opening = new Record(
-            'Opening',
-            new Obj(0, $this->date, 'Date'),
+            Node::OPENING,
+            new Obj(0, $this->date, Node::DATE),
             new Text(0, 'AUTOGIRO'),
             new Text(0, str_pad('', 44)),
-            new Number(0, $this->bgcNr, 'PayeeBgcNumber'),
+            new Number(0, $this->bgcNr, Node::PAYEE_BGC_NUMBER),
             $this->payeeBgNode,
             new Text(0, '  ')
         );
@@ -123,11 +123,11 @@ class TreeBuilder
     public function addCreateMandateRequest(string $payerNr, AccountNumber $account, IdInterface $id): void
     {
         $this->mandates[] = new Record(
-            'CreateMandateRequest',
+            Node::CREATE_MANDATE_REQUEST,
             $this->payeeBgNode,
-            new Number(0, $payerNr, 'PayerNumber'),
-            new Obj(0, $account, 'Account'),
-            new Obj(0, $id, 'StateId'),
+            new Number(0, $payerNr, Node::PAYER_NUMBER),
+            new Obj(0, $account, Node::ACCOUNT),
+            new Obj(0, $id, Node::STATE_ID),
             new Text(0, str_pad('', 24))
         );
     }
@@ -138,9 +138,9 @@ class TreeBuilder
     public function addDeleteMandateRequest(string $payerNr): void
     {
         $this->mandates[] = new Record(
-            'DeleteMandateRequest',
+            Node::DELETE_MANDATE_REQUEST,
             $this->payeeBgNode,
-            new Number(0, $payerNr, 'PayerNumber'),
+            new Number(0, $payerNr, Node::PAYER_NUMBER),
             new Text(0, str_pad('', 52))
         );
     }
@@ -151,9 +151,9 @@ class TreeBuilder
     public function addAcceptDigitalMandateRequest(string $payerNr): void
     {
         $this->mandates[] = new Record(
-            'AcceptDigitalMandateRequest',
+            Node::ACCEPT_DIGITAL_MANDATE_REQUEST,
             $this->payeeBgNode,
-            new Number(0, $payerNr, 'PayerNumber'),
+            new Number(0, $payerNr, Node::PAYER_NUMBER),
             new Text(0, str_pad('', 52))
         );
     }
@@ -164,9 +164,9 @@ class TreeBuilder
     public function addRejectDigitalMandateRequest(string $payerNr): void
     {
         $this->mandates[] = new Record(
-            'RejectDigitalMandateRequest',
+            Node::REJECT_DIGITAL_MANDATE_REQUEST,
             $this->payeeBgNode,
-            new Number(0, $payerNr, 'PayerNumber'),
+            new Number(0, $payerNr, Node::PAYER_NUMBER),
             new Text(0, str_pad('', 48)),
             new Text(0, 'AV'),
             new Text(0, '  ')
@@ -179,11 +179,11 @@ class TreeBuilder
     public function addUpdateMandateRequest(string $payerNr, string $newPayerNr): void
     {
         $this->mandates[] = new Record(
-            'UpdateMandateRequest',
+            Node::UPDATE_MANDATE_REQUEST,
             $this->payeeBgNode,
-            new Number(0, $payerNr, 'PayerNumber'),
+            new Number(0, $payerNr, Node::PAYER_NUMBER),
             $this->payeeBgNode,
-            new Number(0, $newPayerNr, 'PayerNumber'),
+            new Number(0, $newPayerNr, Node::PAYER_NUMBER),
             new Text(0, str_pad('', 26))
         );
     }
@@ -200,7 +200,7 @@ class TreeBuilder
         int $repetitions
     ): void {
         $this->addPaymentRequest(
-            'IncomingPaymentRequest',
+            Node::INCOMING_PAYMENT_REQUEST,
             $payerNr,
             $amount,
             $date,
@@ -222,7 +222,7 @@ class TreeBuilder
         int $repetitions
     ): void {
         $this->addPaymentRequest(
-            'OutgoingPaymentRequest',
+            Node::OUTGOING_PAYMENT_REQUEST,
             $payerNr,
             $amount,
             $date,
@@ -237,7 +237,7 @@ class TreeBuilder
      */
     public function addImmediateIncomingPaymentRequest(string $payerNr, Money $amount, string $ref): void
     {
-        $this->addImmediatePaymentRequest('IncomingPaymentRequest', $payerNr, $amount, $ref);
+        $this->addImmediatePaymentRequest(Node::INCOMING_PAYMENT_REQUEST, $payerNr, $amount, $ref);
     }
 
     /**
@@ -245,7 +245,7 @@ class TreeBuilder
      */
     public function addImmediateOutgoingPaymentRequest(string $payerNr, Money $amount, string $ref): void
     {
-        $this->addImmediatePaymentRequest('OutgoingPaymentRequest', $payerNr, $amount, $ref);
+        $this->addImmediatePaymentRequest(Node::OUTGOING_PAYMENT_REQUEST, $payerNr, $amount, $ref);
     }
 
     /**
@@ -254,9 +254,9 @@ class TreeBuilder
     public function addDeletePaymentRequest(string $payerNr): void
     {
         $this->amendments[] = new Record(
-            'AmendmentRequest',
+            Node::AMENDMENT_REQUEST,
             $this->payeeBgNode,
-            new Number(0, $payerNr, 'PayerNumber'),
+            new Number(0, $payerNr, Node::PAYER_NUMBER),
             new Text(0, str_repeat(' ', 52))
         );
     }
@@ -274,7 +274,7 @@ class TreeBuilder
             }
         }
 
-        return new AutogiroFile('AutogiroRequestFile', ...$sections);
+        return new AutogiroFile(Node::AUTOGIRO_REQUEST_FILE, ...$sections);
     }
 
     private function addPaymentRequest(
@@ -288,12 +288,12 @@ class TreeBuilder
     ): void {
         $this->payments[] = new Record(
             $nodename,
-            new Obj(0, $date, 'Date'),
-            new Number(0, $interval, 'Interval'),
-            new Number(0, (string)$repetitions, 'Repetitions'),
+            new Obj(0, $date, Node::DATE),
+            new Number(0, $interval, Node::INTERVAL),
+            new Number(0, (string)$repetitions, Node::REPETITIONS),
             new Text(0, ' '),
-            new Number(0, $payerNr, 'PayerNumber'),
-            new Obj(0, $amount, 'Amount'),
+            new Number(0, $payerNr, Node::PAYER_NUMBER),
+            new Obj(0, $amount, Node::AMOUNT),
             $this->payeeBgNode,
             new Text(0, str_pad($ref, 16, ' ', STR_PAD_LEFT)),
             new Text(0, str_pad('', 11))
@@ -305,11 +305,11 @@ class TreeBuilder
         $this->payments[] = new Record(
             $nodename,
             new ImmediateDate(),
-            new Number(0, Intervals::INTERVAL_ONCE, 'Interval'),
-            new Number(0, '0', 'Repetitions'),
+            new Number(0, Intervals::INTERVAL_ONCE, Node::INTERVAL),
+            new Number(0, '0', Node::REPETITIONS),
             new Text(0, ' '),
-            new Number(0, $payerNr, 'PayerNumber'),
-            new Obj(0, $amount, 'Amount'),
+            new Number(0, $payerNr, Node::PAYER_NUMBER),
+            new Obj(0, $amount, Node::AMOUNT),
             $this->payeeBgNode,
             new Text(0, str_pad($ref, 16, ' ', STR_PAD_LEFT)),
             new Text(0, str_pad('', 11))

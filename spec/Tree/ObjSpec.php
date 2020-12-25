@@ -22,7 +22,7 @@ class ObjSpec extends ObjectBehavior
 
     function it_contains_a_default_name()
     {
-        $this->getName()->shouldEqual('Object');
+        $this->getName()->shouldEqual(Node::OBJ);
     }
 
     function it_can_set_name()
@@ -33,6 +33,6 @@ class ObjSpec extends ObjectBehavior
 
     function it_contains_a_type()
     {
-        $this->getType()->shouldEqual('Object');
+        $this->getType()->shouldEqual(Node::OBJ);
     }
 }

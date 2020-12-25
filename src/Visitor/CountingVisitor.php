@@ -51,7 +51,7 @@ final class CountingVisitor extends Visitor
 
     public function beforeCount(Node $node): void
     {
-        $expectedCount = (int)$node->getValueFrom('Number');
+        $expectedCount = (int)$node->getValueFrom(Node::NUMBER);
         $currentCount = $this->getCount((string)$node->getValueFrom('Text'));
 
         if ($expectedCount != $currentCount) {

@@ -30,13 +30,13 @@ class SummaryVisitorSpec extends ObjectBehavior
         Node $recordAmount,
         $errorObj
     ) {
-        $summary->getChild('Amount')->willReturn($summaryAmount);
-        $summaryAmount->getValueFrom('Object')->willReturn(Money::SEK('100'));
+        $summary->getChild(Node::AMOUNT)->willReturn($summaryAmount);
+        $summaryAmount->getValueFrom(Node::OBJ)->willReturn(Money::SEK('100'));
         $summary->getValueFrom('Text')->willReturn('foobar');
 
         $record->getName()->willReturn('foobar');
-        $record->getChild('Amount')->willReturn($recordAmount);
-        $recordAmount->getValueFrom('Object')->willReturn(Money::SEK('100'));
+        $record->getChild(Node::AMOUNT)->willReturn($recordAmount);
+        $recordAmount->getValueFrom(Node::OBJ)->willReturn(Money::SEK('100'));
 
         $this->afterRecord($record);
         $this->afterSummary($summary);
@@ -51,13 +51,13 @@ class SummaryVisitorSpec extends ObjectBehavior
         Node $recordAmount,
         $errorObj
     ) {
-        $summary->getChild('Amount')->willReturn($summaryAmount);
-        $summaryAmount->getValueFrom('Object')->willReturn(Money::SEK('100'));
+        $summary->getChild(Node::AMOUNT)->willReturn($summaryAmount);
+        $summaryAmount->getValueFrom(Node::OBJ)->willReturn(Money::SEK('100'));
         $summary->getValueFrom('Text')->willReturn('foobar');
 
         $record->getName()->willReturn('foobar');
-        $record->getChild('Amount')->willReturn($recordAmount);
-        $recordAmount->getValueFrom('Object')->willReturn(Money::SEK('-100'));
+        $record->getChild(Node::AMOUNT)->willReturn($recordAmount);
+        $recordAmount->getValueFrom(Node::OBJ)->willReturn(Money::SEK('-100'));
 
         $this->afterRecord($record);
         $this->afterSummary($summary);
@@ -72,14 +72,14 @@ class SummaryVisitorSpec extends ObjectBehavior
         Node $recordAmount,
         $errorObj
     ) {
-        $summary->getChild('Amount')->willReturn($summaryAmount);
-        $summaryAmount->getValueFrom('Object')->willReturn(Money::SEK('100'));
+        $summary->getChild(Node::AMOUNT)->willReturn($summaryAmount);
+        $summaryAmount->getValueFrom(Node::OBJ)->willReturn(Money::SEK('100'));
         $summary->getValueFrom('Text')->willReturn('foobar');
         $summary->getLineNr()->willReturn(1);
 
         $record->getName()->willReturn('foobar');
-        $record->getChild('Amount')->willReturn($recordAmount);
-        $recordAmount->getValueFrom('Object')->willReturn(Money::SEK('200'));
+        $record->getChild(Node::AMOUNT)->willReturn($recordAmount);
+        $recordAmount->getValueFrom(Node::OBJ)->willReturn(Money::SEK('200'));
 
         $this->afterRecord($record);
         $this->afterSummary($summary);
@@ -94,14 +94,14 @@ class SummaryVisitorSpec extends ObjectBehavior
         Node $recordAmount,
         $errorObj
     ) {
-        $summary->getChild('Amount')->willReturn($summaryAmount);
-        $summaryAmount->getValueFrom('Object')->willReturn(Money::SEK('0'));
+        $summary->getChild(Node::AMOUNT)->willReturn($summaryAmount);
+        $summaryAmount->getValueFrom(Node::OBJ)->willReturn(Money::SEK('0'));
         $summary->getValueFrom('Text')->willReturn('foobar');
         $summary->getLineNr()->willReturn(1);
 
         $record->getName()->willReturn('foobar');
-        $record->getChild('Amount')->willReturn($recordAmount);
-        $recordAmount->getValueFrom('Object')->willReturn(Money::SEK('100'));
+        $record->getChild(Node::AMOUNT)->willReturn($recordAmount);
+        $recordAmount->getValueFrom(Node::OBJ)->willReturn(Money::SEK('100'));
 
         $this->afterRecord($record);
         $this->beforeAutogiroFile();
@@ -115,8 +115,8 @@ class SummaryVisitorSpec extends ObjectBehavior
         Node $summaryAmount,
         $errorObj
     ) {
-        $summary->getChild('Amount')->willReturn($summaryAmount);
-        $summaryAmount->getValueFrom('Object')->willReturn(null);
+        $summary->getChild(Node::AMOUNT)->willReturn($summaryAmount);
+        $summaryAmount->getValueFrom(Node::OBJ)->willReturn(null);
 
         $this->afterSummary($summary);
 

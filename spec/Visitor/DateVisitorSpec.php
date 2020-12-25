@@ -25,15 +25,15 @@ class DateVisitorSpec extends ObjectBehavior
 
     function it_does_not_create_if_date_object_exists(Node $node)
     {
-        $node->hasChild('Object')->willReturn(true);
+        $node->hasChild(Node::OBJ)->willReturn(true);
         $this->beforeDate($node);
         $node->addChild(Argument::any())->shouldNotHaveBeenCalled();
     }
 
     function it_ignores_empty_values(Node $node)
     {
-        $node->hasChild('Object')->willReturn(false);
-        $node->getValueFrom('Number')->willReturn('        ');
+        $node->hasChild(Node::OBJ)->willReturn(false);
+        $node->getValueFrom(Node::NUMBER)->willReturn('        ');
         $this->beforeDate($node);
         $node->addChild(Argument::any())->shouldNotHaveBeenCalled();
     }
@@ -41,8 +41,8 @@ class DateVisitorSpec extends ObjectBehavior
     function it_fails_on_unvalid_date(Node $node, $errorObj)
     {
         $node->getLineNr()->willReturn(1);
-        $node->hasChild('Object')->willReturn(false);
-        $node->getValueFrom('Number')->willReturn('this-is-not-a-valid-date');
+        $node->hasChild(Node::OBJ)->willReturn(false);
+        $node->getValueFrom(Node::NUMBER)->willReturn('this-is-not-a-valid-date');
         $this->beforeDate($node);
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }
@@ -50,8 +50,8 @@ class DateVisitorSpec extends ObjectBehavior
     function it_creates_date(Node $node)
     {
         $node->getLineNr()->willReturn(1);
-        $node->hasChild('Object')->willReturn(false);
-        $node->getValueFrom('Number')->willReturn('20161109');
+        $node->hasChild(Node::OBJ)->willReturn(false);
+        $node->getValueFrom(Node::NUMBER)->willReturn('20161109');
 
         $node->addChild(Argument::that(function (Obj $obj) {
             return $obj->getValue()->format('Ymd') == '20161109';
@@ -63,8 +63,8 @@ class DateVisitorSpec extends ObjectBehavior
     function it_creates_date_times(Node $node)
     {
         $node->getLineNr()->willReturn(1);
-        $node->hasChild('Object')->willReturn(false);
-        $node->getValueFrom('Number')->willReturn('20091110193055123456');
+        $node->hasChild(Node::OBJ)->willReturn(false);
+        $node->getValueFrom(Node::NUMBER)->willReturn('20091110193055123456');
 
         $node->addChild(Argument::that(function (Obj $obj) {
             return $obj->getValue()->format('YmdHis') == '20091110193055';
@@ -76,8 +76,8 @@ class DateVisitorSpec extends ObjectBehavior
     function it_creates_short_dates(Node $node)
     {
         $node->getLineNr()->willReturn(1);
-        $node->hasChild('Object')->willReturn(false);
-        $node->getValueFrom('Number')->willReturn('820323');
+        $node->hasChild(Node::OBJ)->willReturn(false);
+        $node->getValueFrom(Node::NUMBER)->willReturn('820323');
 
         $node->addChild(Argument::that(function (Obj $obj) {
             return $obj->getValue()->format('ymd') == '820323';

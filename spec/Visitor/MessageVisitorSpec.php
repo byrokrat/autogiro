@@ -30,7 +30,7 @@ class MessageVisitorSpec extends ObjectBehavior
         $record->getName()->willReturn('record');
         $msg->getLineNr()->willReturn(1);
         $msg->getName()->willReturn('msg');
-        $msg->getValueFrom('Number')->willReturn('code');
+        $msg->getValueFrom(Node::NUMBER)->willReturn('code');
 
         $messages->readMessage('file', 'record', 'msg', 'code')->willReturn('');
 
@@ -48,7 +48,7 @@ class MessageVisitorSpec extends ObjectBehavior
         $record->getName()->willReturn('record');
         $msg->getLineNr()->willReturn(1);
         $msg->getName()->willReturn('msg');
-        $msg->getValueFrom('Number')->willReturn('code');
+        $msg->getValueFrom(Node::NUMBER)->willReturn('code');
 
         $messages->readMessage('file', 'record', 'msg', 'code')->willReturn('message');
 
@@ -67,7 +67,7 @@ class MessageVisitorSpec extends ObjectBehavior
     {
         $msg->getLineNr()->willReturn(1);
         $msg->getName()->willReturn('msg');
-        $msg->getValueFrom('Number')->willReturn('code');
+        $msg->getValueFrom(Node::NUMBER)->willReturn('code');
         $msg->addChild(Argument::any())->shouldBeCalled();
 
         $messages->readMessage('', '', 'msg', 'code')->shouldBeCalled()->willReturn('foobar');
@@ -81,7 +81,7 @@ class MessageVisitorSpec extends ObjectBehavior
         $record->getName()->willReturn('record');
         $msg->getLineNr()->willReturn(1);
         $msg->getName()->willReturn('msg');
-        $msg->getValueFrom('Number')->willReturn('code');
+        $msg->getValueFrom(Node::NUMBER)->willReturn('code');
         $msg->addChild(Argument::any())->shouldBeCalled();
 
         $messages->readMessage('file', '', 'msg', 'code')->shouldBeCalled()->willReturn('message');

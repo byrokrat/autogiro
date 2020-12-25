@@ -89,7 +89,7 @@ functionality by using one of the visitor constants:
 
 <!-- @include ParserFactory -->
 ```php
-$parser = $factory->createParser(\byrokrat\autogiro\Parser\ParserFactory::VISITOR_IGNORE_OBJECTS);
+$factory->createParser(\byrokrat\autogiro\Parser\ParserFactory::VISITOR_IGNORE_OBJECTS);
 ```
 
 Parsing a file creates a node object.
@@ -100,7 +100,9 @@ Parsing a file creates a node object.
     @include RawFile
 -->
 ```php
-/** @var \byrokrat\autogiro\Tree\Node $node */
+use byrokrat\autogiro\Tree\Node;
+
+/** @var Node */
 $node = $parser->parse($rawFile);
 ```
 
@@ -114,7 +116,7 @@ node `Object` contains constructed php objects. Access using something like:
     @include AutogiroFile
 -->
 ```php
-$money = $node->getChild('Amount')->getValueFrom('Object');
+$money = $node->getChild(Node::AMOUNT)->getValueFrom(Node::OBJ);
 ```
 
 ### Walking the parse tree
@@ -129,20 +131,20 @@ Walk the tree by calling `hasChild()`, `getChild()` and `getChildren()`.
     @expectOutput "0000001234567890"
 -->
 ```php
-echo $node->getChild('MandateRequestSection')
-    ->getChild('DeleteMandateRequest')
-    ->getChild('PayerNumber')
+echo $node->getChild(Node::MANDATE_REQUEST_SECTION)
+    ->getChild(Node::DELETE_MANDATE_REQUEST)
+    ->getChild(Node::PAYER_NUMBER)
     ->getValue();
 ```
 
-Or access all `DeleteMandateRequest` nodes.
+Or access all `Node::DELETE_MANDATE_REQUEST` nodes.
 
 <!--
     @example GetChildren
     @include AutogiroFile
 -->
 ```php
-foreach ($node->getChild('MandateRequestSection')->getChildren('DeleteMandateRequest') as $child) {
+foreach ($node->getChild(Node::MANDATE_REQUEST_SECTION)->getChildren(Node::DELETE_MANDATE_REQUEST) as $child) {
     // process...
 }
 ```
@@ -189,7 +191,7 @@ This can also be done dynamically.
 ```php
 $visitor = new \byrokrat\autogiro\Visitor\Visitor;
 
-$visitor->before("DeleteMandateRequest", function ($node) {
+$visitor->before(Node::DELETE_MANDATE_REQUEST, function ($node) {
     echo "Delete mandate request found!";
 });
 ```
@@ -201,14 +203,14 @@ $visitor->before("DeleteMandateRequest", function ($node) {
     @include Visitor
 -->
 ```php
-$visitor->before("MandateResponse", function ($node) {
-    if ($node->hasChild('CreatedFlag')) {
+$visitor->before(Node::MANDATE_RESPONSE, function ($node) {
+    if ($node->hasChild(Node::CREATED_FLAG)) {
         // Mandate successfully created
     }
-    if ($node->hasChild('DeletedFlag')) {
+    if ($node->hasChild(Node::DELETED_FLAG)) {
         // Mandate successfully deleted
     }
-    if ($node->hasChild('ErrorFlag')) {
+    if ($node->hasChild(Node::ERROR_FLAG)) {
         // Mandate error state
     }
 });
@@ -221,11 +223,11 @@ $visitor->before("MandateResponse", function ($node) {
     @include Visitor
 -->
 ```php
-$visitor->before("SuccessfulIncomingPaymentResponse", function ($node) {
+$visitor->before(Node::SUCCESSFUL_INCOMING_PAYMENT_RESPONSE, function ($node) {
     // successfull payment..
 });
 
-$visitor->before("FailedIncomingPaymentResponse", function ($node) {
+$visitor->before(Node::FAILED_INCOMING_PAYMENT_RESPONSE, function ($node) {
     // failed payment..
 });
 ```

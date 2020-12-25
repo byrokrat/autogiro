@@ -26,8 +26,8 @@ class PayeeVisitorSpec extends ObjectBehavior
     ) {
         $this->beConstructedWith($errorObj);
 
-        $bgA->getValueFrom('Number')->willReturn('A');
-        $bgB->getValueFrom('Number')->willReturn('B');
+        $bgA->getValueFrom(Node::NUMBER)->willReturn('A');
+        $bgB->getValueFrom(Node::NUMBER)->willReturn('B');
         $bgB->getLineNr()->willReturn(1);
 
         $custA->getValue()->willReturn('A');

@@ -29,7 +29,7 @@ class PaymentVisitorSpec extends ObjectBehavior
         Node $ival,
         $errorObj
     ) {
-        $ival->getValueFrom('Number')->willReturn('1');
+        $ival->getValueFrom(Node::NUMBER)->willReturn('1');
         $request->getChild('date')->willReturn($date);
         $request->getChild('interval')->willReturn($ival);
         $request->getValueFrom('repetitions')->willReturn('001');
@@ -44,7 +44,7 @@ class PaymentVisitorSpec extends ObjectBehavior
         Node $ival,
         $errorObj
     ) {
-        $ival->getValueFrom('Number')->willReturn('1');
+        $ival->getValueFrom(Node::NUMBER)->willReturn('1');
         $request->getChild('date')->willReturn($date);
         $request->getChild('interval')->willReturn($ival);
         $request->getValueFrom('repetitions')->willReturn('001');
@@ -59,7 +59,7 @@ class PaymentVisitorSpec extends ObjectBehavior
         Node $ival,
         $errorObj
     ) {
-        $ival->getValueFrom('Number')->willReturn('0');
+        $ival->getValueFrom(Node::NUMBER)->willReturn('0');
         $request->getChild('date')->willReturn($date);
         $request->getChild('interval')->willReturn($ival);
         $request->getValueFrom('repetitions')->willReturn('001');
@@ -74,7 +74,7 @@ class PaymentVisitorSpec extends ObjectBehavior
         Node $ival,
         $errorObj
     ) {
-        $ival->getValueFrom('Number')->willReturn('0');
+        $ival->getValueFrom(Node::NUMBER)->willReturn('0');
         $request->getChild('date')->willReturn($date);
         $request->getChild('interval')->willReturn($ival);
         $request->getValueFrom('repetitions')->willReturn('001');

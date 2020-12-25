@@ -27,14 +27,14 @@ class AmountVisitorSpec extends ObjectBehavior
 
     function it_does_not_create_amount_if_object_exists(Node $node)
     {
-        $node->hasChild('Object')->willReturn(true);
+        $node->hasChild(Node::OBJ)->willReturn(true);
         $this->beforeAmount($node);
         $node->addChild(Argument::any())->shouldNotHaveBeenCalled();
     }
 
     function it_does_not_create_if_amount_is_empty(Node $node)
     {
-        $node->hasChild('Object')->willReturn(false);
+        $node->hasChild(Node::OBJ)->willReturn(false);
         $node->getValueFrom('Text')->willReturn('    ');
         $this->beforeAmount($node);
         $node->addChild(Argument::any())->shouldNotHaveBeenCalled();
@@ -43,7 +43,7 @@ class AmountVisitorSpec extends ObjectBehavior
     function it_fails_on_invalid_amounts($errorObj, $moneyParser, Node $node)
     {
         $node->getLineNr()->willReturn(1);
-        $node->hasChild('Object')->willReturn(false);
+        $node->hasChild(Node::OBJ)->willReturn(false);
         $node->getValueFrom('Text')->willReturn('invalid-amount');
         $moneyParser->parse('invalid-amount')->willThrow(new \Exception);
         $this->beforeAmount($node);
@@ -53,7 +53,7 @@ class AmountVisitorSpec extends ObjectBehavior
     function it_creates_valid_amounts($moneyParser, Node $node)
     {
         $node->getLineNr()->willReturn(1);
-        $node->hasChild('Object')->willReturn(false);
+        $node->hasChild(Node::OBJ)->willReturn(false);
         $node->getValueFrom('Text')->willReturn('1230K');
 
         $money = Money::SEK('-12300');

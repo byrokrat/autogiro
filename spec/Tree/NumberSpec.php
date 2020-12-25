@@ -22,7 +22,7 @@ class NumberSpec extends ObjectBehavior
 
     function it_contains_a_default_name()
     {
-        $this->getName()->shouldEqual('Number');
+        $this->getName()->shouldEqual(Node::NUMBER);
     }
 
     function it_can_set_name()
@@ -33,6 +33,6 @@ class NumberSpec extends ObjectBehavior
 
     function it_contains_a_type()
     {
-        $this->getType()->shouldEqual('Number');
+        $this->getType()->shouldEqual(Node::NUMBER);
     }
 }

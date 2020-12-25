@@ -16,7 +16,7 @@ class CountSpec extends ObjectBehavior
     function let(Node $count)
     {
         $count->getLineNr()->willReturn(1);
-        $count->getName()->willReturn('Number');
+        $count->getName()->willReturn(Node::NUMBER);
         $this->beConstructedWith('', $count);
     }
 
@@ -42,7 +42,7 @@ class CountSpec extends ObjectBehavior
 
     function it_contains_a_number_node($count)
     {
-        $this->getChild('Number')->shouldReturn($count);
+        $this->getChild(Node::NUMBER)->shouldReturn($count);
     }
 
     function it_contains_a_text_node($count)

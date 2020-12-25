@@ -50,7 +50,7 @@ final class PaymentVisitor extends Visitor
     {
         if (
             $node->getChild('date') instanceof ImmediateDate
-            && $node->getChild('interval')->getValueFrom('Number') != Intervals::INTERVAL_ONCE
+            && $node->getChild('interval')->getValueFrom(Node::NUMBER) != Intervals::INTERVAL_ONCE
         ) {
             $this->getErrorObject()->addError(
                 "Immediate dates and intervals can not be mixed in payment on line %s",
@@ -62,13 +62,13 @@ final class PaymentVisitor extends Visitor
     private function validateRepetitionsWithoutInterval(Node $node): void
     {
         if (
-            $node->getChild('interval')->getValueFrom('Number') == Intervals::INTERVAL_ONCE
+            $node->getChild('interval')->getValueFrom(Node::NUMBER) == Intervals::INTERVAL_ONCE
             && trim($node->getValueFrom('repetitions')) != ''
         ) {
             $this->getErrorObject()->addError(
                 "Repetitions set (%s) but interval is once (%s) on line %s",
                 $node->getValueFrom('repetitions'),
-                $node->getChild('interval')->getValueFrom('Number'),
+                $node->getChild('interval')->getValueFrom(Node::NUMBER),
                 (string)$node->getLineNr()
             );
         }
