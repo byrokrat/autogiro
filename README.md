@@ -144,7 +144,9 @@ Or access all `Node::DELETE_MANDATE_REQUEST` nodes.
     @include AutogiroFile
 -->
 ```php
-foreach ($node->getChild(Node::MANDATE_REQUEST_SECTION)->getChildren(Node::DELETE_MANDATE_REQUEST) as $child) {
+$mandateRequests = $node->getChild(Node::MANDATE_REQUEST_SECTION);
+
+foreach ($mandateRequests->getChildren(Node::DELETE_MANDATE_REQUEST) as $deleteRequest) {
     // process...
 }
 ```
