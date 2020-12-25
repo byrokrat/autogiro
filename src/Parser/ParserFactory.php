@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of byrokrat\autogiro.
  *
@@ -18,7 +19,7 @@
  * Copyright 2016-20 Hannes Forsgård
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace byrokrat\autogiro\Parser;
 
@@ -28,6 +29,6 @@ final class ParserFactory extends VisitorFactory
 {
     public function createParser(int $flags = 0): ParserInterface
     {
-        return new Parser(new Grammar, $this->createVisitors($flags));
+        return new Parser(new Grammar(), $this->createVisitors($flags));
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of byrokrat\autogiro.
  *
@@ -18,7 +19,7 @@
  * Copyright 2016-20 Hannes Forsgård
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace byrokrat\autogiro\Visitor;
 
@@ -39,42 +40,42 @@ class VisitorFactory
     /**
      * Do not include account number visitor
      */
-    const VISITOR_IGNORE_ACCOUNTS = 1;
+    public const VISITOR_IGNORE_ACCOUNTS = 1;
 
     /**
      * Do not include amount visitor
      */
-    const VISITOR_IGNORE_AMOUNTS = 2;
+    public const VISITOR_IGNORE_AMOUNTS = 2;
 
     /**
      * Do not include id visitor
      */
-    const VISITOR_IGNORE_IDS = 4;
+    public const VISITOR_IGNORE_IDS = 4;
 
     /**
      * Do not include date visitor
      */
-    const VISITOR_IGNORE_DATES = 8;
+    public const VISITOR_IGNORE_DATES = 8;
 
     /**
      * Do not include message visitor
      */
-    const VISITOR_IGNORE_MESSAGES = 16;
+    public const VISITOR_IGNORE_MESSAGES = 16;
 
     /**
      * Do not include basic validation visitors
      */
-    const VISITOR_IGNORE_BASIC_VALIDATION = 32;
+    public const VISITOR_IGNORE_BASIC_VALIDATION = 32;
 
     /**
      * Do not include strict validation visitors
      */
-    const VISITOR_IGNORE_STRICT_VALIDATION = 64;
+    public const VISITOR_IGNORE_STRICT_VALIDATION = 64;
 
     /**
      * Ignore all visitors based on external dependencies
      */
-    const VISITOR_IGNORE_OBJECTS = self::VISITOR_IGNORE_ACCOUNTS
+    public const VISITOR_IGNORE_OBJECTS = self::VISITOR_IGNORE_ACCOUNTS
         | self::VISITOR_IGNORE_AMOUNTS
         | self::VISITOR_IGNORE_IDS
         | self::VISITOR_IGNORE_DATES;
@@ -82,7 +83,7 @@ class VisitorFactory
     /**
      * Ignore all visitors
      */
-    const VISITOR_IGNORE_ALL = self::VISITOR_IGNORE_OBJECTS
+    public const VISITOR_IGNORE_ALL = self::VISITOR_IGNORE_OBJECTS
         | self::VISITOR_IGNORE_MESSAGES
         | self::VISITOR_IGNORE_BASIC_VALIDATION
         | self::VISITOR_IGNORE_STRICT_VALIDATION;
@@ -96,7 +97,7 @@ class VisitorFactory
             return ($needle & $flags) == $needle;
         };
 
-        $errorObj = new ErrorObject;
+        $errorObj = new ErrorObject();
         $container = new VisitorContainer($errorObj);
 
         if (!$flag(self::VISITOR_IGNORE_BASIC_VALIDATION)) {
@@ -116,8 +117,8 @@ class VisitorFactory
             $container->addVisitor(
                 new AccountVisitor(
                     $errorObj,
-                    new DelegatingFactory(new AccountFactory, new BankgiroFactory),
-                    new BankgiroFactory
+                    new DelegatingFactory(new AccountFactory(), new BankgiroFactory()),
+                    new BankgiroFactory()
                 )
             );
         }
@@ -126,7 +127,7 @@ class VisitorFactory
             $container->addVisitor(
                 new AmountVisitor(
                     $errorObj,
-                    new SignalMoneyParser
+                    new SignalMoneyParser()
                 )
             );
         }
@@ -135,8 +136,8 @@ class VisitorFactory
             $container->addVisitor(
                 new StateIdVisitor(
                     $errorObj,
-                    new OrganizationIdFactory,
-                    new PersonalIdFactory(new CoordinationIdFactory(new NullIdFactory))
+                    new OrganizationIdFactory(),
+                    new PersonalIdFactory(new CoordinationIdFactory(new NullIdFactory()))
                 )
             );
         }

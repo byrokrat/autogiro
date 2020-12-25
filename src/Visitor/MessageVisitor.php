@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of byrokrat\autogiro.
  *
@@ -18,7 +19,7 @@
  * Copyright 2016-20 Hannes Forsgård
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace byrokrat\autogiro\Visitor;
 
@@ -53,7 +54,7 @@ final class MessageVisitor extends Visitor
     public function __construct(ErrorObject $errorObj, MessageRetriever $messages = null)
     {
         $this->setErrorObject($errorObj);
-        $this->messages = $messages ?: new MessageRetriever;
+        $this->messages = $messages ?: new MessageRetriever();
     }
 
     public function beforeAutogiroFile(Node $node): void

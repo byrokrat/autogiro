@@ -9,7 +9,7 @@ PHPCS_CMD=tools/phpcs
 PHPEG_CMD=tools/phpeg
 
 GRAMMAR=src/Parser/Grammar.php
-PARSER_FILES:=$(shell find src/Parser/ -type f -name '*.php' ! -path $(GRAMMAR))
+PARSER_FILES:=$(shell find src/Parser/ -type f ! -path $(GRAMMAR))
 
 .DEFAULT_GOAL=all
 
@@ -18,8 +18,6 @@ all: $(GRAMMAR) test analyze
 
 $(GRAMMAR): $(PARSER_FILES) vendor/installed $(PHPEG_CMD)
 	$(PHPEG_CMD) generate src/Parser/Grammar.peg
-
-# continous
 
 .PHONY: clean
 clean:
@@ -58,7 +56,7 @@ phpstan: vendor/installed $(GRAMMAR) $(PHPSTAN_CMD)
 
 .PHONY: phpcs
 phpcs: $(PHPCS_CMD)
-	$(PHPCS_CMD) src --standard=PSR2 --ignore=$(GRAMMAR)
+	$(PHPCS_CMD) src --standard=PSR12 --ignore=$(GRAMMAR)
 	$(PHPCS_CMD) spec --standard=spec/ruleset.xml
 
 vendor/installed: composer.json

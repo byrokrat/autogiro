@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of byrokrat\autogiro.
  *
@@ -18,7 +19,7 @@
  * Copyright 2016-20 Hannes Forsgård
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace byrokrat\autogiro\Writer;
 
@@ -41,10 +42,10 @@ final class WriterFactory
             new TreeBuilder(
                 $bgcNr,
                 $bankgiro,
-                $date ?: new \DateTimeImmutable
+                $date ?: new \DateTimeImmutable()
             ),
             new PrintingVisitor(
-                new SignalMoneyFormatter
+                new SignalMoneyFormatter()
             )
         );
     }

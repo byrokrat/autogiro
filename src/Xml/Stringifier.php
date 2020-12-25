@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of byrokrat\autogiro.
  *
@@ -18,7 +19,7 @@
  * Copyright 2016-20 Hannes Forsgård
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace byrokrat\autogiro\Xml;
 
@@ -33,12 +34,12 @@ class Stringifier
     /**
      * Arrays cast value
      */
-    const ARRAY_VALUE = 'ARRAY_VALUE';
+    public const ARRAY_VALUE = 'ARRAY_VALUE';
 
     /**
      * Object cast value
      */
-    const OBJECT_VALUE = 'OBJECT_VALUE';
+    public const OBJECT_VALUE = 'OBJECT_VALUE';
 
     /**
      * @var MoneyFormatter

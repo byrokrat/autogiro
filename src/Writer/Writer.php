@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of byrokrat\autogiro.
  *
@@ -18,7 +19,7 @@
  * Copyright 2016-20 Hannes Forsgård
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace byrokrat\autogiro\Writer;
 
@@ -48,7 +49,7 @@ final class Writer implements WriterInterface
     public function getContent(): string
     {
         $tree = $this->treeBuilder->buildTree();
-        $output = new Output;
+        $output = new Output();
         $this->printer->setOutput($output);
         $tree->accept($this->printer);
 

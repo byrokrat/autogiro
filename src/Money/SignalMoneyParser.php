@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of byrokrat\autogiro.
  *
@@ -18,7 +19,7 @@
  * Copyright 2016-20 Hannes Forsgård
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace byrokrat\autogiro\Money;
 
@@ -67,7 +68,7 @@ final class SignalMoneyParser implements MoneyParser
         if (isset(self::SIGNALS[$lastChar])) {
             $money = sprintf(
                 '-%s%s',
-                mb_substr($money, 0, mb_strlen($money)-1),
+                mb_substr($money, 0, mb_strlen($money) - 1),
                 self::SIGNALS[$lastChar]
             );
         }

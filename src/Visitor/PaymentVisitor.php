@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of byrokrat\autogiro.
  *
@@ -18,7 +19,7 @@
  * Copyright 2016-20 Hannes Forsgård
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace byrokrat\autogiro\Visitor;
 
@@ -47,7 +48,8 @@ final class PaymentVisitor extends Visitor
 
     private function validateImmediateDateWithInterval(Node $node): void
     {
-        if ($node->getChild('date') instanceof ImmediateDate
+        if (
+            $node->getChild('date') instanceof ImmediateDate
             && $node->getChild('interval')->getValueFrom('Number') != Intervals::INTERVAL_ONCE
         ) {
             $this->getErrorObject()->addError(
@@ -59,7 +61,8 @@ final class PaymentVisitor extends Visitor
 
     private function validateRepetitionsWithoutInterval(Node $node): void
     {
-        if ($node->getChild('interval')->getValueFrom('Number') == Intervals::INTERVAL_ONCE
+        if (
+            $node->getChild('interval')->getValueFrom('Number') == Intervals::INTERVAL_ONCE
             && trim($node->getValueFrom('repetitions')) != ''
         ) {
             $this->getErrorObject()->addError(

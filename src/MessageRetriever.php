@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of byrokrat\autogiro.
  *
@@ -18,7 +19,7 @@
  * Copyright 2016-20 Hannes Forsgård
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace byrokrat\autogiro;
 
@@ -27,12 +28,12 @@ class MessageRetriever
     /**
      * Match all wildcard key
      */
-    const WILDCARD = '*';
+    public const WILDCARD = '*';
 
     /**
      * Default location of messages file
      */
-    const DEFAULT_MESSAGE_STORE = __DIR__ . '/messages.json';
+    public const DEFAULT_MESSAGE_STORE = __DIR__ . '/messages.json';
 
     /**
      * @var array<string, array>

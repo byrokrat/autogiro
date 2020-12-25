@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of byrokrat\autogiro.
  *
@@ -18,7 +19,7 @@
  * Copyright 2016-20 Hannes Forsgård
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace byrokrat\autogiro\Tree;
 
@@ -142,7 +143,7 @@ class Node
             }
         }
 
-        return new NullNode;
+        return new NullNode();
     }
 
     /**

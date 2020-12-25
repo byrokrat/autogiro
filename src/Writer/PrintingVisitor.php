@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of byrokrat\autogiro.
  *
@@ -18,7 +19,7 @@
  * Copyright 2016-20 Hannes Forsgård
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace byrokrat\autogiro\Writer;
 
@@ -37,7 +38,7 @@ use Money\MoneyFormatter;
  */
 class PrintingVisitor extends Visitor
 {
-    const EOL = "\r\n";
+    public const EOL = "\r\n";
 
     /**
      * @var ?Output

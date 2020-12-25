@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of byrokrat\autogiro.
  *
@@ -28,45 +29,45 @@ interface Intervals
     /**
      * Perform payment once
      */
-    const INTERVAL_ONCE = '0';
+    public const INTERVAL_ONCE = '0';
 
     /**
      * Perform payment once every month on the date specified in record
      */
-    const INTERVAL_MONTHLY_ON_DATE = '1';
+    public const INTERVAL_MONTHLY_ON_DATE = '1';
 
     /**
      * Perform payment once every quarter on the date specified in record
      */
-    const INTERVAL_QUARTERLY_ON_DATE = '2';
+    public const INTERVAL_QUARTERLY_ON_DATE = '2';
 
     /**
      * Perform payment once every six months on the date specified in record
      */
-    const INTERVAL_SEMIANUALLY_ON_DATE = '3';
+    public const INTERVAL_SEMIANUALLY_ON_DATE = '3';
 
     /**
      * Perform payment once every year on the date specified in record
      */
-    const INTERVAL_ANUALLY_ON_DATE = '4';
+    public const INTERVAL_ANUALLY_ON_DATE = '4';
 
     /**
      * Perform payment once every month on the last calender day
      */
-    const INTERVAL_MONTHLY_ON_LAST_CALENDAR_DAY = '5';
+    public const INTERVAL_MONTHLY_ON_LAST_CALENDAR_DAY = '5';
 
     /**
      * Perform payment once every quarter on the last calender day
      */
-    const INTERVAL_QUARTERLY_ON_LAST_CALENDAR_DAY = '6';
+    public const INTERVAL_QUARTERLY_ON_LAST_CALENDAR_DAY = '6';
 
     /**
      * Perform payment once every six months on the last calender day
      */
-    const INTERVAL_SEMIANUALLY_ON_LAST_CALENDAR_DAY = '7';
+    public const INTERVAL_SEMIANUALLY_ON_LAST_CALENDAR_DAY = '7';
 
     /**
      * Perform payment once every year on the last calender day
      */
-    const INTERVAL_ANUALLY_ON_LAST_CALENDAR_DAY = '8';
+    public const INTERVAL_ANUALLY_ON_LAST_CALENDAR_DAY = '8';
 }
