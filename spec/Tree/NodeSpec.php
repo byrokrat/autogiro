@@ -110,4 +110,19 @@ class NodeSpec extends ObjectBehavior
 
         $this->getValueFrom('child')->shouldEqual('val');
     }
+
+    function it_can_read_values_form_object_children(Node $child)
+    {
+        $child->getName()->willReturn(Node::OBJ);
+        $child->getValue()->willReturn('foobar');
+
+        $this->addChild($child);
+
+        $this->getObjectValue()->shouldEqual('foobar');
+    }
+
+    function it_can_read_default_object_value()
+    {
+        $this->getObjectValue()->shouldEqual(null);
+    }
 }

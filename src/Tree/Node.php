@@ -298,4 +298,14 @@ class Node
     {
         return $this->getChild($name)->getValue();
     }
+
+    /**
+     * Get raw value wrapped in child 'object' node
+     *
+     * @return mixed Loaded node value
+     */
+    public function getObjectValue()
+    {
+        return $this->getChild(self::OBJ)->getValue();
+    }
 }

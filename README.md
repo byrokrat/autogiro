@@ -116,7 +116,7 @@ node `Object` contains constructed php objects. Access using something like:
     @include AutogiroFile
 -->
 ```php
-$money = $node->getChild(Node::AMOUNT)->getValueFrom(Node::OBJ);
+$money = $node->getChild(Node::AMOUNT)->getObjectValue();
 ```
 
 ### Walking the parse tree
