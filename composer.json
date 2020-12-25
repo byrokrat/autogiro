@@ -17,15 +17,12 @@
         }
     },
     "require": {
-        "php": ">=7.1",
+        "php": "^7.3 || ^8.0",
         "ext-mbstring": "*",
         "ext-bcmath": "*",
         "byrokrat/banking": "^2.1",
         "byrokrat/id": "^2",
         "moneyphp/money": "^3",
         "neitanod/forceutf8": "~2.0"
-    },
-    "require-dev": {
-        "scato/phpeg": "^1"
     }
 }

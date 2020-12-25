@@ -40,11 +40,12 @@ class AmountVisitorSpec extends ObjectBehavior
         $node->addChild(Argument::any())->shouldNotHaveBeenCalled();
     }
 
-    function it_fails_on_unvalid_amounts(Node $node, $errorObj)
+    function it_fails_on_invalid_amounts($errorObj, $moneyParser, Node $node)
     {
         $node->getLineNr()->willReturn(1);
         $node->hasChild('Object')->willReturn(false);
-        $node->getValueFrom('Text')->willReturn('this-is-not-a-valid-signal-string');
+        $node->getValueFrom('Text')->willReturn('invalid-amount');
+        $moneyParser->parse('invalid-amount')->willThrow(new \Exception);
         $this->beforeAmount($node);
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }

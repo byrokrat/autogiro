@@ -6,8 +6,7 @@ BEHAT_CMD=tools/behat
 README_TESTER_CMD=tools/readme-tester
 PHPSTAN_CMD=tools/phpstan
 PHPCS_CMD=tools/phpcs
-
-PHPEG_CMD=vendor/bin/phpeg
+PHPEG_CMD=tools/phpeg
 
 GRAMMAR=src/Parser/Grammar.php
 PARSER_FILES:=$(shell find src/Parser/ -type f -name '*.php' ! -path $(GRAMMAR))
@@ -17,8 +16,10 @@ PARSER_FILES:=$(shell find src/Parser/ -type f -name '*.php' ! -path $(GRAMMAR))
 .PHONY: all
 all: $(GRAMMAR) test analyze
 
-$(GRAMMAR): $(PARSER_FILES) vendor/installed
+$(GRAMMAR): $(PARSER_FILES) vendor/installed $(PHPEG_CMD)
 	$(PHPEG_CMD) generate src/Parser/Grammar.peg
+
+# continous
 
 .PHONY: clean
 clean:
@@ -26,7 +27,12 @@ clean:
 	rm -rf vendor
 	rm -f composer.lock
 	rm -rf tools
-	rm -f phive.xml
+
+.PHONY: continuous-integration
+continuous-integration: $(PHPSPEC_CMD) $(BEHAT_CMD) $(README_TESTER_CMD)
+	$(PHPSPEC_CMD) run --verbose
+	$(BEHAT_CMD)
+	$(README_TESTER_CMD) README.md
 
 .PHONY: test
 test: phpspec behat docs
@@ -48,7 +54,7 @@ analyze: phpstan phpcs
 
 .PHONY: phpstan
 phpstan: vendor/installed $(GRAMMAR) $(PHPSTAN_CMD)
-	$(PHPSTAN_CMD) analyze -c phpstan.neon -l 7 src
+	$(PHPSTAN_CMD) analyze -c phpstan.neon -l 8 src
 
 .PHONY: phpcs
 phpcs: $(PHPCS_CMD)
@@ -59,17 +65,13 @@ vendor/installed: composer.json
 	$(COMPOSER_CMD) install
 	touch $@
 
-$(PHPSPEC_CMD):
-	$(PHIVE_CMD) install phpspec/phpspec --force-accept-unsigned
+tools/installed: .phive/phars.xml
+	$(PHIVE_CMD) install --force-accept-unsigned --trust-gpg-keys CF1A108D0E7AE720,31C7E470E2138192,0FD3A3029E470F86
+	touch $@
 
-$(BEHAT_CMD):
-	$(PHIVE_CMD) install behat/behat:3 --force-accept-unsigned
-
-$(README_TESTER_CMD):
-	$(PHIVE_CMD) install hanneskod/readme-tester:1 --force-accept-unsigned
-
-$(PHPSTAN_CMD):
-	$(PHIVE_CMD) install phpstan
-
-$(PHPCS_CMD):
-	$(PHIVE_CMD) install phpcs
+$(PHPSPEC_CMD): tools/installed
+$(PHPSTAN_CMD): tools/installed
+$(PHPCS_CMD): tools/installed
+$(PHPEG_CMD): tools/installed
+$(README_TESTER_CMD): tools/installed
+$(BEHAT_CMD): tools/installed
