@@ -1,3 +1,5 @@
+![byrokrat](res/logo.svg)
+
 # Autogiro
 
 [![Packagist Version](https://img.shields.io/packagist/v/byrokrat/autogiro.svg?style=flat-square)](https://packagist.org/packages/byrokrat/autogiro)
