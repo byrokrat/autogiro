@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with byrokrat\autogiro\Visitor. If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright 2016-20 Hannes Forsgård
+ * Copyright 2016-21 Hannes Forsgård
  */
 
 declare(strict_types=1);
