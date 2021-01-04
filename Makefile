@@ -56,8 +56,7 @@ phpstan: vendor/installed $(GRAMMAR) $(PHPSTAN_CMD)
 
 .PHONY: phpcs
 phpcs: $(PHPCS_CMD)
-	$(PHPCS_CMD) src --standard=PSR12 --ignore=$(GRAMMAR)
-	$(PHPCS_CMD) spec --standard=spec/ruleset.xml
+	$(PHPCS_CMD)
 
 vendor/installed: composer.json
 	$(COMPOSER_CMD) install

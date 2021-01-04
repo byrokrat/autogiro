@@ -67,7 +67,7 @@ class FeatureContext implements Context, SnippetAcceptingContext
      */
     public function iFindNodes($number, $nodeType)
     {
-        $visitor = new Visitor;
+        $visitor = new Visitor();
         $count = 0;
 
         $visitor->before($nodeType, function () use (&$count) {
@@ -76,7 +76,7 @@ class FeatureContext implements Context, SnippetAcceptingContext
 
         $this->fileNode->accept($visitor);
 
-        Assertions::assertEquals((integer)$number, $count);
+        Assertions::assertEquals((int)$number, $count);
     }
 
     /**
@@ -119,9 +119,9 @@ class FeatureContext implements Context, SnippetAcceptingContext
      */
     public function aWriterWithBgcNumberAndBankgiro(string $bgcNumber, string $bankgiro, string $date)
     {
-        $this->writer = (new WriterFactory)->createWriter(
+        $this->writer = (new WriterFactory())->createWriter(
             $bgcNumber,
-            (new \byrokrat\banking\BankgiroFactory)->createAccount($bankgiro),
+            (new \byrokrat\banking\BankgiroFactory())->createAccount($bankgiro),
             new \DateTime($date)
         );
     }
@@ -139,7 +139,7 @@ class FeatureContext implements Context, SnippetAcceptingContext
                     $args[] = $argHash['value'];
                     break;
                 case 'account':
-                    $args[] = (new \byrokrat\banking\AccountFactory)->createAccount($argHash['value']);
+                    $args[] = (new \byrokrat\banking\AccountFactory())->createAccount($argHash['value']);
                     break;
                 case 'id':
                     $args[] = new \byrokrat\id\PersonalId($argHash['value']);

@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<ruleset>
+    <rule ref="PSR12"/>
+
+    <file>./features</file>
+    <file>./spec</file>
+    <file>./src</file>
+
+    <exclude-pattern>./src/Parser/Grammar.php</exclude-pattern>
+
+    <rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace">
+       <exclude-pattern>./features</exclude-pattern>
+    </rule>
+
+    <rule ref="PSR1.Methods.CamelCapsMethodName.NotCamelCaps">
+       <exclude-pattern>./spec</exclude-pattern>
+    </rule>
+
+    <rule ref="Squiz.Scope.MethodScope.Missing">
+       <exclude-pattern>./spec</exclude-pattern>
+    </rule>
+
+    <rule ref="PSR12.Properties.ConstantVisibility.NotFound">
+       <exclude-pattern>./spec</exclude-pattern>
+    </rule>
+
+    <arg name="colors"/>
+</ruleset>

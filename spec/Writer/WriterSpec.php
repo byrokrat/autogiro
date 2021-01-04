@@ -75,7 +75,7 @@ class WriterSpec extends ObjectBehavior
     function it_calls_tree_builder_on_add_payment($treeBuilder)
     {
         $amount = Money::SEK(100);
-        $date = new \DateTime;
+        $date = new \DateTime();
         $this->addPayment('foo', $amount, $date, 'ref', '10', 100);
         $treeBuilder->addIncomingPaymentRequest('foo', $amount, $date, 'ref', '10', 100)->shouldHaveBeenCalled();
     }
@@ -83,7 +83,7 @@ class WriterSpec extends ObjectBehavior
     function it_defaults_to_creating_one_time_payments($treeBuilder)
     {
         $amount = Money::SEK(100);
-        $date = new \DateTime;
+        $date = new \DateTime();
         $this->addPayment('foo', $amount, $date);
         $treeBuilder->addIncomingPaymentRequest('foo', $amount, $date, '', Intervals::INTERVAL_ONCE, 0)
             ->shouldHaveBeenCalled();
@@ -92,7 +92,7 @@ class WriterSpec extends ObjectBehavior
     function it_creates_monthly_payments($treeBuilder)
     {
         $amount = Money::SEK(100);
-        $date = new \DateTime;
+        $date = new \DateTime();
         $this->addMonthlyPayment('foo', $amount, $date, 'ref');
         $treeBuilder->addIncomingPaymentRequest('foo', $amount, $date, 'ref', Intervals::INTERVAL_MONTHLY_ON_DATE, 0)
             ->shouldHaveBeenCalled();
@@ -108,7 +108,7 @@ class WriterSpec extends ObjectBehavior
     function it_calls_tree_builder_on_add_outgoing_payment($treeBuilder)
     {
         $amount = Money::SEK(100);
-        $date = new \DateTime;
+        $date = new \DateTime();
         $this->addOutgoingPayment('foo', $amount, $date, 'ref', '10', 100);
         $treeBuilder->addOutgoingPaymentRequest('foo', $amount, $date, 'ref', '10', 100)->shouldHaveBeenCalled();
     }

@@ -45,7 +45,7 @@ class AmountVisitorSpec extends ObjectBehavior
         $node->getLineNr()->willReturn(1);
         $node->hasChild(Node::OBJ)->willReturn(false);
         $node->getValueFrom('Text')->willReturn('invalid-amount');
-        $moneyParser->parse('invalid-amount')->willThrow(new \Exception);
+        $moneyParser->parse('invalid-amount')->willThrow(new \Exception());
         $this->beforeAmount($node);
         $errorObj->addError(Argument::type('string'), Argument::cetera())->shouldHaveBeenCalledTimes(1);
     }

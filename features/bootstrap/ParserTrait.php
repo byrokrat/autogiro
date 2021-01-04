@@ -18,7 +18,7 @@ trait ParserTrait
      */
     public function aParser()
     {
-        $this->parser = (new ParserFactory)->createParser();
+        $this->parser = (new ParserFactory())->createParser();
     }
 
     /**
@@ -26,7 +26,7 @@ trait ParserTrait
      */
     public function aParserThatIgnoresAccountAndIdStructures()
     {
-        $this->parser = (new ParserFactory)->createParser(
+        $this->parser = (new ParserFactory())->createParser(
             ParserFactory::VISITOR_IGNORE_ACCOUNTS | ParserFactory::VISITOR_IGNORE_IDS
         );
     }

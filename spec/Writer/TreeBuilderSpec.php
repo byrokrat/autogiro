@@ -243,7 +243,7 @@ class TreeBuilderSpec extends ObjectBehavior
                 $date,
                 new Record(
                     Node::INCOMING_PAYMENT_REQUEST,
-                    new ImmediateDate,
+                    new ImmediateDate(),
                     new Number(0, Intervals::INTERVAL_ONCE, Node::INTERVAL),
                     new Number(0, '0', Node::REPETITIONS),
                     new Text(0, ' '),
@@ -270,7 +270,7 @@ class TreeBuilderSpec extends ObjectBehavior
                 $date,
                 new Record(
                     Node::OUTGOING_PAYMENT_REQUEST,
-                    new ImmediateDate,
+                    new ImmediateDate(),
                     new Number(0, Intervals::INTERVAL_ONCE, Node::INTERVAL),
                     new Number(0, '0', Node::REPETITIONS),
                     new Text(0, ' '),
